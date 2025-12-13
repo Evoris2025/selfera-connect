@@ -1,0 +1,199 @@
+{
+  "common": {
+    "loading": "Memuat...",
+    "error": "Terjadi kesalahan",
+    "retry": "Coba lagi",
+    "save": "Simpan",
+    "cancel": "Batal",
+    "close": "Tutup",
+    "delete": "Hapus",
+    "edit": "Edit",
+    "share": "Bagikan",
+    "search": "Cari",
+    "seeAll": "Lihat semua",
+    "learnMore": "Pelajari lebih lanjut",
+    "back": "Kembali"
+  },
+  "nav": {
+    "home": "Beranda",
+    "explore": "Jelajahi",
+    "directory": "Cari Bantuan",
+    "notifications": "Notifikasi",
+    "profile": "Profil",
+    "settings": "Pengaturan",
+    "crisisSupport": "Dukungan Krisis",
+    "createPost": "Buat Postingan"
+  },
+  "landing": {
+    "hero": {
+      "title": "Kesejahteraan Anda penting",
+      "subtitle": "Komunitas yang mendukung untuk kesadaran kesehatan mental, sumber daya yang dapat diakses, dan koneksi yang tulus.",
+      "cta": "Bergabung dengan SelfERA",
+      "explore": "Jelajahi"
+    },
+    "features": {
+      "community": "Komunitas Pendukung",
+      "communityDesc": "Terhubung dengan mereka yang mengerti",
+      "resources": "Sumber Daya Terpercaya",
+      "resourcesDesc": "Temukan layanan terverifikasi di seluruh dunia",
+      "safe": "Ruang Aman",
+      "safeDesc": "Privasi dan keamanan Anda yang utama"
+    },
+    "crisis": {
+      "title": "Butuh dukungan sekarang?",
+      "subtitle": "Akses sumber daya krisis kapan saja, tanpa akun.",
+      "cta": "Dapatkan Dukungan Krisis"
+    }
+  },
+  "auth": {
+    "login": "Masuk",
+    "signup": "Buat akun",
+    "logout": "Keluar",
+    "email": "Email",
+    "password": "Kata sandi",
+    "confirmPassword": "Konfirmasi kata sandi",
+    "forgotPassword": "Lupa kata sandi?",
+    "noAccount": "Belum punya akun?",
+    "hasAccount": "Sudah punya akun?",
+    "orContinueWith": "Atau lanjutkan dengan",
+    "termsAgreement": "Dengan melanjutkan, Anda menyetujui Syarat dan Kebijakan Privasi kami"
+  },
+  "onboarding": {
+    "welcome": "Selamat datang di SelfERA",
+    "chooseLanguage": "Pilih bahasa Anda",
+    "chooseCountry": "Di mana lokasi Anda?",
+    "chooseInterests": "Topik apa yang menarik bagi Anda?",
+    "chooseHandle": "Pilih handle Anda",
+    "handleHint": "Ini cara orang lain menemukan Anda",
+    "accountType": "Jenis akun",
+    "individual": "Individu",
+    "organization": "Organisasi",
+    "professional": "Profesional kesehatan mental",
+    "finish": "Mulai"
+  },
+  "feed": {
+    "following": "Mengikuti",
+    "trending": "Trending",
+    "topics": "Topik",
+    "emptyFollowing": "Ikuti orang untuk melihat postingan mereka di sini",
+    "emptyTrending": "Tidak ada postingan trending saat ini"
+  },
+  "post": {
+    "create": "Buat postingan",
+    "whatsOnMind": "Apa yang Anda pikirkan?",
+    "addImage": "Tambah gambar",
+    "addVideo": "Tambah video",
+    "selectTopic": "Pilih topik",
+    "topicRequired": "Minimal satu topik diperlukan",
+    "visibility": "Visibilitas",
+    "public": "Publik",
+    "followers": "Pengikut saja",
+    "private": "Hanya saya",
+    "contentWarning": "Peringatan konten",
+    "contentWarningTypes": {
+      "sensitive": "Konten sensitif",
+      "triggering": "Mungkin memicu",
+      "mature": "Tema dewasa"
+    },
+    "publish": "Publikasikan",
+    "publishing": "Mempublikasikan...",
+    "language": "Bahasa postingan"
+  },
+  "reactions": {
+    "support": "Dukungan",
+    "informative": "Informatif",
+    "relatable": "Relatable"
+  },
+  "comments": {
+    "title": "Komentar",
+    "add": "Tambahkan komentar...",
+    "empty": "Belum ada komentar. Mulai percakapan."
+  },
+  "profile": {
+    "posts": "Postingan",
+    "saved": "Disimpan",
+    "about": "Tentang",
+    "follow": "Ikuti",
+    "following": "Mengikuti",
+    "unfollow": "Berhenti mengikuti",
+    "followers": "Pengikut",
+    "editProfile": "Edit profil",
+    "applyVerification": "Ajukan verifikasi",
+    "verified": "Terverifikasi",
+    "privateAccount": "Akun ini privat",
+    "requestFollow": "Minta untuk mengikuti"
+  },
+  "directory": {
+    "title": "Cari Bantuan",
+    "subtitle": "Temukan layanan dan sumber daya kesehatan mental terpercaya",
+    "filters": {
+      "region": "Wilayah",
+      "delivery": "Jenis pengiriman",
+      "online": "Online",
+      "inPerson": "Tatap muka",
+      "hybrid": "Hybrid",
+      "priceRange": "Rentang harga",
+      "free": "Gratis",
+      "affordable": "Terjangkau",
+      "standard": "Standar",
+      "languages": "Bahasa",
+      "verifiedOnly": "Hanya terverifikasi"
+    },
+    "noResults": "Tidak ada layanan yang cocok dengan kriteria Anda",
+    "disclaimer": "Direktori ini hanya menyediakan informasi dan bukan pengganti nasihat medis profesional. Jika Anda dalam krisis, segera cari bantuan."
+  },
+  "crisis": {
+    "title": "Dukungan Krisis",
+    "subtitle": "Jika Anda dalam bahaya segera, silakan hubungi layanan darurat.",
+    "selectCountry": "Pilih negara Anda",
+    "hotlines": "Hotline krisis",
+    "resources": "Sumber daya tambahan",
+    "available247": "Tersedia 24/7",
+    "textLine": "Jalur teks",
+    "chatSupport": "Dukungan chat"
+  },
+  "safety": {
+    "report": "Laporkan",
+    "block": "Blokir",
+    "mute": "Bisukan",
+    "reportReasons": {
+      "spam": "Spam",
+      "harassment": "Pelecehan",
+      "harmful": "Konten berbahaya",
+      "misinformation": "Misinformasi",
+      "other": "Lainnya"
+    },
+    "reportSubmitted": "Laporan dikirim",
+    "userBlocked": "Pengguna diblokir",
+    "userMuted": "Pengguna dibisukan"
+  },
+  "settings": {
+    "title": "Pengaturan",
+    "language": "Bahasa",
+    "reduceMotion": "Kurangi gerakan",
+    "privateAccount": "Akun privat",
+    "notifications": "Notifikasi",
+    "privacy": "Privasi",
+    "account": "Akun",
+    "help": "Bantuan & Dukungan"
+  },
+  "footer": {
+    "privacy": "Privasi",
+    "terms": "Syarat",
+    "guidelines": "Pedoman Komunitas",
+    "safety": "Keamanan",
+    "contact": "Kontak"
+  },
+  "topics": {
+    "anxiety": "Kecemasan",
+    "depression": "Depresi",
+    "selfCare": "Perawatan diri",
+    "relationships": "Hubungan",
+    "stress": "Stres",
+    "sleep": "Tidur",
+    "mindfulness": "Kesadaran",
+    "recovery": "Pemulihan",
+    "support": "Dukungan",
+    "awareness": "Kesadaran"
+  }
+}

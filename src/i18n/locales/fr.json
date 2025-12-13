@@ -1,0 +1,199 @@
+{
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur s'est produite",
+    "retry": "Réessayer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "share": "Partager",
+    "search": "Rechercher",
+    "seeAll": "Tout voir",
+    "learnMore": "En savoir plus",
+    "back": "Retour"
+  },
+  "nav": {
+    "home": "Accueil",
+    "explore": "Explorer",
+    "directory": "Trouver de l'aide",
+    "notifications": "Notifications",
+    "profile": "Profil",
+    "settings": "Paramètres",
+    "crisisSupport": "Soutien en crise",
+    "createPost": "Créer une publication"
+  },
+  "landing": {
+    "hero": {
+      "title": "Votre bien-être compte",
+      "subtitle": "Une communauté de soutien pour la sensibilisation à la santé mentale, des ressources accessibles et des connexions authentiques.",
+      "cta": "Rejoindre SelfERA",
+      "explore": "Explorer"
+    },
+    "features": {
+      "community": "Communauté de soutien",
+      "communityDesc": "Connectez-vous avec ceux qui vous comprennent",
+      "resources": "Ressources fiables",
+      "resourcesDesc": "Trouvez des services vérifiés dans le monde entier",
+      "safe": "Espace sécurisé",
+      "safeDesc": "Votre vie privée et votre sécurité passent en premier"
+    },
+    "crisis": {
+      "title": "Besoin de soutien maintenant?",
+      "subtitle": "Accédez aux ressources de crise à tout moment, sans compte.",
+      "cta": "Obtenir un soutien en crise"
+    }
+  },
+  "auth": {
+    "login": "Se connecter",
+    "signup": "Créer un compte",
+    "logout": "Se déconnecter",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "forgotPassword": "Mot de passe oublié?",
+    "noAccount": "Pas de compte?",
+    "hasAccount": "Déjà un compte?",
+    "orContinueWith": "Ou continuer avec",
+    "termsAgreement": "En continuant, vous acceptez nos Conditions et notre Politique de confidentialité"
+  },
+  "onboarding": {
+    "welcome": "Bienvenue sur SelfERA",
+    "chooseLanguage": "Choisissez votre langue",
+    "chooseCountry": "Où êtes-vous situé?",
+    "chooseInterests": "Quels sujets vous intéressent?",
+    "chooseHandle": "Choisissez votre identifiant",
+    "handleHint": "C'est ainsi que les autres vous trouveront",
+    "accountType": "Type de compte",
+    "individual": "Individuel",
+    "organization": "Organisation",
+    "professional": "Professionnel de santé mentale",
+    "finish": "Commencer"
+  },
+  "feed": {
+    "following": "Abonnements",
+    "trending": "Tendances",
+    "topics": "Sujets",
+    "emptyFollowing": "Suivez des personnes pour voir leurs publications ici",
+    "emptyTrending": "Aucune publication tendance pour le moment"
+  },
+  "post": {
+    "create": "Créer une publication",
+    "whatsOnMind": "Qu'avez-vous en tête?",
+    "addImage": "Ajouter une image",
+    "addVideo": "Ajouter une vidéo",
+    "selectTopic": "Sélectionner un sujet",
+    "topicRequired": "Au moins un sujet est requis",
+    "visibility": "Visibilité",
+    "public": "Public",
+    "followers": "Abonnés uniquement",
+    "private": "Moi uniquement",
+    "contentWarning": "Avertissement de contenu",
+    "contentWarningTypes": {
+      "sensitive": "Contenu sensible",
+      "triggering": "Peut être déclencheur",
+      "mature": "Thèmes matures"
+    },
+    "publish": "Publier",
+    "publishing": "Publication...",
+    "language": "Langue de la publication"
+  },
+  "reactions": {
+    "support": "Soutien",
+    "informative": "Informatif",
+    "relatable": "Identifiable"
+  },
+  "comments": {
+    "title": "Commentaires",
+    "add": "Ajouter un commentaire...",
+    "empty": "Pas encore de commentaires. Lancez la conversation."
+  },
+  "profile": {
+    "posts": "Publications",
+    "saved": "Enregistrés",
+    "about": "À propos",
+    "follow": "Suivre",
+    "following": "Abonné",
+    "unfollow": "Se désabonner",
+    "followers": "Abonnés",
+    "editProfile": "Modifier le profil",
+    "applyVerification": "Demander la vérification",
+    "verified": "Vérifié",
+    "privateAccount": "Ce compte est privé",
+    "requestFollow": "Demander à suivre"
+  },
+  "directory": {
+    "title": "Trouver de l'aide",
+    "subtitle": "Découvrez des services et ressources de santé mentale fiables",
+    "filters": {
+      "region": "Région",
+      "delivery": "Type de prestation",
+      "online": "En ligne",
+      "inPerson": "En personne",
+      "hybrid": "Hybride",
+      "priceRange": "Gamme de prix",
+      "free": "Gratuit",
+      "affordable": "Abordable",
+      "standard": "Standard",
+      "languages": "Langues",
+      "verifiedOnly": "Vérifiés uniquement"
+    },
+    "noResults": "Aucun service ne correspond à vos critères",
+    "disclaimer": "Ce répertoire fournit des informations uniquement et ne remplace pas un avis médical professionnel. Si vous êtes en crise, veuillez demander de l'aide immédiatement."
+  },
+  "crisis": {
+    "title": "Soutien en crise",
+    "subtitle": "Si vous êtes en danger immédiat, appelez les services d'urgence.",
+    "selectCountry": "Sélectionnez votre pays",
+    "hotlines": "Lignes de crise",
+    "resources": "Ressources supplémentaires",
+    "available247": "Disponible 24h/24",
+    "textLine": "Ligne de texte",
+    "chatSupport": "Support par chat"
+  },
+  "safety": {
+    "report": "Signaler",
+    "block": "Bloquer",
+    "mute": "Masquer",
+    "reportReasons": {
+      "spam": "Spam",
+      "harassment": "Harcèlement",
+      "harmful": "Contenu nuisible",
+      "misinformation": "Désinformation",
+      "other": "Autre"
+    },
+    "reportSubmitted": "Signalement envoyé",
+    "userBlocked": "Utilisateur bloqué",
+    "userMuted": "Utilisateur masqué"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "language": "Langue",
+    "reduceMotion": "Réduire les animations",
+    "privateAccount": "Compte privé",
+    "notifications": "Notifications",
+    "privacy": "Confidentialité",
+    "account": "Compte",
+    "help": "Aide et Support"
+  },
+  "footer": {
+    "privacy": "Confidentialité",
+    "terms": "Conditions",
+    "guidelines": "Règles de la communauté",
+    "safety": "Sécurité",
+    "contact": "Contact"
+  },
+  "topics": {
+    "anxiety": "Anxiété",
+    "depression": "Dépression",
+    "selfCare": "Prendre soin de soi",
+    "relationships": "Relations",
+    "stress": "Stress",
+    "sleep": "Sommeil",
+    "mindfulness": "Pleine conscience",
+    "recovery": "Rétablissement",
+    "support": "Soutien",
+    "awareness": "Sensibilisation"
+  }
+}
