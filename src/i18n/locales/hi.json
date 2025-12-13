@@ -1,0 +1,199 @@
+{
+  "common": {
+    "loading": "लोड हो रहा है...",
+    "error": "कुछ गलत हो गया",
+    "retry": "फिर से कोशिश करें",
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "close": "बंद करें",
+    "delete": "हटाएं",
+    "edit": "संपादित करें",
+    "share": "साझा करें",
+    "search": "खोजें",
+    "seeAll": "सभी देखें",
+    "learnMore": "और जानें",
+    "back": "वापस"
+  },
+  "nav": {
+    "home": "होम",
+    "explore": "एक्सप्लोर",
+    "directory": "मदद खोजें",
+    "notifications": "सूचनाएं",
+    "profile": "प्रोफ़ाइल",
+    "settings": "सेटिंग्स",
+    "crisisSupport": "संकट सहायता",
+    "createPost": "पोस्ट बनाएं"
+  },
+  "landing": {
+    "hero": {
+      "title": "आपकी भलाई मायने रखती है",
+      "subtitle": "मानसिक स्वास्थ्य जागरूकता, सुलभ संसाधनों और वास्तविक संबंधों के लिए एक सहायक समुदाय।",
+      "cta": "SelfERA से जुड़ें",
+      "explore": "एक्सप्लोर करें"
+    },
+    "features": {
+      "community": "सहायक समुदाय",
+      "communityDesc": "उनसे जुड़ें जो आपको समझते हैं",
+      "resources": "विश्वसनीय संसाधन",
+      "resourcesDesc": "दुनिया भर में सत्यापित सेवाएं खोजें",
+      "safe": "सुरक्षित स्थान",
+      "safeDesc": "आपकी गोपनीयता और सुरक्षा पहले आती है"
+    },
+    "crisis": {
+      "title": "अभी सहायता चाहिए?",
+      "subtitle": "कभी भी संकट संसाधनों तक पहुंचें, खाते की जरूरत नहीं।",
+      "cta": "संकट सहायता प्राप्त करें"
+    }
+  },
+  "auth": {
+    "login": "लॉग इन",
+    "signup": "खाता बनाएं",
+    "logout": "लॉग आउट",
+    "email": "ईमेल",
+    "password": "पासवर्ड",
+    "confirmPassword": "पासवर्ड की पुष्टि करें",
+    "forgotPassword": "पासवर्ड भूल गए?",
+    "noAccount": "खाता नहीं है?",
+    "hasAccount": "पहले से खाता है?",
+    "orContinueWith": "या इसके साथ जारी रखें",
+    "termsAgreement": "जारी रखकर, आप हमारी शर्तों और गोपनीयता नीति से सहमत हैं"
+  },
+  "onboarding": {
+    "welcome": "SelfERA में आपका स्वागत है",
+    "chooseLanguage": "अपनी भाषा चुनें",
+    "chooseCountry": "आप कहां हैं?",
+    "chooseInterests": "आपकी रुचि किसमें है?",
+    "chooseHandle": "अपना हैंडल चुनें",
+    "handleHint": "इससे दूसरे आपको खोजेंगे",
+    "accountType": "खाता प्रकार",
+    "individual": "व्यक्तिगत",
+    "organization": "संगठन",
+    "professional": "मानसिक स्वास्थ्य पेशेवर",
+    "finish": "शुरू करें"
+  },
+  "feed": {
+    "following": "फॉलो किए गए",
+    "trending": "ट्रेंडिंग",
+    "topics": "विषय",
+    "emptyFollowing": "उनकी पोस्ट यहां देखने के लिए लोगों को फॉलो करें",
+    "emptyTrending": "अभी कोई ट्रेंडिंग पोस्ट नहीं"
+  },
+  "post": {
+    "create": "पोस्ट बनाएं",
+    "whatsOnMind": "आप क्या सोच रहे हैं?",
+    "addImage": "छवि जोड़ें",
+    "addVideo": "वीडियो जोड़ें",
+    "selectTopic": "एक विषय चुनें",
+    "topicRequired": "कम से कम एक विषय आवश्यक है",
+    "visibility": "दृश्यता",
+    "public": "सार्वजनिक",
+    "followers": "केवल फॉलोअर्स",
+    "private": "केवल मैं",
+    "contentWarning": "सामग्री चेतावनी",
+    "contentWarningTypes": {
+      "sensitive": "संवेदनशील सामग्री",
+      "triggering": "ट्रिगर कर सकता है",
+      "mature": "परिपक्व विषय"
+    },
+    "publish": "प्रकाशित करें",
+    "publishing": "प्रकाशित हो रहा है...",
+    "language": "पोस्ट भाषा"
+  },
+  "reactions": {
+    "support": "सहायता",
+    "informative": "जानकारीपूर्ण",
+    "relatable": "संबंधित"
+  },
+  "comments": {
+    "title": "टिप्पणियां",
+    "add": "टिप्पणी जोड़ें...",
+    "empty": "अभी कोई टिप्पणी नहीं। बातचीत शुरू करें।"
+  },
+  "profile": {
+    "posts": "पोस्ट",
+    "saved": "सहेजे गए",
+    "about": "परिचय",
+    "follow": "फॉलो करें",
+    "following": "फॉलो किया हुआ",
+    "unfollow": "अनफॉलो करें",
+    "followers": "फॉलोअर्स",
+    "editProfile": "प्रोफ़ाइल संपादित करें",
+    "applyVerification": "सत्यापन के लिए आवेदन करें",
+    "verified": "सत्यापित",
+    "privateAccount": "यह खाता निजी है",
+    "requestFollow": "फॉलो करने का अनुरोध करें"
+  },
+  "directory": {
+    "title": "मदद खोजें",
+    "subtitle": "विश्वसनीय मानसिक स्वास्थ्य सेवाएं और संसाधन खोजें",
+    "filters": {
+      "region": "क्षेत्र",
+      "delivery": "वितरण प्रकार",
+      "online": "ऑनलाइन",
+      "inPerson": "व्यक्तिगत",
+      "hybrid": "हाइब्रिड",
+      "priceRange": "मूल्य सीमा",
+      "free": "मुफ्त",
+      "affordable": "सस्ता",
+      "standard": "मानक",
+      "languages": "भाषाएं",
+      "verifiedOnly": "केवल सत्यापित"
+    },
+    "noResults": "आपके मानदंडों से मेल खाती कोई सेवा नहीं मिली",
+    "disclaimer": "यह निर्देशिका केवल जानकारी प्रदान करती है और पेशेवर चिकित्सा सलाह का विकल्प नहीं है। यदि आप संकट में हैं, कृपया तुरंत मदद लें।"
+  },
+  "crisis": {
+    "title": "संकट सहायता",
+    "subtitle": "यदि आप तत्काल खतरे में हैं, कृपया आपातकालीन सेवाओं को कॉल करें।",
+    "selectCountry": "अपना देश चुनें",
+    "hotlines": "संकट हॉटलाइन",
+    "resources": "अतिरिक्त संसाधन",
+    "available247": "24/7 उपलब्ध",
+    "textLine": "टेक्स्ट लाइन",
+    "chatSupport": "चैट सहायता"
+  },
+  "safety": {
+    "report": "रिपोर्ट करें",
+    "block": "ब्लॉक करें",
+    "mute": "म्यूट करें",
+    "reportReasons": {
+      "spam": "स्पैम",
+      "harassment": "उत्पीड़न",
+      "harmful": "हानिकारक सामग्री",
+      "misinformation": "गलत सूचना",
+      "other": "अन्य"
+    },
+    "reportSubmitted": "रिपोर्ट सबमिट की गई",
+    "userBlocked": "उपयोगकर्ता ब्लॉक किया गया",
+    "userMuted": "उपयोगकर्ता म्यूट किया गया"
+  },
+  "settings": {
+    "title": "सेटिंग्स",
+    "language": "भाषा",
+    "reduceMotion": "गति कम करें",
+    "privateAccount": "निजी खाता",
+    "notifications": "सूचनाएं",
+    "privacy": "गोपनीयता",
+    "account": "खाता",
+    "help": "मदद और सहायता"
+  },
+  "footer": {
+    "privacy": "गोपनीयता",
+    "terms": "शर्तें",
+    "guidelines": "समुदाय दिशानिर्देश",
+    "safety": "सुरक्षा",
+    "contact": "संपर्क"
+  },
+  "topics": {
+    "anxiety": "चिंता",
+    "depression": "अवसाद",
+    "selfCare": "आत्म-देखभाल",
+    "relationships": "रिश्ते",
+    "stress": "तनाव",
+    "sleep": "नींद",
+    "mindfulness": "माइंडफुलनेस",
+    "recovery": "रिकवरी",
+    "support": "सहायता",
+    "awareness": "जागरूकता"
+  }
+}

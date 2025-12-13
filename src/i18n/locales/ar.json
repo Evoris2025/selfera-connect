@@ -1,0 +1,199 @@
+{
+  "common": {
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ ما",
+    "retry": "حاول مرة أخرى",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "close": "إغلاق",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "share": "مشاركة",
+    "search": "بحث",
+    "seeAll": "عرض الكل",
+    "learnMore": "اعرف المزيد",
+    "back": "رجوع"
+  },
+  "nav": {
+    "home": "الرئيسية",
+    "explore": "استكشاف",
+    "directory": "ابحث عن مساعدة",
+    "notifications": "الإشعارات",
+    "profile": "الملف الشخصي",
+    "settings": "الإعدادات",
+    "crisisSupport": "دعم الأزمات",
+    "createPost": "إنشاء منشور"
+  },
+  "landing": {
+    "hero": {
+      "title": "صحتك النفسية مهمة",
+      "subtitle": "مجتمع داعم للتوعية بالصحة النفسية والموارد المتاحة والتواصل الحقيقي.",
+      "cta": "انضم إلى SelfERA",
+      "explore": "استكشف"
+    },
+    "features": {
+      "community": "مجتمع داعم",
+      "communityDesc": "تواصل مع من يفهمونك",
+      "resources": "موارد موثوقة",
+      "resourcesDesc": "اعثر على خدمات معتمدة حول العالم",
+      "safe": "مساحة آمنة",
+      "safeDesc": "خصوصيتك وسلامتك أولاً"
+    },
+    "crisis": {
+      "title": "تحتاج دعماً الآن؟",
+      "subtitle": "احصل على موارد الأزمات في أي وقت، بدون حساب.",
+      "cta": "احصل على دعم الأزمات"
+    }
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "signup": "إنشاء حساب",
+    "logout": "تسجيل الخروج",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "noAccount": "ليس لديك حساب؟",
+    "hasAccount": "لديك حساب بالفعل؟",
+    "orContinueWith": "أو تابع باستخدام",
+    "termsAgreement": "بالمتابعة، توافق على الشروط وسياسة الخصوصية"
+  },
+  "onboarding": {
+    "welcome": "مرحباً بك في SelfERA",
+    "chooseLanguage": "اختر لغتك",
+    "chooseCountry": "أين موقعك؟",
+    "chooseInterests": "ما المواضيع التي تهمك؟",
+    "chooseHandle": "اختر اسم المستخدم",
+    "handleHint": "هكذا سيجدك الآخرون",
+    "accountType": "نوع الحساب",
+    "individual": "فرد",
+    "organization": "منظمة",
+    "professional": "متخصص في الصحة النفسية",
+    "finish": "ابدأ"
+  },
+  "feed": {
+    "following": "المتابَعون",
+    "trending": "الرائج",
+    "topics": "المواضيع",
+    "emptyFollowing": "تابع أشخاصاً لترى منشوراتهم هنا",
+    "emptyTrending": "لا توجد منشورات رائجة الآن"
+  },
+  "post": {
+    "create": "إنشاء منشور",
+    "whatsOnMind": "ما الذي يدور في ذهنك؟",
+    "addImage": "إضافة صورة",
+    "addVideo": "إضافة فيديو",
+    "selectTopic": "اختر موضوعاً",
+    "topicRequired": "مطلوب موضوع واحد على الأقل",
+    "visibility": "الظهور",
+    "public": "عام",
+    "followers": "المتابعون فقط",
+    "private": "أنا فقط",
+    "contentWarning": "تحذير محتوى",
+    "contentWarningTypes": {
+      "sensitive": "محتوى حساس",
+      "triggering": "قد يكون مثيراً",
+      "mature": "مواضيع للبالغين"
+    },
+    "publish": "نشر",
+    "publishing": "جاري النشر...",
+    "language": "لغة المنشور"
+  },
+  "reactions": {
+    "support": "دعم",
+    "informative": "مفيد",
+    "relatable": "مُتَعاطف"
+  },
+  "comments": {
+    "title": "التعليقات",
+    "add": "أضف تعليقاً...",
+    "empty": "لا توجد تعليقات بعد. ابدأ المحادثة."
+  },
+  "profile": {
+    "posts": "المنشورات",
+    "saved": "المحفوظات",
+    "about": "حول",
+    "follow": "متابعة",
+    "following": "متابَع",
+    "unfollow": "إلغاء المتابعة",
+    "followers": "المتابعون",
+    "editProfile": "تعديل الملف",
+    "applyVerification": "طلب التوثيق",
+    "verified": "موثق",
+    "privateAccount": "هذا الحساب خاص",
+    "requestFollow": "طلب المتابعة"
+  },
+  "directory": {
+    "title": "ابحث عن مساعدة",
+    "subtitle": "اكتشف خدمات وموارد الصحة النفسية الموثوقة",
+    "filters": {
+      "region": "المنطقة",
+      "delivery": "طريقة التقديم",
+      "online": "عبر الإنترنت",
+      "inPerson": "حضوري",
+      "hybrid": "مختلط",
+      "priceRange": "نطاق السعر",
+      "free": "مجاني",
+      "affordable": "ميسور",
+      "standard": "عادي",
+      "languages": "اللغات",
+      "verifiedOnly": "الموثقون فقط"
+    },
+    "noResults": "لم يتم العثور على خدمات تطابق معاييرك",
+    "disclaimer": "يوفر هذا الدليل معلومات فقط ولا يحل محل المشورة الطبية المهنية. إذا كنت في أزمة، يرجى طلب المساعدة الفورية."
+  },
+  "crisis": {
+    "title": "دعم الأزمات",
+    "subtitle": "إذا كنت في خطر فوري، يرجى الاتصال بخدمات الطوارئ.",
+    "selectCountry": "اختر بلدك",
+    "hotlines": "خطوط الأزمات",
+    "resources": "موارد إضافية",
+    "available247": "متاح على مدار الساعة",
+    "textLine": "خط الرسائل",
+    "chatSupport": "دعم المحادثة"
+  },
+  "safety": {
+    "report": "إبلاغ",
+    "block": "حظر",
+    "mute": "كتم",
+    "reportReasons": {
+      "spam": "رسائل غير مرغوبة",
+      "harassment": "تحرش",
+      "harmful": "محتوى ضار",
+      "misinformation": "معلومات مضللة",
+      "other": "أخرى"
+    },
+    "reportSubmitted": "تم إرسال البلاغ",
+    "userBlocked": "تم حظر المستخدم",
+    "userMuted": "تم كتم المستخدم"
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "language": "اللغة",
+    "reduceMotion": "تقليل الحركة",
+    "privateAccount": "حساب خاص",
+    "notifications": "الإشعارات",
+    "privacy": "الخصوصية",
+    "account": "الحساب",
+    "help": "المساعدة والدعم"
+  },
+  "footer": {
+    "privacy": "الخصوصية",
+    "terms": "الشروط",
+    "guidelines": "إرشادات المجتمع",
+    "safety": "السلامة",
+    "contact": "اتصل بنا"
+  },
+  "topics": {
+    "anxiety": "القلق",
+    "depression": "الاكتئاب",
+    "selfCare": "العناية بالذات",
+    "relationships": "العلاقات",
+    "stress": "التوتر",
+    "sleep": "النوم",
+    "mindfulness": "اليقظة الذهنية",
+    "recovery": "التعافي",
+    "support": "الدعم",
+    "awareness": "التوعية"
+  }
+}

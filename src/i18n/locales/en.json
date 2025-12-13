@@ -1,0 +1,199 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Try again",
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "delete": "Delete",
+    "edit": "Edit",
+    "share": "Share",
+    "search": "Search",
+    "seeAll": "See all",
+    "learnMore": "Learn more",
+    "back": "Back"
+  },
+  "nav": {
+    "home": "Home",
+    "explore": "Explore",
+    "directory": "Find Help",
+    "notifications": "Notifications",
+    "profile": "Profile",
+    "settings": "Settings",
+    "crisisSupport": "Crisis Support",
+    "createPost": "Create Post"
+  },
+  "landing": {
+    "hero": {
+      "title": "Your wellbeing matters",
+      "subtitle": "A supportive community for mental health awareness, accessible resources, and genuine connection.",
+      "cta": "Join SelfERA",
+      "explore": "Explore"
+    },
+    "features": {
+      "community": "Supportive Community",
+      "communityDesc": "Connect with others who understand",
+      "resources": "Trusted Resources",
+      "resourcesDesc": "Find verified services worldwide",
+      "safe": "Safe Space",
+      "safeDesc": "Your privacy and safety come first"
+    },
+    "crisis": {
+      "title": "Need support now?",
+      "subtitle": "Access crisis resources anytime, no account needed.",
+      "cta": "Get Crisis Support"
+    }
+  },
+  "auth": {
+    "login": "Log in",
+    "signup": "Create account",
+    "logout": "Log out",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "orContinueWith": "Or continue with",
+    "termsAgreement": "By continuing, you agree to our Terms and Privacy Policy"
+  },
+  "onboarding": {
+    "welcome": "Welcome to SelfERA",
+    "chooseLanguage": "Choose your language",
+    "chooseCountry": "Where are you located?",
+    "chooseInterests": "What topics interest you?",
+    "chooseHandle": "Choose your handle",
+    "handleHint": "This is how others will find you",
+    "accountType": "Account type",
+    "individual": "Individual",
+    "organization": "Organization",
+    "professional": "Mental health professional",
+    "finish": "Get started"
+  },
+  "feed": {
+    "following": "Following",
+    "trending": "Trending",
+    "topics": "Topics",
+    "emptyFollowing": "Follow people to see their posts here",
+    "emptyTrending": "No trending posts right now"
+  },
+  "post": {
+    "create": "Create post",
+    "whatsOnMind": "What's on your mind?",
+    "addImage": "Add image",
+    "addVideo": "Add video",
+    "selectTopic": "Select a topic",
+    "topicRequired": "At least one topic is required",
+    "visibility": "Visibility",
+    "public": "Public",
+    "followers": "Followers only",
+    "private": "Only me",
+    "contentWarning": "Content warning",
+    "contentWarningTypes": {
+      "sensitive": "Sensitive content",
+      "triggering": "May be triggering",
+      "mature": "Mature themes"
+    },
+    "publish": "Publish",
+    "publishing": "Publishing...",
+    "language": "Post language"
+  },
+  "reactions": {
+    "support": "Support",
+    "informative": "Informative",
+    "relatable": "Relatable"
+  },
+  "comments": {
+    "title": "Comments",
+    "add": "Add a comment...",
+    "empty": "No comments yet. Start the conversation."
+  },
+  "profile": {
+    "posts": "Posts",
+    "saved": "Saved",
+    "about": "About",
+    "follow": "Follow",
+    "following": "Following",
+    "unfollow": "Unfollow",
+    "followers": "Followers",
+    "editProfile": "Edit profile",
+    "applyVerification": "Apply for verification",
+    "verified": "Verified",
+    "privateAccount": "This account is private",
+    "requestFollow": "Request to follow"
+  },
+  "directory": {
+    "title": "Find Help",
+    "subtitle": "Discover trusted mental health services and resources",
+    "filters": {
+      "region": "Region",
+      "delivery": "Delivery type",
+      "online": "Online",
+      "inPerson": "In person",
+      "hybrid": "Hybrid",
+      "priceRange": "Price range",
+      "free": "Free",
+      "affordable": "Affordable",
+      "standard": "Standard",
+      "languages": "Languages",
+      "verifiedOnly": "Verified only"
+    },
+    "noResults": "No services found matching your criteria",
+    "disclaimer": "This directory provides information only and is not a substitute for professional medical advice. If you're in crisis, please seek immediate help."
+  },
+  "crisis": {
+    "title": "Crisis Support",
+    "subtitle": "If you're in immediate danger, please call emergency services.",
+    "selectCountry": "Select your country",
+    "hotlines": "Crisis hotlines",
+    "resources": "Additional resources",
+    "available247": "Available 24/7",
+    "textLine": "Text line",
+    "chatSupport": "Chat support"
+  },
+  "safety": {
+    "report": "Report",
+    "block": "Block",
+    "mute": "Mute",
+    "reportReasons": {
+      "spam": "Spam",
+      "harassment": "Harassment",
+      "harmful": "Harmful content",
+      "misinformation": "Misinformation",
+      "other": "Other"
+    },
+    "reportSubmitted": "Report submitted",
+    "userBlocked": "User blocked",
+    "userMuted": "User muted"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "reduceMotion": "Reduce motion",
+    "privateAccount": "Private account",
+    "notifications": "Notifications",
+    "privacy": "Privacy",
+    "account": "Account",
+    "help": "Help & Support"
+  },
+  "footer": {
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "guidelines": "Community Guidelines",
+    "safety": "Safety",
+    "contact": "Contact"
+  },
+  "topics": {
+    "anxiety": "Anxiety",
+    "depression": "Depression",
+    "selfCare": "Self-care",
+    "relationships": "Relationships",
+    "stress": "Stress",
+    "sleep": "Sleep",
+    "mindfulness": "Mindfulness",
+    "recovery": "Recovery",
+    "support": "Support",
+    "awareness": "Awareness"
+  }
+}
