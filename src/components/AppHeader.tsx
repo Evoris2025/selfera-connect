@@ -31,7 +31,10 @@ export function AppHeader({ title }: AppHeaderProps) {
   const userInitial = user?.email?.charAt(0).toUpperCase() || 'U';
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+    <header className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      {/* Gradient border at bottom */}
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+      
       <div className="flex items-center justify-between h-14 px-4 max-w-lg mx-auto">
         {/* Logo */}
         <Link to="/feed" className="flex items-center gap-3 group">
