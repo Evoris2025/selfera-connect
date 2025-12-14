@@ -6,9 +6,10 @@ interface AppLayoutProps {
   children: ReactNode;
   title?: string;
   showHeader?: boolean;
+  onCreatePost?: () => void;
 }
 
-export function AppLayout({ children, title, showHeader = true }: AppLayoutProps) {
+export function AppLayout({ children, title, showHeader = true, onCreatePost }: AppLayoutProps) {
   return (
     <div className="min-h-screen bg-background flex flex-col w-full">
       {showHeader && <AppHeader title={title} />}
@@ -17,7 +18,7 @@ export function AppLayout({ children, title, showHeader = true }: AppLayoutProps
         {children}
       </main>
       
-      <MobileNav />
+      <MobileNav onCreateClick={onCreatePost} />
     </div>
   );
 }

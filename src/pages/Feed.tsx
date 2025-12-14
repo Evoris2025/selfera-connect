@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AppLayout } from '@/components/AppLayout';
+import { ComposerBar } from '@/components/ComposerBar';
+import { StoriesRow } from '@/components/StoriesRow';
 import { PostCard } from '@/components/PostCard';
 import { PostCardSkeleton } from '@/components/SkeletonLoader';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { toast } from '@/hooks/use-toast';
 
 // Mock data for demo
 const mockPosts = [
@@ -46,7 +48,7 @@ const mockPosts = [
       handle: 'jamie_journey',
       avatar: '',
     },
-    content: 'Today marks 1 year since I started my recovery journey. It hasn\'t been easy, but I\'m grateful for this community and everyone who has supported me. There is hope.',
+    content: "Today marks 1 year since I started my recovery journey. It hasn't been easy, but I'm grateful for this community and everyone who has supported me. There is hope.",
     tags: ['Recovery', 'Support'],
     reactions: { support: 1204, informative: 45, relatable: 678 },
     commentCount: 156,
@@ -56,31 +58,31 @@ const mockPosts = [
 
 export default function Feed() {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState('following');
   const [loading, setLoading] = useState(false);
 
-  return (
-    <AppLayout>
-      <div className="p-4">
-        {/* Feed Tabs */}
-        <div className="mb-4">
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="w-full bg-secondary">
-              <TabsTrigger value="following" className="flex-1 text-xs">
-                {t('feed.following')}
-              </TabsTrigger>
-              <TabsTrigger value="trending" className="flex-1 text-xs">
-                {t('feed.trending')}
-              </TabsTrigger>
-              <TabsTrigger value="topics" className="flex-1 text-xs">
-                {t('feed.topics')}
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
+  const handleOpenComposer = (mode?: 'text' | 'video' | 'image' | 'reel') => {
+    // TODO: Open create post modal
+    toast({
+      title: 'Create Post',
+      description: `Opening composer in ${mode || 'text'} mode...`,
+    });
+  };
 
-        {/* Posts */}
-        <div className="space-y-4">
+  const handleCreatePost = () => {
+    handleOpenComposer('text');
+  };
+
+  return (
+    <AppLayout onCreatePost={handleCreatePost}>
+      <div className="flex flex-col gap-3 p-3">
+        {/* Top Composer Bar */}
+        <ComposerBar onOpenComposer={handleOpenComposer} />
+
+        {/* Stories Row */}
+        <StoriesRow />
+
+        {/* Posts Feed */}
+        <div className="space-y-3">
           {loading ? (
             <>
               <PostCardSkeleton />

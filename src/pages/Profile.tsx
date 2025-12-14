@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { MapPin, Globe, Calendar, Settings, BadgeCheck, Lock } from 'lucide-react';
+import { MapPin, Globe, Calendar, Settings, Lock } from 'lucide-react';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PostCard } from '@/components/PostCard';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
+import { toast } from '@/hooks/use-toast';
 
 // Mock user data
 const mockUser = {
@@ -49,134 +50,150 @@ export default function Profile() {
   const { handle } = useParams();
   const { t } = useTranslation();
   const [isFollowing, setIsFollowing] = useState(false);
+  const [activeTab, setActiveTab] = useState('posts');
   const isOwnProfile = !handle || handle === mockUser.handle;
 
+  const handleCreatePost = () => {
+    toast({
+      title: 'Create Post',
+      description: 'Opening composer...',
+    });
+  };
+
   return (
-    <AppLayout>
-      <div className="max-w-3xl mx-auto">
-        {/* Profile Header */}
-        <div className="relative">
-          {/* Cover */}
-          <div className="h-32 md:h-48 bg-gradient-to-br from-[hsl(217,91%,60%)]/30 via-[hsl(270,70%,60%)]/30 to-[hsl(25,95%,53%)]/30" />
+    <AppLayout showHeader={false} onCreatePost={handleCreatePost}>
+      <div className="flex flex-col">
+        {/* Profile Header - Compact Mobile Style */}
+        <div className="px-4 pt-4 pb-3 bg-background">
+          {/* Top Row: Avatar + Stats + Actions */}
+          <div className="flex items-center gap-4">
+            {/* Avatar */}
+            <Avatar className="h-20 w-20 flex-shrink-0">
+              <AvatarImage src={mockUser.avatar} alt={mockUser.name} />
+              <AvatarFallback className="bg-secondary text-secondary-foreground text-2xl">
+                {mockUser.name.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
 
-          {/* Profile Info */}
-          <div className="px-4 pb-6">
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between -mt-16 md:-mt-20 mb-4">
-              <Avatar className="h-28 w-28 md:h-36 md:w-36 border-4 border-background">
-                <AvatarImage src={mockUser.avatar} alt={mockUser.name} />
-                <AvatarFallback className="bg-secondary text-secondary-foreground text-3xl">
-                  {mockUser.name.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-
-              <div className="mt-4 md:mt-0 flex gap-2">
-                {isOwnProfile ? (
-                  <>
-                    <Button variant="outline">{t('profile.editProfile')}</Button>
-                    <Button variant="ghost" size="icon">
-                      <Settings className="h-5 w-5" />
-                    </Button>
-                  </>
-                ) : (
-                  <Button
-                    variant={isFollowing ? 'outline' : 'gradient'}
-                    onClick={() => setIsFollowing(!isFollowing)}
-                  >
-                    {isFollowing ? t('profile.following') : t('profile.follow')}
-                  </Button>
-                )}
-              </div>
+            {/* Stats */}
+            <div className="flex-1 flex justify-around">
+              <button className="flex flex-col items-center">
+                <span className="font-bold text-foreground text-lg">{mockUser.stats.posts}</span>
+                <span className="text-xs text-muted-foreground">{t('profile.posts')}</span>
+              </button>
+              <button className="flex flex-col items-center">
+                <span className="font-bold text-foreground text-lg">{mockUser.stats.followers.toLocaleString()}</span>
+                <span className="text-xs text-muted-foreground">{t('profile.followers')}</span>
+              </button>
+              <button className="flex flex-col items-center">
+                <span className="font-bold text-foreground text-lg">{mockUser.stats.following}</span>
+                <span className="text-xs text-muted-foreground">{t('profile.following')}</span>
+              </button>
             </div>
+          </div>
 
-            <div className="space-y-3">
-              <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-2xl font-bold text-foreground">{mockUser.name}</h1>
-                  {mockUser.isVerified && <VerifiedBadge className="h-5 w-5" />}
-                  {mockUser.isPrivate && <Lock className="h-4 w-4 text-muted-foreground" />}
-                </div>
-                <p className="text-muted-foreground">@{mockUser.handle}</p>
-              </div>
+          {/* Name + Handle */}
+          <div className="mt-3">
+            <div className="flex items-center gap-1.5">
+              <h1 className="font-bold text-foreground">{mockUser.name}</h1>
+              {mockUser.isVerified && <VerifiedBadge className="h-4 w-4" />}
+              {mockUser.isPrivate && <Lock className="h-3.5 w-3.5 text-muted-foreground" />}
+            </div>
+            <p className="text-sm text-muted-foreground">@{mockUser.handle}</p>
+          </div>
 
-              <p className="text-foreground">{mockUser.bio}</p>
+          {/* Bio */}
+          <p className="mt-2 text-sm text-foreground">{mockUser.bio}</p>
 
-              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <MapPin className="h-4 w-4" />
-                  {mockUser.country}
-                </div>
-                <div className="flex items-center gap-1">
-                  <Globe className="h-4 w-4" />
-                  {mockUser.languages.join(', ')}
-                </div>
-                <div className="flex items-center gap-1">
-                  <Calendar className="h-4 w-4" />
-                  Joined {mockUser.joinedDate}
-                </div>
-              </div>
+          {/* Meta info */}
+          <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-muted-foreground">
+            <div className="flex items-center gap-1">
+              <MapPin className="h-3 w-3" />
+              {mockUser.country}
+            </div>
+            <div className="flex items-center gap-1">
+              <Globe className="h-3 w-3" />
+              {mockUser.languages.join(', ')}
+            </div>
+            <div className="flex items-center gap-1">
+              <Calendar className="h-3 w-3" />
+              {mockUser.joinedDate}
+            </div>
+          </div>
 
-              <div className="flex items-center gap-6">
-                <button className="hover:underline">
-                  <span className="font-semibold text-foreground">{mockUser.stats.posts}</span>{' '}
-                  <span className="text-muted-foreground">{t('profile.posts')}</span>
-                </button>
-                <button className="hover:underline">
-                  <span className="font-semibold text-foreground">{mockUser.stats.followers.toLocaleString()}</span>{' '}
-                  <span className="text-muted-foreground">{t('profile.followers')}</span>
-                </button>
-                <button className="hover:underline">
-                  <span className="font-semibold text-foreground">{mockUser.stats.following}</span>{' '}
-                  <span className="text-muted-foreground">{t('profile.following')}</span>
-                </button>
-              </div>
-
-              {mockUser.userType !== 'individual' && !mockUser.isVerified && (
-                <Button variant="subtle" size="sm">
-                  <BadgeCheck className="h-4 w-4 mr-2" />
-                  {t('profile.applyVerification')}
+          {/* Action Buttons */}
+          <div className="flex gap-2 mt-4">
+            {isOwnProfile ? (
+              <>
+                <Button variant="outline" size="sm" className="flex-1 h-9">
+                  {t('profile.editProfile')}
                 </Button>
-              )}
-            </div>
+                <Button variant="outline" size="icon" className="h-9 w-9">
+                  <Settings className="h-4 w-4" />
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant={isFollowing ? 'outline' : 'gradient'}
+                  size="sm"
+                  className="flex-1 h-9"
+                  onClick={() => setIsFollowing(!isFollowing)}
+                >
+                  {isFollowing ? t('profile.following') : t('profile.follow')}
+                </Button>
+                <Button variant="outline" size="sm" className="h-9">
+                  Message
+                </Button>
+              </>
+            )}
           </div>
         </div>
 
         {/* Content Tabs */}
-        <div className="px-4">
-          <Tabs defaultValue="posts">
-            <TabsList className="w-full bg-secondary">
-              <TabsTrigger value="posts" className="flex-1">
-                {t('profile.posts')}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="w-full rounded-none bg-transparent border-b border-border h-11">
+            <TabsTrigger 
+              value="posts" 
+              className="flex-1 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent"
+            >
+              {t('profile.posts')}
+            </TabsTrigger>
+            {isOwnProfile && (
+              <TabsTrigger 
+                value="saved" 
+                className="flex-1 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent"
+              >
+                {t('profile.saved')}
               </TabsTrigger>
-              {isOwnProfile && (
-                <TabsTrigger value="saved" className="flex-1">
-                  {t('profile.saved')}
-                </TabsTrigger>
-              )}
-              <TabsTrigger value="about" className="flex-1">
-                {t('profile.about')}
-              </TabsTrigger>
-            </TabsList>
+            )}
+            <TabsTrigger 
+              value="about" 
+              className="flex-1 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent"
+            >
+              {t('profile.about')}
+            </TabsTrigger>
+          </TabsList>
 
-            <TabsContent value="posts" className="mt-4 space-y-4">
-              {mockPosts.map((post) => (
-                <PostCard key={post.id} {...post} />
-              ))}
-            </TabsContent>
+          <TabsContent value="posts" className="mt-0 p-3 space-y-3">
+            {mockPosts.map((post) => (
+              <PostCard key={post.id} {...post} />
+            ))}
+          </TabsContent>
 
-            <TabsContent value="saved" className="mt-4">
-              <div className="text-center py-12 text-muted-foreground">
-                No saved posts yet
-              </div>
-            </TabsContent>
+          <TabsContent value="saved" className="mt-0 p-3">
+            <div className="text-center py-12 text-muted-foreground text-sm">
+              No saved posts yet
+            </div>
+          </TabsContent>
 
-            <TabsContent value="about" className="mt-4">
-              <div className="bg-card border border-border rounded-xl p-6">
-                <h3 className="font-semibold text-foreground mb-4">About</h3>
-                <p className="text-muted-foreground">{mockUser.bio}</p>
-              </div>
-            </TabsContent>
-          </Tabs>
-        </div>
+          <TabsContent value="about" className="mt-0 p-3">
+            <div className="bg-card border border-border rounded-xl p-4">
+              <h3 className="font-semibold text-foreground mb-2 text-sm">About</h3>
+              <p className="text-sm text-muted-foreground">{mockUser.bio}</p>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </AppLayout>
   );
