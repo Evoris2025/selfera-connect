@@ -33,7 +33,6 @@ interface PostCardProps {
   tags: string[];
   reactions: {
     heart: number;
-    hug: number;
   };
   commentCount: number;
   createdAt: string;
@@ -163,23 +162,14 @@ export function PostCard({
 
       {/* Actions */}
       <div className="p-4 border-t border-border">
-        <div className="flex flex-wrap items-center gap-2 mb-3">
-          <ReactionButton 
-            type="heart" 
-            count={reactions.heart} 
-            active={activeReaction === 'heart'}
-            onClick={() => handleReaction('heart')}
-          />
-          <ReactionButton 
-            type="hug" 
-            count={reactions.hug}
-            active={activeReaction === 'hug'}
-            onClick={() => handleReaction('hug')}
-          />
-        </div>
-        
         <div className="flex items-center justify-between text-muted-foreground">
           <div className="flex items-center gap-4">
+            <ReactionButton 
+              type="heart" 
+              count={reactions.heart} 
+              active={activeReaction === 'heart'}
+              onClick={() => handleReaction('heart')}
+            />
             <button className="flex items-center gap-1.5 hover:text-foreground transition-colors">
               <MessageCircle className="h-4 w-4" />
               <span className="text-sm">{commentCount}</span>
