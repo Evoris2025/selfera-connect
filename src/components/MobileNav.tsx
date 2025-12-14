@@ -86,7 +86,7 @@ export function MobileNav({ onCreateClick, notificationCount = 0, messageCount =
                       "p-0.5 rounded-full",
                       isActive && "ring-2 ring-primary/80 ring-offset-2 ring-offset-background"
                     )}
-                    animate={isActive ? { scale: [1, 1.15, 1] } : { scale: 1 }}
+                    animate={isActive ? { scale: 1.1 } : { scale: 1 }}
                     transition={springBounce}
                   >
                     <div className="w-5 h-5 flex items-center justify-center">
@@ -109,7 +109,7 @@ export function MobileNav({ onCreateClick, notificationCount = 0, messageCount =
                 )}
               >
                 <motion.div
-                  animate={isActive ? { scale: [1, 1.2, 1] } : { scale: 1 }}
+                  animate={isActive ? { scale: 1.15 } : { scale: 1 }}
                   transition={springBounce}
                 >
                   <item.icon className="h-5 w-5" strokeWidth={isActive ? 2 : 1.5} />
@@ -122,20 +122,13 @@ export function MobileNav({ onCreateClick, notificationCount = 0, messageCount =
                       initial={{ opacity: 0, scale: 0, y: 5 }}
                       animate={{ 
                         opacity: 1, 
-                        scale: [0, 1.4, 1],
+                        scale: 1.2,
                         y: 0
                       }}
                       exit={{ opacity: 0, scale: 0, y: -5 }}
                       transition={springPop}
-                      className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-rose-500 shadow-lg shadow-rose-500/50"
-                    >
-                      {/* Pulse ring */}
-                      <motion.span
-                        className="absolute inset-0 rounded-full bg-rose-500"
-                        animate={{ scale: [1, 2, 2], opacity: [0.6, 0, 0] }}
-                        transition={{ duration: 1.5, repeat: Infinity, ease: 'easeOut' }}
-                      />
-                    </motion.span>
+                      className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-rose-500 shadow-lg shadow-rose-500/50 animate-pulse"
+                    />
                   )}
                 </AnimatePresence>
               </motion.div>

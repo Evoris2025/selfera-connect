@@ -1,4 +1,4 @@
-import { memo, useRef, useEffect } from 'react';
+import { memo, useRef, useEffect, forwardRef } from 'react';
 import { motion } from 'framer-motion';
 import { Play, Heart, MessageCircle, GripVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -32,7 +32,7 @@ function formatCount(count: number): string {
   return count.toString();
 }
 
-export const DraggableGridItem = memo(function DraggableGridItem({
+export const DraggableGridItem = memo(forwardRef<HTMLDivElement, DraggableGridItemProps>(function DraggableGridItem({
   post,
   index,
   isRearrangeMode,
@@ -45,7 +45,7 @@ export const DraggableGridItem = memo(function DraggableGridItem({
   onTouchStart,
   onTouchMove,
   onTouchEnd,
-}: DraggableGridItemProps) {
+}, ref) {
   const tapCount = useRef(0);
   const tapTimer = useRef<NodeJS.Timeout | null>(null);
 
@@ -178,4 +178,4 @@ export const DraggableGridItem = memo(function DraggableGridItem({
       )}
     </motion.div>
   );
-});
+}));

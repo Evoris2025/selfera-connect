@@ -107,7 +107,7 @@ function TypingIndicator() {
         <motion.div
           key={i}
           className="w-2 h-2 rounded-full bg-muted-foreground/50"
-          animate={{ y: [0, -6, 0], scale: [1, 1.2, 1] }}
+          animate={{ y: [0, -6, 0] }}
           transition={{
             duration: 0.5,
             repeat: Infinity,
@@ -127,7 +127,7 @@ function OnlineIndicator({ size = 'default', pulse = false }: { size?: 'small' |
         "absolute rounded-full bg-emerald-500 border-[2.5px] border-background shadow-sm",
         size === 'small' ? "bottom-0 right-0 w-3.5 h-3.5" : "bottom-0.5 right-0.5 w-4 h-4"
       )}
-      animate={pulse ? { scale: [1, 1.3, 1] } : {}}
+      animate={pulse ? { scale: 1.2 } : {}}
       transition={springPop}
     >
       {pulse && (
