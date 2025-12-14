@@ -15,7 +15,7 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, type Transition } from 'framer-motion';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   DropdownMenu,
@@ -26,11 +26,10 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { MobileNav } from '@/components/MobileNav';
 
-// Soft, calm motion configs for notifications
-const springSnap = { type: 'spring' as const, stiffness: 350, damping: 35, mass: 1 };
-const springBounce = { type: 'spring' as const, stiffness: 260, damping: 32, mass: 1 };
-const springPop = { type: 'spring' as const, stiffness: 280, damping: 30 };
-const springElastic = { type: 'spring' as const, stiffness: 220, damping: 30 };
+// Ultra-calm motion - simple fades and slides only
+const calmFade: Transition = { duration: 0.25, ease: 'easeOut' as const };
+const calmSlide: Transition = { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] as const };
+const calmStagger: Transition = { duration: 0.2, ease: 'easeOut' as const };
 
 interface Notification {
   id: string;
@@ -113,31 +112,24 @@ function StackedAvatars({ users, max = 3 }: { users: { name: string; handle: str
   
   if (displayUsers.length === 1) {
     return (
-      <motion.div
-        whileHover={{ scale: 1.1 }}
-        transition={springPop}
-      >
+      <div>
         <Avatar className="h-12 w-12 ring-1 ring-border/50">
           <AvatarFallback className="bg-gradient-to-br from-secondary to-secondary/60 text-foreground font-medium">
             {displayUsers[0].name.charAt(0)}
           </AvatarFallback>
         </Avatar>
-      </motion.div>
+      </div>
     );
   }
 
   return (
-    <motion.div 
-      className="relative h-12 w-12"
-      whileHover={{ scale: 1.05 }}
-      transition={springPop}
-    >
+    <div className="relative h-12 w-12">
       {displayUsers.map((user, idx) => (
         <motion.div
           key={user.handle}
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ ...springBounce, delay: idx * 0.1 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ ...calmFade, delay: idx * 0.1 }}
         >
           <Avatar 
             className={cn(
@@ -153,7 +145,7 @@ function StackedAvatars({ users, max = 3 }: { users: { name: string; handle: str
           </Avatar>
         </motion.div>
       ))}
-    </motion.div>
+    </div>
   );
 }
 
@@ -175,37 +167,30 @@ function NotificationItem({ notification, index }: { notification: Notification;
     <DropdownMenu open={showLongPressMenu} onOpenChange={setShowLongPressMenu}>
       <DropdownMenuTrigger asChild>
         <motion.div
-          initial={{ opacity: 0, x: -40, scale: 0.9 }}
-          animate={{ opacity: 1, x: 0, scale: 1 }}
-          transition={{ ...springBounce, delay: index * 0.04 }}
-          whileTap={{ scale: 0.97, x: 5 }}
-          whileHover={{ x: 3, backgroundColor: 'hsl(var(--secondary) / 0.3)' }}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...calmSlide, delay: index * 0.03 }}
           onClick={handleClick}
           onContextMenu={(e) => { e.preventDefault(); setShowLongPressMenu(true); }}
           className={cn(
-            'flex items-center gap-4 px-5 py-3.5 cursor-pointer transition-colors',
+            'flex items-center gap-4 px-5 py-3.5 cursor-pointer transition-colors hover:bg-secondary/30',
             !notification.read && 'bg-primary/[0.05]'
           )}
         >
-          {/* Avatar(s) */}
           <div className="relative shrink-0">
             {notification.users && notification.users.length > 0 ? (
               <StackedAvatars users={notification.users} />
             ) : (
-              <motion.div 
-                className="w-12 h-12 rounded-full bg-gradient-to-br from-secondary to-secondary/60 flex items-center justify-center"
-                whileHover={{ scale: 1.1, rotate: 5 }}
-                transition={springPop}
-              >
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-secondary to-secondary/60 flex items-center justify-center">
                 {getNotificationIcon(notification.type)}
-              </motion.div>
+              </div>
             )}
             {notification.users && notification.users.length > 0 && (
               <motion.div 
                 className="absolute -bottom-0.5 -right-0.5 p-1 rounded-full bg-background border border-border/50 shadow-sm"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ ...springPop, delay: index * 0.04 + 0.2 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ ...calmFade, delay: index * 0.03 + 0.15 }}
               >
                 {getNotificationIcon(notification.type)}
               </motion.div>
@@ -224,47 +209,31 @@ function NotificationItem({ notification, index }: { notification: Notification;
             )}
           </div>
 
-          {/* Right side */}
           {notification.showFollowButton ? (
-            <motion.div
-              whileTap={{ scale: 0.85 }}
-              transition={springSnap}
-            >
+            <div>
               <Button
                 size="sm"
                 variant={isFollowing ? "outline" : "default"}
                 className={cn("shrink-0 h-8 px-4 rounded-lg text-[13px] font-semibold", isFollowing && "border-border/50")}
                 onClick={(e) => { e.stopPropagation(); setIsFollowing(!isFollowing); }}
               >
-                <motion.span
-                  key={isFollowing ? 'following' : 'follow'}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={springPop}
-                >
-                  {isFollowing ? 'Following' : 'Follow'}
-                </motion.span>
+                {isFollowing ? 'Following' : 'Follow'}
               </Button>
-            </motion.div>
+            </div>
           ) : notification.thumbnailUrl ? (
-            <motion.div 
-              className="w-11 h-11 rounded-lg bg-secondary overflow-hidden shrink-0 ring-1 ring-border/30"
-              whileHover={{ scale: 1.1 }}
-              transition={springPop}
-            >
+            <div className="w-11 h-11 rounded-lg bg-secondary overflow-hidden shrink-0 ring-1 ring-border/30">
               <img src={notification.thumbnailUrl} alt="" className="w-full h-full object-cover" />
-            </motion.div>
+            </div>
           ) : null}
 
-          {/* Unread dot */}
           <AnimatePresence>
             {!notification.read && !notification.showFollowButton && !notification.thumbnailUrl && (
-            <motion.div 
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0 }}
-              transition={springPop}
-                className="w-2 h-2 rounded-full bg-primary shrink-0 shadow-lg shadow-primary/40" 
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={calmFade}
+                className="w-2 h-2 rounded-full bg-primary shrink-0" 
               />
             )}
           </AnimatePresence>
@@ -296,21 +265,15 @@ function HighlightCard({ notification, index }: { notification: Notification; in
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.85, y: 20 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      transition={{ ...springBounce, delay: index * 0.08 }}
-      whileTap={{ scale: 0.97 }}
-      whileHover={{ scale: 1.02, y: -2 }}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ ...calmSlide, delay: index * 0.05 }}
       onClick={handleClick}
-      className="flex items-center gap-4 px-5 py-4 cursor-pointer bg-gradient-to-r from-primary/[0.08] via-primary/[0.04] to-transparent rounded-2xl mx-4 mb-3 border border-primary/10"
+      className="flex items-center gap-4 px-5 py-4 cursor-pointer bg-gradient-to-r from-primary/[0.08] via-primary/[0.04] to-transparent rounded-2xl mx-4 mb-3 border border-primary/10 hover:bg-primary/[0.06] transition-colors"
     >
-      <motion.div 
-        className="relative shrink-0"
-        animate={{ rotate: [0, -2, 2, 0] }}
-        transition={{ duration: 0.6, delay: index * 0.1 + 0.3, ease: 'easeInOut' }}
-      >
+      <div className="relative shrink-0">
         {notification.users && <StackedAvatars users={notification.users} />}
-      </motion.div>
+      </div>
 
       <div className="flex-1 min-w-0">
         <p className="text-[14px] text-foreground font-semibold leading-snug">
@@ -321,21 +284,13 @@ function HighlightCard({ notification, index }: { notification: Notification; in
       </div>
 
       {notification.thumbnailUrl ? (
-        <motion.div 
-          className="w-11 h-11 rounded-lg bg-secondary overflow-hidden shrink-0 ring-1 ring-border/30"
-          whileHover={{ scale: 1.15, rotate: 3 }}
-          transition={springPop}
-        >
+        <div className="w-11 h-11 rounded-lg bg-secondary overflow-hidden shrink-0 ring-1 ring-border/30">
           <img src={notification.thumbnailUrl} alt="" className="w-full h-full object-cover" />
-        </motion.div>
+        </div>
       ) : notification.type === 'message' ? (
-        <motion.div 
-          className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0"
-          animate={{ scale: 1.1 }}
-          transition={{ duration: 2, repeat: Infinity, repeatType: 'reverse' }}
-        >
+        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
           <MessageCircle className="h-5 w-5 text-primary" />
-        </motion.div>
+        </div>
       ) : null}
     </motion.div>
   );
@@ -346,23 +301,19 @@ function EmptyState() {
   
   return (
     <motion.div 
-      initial={{ opacity: 0, scale: 0.9, y: 30 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      transition={springBounce}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={calmSlide}
       className="flex flex-col items-center justify-center py-20 px-6"
     >
-      <motion.div 
-        className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-secondary/40 flex items-center justify-center mb-5"
-        animate={{ scale: 1.05 }}
-        transition={{ duration: 3, repeat: Infinity, repeatType: 'reverse' }}
-      >
+      <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-secondary/40 flex items-center justify-center mb-5">
         <CheckCircle className="h-10 w-10 text-primary/60" />
-      </motion.div>
+      </div>
       <motion.h3 
         className="text-lg font-semibold text-foreground mb-2"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ ...springBounce, delay: 0.2 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ ...calmFade, delay: 0.15 }}
       >
         You're all caught up
       </motion.h3>
@@ -370,20 +321,14 @@ function EmptyState() {
         className="text-[14px] text-muted-foreground/70 text-center mb-6"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
+        transition={{ ...calmFade, delay: 0.25 }}
       >
         You've seen all your notifications from the last 30 days
       </motion.p>
-      <motion.div
-        whileTap={{ scale: 0.9 }}
-        whileHover={{ scale: 1.05 }}
-        transition={springSnap}
-      >
-        <Button variant="outline" className="rounded-xl" onClick={() => navigate('/settings')}>
-          <Settings className="h-4 w-4 mr-2" />
-          Notification settings
-        </Button>
-      </motion.div>
+      <Button variant="outline" className="rounded-xl" onClick={() => navigate('/settings')}>
+        <Settings className="h-4 w-4 mr-2" />
+        Notification settings
+      </Button>
     </motion.div>
   );
 }
@@ -402,26 +347,24 @@ export default function Notifications() {
     <div className="flex flex-col h-[100dvh] bg-background">
       {/* Header */}
       <motion.div 
-        initial={{ y: -30, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={springBounce}
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={calmSlide}
         className="flex items-center gap-4 px-4 py-3.5 border-b border-border/60 bg-background"
       >
-        <motion.div whileTap={{ scale: 0.8, x: -5 }} transition={springSnap}>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate(-1)}
-            className="shrink-0 -ml-2 h-9 w-9 rounded-full hover:bg-secondary"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-        </motion.div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => navigate(-1)}
+          className="shrink-0 -ml-2 h-9 w-9 rounded-full hover:bg-secondary"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
         <motion.h1 
           className="flex-1 font-bold text-xl text-foreground tracking-tight"
-          initial={{ opacity: 0, x: -10 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ ...springBounce, delay: 0.1 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ ...calmFade, delay: 0.1 }}
         >
           Notifications
         </motion.h1>
@@ -442,26 +385,25 @@ export default function Notifications() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
               >
-                <motion.button
+                <button
                   className="px-5 pb-3 flex items-center gap-2 w-full"
                   onClick={() => setHighlightsExpanded(!highlightsExpanded)}
-                  whileTap={{ scale: 0.98 }}
                 >
                   <span className="font-semibold text-[15px] text-foreground tracking-tight">Highlights</span>
                   <motion.div
                     animate={{ rotate: highlightsExpanded ? 0 : -90 }}
-                    transition={springSnap}
+                    transition={calmFade}
                   >
                     <ChevronDown className="h-4 w-4 text-muted-foreground" />
                   </motion.div>
-                </motion.button>
+                </button>
                 <AnimatePresence>
                   {highlightsExpanded && (
                     <motion.div
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={springElastic}
+                      transition={calmSlide}
                     >
                       {grouped.highlights.map((notification, idx) => (
                         <HighlightCard key={notification.id} notification={notification} index={idx} />
@@ -477,9 +419,9 @@ export default function Notifications() {
               <div className="pt-4">
                 <motion.div 
                   className="px-5 pb-2"
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ ...springBounce, delay: 0.2 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ ...calmFade, delay: 0.15 }}
                 >
                   <span className="font-semibold text-[15px] text-foreground tracking-tight">Last 7 days</span>
                 </motion.div>
@@ -494,9 +436,9 @@ export default function Notifications() {
               <div className="pt-4">
                 <motion.div 
                   className="px-5 pb-2"
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ ...springBounce, delay: 0.3 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ ...calmFade, delay: 0.2 }}
                 >
                   <span className="font-semibold text-[15px] text-foreground tracking-tight">Earlier</span>
                 </motion.div>
