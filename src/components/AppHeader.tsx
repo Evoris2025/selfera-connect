@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import logo from '@/assets/logo.jpg';
+import { LogoLink } from './Logo';
 
 interface AppHeaderProps {
   title?: string;
@@ -34,14 +34,7 @@ export function AppHeader({ title }: AppHeaderProps) {
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <div className="flex items-center justify-between h-14 px-4 max-w-lg mx-auto">
         {/* Logo */}
-        <Link to="/feed" className="flex items-center gap-1">
-          <img src={logo} alt="SelfERA" className="w-10 h-10 rounded-xl object-cover" />
-          {title ? (
-            <span className="font-semibold text-foreground tracking-widest">{title}</span>
-          ) : (
-            <span className="text-lg font-semibold gradient-brand-text"><span className="tracking-[0.02em]">Self</span><span className="tracking-[0.04em]">ERA</span></span>
-          )}
-        </Link>
+        <LogoLink to="/feed" size="md" />
 
         {/* Right Actions */}
         <div className="flex items-center gap-2">
