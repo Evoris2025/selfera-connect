@@ -2,54 +2,54 @@ import { Plus, ChevronRight } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
-interface Story {
+interface Expression {
   id: string;
   userName: string;
   userAvatar: string;
   thumbnailUrl: string;
-  hasUnseenStory: boolean;
+  hasUnseenExpression: boolean;
 }
 
-// Mock stories data
-const mockStories: Story[] = [
+// Mock expressions data
+const mockExpressions: Expression[] = [
   {
     id: '1',
     userName: 'Jennifer Love Hewitt',
     userAvatar: '',
     thumbnailUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=300&fit=crop',
-    hasUnseenStory: true,
+    hasUnseenExpression: true,
   },
   {
     id: '2',
     userName: "Cody's collaborations",
     userAvatar: '',
     thumbnailUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=300&fit=crop',
-    hasUnseenStory: true,
+    hasUnseenExpression: true,
   },
   {
     id: '3',
     userName: 'Amy Fell',
     userAvatar: '',
     thumbnailUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=300&fit=crop',
-    hasUnseenStory: true,
+    hasUnseenExpression: true,
   },
   {
     id: '4',
     userName: 'Trent Mitchel Livori',
     userAvatar: '',
     thumbnailUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=300&fit=crop',
-    hasUnseenStory: false,
+    hasUnseenExpression: false,
   },
   {
     id: '5',
     userName: 'Donna Karen',
     userAvatar: '',
     thumbnailUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=300&fit=crop',
-    hasUnseenStory: true,
+    hasUnseenExpression: true,
   },
 ];
 
-export function StoriesRow() {
+export function ExpressionsRow() {
   const { user } = useAuth();
   const displayName = user?.email?.split('@')[0] || 'You';
   const userInitial = displayName.charAt(0).toUpperCase();
@@ -76,23 +76,23 @@ export function StoriesRow() {
                   </div>
                 </div>
                 <p className="text-xs text-center text-foreground font-medium mt-1">
-                  Create story
+                  Create expression
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Story Cards */}
-          {mockStories.map((story) => (
+          {/* Expression Cards */}
+          {mockExpressions.map((expression) => (
             <button
-              key={story.id}
+              key={expression.id}
               className="flex-shrink-0 w-[110px] group"
             >
               <div className="relative h-[160px] rounded-xl overflow-hidden">
-                {/* Story thumbnail */}
+                {/* Expression thumbnail */}
                 <img
-                  src={story.thumbnailUrl}
-                  alt={story.userName}
+                  src={expression.thumbnailUrl}
+                  alt={expression.userName}
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 
@@ -101,18 +101,18 @@ export function StoriesRow() {
                 
                 {/* User avatar with gradient ring */}
                 <div className="absolute top-2 left-2">
-                  <div className={`w-10 h-10 rounded-full p-[2px] ${story.hasUnseenStory ? 'gradient-brand' : 'bg-muted'}`}>
+                  <div className={`w-10 h-10 rounded-full p-[2px] ${expression.hasUnseenExpression ? 'gradient-brand' : 'bg-muted'}`}>
                     <div className="w-full h-full rounded-full bg-card p-[2px]">
                       <div className="w-full h-full rounded-full bg-secondary flex items-center justify-center overflow-hidden">
-                        {story.userAvatar ? (
+                        {expression.userAvatar ? (
                           <img
-                            src={story.userAvatar}
-                            alt={story.userName}
+                            src={expression.userAvatar}
+                            alt={expression.userName}
                             className="w-full h-full object-cover"
                           />
                         ) : (
                           <span className="text-xs font-medium text-secondary-foreground">
-                            {story.userName.charAt(0)}
+                            {expression.userName.charAt(0)}
                           </span>
                         )}
                       </div>
@@ -123,7 +123,7 @@ export function StoriesRow() {
                 {/* Username */}
                 <div className="absolute bottom-2 left-2 right-2">
                   <p className="text-xs text-white font-medium line-clamp-2 leading-tight">
-                    {story.userName}
+                    {expression.userName}
                   </p>
                 </div>
               </div>

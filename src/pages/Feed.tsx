@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AppLayout } from '@/components/AppLayout';
 import { ComposerBar } from '@/components/ComposerBar';
-import { StoriesRow } from '@/components/StoriesRow';
+import { ExpressionsRow } from '@/components/ExpressionsRow';
 import { PostCard } from '@/components/PostCard';
 import { PostCardSkeleton } from '@/components/SkeletonLoader';
 import { toast } from '@/hooks/use-toast';
@@ -23,7 +23,7 @@ const mockPosts = [
       url: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&h=600&fit=crop',
     },
     tags: ['Self-care', 'Mindfulness'],
-    reactions: { support: 245, informative: 89, relatable: 156 },
+    reactions: { heart: 334, hug: 156 },
     commentCount: 32,
     createdAt: '2 hours ago',
   },
@@ -37,7 +37,7 @@ const mockPosts = [
     },
     content: 'Anxiety tip: Try the 5-4-3-2-1 grounding technique. Name 5 things you can see, 4 you can touch, 3 you can hear, 2 you can smell, and 1 you can taste. This helps bring you back to the present moment.',
     tags: ['Anxiety', 'Awareness'],
-    reactions: { support: 512, informative: 892, relatable: 234 },
+    reactions: { heart: 746, hug: 892 },
     commentCount: 78,
     createdAt: '4 hours ago',
   },
@@ -50,7 +50,7 @@ const mockPosts = [
     },
     content: "Today marks 1 year since I started my recovery journey. It hasn't been easy, but I'm grateful for this community and everyone who has supported me. There is hope.",
     tags: ['Recovery', 'Support'],
-    reactions: { support: 1204, informative: 45, relatable: 678 },
+    reactions: { heart: 1882, hug: 723 },
     commentCount: 156,
     createdAt: '6 hours ago',
   },
@@ -78,8 +78,8 @@ export default function Feed() {
         {/* Top Composer Bar */}
         <ComposerBar onOpenComposer={handleOpenComposer} />
 
-        {/* Stories Row */}
-        <StoriesRow />
+        {/* Expressions Row */}
+        <ExpressionsRow />
 
         {/* Posts Feed */}
         <div className="space-y-3">

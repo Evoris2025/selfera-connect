@@ -22,7 +22,8 @@
     "profile": "الملف الشخصي",
     "settings": "الإعدادات",
     "crisisSupport": "دعم الأزمات",
-    "createPost": "إنشاء منشور"
+    "createPost": "إنشاء منشور",
+    "interactions": "التفاعلات"
   },
   "landing": {
     "hero": {
@@ -78,6 +79,11 @@
     "emptyFollowing": "تابع أشخاصاً لترى منشوراتهم هنا",
     "emptyTrending": "لا توجد منشورات رائجة الآن"
   },
+  "expressions": {
+    "create": "إنشاء تعبير",
+    "view": "عرض التعبير",
+    "empty": "لا توجد تعبيرات بعد"
+  },
   "post": {
     "create": "إنشاء منشور",
     "whatsOnMind": "ما الذي يدور في ذهنك؟",
@@ -100,9 +106,8 @@
     "language": "لغة المنشور"
   },
   "reactions": {
-    "support": "دعم",
-    "informative": "مفيد",
-    "relatable": "مُتَعاطف"
+    "heart": "قلب",
+    "hug": "عناق"
   },
   "comments": {
     "title": "التعليقات",
@@ -111,7 +116,7 @@
   },
   "profile": {
     "posts": "المنشورات",
-    "saved": "المحفوظات",
+    "library": "المكتبة",
     "about": "حول",
     "follow": "متابعة",
     "following": "متابَع",
@@ -122,6 +127,14 @@
     "verified": "موثق",
     "privateAccount": "هذا الحساب خاص",
     "requestFollow": "طلب المتابعة"
+  },
+  "library": {
+    "title": "مكتبتي",
+    "empty": "مكتبتك فارغة. أضف منشورات تدعم رحلة صحتك النفسية.",
+    "added": "أُضيف إلى المكتبة",
+    "addedDesc": "تم حفظ هذا المنشور في مكتبة الصحة النفسية الخاصة بك.",
+    "removed": "أُزيل من المكتبة",
+    "removedDesc": "تم إزالة هذا المنشور من مكتبتك."
   },
   "directory": {
     "title": "ابحث عن مساعدة",

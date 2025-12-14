@@ -22,7 +22,8 @@
     "profile": "Profile",
     "settings": "Settings",
     "crisisSupport": "Crisis Support",
-    "createPost": "Create Post"
+    "createPost": "Create Post",
+    "interactions": "Interactions"
   },
   "landing": {
     "hero": {
@@ -78,6 +79,11 @@
     "emptyFollowing": "Follow people to see their posts here",
     "emptyTrending": "No trending posts right now"
   },
+  "expressions": {
+    "create": "Create expression",
+    "view": "View expression",
+    "empty": "No expressions yet"
+  },
   "post": {
     "create": "Create post",
     "whatsOnMind": "What's on your mind?",
@@ -100,9 +106,8 @@
     "language": "Post language"
   },
   "reactions": {
-    "support": "Support",
-    "informative": "Informative",
-    "relatable": "Relatable"
+    "heart": "Heart",
+    "hug": "Hug"
   },
   "comments": {
     "title": "Comments",
@@ -111,7 +116,7 @@
   },
   "profile": {
     "posts": "Posts",
-    "saved": "Saved",
+    "library": "Library",
     "about": "About",
     "follow": "Follow",
     "following": "Following",
@@ -122,6 +127,14 @@
     "verified": "Verified",
     "privateAccount": "This account is private",
     "requestFollow": "Request to follow"
+  },
+  "library": {
+    "title": "My Library",
+    "empty": "Your Library is empty. Add posts that support your wellbeing journey.",
+    "added": "Added to Library",
+    "addedDesc": "This post has been saved to your wellbeing library.",
+    "removed": "Removed from Library",
+    "removedDesc": "This post has been removed from your library."
   },
   "directory": {
     "title": "Find Help",

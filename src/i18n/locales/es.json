@@ -22,7 +22,8 @@
     "profile": "Perfil",
     "settings": "Configuración",
     "crisisSupport": "Apoyo en Crisis",
-    "createPost": "Crear Publicación"
+    "createPost": "Crear Publicación",
+    "interactions": "Interacciones"
   },
   "landing": {
     "hero": {
@@ -78,6 +79,11 @@
     "emptyFollowing": "Sigue a personas para ver sus publicaciones aquí",
     "emptyTrending": "No hay publicaciones en tendencia ahora"
   },
+  "expressions": {
+    "create": "Crear expresión",
+    "view": "Ver expresión",
+    "empty": "Aún no hay expresiones"
+  },
   "post": {
     "create": "Crear publicación",
     "whatsOnMind": "¿Qué tienes en mente?",
@@ -100,9 +106,8 @@
     "language": "Idioma de la publicación"
   },
   "reactions": {
-    "support": "Apoyo",
-    "informative": "Informativo",
-    "relatable": "Identificable"
+    "heart": "Corazón",
+    "hug": "Abrazo"
   },
   "comments": {
     "title": "Comentarios",
@@ -111,7 +116,7 @@
   },
   "profile": {
     "posts": "Publicaciones",
-    "saved": "Guardados",
+    "library": "Biblioteca",
     "about": "Acerca de",
     "follow": "Seguir",
     "following": "Siguiendo",
@@ -122,6 +127,14 @@
     "verified": "Verificado",
     "privateAccount": "Esta cuenta es privada",
     "requestFollow": "Solicitar seguir"
+  },
+  "library": {
+    "title": "Mi Biblioteca",
+    "empty": "Tu Biblioteca está vacía. Añade publicaciones que apoyen tu viaje de bienestar.",
+    "added": "Añadido a la Biblioteca",
+    "addedDesc": "Esta publicación se ha guardado en tu biblioteca de bienestar.",
+    "removed": "Eliminado de la Biblioteca",
+    "removedDesc": "Esta publicación se ha eliminado de tu biblioteca."
   },
   "directory": {
     "title": "Buscar Ayuda",
