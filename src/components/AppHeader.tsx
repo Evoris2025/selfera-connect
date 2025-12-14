@@ -35,7 +35,7 @@ export function AppHeader({ title }: AppHeaderProps) {
       <div className="flex items-center justify-between h-14 px-4 max-w-lg mx-auto">
         {/* Logo */}
         <Link to="/feed" className="flex items-center gap-2">
-          <img src={logo} alt="SelfERA" className="w-8 h-8 rounded-lg object-cover" />
+          <img src={logo} alt="SelfERA" className="w-10 h-10 rounded-lg object-cover" />
           {title ? (
             <span className="font-semibold text-foreground">{title}</span>
           ) : (
