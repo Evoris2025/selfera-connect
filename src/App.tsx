@@ -15,6 +15,7 @@ import Feed from "./pages/Feed";
 import Explore from "./pages/Explore";
 import Community from "./pages/Community";
 import Notifications from "./pages/Notifications";
+import Messages from "./pages/Messages";
 import Profile from "./pages/Profile";
 import Directory from "./pages/Directory";
 import CrisisSupport from "./pages/CrisisSupport";
@@ -83,6 +84,7 @@ function AppRoutes() {
       <Route path="/search" element={<ProtectedRoute><Explore /></ProtectedRoute>} />
       <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+      <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
       <Route path="/profile/:handle?" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
       {/* Public routes */}
