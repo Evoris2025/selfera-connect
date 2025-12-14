@@ -1,85 +1,94 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { MapPin, Globe, Calendar, Settings, Lock, Quote, Heart, Users, Sparkles, BookOpen, Pin } from 'lucide-react';
+import { MapPin, Globe, Calendar, Settings, Lock, Grid3X3, Bookmark, Play, MessageCircle, Heart } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card } from '@/components/ui/card';
-import { PostCard } from '@/components/PostCard';
-import { TextPostCard } from '@/components/TextPostCard';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
-// Mock user data with journey focus
+// Mock user data with full social metrics
 const mockUser = {
   name: 'Alex Johnson',
   handle: 'alexj',
   avatar: '',
-  bio: 'Advocate for mental health awareness. Sharing my journey one day at a time. 💙',
-  pinnedReflection: "Recovery isn't linear. Some days I take three steps forward, others I take two steps back. But I'm still here, still trying, and that's what matters.",
+  bio: 'Advocate for mental health awareness 💙 Sharing my journey one day at a time. DM for collabs ✨',
+  website: 'linktr.ee/alexj',
   country: 'United States',
   languages: ['English', 'Spanish'],
   joinedDate: 'March 2024',
-  isVerified: false,
+  isVerified: true,
   isPrivate: false,
   userType: 'individual' as const,
   stats: {
-    posts: 47,
-    followers: 1234,
+    posts: 147,
+    followers: 12400,
     following: 567,
-    contributions: 156, // New: contribution count
-    supportGiven: 89, // New: times helped others
   },
 };
 
+// Mock posts grid
 const mockPosts = [
-  {
-    id: '1',
-    author: {
-      name: mockUser.name,
-      handle: mockUser.handle,
-      avatar: mockUser.avatar,
-      isVerified: mockUser.isVerified,
-    },
-    content: 'Today was a good day. Small wins matter. Remember to celebrate your progress, no matter how small.',
-    tags: ['Self-care', 'Mindfulness'],
-    commentCount: 8,
-    createdAt: '1 day ago',
-    tone: 'progress' as const,
-    isTextOnly: true,
-  },
-  {
-    id: '2',
-    author: {
-      name: mockUser.name,
-      handle: mockUser.handle,
-      avatar: mockUser.avatar,
-      isVerified: mockUser.isVerified,
-    },
-    content: 'Gratitude practice: Three things I\'m thankful for today - morning coffee, a supportive friend, and this community.',
-    tags: ['Gratitude', 'Daily Practice'],
-    commentCount: 12,
-    createdAt: '3 days ago',
-    tone: 'steady' as const,
-    isTextOnly: true,
-  },
+  { id: '1', thumbnail: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400&h=400&fit=crop', likes: 1234, comments: 56, isVideo: false },
+  { id: '2', thumbnail: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=400&h=400&fit=crop', likes: 892, comments: 34, isVideo: false },
+  { id: '3', thumbnail: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=400&h=400&fit=crop', likes: 2341, comments: 89, isVideo: true },
+  { id: '4', thumbnail: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=400&h=400&fit=crop', likes: 567, comments: 23, isVideo: false },
+  { id: '5', thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop', likes: 3456, comments: 128, isVideo: false },
+  { id: '6', thumbnail: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop', likes: 789, comments: 45, isVideo: true },
 ];
 
-const mockExpressions = [
-  { id: '1', thumbnail: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=200&h=300&fit=crop' },
-  { id: '2', thumbnail: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=200&h=300&fit=crop' },
-  { id: '3', thumbnail: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=200&h=300&fit=crop' },
+const mockReels = [
+  { id: '1', thumbnail: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=300&h=500&fit=crop', views: 45600 },
+  { id: '2', thumbnail: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=300&h=500&fit=crop', views: 23400 },
+  { id: '3', thumbnail: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=300&h=500&fit=crop', views: 67800 },
 ];
+
+function formatCount(count: number): string {
+  if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`;
+  if (count >= 1000) return `${(count / 1000).toFixed(1)}K`;
+  return count.toString();
+}
+
+function StatButton({ count, label, onClick }: { count: number; label: string; onClick?: () => void }) {
+  return (
+    <button 
+      onClick={onClick}
+      className="flex flex-col items-center group"
+    >
+      <motion.span 
+        key={count}
+        initial={{ scale: 1.2, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="font-bold text-foreground text-lg group-hover:text-primary transition-colors"
+      >
+        {formatCount(count)}
+      </motion.span>
+      <span className="text-xs text-muted-foreground">{label}</span>
+    </button>
+  );
+}
 
 export default function Profile() {
   const { handle } = useParams();
   const { t } = useTranslation();
   const [isFollowing, setIsFollowing] = useState(false);
   const [activeTab, setActiveTab] = useState('posts');
+  const [followerCount, setFollowerCount] = useState(mockUser.stats.followers);
   const isOwnProfile = !handle || handle === mockUser.handle;
+
+  const handleFollow = () => {
+    setIsFollowing(!isFollowing);
+    setFollowerCount(prev => isFollowing ? prev - 1 : prev + 1);
+    
+    // Haptic feedback simulation
+    if (navigator.vibrate) {
+      navigator.vibrate(10);
+    }
+  };
 
   const handleCreatePost = () => {
     toast({
@@ -91,81 +100,67 @@ export default function Profile() {
   return (
     <AppLayout showHeader={false} onCreatePost={handleCreatePost}>
       <div className="flex flex-col">
-        {/* Profile Header - Journey-focused */}
-        <div className="px-4 pt-4 pb-5 bg-gradient-to-b from-card to-background">
-          {/* Avatar + Basic Info */}
-          <div className="flex items-start gap-4">
-            <Avatar className="h-20 w-20 flex-shrink-0 ring-2 ring-primary/20">
-              <AvatarImage src={mockUser.avatar} alt={mockUser.name} />
-              <AvatarFallback className="bg-secondary text-secondary-foreground text-2xl">
-                {mockUser.name.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
+        {/* Profile Header - Instagram Style */}
+        <div className="px-4 pt-4 pb-5">
+          {/* Top Row: Avatar + Stats */}
+          <div className="flex items-center gap-6">
+            {/* Avatar with gradient ring */}
+            <motion.div 
+              whileHover={{ scale: 1.05 }}
+              className="relative"
+            >
+              <div className="w-20 h-20 rounded-full p-[3px] gradient-brand">
+                <Avatar className="w-full h-full ring-2 ring-background">
+                  <AvatarImage src={mockUser.avatar} alt={mockUser.name} />
+                  <AvatarFallback className="bg-secondary text-secondary-foreground text-2xl">
+                    {mockUser.name.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+            </motion.div>
 
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1.5">
-                <h1 className="font-bold text-lg text-foreground truncate">{mockUser.name}</h1>
-                {mockUser.isVerified && <VerifiedBadge />}
-                {mockUser.isPrivate && <Lock className="h-3.5 w-3.5 text-muted-foreground" />}
-              </div>
-              <p className="text-sm text-muted-foreground">@{mockUser.handle}</p>
-              
-              {/* Meta info - inline */}
-              <div className="flex flex-wrap items-center gap-2 mt-1.5 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1">
-                  <Calendar className="h-3 w-3" />
-                  {mockUser.joinedDate}
-                </span>
-                <span>·</span>
-                <span className="flex items-center gap-1">
-                  <MapPin className="h-3 w-3" />
-                  {mockUser.country}
-                </span>
-              </div>
+            {/* Stats Row */}
+            <div className="flex-1 flex justify-around">
+              <StatButton count={mockUser.stats.posts} label="Posts" />
+              <StatButton count={followerCount} label="Followers" />
+              <StatButton count={mockUser.stats.following} label="Following" />
             </div>
+          </div>
+
+          {/* Name + Handle + Bio */}
+          <div className="mt-4">
+            <div className="flex items-center gap-1.5">
+              <h1 className="font-bold text-foreground">{mockUser.name}</h1>
+              {mockUser.isVerified && <VerifiedBadge />}
+              {mockUser.isPrivate && <Lock className="h-3.5 w-3.5 text-muted-foreground" />}
+            </div>
+            <p className="text-sm text-muted-foreground">@{mockUser.handle}</p>
           </div>
 
           {/* Bio */}
-          <p className="mt-4 text-sm text-foreground leading-relaxed">{mockUser.bio}</p>
-
-          {/* Journey Stats - De-emphasized follower counts */}
-          <div className="flex gap-4 mt-4 py-3 px-4 bg-card/50 rounded-xl border border-border/50">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 rounded-lg bg-emerald-500/10">
-                <Heart className="h-4 w-4 text-emerald-400" />
-              </div>
-              <div>
-                <span className="font-semibold text-foreground text-sm">{mockUser.stats.supportGiven}</span>
-                <span className="text-xs text-muted-foreground ml-1">support given</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 rounded-lg bg-primary/10">
-                <Sparkles className="h-4 w-4 text-primary" />
-              </div>
-              <div>
-                <span className="font-semibold text-foreground text-sm">{mockUser.stats.contributions}</span>
-                <span className="text-xs text-muted-foreground ml-1">contributions</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Subtle follower info */}
-          <div className="flex gap-4 mt-3 text-xs text-muted-foreground">
-            <button className="hover:text-foreground transition-colors">
-              <span className="font-medium text-foreground">{mockUser.stats.followers.toLocaleString()}</span> followers
-            </button>
-            <button className="hover:text-foreground transition-colors">
-              <span className="font-medium text-foreground">{mockUser.stats.following}</span> following
-            </button>
-          </div>
+          <p className="mt-2 text-sm text-foreground whitespace-pre-line">{mockUser.bio}</p>
+          
+          {/* Website Link */}
+          {mockUser.website && (
+            <a 
+              href={`https://${mockUser.website}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-primary font-medium hover:underline mt-1 inline-block"
+            >
+              {mockUser.website}
+            </a>
+          )}
 
           {/* Action Buttons */}
           <div className="flex gap-2 mt-4">
             {isOwnProfile ? (
               <>
-                <Button variant="outline" size="sm" className="flex-1 h-9">
-                  {t('profile.editProfile')}
+                <Button variant="outline" size="sm" className="flex-1 h-9 font-semibold">
+                  Edit profile
+                </Button>
+                <Button variant="outline" size="sm" className="flex-1 h-9 font-semibold">
+                  Share profile
                 </Button>
                 <Button variant="outline" size="icon" className="h-9 w-9">
                   <Settings className="h-4 w-4" />
@@ -173,138 +168,117 @@ export default function Profile() {
               </>
             ) : (
               <>
-                <Button
-                  variant={isFollowing ? 'outline' : 'default'}
-                  size="sm"
-                  className="flex-1 h-9"
-                  onClick={() => setIsFollowing(!isFollowing)}
-                >
-                  {isFollowing ? t('profile.following') : t('profile.follow')}
-                </Button>
-                <Button variant="outline" size="sm" className="h-9">
-                  {t('nav.interactions')}
+                <motion.div className="flex-1" whileTap={{ scale: 0.95 }}>
+                  <Button
+                    variant={isFollowing ? 'outline' : 'default'}
+                    size="sm"
+                    className={cn(
+                      'w-full h-9 font-semibold transition-all',
+                      !isFollowing && 'bg-primary hover:bg-primary/90 animate-glow-pulse'
+                    )}
+                    onClick={handleFollow}
+                  >
+                    {isFollowing ? 'Following' : 'Follow'}
+                  </Button>
+                </motion.div>
+                <Button variant="outline" size="sm" className="flex-1 h-9 font-semibold">
+                  Message
                 </Button>
               </>
             )}
           </div>
         </div>
 
-        {/* Pinned Reflection */}
-        {mockUser.pinnedReflection && (
-          <div className="px-4 pb-4">
-            <Card className="p-4 bg-gradient-to-r from-primary/5 to-accent/5 border-primary/20">
-              <div className="flex items-start gap-3">
-                <div className="p-1.5 rounded-lg bg-primary/10 flex-shrink-0">
-                  <Pin className="h-4 w-4 text-primary" />
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2">
-                    Pinned Reflection
-                  </p>
-                  <p className="text-sm text-foreground leading-relaxed italic">
-                    "{mockUser.pinnedReflection}"
-                  </p>
-                </div>
-              </div>
-            </Card>
-          </div>
-        )}
-
-        {/* Content Tabs - Updated structure */}
+        {/* Content Tabs - Instagram Grid Style */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="w-full rounded-none bg-transparent border-b border-border h-12 px-2">
+          <TabsList className="w-full rounded-none bg-transparent border-y border-border h-12 grid grid-cols-3">
             <TabsTrigger 
               value="posts" 
-              className="flex-1 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent gap-1.5"
+              className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-foreground data-[state=active]:bg-transparent h-full"
             >
-              <Quote className="h-4 w-4" />
-              <span className="hidden sm:inline">{t('profile.posts')}</span>
+              <Grid3X3 className="h-5 w-5" />
             </TabsTrigger>
             <TabsTrigger 
-              value="expressions" 
-              className="flex-1 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent gap-1.5"
+              value="reels" 
+              className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-foreground data-[state=active]:bg-transparent h-full"
             >
-              <Sparkles className="h-4 w-4" />
-              <span className="hidden sm:inline">Expressions</span>
+              <Play className="h-5 w-5" />
             </TabsTrigger>
-            {isOwnProfile && (
-              <TabsTrigger 
-                value="library" 
-                className="flex-1 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent gap-1.5"
-              >
-                <BookOpen className="h-4 w-4" />
-                <span className="hidden sm:inline">{t('profile.library')}</span>
-              </TabsTrigger>
-            )}
             <TabsTrigger 
-              value="about" 
-              className="flex-1 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent gap-1.5"
+              value="saved" 
+              className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-foreground data-[state=active]:bg-transparent h-full"
             >
-              <Users className="h-4 w-4" />
-              <span className="hidden sm:inline">{t('profile.about')}</span>
+              <Bookmark className="h-5 w-5" />
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="posts" className="mt-0 p-3 space-y-4">
-            {mockPosts.map((post) => 
-              post.isTextOnly ? (
-                <TextPostCard key={post.id} {...post} />
-              ) : (
-                <PostCard key={post.id} {...post} />
-              )
-            )}
-          </TabsContent>
-
-          <TabsContent value="expressions" className="mt-0 p-3">
-            <div className="grid grid-cols-3 gap-1">
-              {mockExpressions.map((exp) => (
-                <div 
-                  key={exp.id}
-                  className="aspect-[9/16] rounded-lg overflow-hidden bg-secondary cursor-pointer hover:opacity-90 transition-opacity"
+          {/* Posts Grid */}
+          <TabsContent value="posts" className="mt-0">
+            <div className="grid grid-cols-3 gap-0.5">
+              {mockPosts.map((post, index) => (
+                <motion.div
+                  key={post.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="aspect-square relative group cursor-pointer overflow-hidden"
                 >
                   <img 
-                    src={exp.thumbnail} 
+                    src={post.thumbnail} 
                     alt="" 
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
-                </div>
+                  {post.isVideo && (
+                    <div className="absolute top-2 right-2">
+                      <Play className="h-4 w-4 text-white drop-shadow-lg fill-current" />
+                    </div>
+                  )}
+                  {/* Hover overlay with stats */}
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
+                    <div className="flex items-center gap-1 text-white font-semibold">
+                      <Heart className="h-5 w-5 fill-current" />
+                      {formatCount(post.likes)}
+                    </div>
+                    <div className="flex items-center gap-1 text-white font-semibold">
+                      <MessageCircle className="h-5 w-5 fill-current" />
+                      {formatCount(post.comments)}
+                    </div>
+                  </div>
+                </motion.div>
               ))}
             </div>
-            {mockExpressions.length === 0 && (
-              <div className="text-center py-12 text-muted-foreground text-sm">
-                No expressions yet
-              </div>
-            )}
           </TabsContent>
 
-          <TabsContent value="library" className="mt-0 p-3">
-            <div className="text-center py-12 text-muted-foreground text-sm">
-              {t('library.empty')}
+          {/* Reels Grid */}
+          <TabsContent value="reels" className="mt-0">
+            <div className="grid grid-cols-3 gap-0.5">
+              {mockReels.map((reel, index) => (
+                <motion.div
+                  key={reel.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="aspect-[9/16] relative group cursor-pointer overflow-hidden"
+                >
+                  <img 
+                    src={reel.thumbnail} 
+                    alt="" 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute bottom-2 left-2 flex items-center gap-1 text-white text-xs font-semibold">
+                    <Play className="h-3 w-3 fill-current" />
+                    {formatCount(reel.views)}
+                  </div>
+                </motion.div>
+              ))}
             </div>
           </TabsContent>
 
-          <TabsContent value="about" className="mt-0 p-3 space-y-4">
-            <Card className="p-4">
-              <h3 className="font-semibold text-foreground mb-3 text-sm flex items-center gap-2">
-                <Globe className="h-4 w-4 text-muted-foreground" />
-                About
-              </h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{mockUser.bio}</p>
-            </Card>
-            
-            <Card className="p-4">
-              <h3 className="font-semibold text-foreground mb-3 text-sm">Languages</h3>
-              <div className="flex flex-wrap gap-2">
-                {mockUser.languages.map((lang) => (
-                  <span 
-                    key={lang}
-                    className="px-3 py-1 rounded-full bg-secondary text-sm text-muted-foreground"
-                  >
-                    {lang}
-                  </span>
-                ))}
-              </div>
-            </Card>
+          {/* Saved */}
+          <TabsContent value="saved" className="mt-0 p-4">
+            <div className="text-center py-12 text-muted-foreground text-sm">
+              {isOwnProfile ? 'Only you can see what you\'ve saved' : 'Nothing saved yet'}
+            </div>
           </TabsContent>
         </Tabs>
       </div>
