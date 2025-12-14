@@ -1,10 +1,10 @@
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MoreHorizontal, Flag, Ban, VolumeX, BookOpen, Share2, MessageCircle, Heart } from 'lucide-react';
+import { MoreHorizontal, Flag, Ban, VolumeX, BookOpen, Share2, MessageCircle, Heart, Send } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,8 +12,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ReactionButton } from './ReactionButton';
 import { VerifiedBadge } from './VerifiedBadge';
+import { Hashtag } from './Hashtag';
 import { useReactions } from '@/hooks/useReactions';
 import { useLibrary } from '@/hooks/useLibrary';
 import { useAuth } from '@/contexts/AuthContext';
@@ -37,8 +37,15 @@ interface PostCardProps {
   tags: string[];
   commentCount: number;
   createdAt: string;
+  likes?: number;
   hasContentWarning?: boolean;
   contentWarningType?: string;
+}
+
+function formatCount(count: number): string {
+  if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`;
+  if (count >= 1000) return `${(count / 1000).toFixed(1)}K`;
+  return count.toString();
 }
 
 export function PostCard({
@@ -49,6 +56,7 @@ export function PostCard({
   tags,
   commentCount,
   createdAt,
+  likes = 0,
   hasContentWarning,
   contentWarningType,
 }: PostCardProps) {
@@ -56,6 +64,7 @@ export function PostCard({
   const { user } = useAuth();
   const [showContent, setShowContent] = useState(!hasContentWarning);
   const [showHeartOverlay, setShowHeartOverlay] = useState(false);
+  const [localLikes, setLocalLikes] = useState(likes);
   const lastTapRef = useRef<number>(0);
   const { heartCount, hasReacted, toggleReaction } = useReactions(id);
   const { inLibrary, toggleLibrary } = useLibrary(id);
@@ -65,7 +74,6 @@ export function PostCard({
     const DOUBLE_TAP_DELAY = 300;
     
     if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
-      // Double tap detected
       if (!user) {
         toast({
           title: t('auth.required'),
@@ -79,8 +87,14 @@ export function PostCard({
       setShowHeartOverlay(true);
       setTimeout(() => setShowHeartOverlay(false), 800);
       
+      // Haptic feedback
+      if (navigator.vibrate) {
+        navigator.vibrate(10);
+      }
+      
       // Only add reaction if not already reacted
       if (!hasReacted) {
+        setLocalLikes(prev => prev + 1);
         await toggleReaction();
       }
     }
@@ -96,6 +110,13 @@ export function PostCard({
       });
       return;
     }
+    
+    // Haptic feedback
+    if (navigator.vibrate) {
+      navigator.vibrate(10);
+    }
+    
+    setLocalLikes(prev => hasReacted ? prev - 1 : prev + 1);
     await toggleReaction();
   };
 
@@ -115,23 +136,36 @@ export function PostCard({
     });
   };
 
+  // Parse content for hashtags
+  const renderContent = () => {
+    const parts = content.split(/(#\w+)/g);
+    return parts.map((part, i) => {
+      if (part.startsWith('#')) {
+        return <Hashtag key={i} tag={part} size="sm" className="inline mx-0.5" />;
+      }
+      return part;
+    });
+  };
+
   return (
-    <Card className="overflow-hidden hover:border-primary/20 transition-colors">
+    <Card className="overflow-hidden border-0 border-b border-border rounded-none bg-transparent">
       {/* Header */}
-      <div className="p-4 flex items-start justify-between">
+      <div className="p-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Avatar className="h-10 w-10 ring-2 ring-border">
-            <AvatarImage src={author.avatar} alt={author.name} />
-            <AvatarFallback className="bg-secondary text-secondary-foreground">
-              {author.name.charAt(0)}
-            </AvatarFallback>
-          </Avatar>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Avatar className="h-10 w-10 ring-2 ring-primary/20">
+              <AvatarImage src={author.avatar} alt={author.name} />
+              <AvatarFallback className="bg-secondary text-secondary-foreground">
+                {author.name.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
+          </motion.div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-foreground">{author.name}</span>
-              {author.isVerified && <VerifiedBadge />}
+              <span className="font-semibold text-foreground text-sm">{author.name}</span>
+              {author.isVerified && <VerifiedBadge size="sm" />}
             </div>
-            <p className="text-sm text-muted-foreground">@{author.handle}</p>
+            <p className="text-xs text-muted-foreground">@{author.handle} · {createdAt}</p>
           </div>
         </div>
         
@@ -159,33 +193,17 @@ export function PostCard({
         </DropdownMenu>
       </div>
 
-      {/* Tags */}
-      <div className="px-4 pb-3 flex flex-wrap gap-2">
-        {tags.map((tag) => (
-          <Badge key={tag} variant="secondary" className="rounded-full text-xs">
-            {tag}
-          </Badge>
-        ))}
-      </div>
-
-      {/* Content */}
-      <div className="px-4 pb-4">
-        <p className="text-foreground leading-relaxed">{content}</p>
-      </div>
-
       {/* Media */}
       {media && (
         <div className="relative">
           {hasContentWarning && !showContent ? (
             <div 
-              className="aspect-video bg-secondary/50 backdrop-blur-xl flex items-center justify-center cursor-pointer"
+              className="aspect-square bg-secondary/50 backdrop-blur-xl flex items-center justify-center cursor-pointer"
               onClick={() => setShowContent(true)}
             >
               <div className="text-center">
-                <Badge variant="outline" className="mb-2 border-warning/50 text-warning">
-                  {contentWarningType}
-                </Badge>
-                <p className="text-muted-foreground text-sm">Tap to view</p>
+                <span className="text-sm text-warning font-medium">{contentWarningType}</span>
+                <p className="text-muted-foreground text-sm mt-1">Tap to view</p>
               </div>
             </div>
           ) : media.type === 'image' ? (
@@ -196,16 +214,21 @@ export function PostCard({
               <img 
                 src={media.url} 
                 alt="" 
-                className="w-full aspect-video object-cover"
+                className="w-full aspect-square object-cover"
               />
               {showHeartOverlay && (
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <motion.div 
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 1.5, opacity: 0 }}
+                  className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                >
                   <Heart className="h-24 w-24 fill-white text-white drop-shadow-lg animate-heart-burst" />
-                </div>
+                </motion.div>
               )}
             </div>
           ) : (
-            <div className="aspect-video bg-secondary flex items-center justify-center">
+            <div className="aspect-square bg-secondary flex items-center justify-center">
               <video 
                 src={media.url} 
                 poster={media.thumbnail}
@@ -217,35 +240,80 @@ export function PostCard({
         </div>
       )}
 
-      {/* Actions */}
-      <div className="p-4 border-t border-border">
-        <div className="flex items-center justify-between text-muted-foreground">
+      {/* Actions - Instagram Style */}
+      <div className="p-3">
+        <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-4">
-            <ReactionButton 
-              type="heart" 
-              count={heartCount} 
-              active={hasReacted}
+            <motion.button 
+              whileTap={{ scale: 0.8 }}
               onClick={handleReaction}
-            />
-            <button className="flex items-center gap-1.5 hover:text-foreground transition-colors">
-              <MessageCircle className="h-4 w-4" />
-              <span className="text-sm">{commentCount}</span>
-            </button>
-            <button 
-              onClick={handleLibraryToggle}
-              className={cn(
-                'flex items-center gap-1.5 transition-colors',
-                inLibrary ? 'text-primary' : 'hover:text-foreground'
-              )}
+              className="flex items-center gap-1"
             >
-              <BookOpen className={cn('h-4 w-4', inLibrary && 'fill-current')} />
-            </button>
-            <button className="flex items-center gap-1.5 hover:text-foreground transition-colors">
-              <Share2 className="h-4 w-4" />
-            </button>
+              <Heart className={cn(
+                'h-6 w-6 transition-all',
+                hasReacted 
+                  ? 'fill-rose-500 text-rose-500 animate-heart-pop' 
+                  : 'text-foreground hover:text-rose-500'
+              )} />
+            </motion.button>
+            <motion.button 
+              whileTap={{ scale: 0.9 }}
+              className="text-foreground hover:text-muted-foreground transition-colors"
+            >
+              <MessageCircle className="h-6 w-6" />
+            </motion.button>
+            <motion.button 
+              whileTap={{ scale: 0.9 }}
+              className="text-foreground hover:text-muted-foreground transition-colors"
+            >
+              <Send className="h-6 w-6" />
+            </motion.button>
           </div>
-          <span className="text-xs">{createdAt}</span>
+          <motion.button 
+            whileTap={{ scale: 0.9 }}
+            onClick={handleLibraryToggle}
+            className={cn(
+              'transition-colors',
+              inLibrary ? 'text-foreground' : 'text-foreground hover:text-muted-foreground'
+            )}
+          >
+            <BookOpen className={cn('h-6 w-6', inLibrary && 'fill-current')} />
+          </motion.button>
         </div>
+
+        {/* Like count */}
+        <motion.p 
+          key={localLikes}
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="font-semibold text-sm text-foreground"
+        >
+          {formatCount(localLikes + heartCount)} likes
+        </motion.p>
+
+        {/* Content */}
+        <div className="mt-1">
+          <p className="text-sm text-foreground">
+            <span className="font-semibold mr-1">{author.handle}</span>
+            {renderContent()}
+          </p>
+        </div>
+
+        {/* Tags as hashtags */}
+        {tags.length > 0 && !content.includes('#') && (
+          <div className="flex flex-wrap gap-1 mt-2">
+            {tags.map((tag) => (
+              <Hashtag key={tag} tag={tag} size="sm" />
+            ))}
+          </div>
+        )}
+
+        {/* Comments link */}
+        {commentCount > 0 && (
+          <button className="text-sm text-muted-foreground mt-1 hover:text-foreground transition-colors">
+            View all {formatCount(commentCount)} comments
+          </button>
+        )}
       </div>
     </Card>
   );
