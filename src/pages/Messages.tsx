@@ -107,10 +107,11 @@ function TypingIndicator() {
         <motion.div
           key={i}
           className="w-2 h-2 rounded-full bg-muted-foreground/50"
-          animate={{ y: [0, -6, 0] }}
+          animate={{ y: -6 }}
           transition={{
-            duration: 0.5,
+            duration: 0.25,
             repeat: Infinity,
+            repeatType: 'reverse',
             delay: i * 0.15,
             ease: 'easeInOut'
           }}
@@ -131,10 +132,8 @@ function OnlineIndicator({ size = 'default', pulse = false }: { size?: 'small' |
       transition={springPop}
     >
       {pulse && (
-        <motion.span
-          className="absolute inset-0 rounded-full bg-emerald-500"
-          animate={{ scale: [1, 2.5], opacity: [0.6, 0] }}
-          transition={{ duration: 1, repeat: Infinity }}
+        <span
+          className="absolute inset-0 rounded-full bg-emerald-500/60 animate-ping"
         />
       )}
     </motion.div>
@@ -542,8 +541,8 @@ export default function Messages() {
               >
                 <motion.div 
                   className="relative"
-                  animate={conversation.isNew ? { scale: [1, 1.1, 1] } : {}}
-                  transition={{ ...springPop, repeat: conversation.isNew ? 2 : 0 }}
+                  animate={conversation.isNew ? { scale: 1.05 } : {}}
+                  transition={conversation.isNew ? { duration: 0.25, repeat: 2, repeatType: 'reverse', ease: 'easeInOut' } : {}}
                 >
                   <Avatar className={cn(
                     "h-[58px] w-[58px] shadow-sm",
