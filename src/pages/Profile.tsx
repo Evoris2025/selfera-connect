@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { MapPin, Globe, Calendar, Settings, Lock, Grid3X3, BookOpen, Play, MessageCircle, Heart, Users } from 'lucide-react';
+import { Settings, Lock, Play } from 'lucide-react';
 import { DiscoverRow } from '@/components/DiscoverRow';
 import { RearrangeableGrid } from '@/components/profile/RearrangeableGrid';
+import { RearrangeableTabBar } from '@/components/profile/RearrangeableTabBar';
 import { motion } from 'framer-motion';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -201,36 +201,26 @@ export default function Profile() {
         {/* Discover People Row */}
         <DiscoverRow />
 
-        {/* Content Tabs - Instagram Grid Style */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="w-full rounded-none bg-transparent border-y border-border h-12 grid grid-cols-3">
-            <TabsTrigger 
-              value="posts" 
-              className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-foreground data-[state=active]:bg-transparent h-full"
-            >
-              <Grid3X3 className="h-5 w-5" />
-            </TabsTrigger>
-            <TabsTrigger 
-              value="reels" 
-              className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-foreground data-[state=active]:bg-transparent h-full"
-            >
-              <Play className="h-5 w-5" />
-            </TabsTrigger>
-            <TabsTrigger 
-              value="library" 
-              className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-foreground data-[state=active]:bg-transparent h-full"
-            >
-              <BookOpen className="h-5 w-5" />
-            </TabsTrigger>
-          </TabsList>
+        {/* Content Tabs - Rearrangeable */}
+        <RearrangeableTabBar
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          isOwnProfile={isOwnProfile}
+        />
 
-          {/* Posts Grid */}
-          <TabsContent value="posts" className="mt-0">
+        {/* Tab Content */}
+        <div className="mt-0">
+          {activeTab === 'posts' && (
             <RearrangeableGrid posts={mockPosts} isOwnProfile={isOwnProfile} />
-          </TabsContent>
+          )}
 
-          {/* Reels Grid */}
-          <TabsContent value="reels" className="mt-0">
+          {activeTab === 'expressions' && (
+            <div className="text-center py-12 text-muted-foreground text-sm">
+              {isOwnProfile ? 'Your expressions will appear here' : 'No expressions yet'}
+            </div>
+          )}
+
+          {activeTab === 'reels' && (
             <div className="grid grid-cols-3 gap-0.5">
               {mockReels.map((reel, index) => (
                 <motion.div
@@ -252,15 +242,20 @@ export default function Profile() {
                 </motion.div>
               ))}
             </div>
-          </TabsContent>
+          )}
 
-          {/* Library */}
-          <TabsContent value="library" className="mt-0 p-4">
+          {activeTab === 'community' && (
+            <div className="text-center py-12 text-muted-foreground text-sm">
+              {isOwnProfile ? 'Communities you\'ve joined' : 'No communities yet'}
+            </div>
+          )}
+
+          {activeTab === 'library' && (
             <div className="text-center py-12 text-muted-foreground text-sm">
               {isOwnProfile ? 'Your mental health & wellbeing library' : 'Nothing in library yet'}
             </div>
-          </TabsContent>
-        </Tabs>
+          )}
+        </div>
       </div>
     </AppLayout>
   );
