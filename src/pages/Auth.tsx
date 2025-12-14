@@ -145,11 +145,14 @@ export default function Auth() {
             className="w-full max-w-md"
           >
             {/* Logo */}
-            <div className="flex items-center gap-2 mb-8">
-              <img src={logo} alt="SelfERA" className="w-11 h-11 rounded-xl object-cover" />
-              <span className="flex items-baseline">
-                <span className="text-sm font-medium text-muted-foreground tracking-tight">Self</span>
-                <span className="text-3xl font-bold gradient-brand-text tracking-[0.15em]">ERA</span>
+            <div className="flex items-center gap-3 mb-8 group">
+              <div className="relative">
+                <img src={logo} alt="SelfERA" className="w-12 h-12 rounded-2xl object-cover ring-1 ring-foreground/10" />
+                <div className="absolute inset-0 rounded-2xl bg-primary/20 blur-xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
+              <span className="font-logo text-2xl tracking-[0.2em] uppercase logo-glow">
+                <span className="font-light text-foreground/50">SELF</span>
+                <span className="font-semibold gradient-brand-text">ERA</span>
               </span>
             </div>
 

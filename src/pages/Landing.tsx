@@ -45,11 +45,14 @@ export default function Landing() {
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <img src={logo} alt="SelfERA" className="w-10 h-10 rounded-xl object-cover" />
-            <span className="flex items-baseline">
-              <span className="text-xs font-medium text-muted-foreground tracking-tight">Self</span>
-              <span className="text-2xl font-bold gradient-brand-text tracking-[0.15em]">ERA</span>
+          <div className="flex items-center gap-3 group">
+            <div className="relative">
+              <img src={logo} alt="SelfERA" className="w-11 h-11 rounded-2xl object-cover ring-1 ring-foreground/10" />
+              <div className="absolute inset-0 rounded-2xl bg-primary/20 blur-xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </div>
+            <span className="font-logo text-xl tracking-[0.2em] uppercase logo-glow">
+              <span className="font-light text-foreground/50">SELF</span>
+              <span className="font-semibold gradient-brand-text">ERA</span>
             </span>
           </div>
 
@@ -175,8 +178,11 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
-              <img src={logo} alt="SelfERA" className="w-10 h-10 rounded-lg object-cover" />
-              <span className="font-semibold text-foreground tracking-wide">SelfERA</span>
+              <img src={logo} alt="SelfERA" className="w-10 h-10 rounded-2xl object-cover ring-1 ring-foreground/10" />
+              <span className="font-logo text-lg tracking-[0.2em] uppercase">
+                <span className="font-light text-foreground/50">SELF</span>
+                <span className="font-semibold gradient-brand-text">ERA</span>
+              </span>
             </div>
 
             <nav className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
