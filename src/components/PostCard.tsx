@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MoreHorizontal, Flag, Ban, VolumeX, BookOpen, Share2, MessageCircle } from 'lucide-react';
+import { MoreHorizontal, Flag, Ban, VolumeX, BookOpen, Share2, MessageCircle, Heart } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -55,8 +55,37 @@ export function PostCard({
   const { t } = useTranslation();
   const { user } = useAuth();
   const [showContent, setShowContent] = useState(!hasContentWarning);
+  const [showHeartOverlay, setShowHeartOverlay] = useState(false);
+  const lastTapRef = useRef<number>(0);
   const { heartCount, hasReacted, toggleReaction } = useReactions(id);
   const { inLibrary, toggleLibrary } = useLibrary(id);
+
+  const handleDoubleTap = async () => {
+    const now = Date.now();
+    const DOUBLE_TAP_DELAY = 300;
+    
+    if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
+      // Double tap detected
+      if (!user) {
+        toast({
+          title: t('auth.required'),
+          description: t('auth.loginToReact'),
+          variant: 'destructive',
+        });
+        return;
+      }
+      
+      // Show heart overlay animation
+      setShowHeartOverlay(true);
+      setTimeout(() => setShowHeartOverlay(false), 800);
+      
+      // Only add reaction if not already reacted
+      if (!hasReacted) {
+        await toggleReaction();
+      }
+    }
+    lastTapRef.current = now;
+  };
 
   const handleReaction = async () => {
     if (!user) {
@@ -160,11 +189,21 @@ export function PostCard({
               </div>
             </div>
           ) : media.type === 'image' ? (
-            <img 
-              src={media.url} 
-              alt="" 
-              className="w-full aspect-video object-cover"
-            />
+            <div 
+              className="relative cursor-pointer select-none"
+              onClick={handleDoubleTap}
+            >
+              <img 
+                src={media.url} 
+                alt="" 
+                className="w-full aspect-video object-cover"
+              />
+              {showHeartOverlay && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <Heart className="h-24 w-24 fill-white text-white drop-shadow-lg animate-heart-burst" />
+                </div>
+              )}
+            </div>
           ) : (
             <div className="aspect-video bg-secondary flex items-center justify-center">
               <video 
