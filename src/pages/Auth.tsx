@@ -145,9 +145,9 @@ export default function Auth() {
             className="w-full max-w-md"
           >
             {/* Logo */}
-            <div className="flex items-center gap-2 mb-8">
+            <div className="flex items-center gap-3 mb-8">
               <img src={logo} alt="SelfERA" className="w-12 h-12 rounded-xl object-cover" />
-              <span className="text-2xl font-bold gradient-brand-text">
+              <span className="text-2xl font-bold gradient-brand-text tracking-wide">
                 SelfERA
               </span>
             </div>
