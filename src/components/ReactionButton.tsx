@@ -13,27 +13,34 @@ export function ReactionButton({ count, active, onClick }: ReactionButtonProps) 
   const [isAnimating, setIsAnimating] = useState(false);
 
   const handleClick = () => {
-    setIsAnimating(true);
+    if (!active) {
+      setIsAnimating(true);
+      setTimeout(() => setIsAnimating(false), 400);
+    }
     onClick?.();
-    setTimeout(() => setIsAnimating(false), 300);
   };
 
   return (
     <button
       onClick={handleClick}
       className={cn(
-        'flex items-center gap-1.5 text-sm transition-all duration-200',
-        active ? 'text-rose-500' : 'text-muted-foreground hover:text-rose-500'
+        'flex items-center gap-1.5 text-sm transition-colors duration-200',
+        active ? 'text-rose-500' : 'text-muted-foreground hover:text-rose-400'
       )}
     >
       <Heart 
         className={cn(
-          'h-4 w-4 transition-transform duration-300',
-          active && 'fill-current',
-          isAnimating && 'scale-125'
+          'h-5 w-5 transition-colors duration-150',
+          active && 'fill-rose-500 text-rose-500',
+          isAnimating && 'animate-heart-pop'
         )} 
       />
-      {count > 0 && <span className="text-xs">{count}</span>}
+      <span className={cn(
+        'text-sm tabular-nums',
+        active ? 'text-rose-500' : 'text-muted-foreground'
+      )}>
+        {count}
+      </span>
     </button>
   );
 }
