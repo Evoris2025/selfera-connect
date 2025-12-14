@@ -58,9 +58,9 @@ export const DraggableGridItem = memo(function DraggableGridItem({
       onLongPress();
       // Haptic-like visual feedback
       if (navigator.vibrate) {
-        navigator.vibrate(50);
+        navigator.vibrate(100);
       }
-    }, 400);
+    }, 5000); // 5 seconds
   };
 
   const handleMouseUp = () => {
@@ -102,8 +102,8 @@ export const DraggableGridItem = memo(function DraggableGridItem({
       }}
       className={cn(
         'aspect-square relative group cursor-pointer overflow-hidden',
-        isRearrangeMode && 'cursor-grab active:cursor-grabbing',
-        isDragging && 'shadow-2xl ring-2 ring-primary',
+        isRearrangeMode && 'cursor-grab active:cursor-grabbing animate-jiggle',
+        isDragging && 'shadow-2xl ring-2 ring-primary animate-none',
         isBeingDraggedOver && 'ring-2 ring-primary/50'
       )}
       onMouseDown={handleMouseDown}
