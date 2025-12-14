@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { MapPin, Globe, Calendar, Settings, Lock, Grid3X3, Bookmark, Play, MessageCircle, Heart } from 'lucide-react';
+import { DiscoverRow } from '@/components/DiscoverRow';
 import { motion } from 'framer-motion';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
@@ -152,7 +153,7 @@ export default function Profile() {
             </a>
           )}
 
-          {/* Action Buttons */}
+        {/* Action Buttons */}
           <div className="flex gap-2 mt-4">
             {isOwnProfile ? (
               <>
@@ -188,6 +189,9 @@ export default function Profile() {
             )}
           </div>
         </div>
+
+        {/* Discover People Row */}
+        <DiscoverRow />
 
         {/* Content Tabs - Instagram Grid Style */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
