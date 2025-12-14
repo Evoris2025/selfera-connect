@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
@@ -8,14 +8,24 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { toast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { z } from 'zod';
+
+const authSchema = z.object({
+  email: z.string().email('Please enter a valid email'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+});
 
 export default function Auth() {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { user, signUp, signIn } = useAuth();
+  
   const [isLogin, setIsLogin] = useState(searchParams.get('mode') !== 'signup');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
   const [formData, setFormData] = useState({
     email: '',
@@ -23,19 +33,94 @@ export default function Auth() {
     confirmPassword: '',
   });
 
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate('/feed');
+    }
+  }, [user, navigate]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({});
+    
+    // Validate form
+    const result = authSchema.safeParse(formData);
+    if (!result.success) {
+      const fieldErrors: { email?: string; password?: string } = {};
+      result.error.errors.forEach((err) => {
+        if (err.path[0] === 'email') fieldErrors.email = err.message;
+        if (err.path[0] === 'password') fieldErrors.password = err.message;
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+
+    // Check password confirmation for signup
+    if (!isLogin && formData.password !== formData.confirmPassword) {
+      setErrors({ password: 'Passwords do not match' });
+      return;
+    }
+
     setLoading(true);
 
-    // Simulate auth - will be replaced with real auth
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      if (isLogin) {
+        const { error } = await signIn(formData.email, formData.password);
+        if (error) {
+          if (error.message.includes('Invalid login credentials')) {
+            toast({
+              title: 'Login failed',
+              description: 'Invalid email or password. Please try again.',
+              variant: 'destructive',
+            });
+          } else {
+            toast({
+              title: 'Error',
+              description: error.message,
+              variant: 'destructive',
+            });
+          }
+        } else {
+          toast({
+            title: 'Welcome back!',
+            description: 'You have been logged in.',
+          });
+          navigate('/feed');
+        }
+      } else {
+        const { error } = await signUp(formData.email, formData.password);
+        if (error) {
+          if (error.message.includes('already registered')) {
+            toast({
+              title: 'Account exists',
+              description: 'This email is already registered. Try logging in instead.',
+              variant: 'destructive',
+            });
+          } else {
+            toast({
+              title: 'Error',
+              description: error.message,
+              variant: 'destructive',
+            });
+          }
+        } else {
+          toast({
+            title: 'Account created!',
+            description: 'Welcome to SelfERA.',
+          });
+          navigate('/feed');
+        }
+      }
+    } catch (error) {
       toast({
-        title: isLogin ? 'Welcome back!' : 'Account created!',
-        description: isLogin ? 'You have been logged in.' : 'Please complete your profile.',
+        title: 'Error',
+        description: 'An unexpected error occurred. Please try again.',
+        variant: 'destructive',
       });
-      navigate('/feed');
-    }, 1000);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -60,10 +145,10 @@ export default function Auth() {
           >
             {/* Logo */}
             <div className="flex items-center gap-2 mb-8">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[hsl(217,91%,60%)] via-[hsl(270,70%,60%)] to-[hsl(25,95%,53%)] flex items-center justify-center">
-                <span className="text-xl font-bold text-foreground">S</span>
+              <div className="w-10 h-10 rounded-xl gradient-brand flex items-center justify-center">
+                <span className="text-xl font-bold text-white">S</span>
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-[hsl(217,91%,60%)] via-[hsl(270,70%,60%)] to-[hsl(25,95%,53%)] bg-clip-text text-transparent">
+              <span className="text-2xl font-bold gradient-brand-text">
                 SelfERA
               </span>
             </div>
@@ -93,6 +178,9 @@ export default function Auth() {
                   required
                   className="h-12"
                 />
+                {errors.email && (
+                  <p className="text-sm text-destructive">{errors.email}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -115,6 +203,9 @@ export default function Auth() {
                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
                 </div>
+                {errors.password && (
+                  <p className="text-sm text-destructive">{errors.password}</p>
+                )}
               </div>
 
               {!isLogin && (
@@ -153,10 +244,10 @@ export default function Auth() {
       </div>
 
       {/* Right Panel - Visual */}
-      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-[hsl(217,91%,60%)]/20 via-[hsl(270,70%,60%)]/20 to-[hsl(25,95%,53%)]/20 items-center justify-center p-12">
+      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-primary/20 via-accent/20 to-crisis/20 items-center justify-center p-12">
         <div className="max-w-md text-center">
-          <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-[hsl(217,91%,60%)] via-[hsl(270,70%,60%)] to-[hsl(25,95%,53%)] flex items-center justify-center mx-auto mb-8">
-            <span className="text-4xl font-bold text-foreground">S</span>
+          <div className="w-24 h-24 rounded-3xl gradient-brand flex items-center justify-center mx-auto mb-8">
+            <span className="text-4xl font-bold text-white">S</span>
           </div>
           <h2 className="text-3xl font-bold text-foreground mb-4">
             {t('landing.hero.title')}
