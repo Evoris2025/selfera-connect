@@ -46,38 +46,37 @@ export const DraggableGridItem = memo(function DraggableGridItem({
   onTouchMove,
   onTouchEnd,
 }: DraggableGridItemProps) {
-  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
-  const isLongPressing = useRef(false);
+  const tapCount = useRef(0);
+  const tapTimer = useRef<NodeJS.Timeout | null>(null);
 
-  const handleMouseDown = () => {
+  const handleTap = () => {
     if (isRearrangeMode) return;
     
-    isLongPressing.current = false;
-    longPressTimer.current = setTimeout(() => {
-      isLongPressing.current = true;
+    tapCount.current += 1;
+    
+    // Reset tap count after 500ms of no taps
+    if (tapTimer.current) {
+      clearTimeout(tapTimer.current);
+    }
+    
+    if (tapCount.current >= 3) {
+      tapCount.current = 0;
       onLongPress();
-      // Haptic-like visual feedback
+      // Haptic feedback
       if (navigator.vibrate) {
         navigator.vibrate(100);
       }
-    }, 5000); // 5 seconds
-  };
-
-  const handleMouseUp = () => {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
+    } else {
+      tapTimer.current = setTimeout(() => {
+        tapCount.current = 0;
+      }, 500);
     }
-  };
-
-  const handleMouseLeave = () => {
-    handleMouseUp();
   };
 
   useEffect(() => {
     return () => {
-      if (longPressTimer.current) {
-        clearTimeout(longPressTimer.current);
+      if (tapTimer.current) {
+        clearTimeout(tapTimer.current);
       }
     };
   }, []);
@@ -106,20 +105,12 @@ export const DraggableGridItem = memo(function DraggableGridItem({
         isDragging && 'shadow-2xl ring-2 ring-primary animate-none',
         isBeingDraggedOver && 'ring-2 ring-primary/50'
       )}
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseLeave}
+      onClick={handleTap}
       onTouchStart={(e) => {
-        if (!isRearrangeMode) {
-          handleMouseDown();
-        }
         onTouchStart(e, index);
       }}
       onTouchMove={onTouchMove}
-      onTouchEnd={() => {
-        handleMouseUp();
-        onTouchEnd();
-      }}
+      onTouchEnd={onTouchEnd}
       draggable={isRearrangeMode}
       onDragStart={() => {
         if (isRearrangeMode) {
