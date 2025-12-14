@@ -877,6 +877,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_community_members: {
+        Row: {
+          created_at: string
+          id: string
+          member_user_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          member_user_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          member_user_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_community_members_member_user_id_fkey"
+            columns: ["member_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_community_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_profile_grid_order: {
         Row: {
           id: string
