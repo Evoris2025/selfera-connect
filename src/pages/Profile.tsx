@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { MapPin, Globe, Calendar, Settings, Lock, Grid3X3, BookOpen, Play, MessageCircle, Heart, Users } from 'lucide-react';
 import { DiscoverRow } from '@/components/DiscoverRow';
+import { RearrangeableGrid } from '@/components/profile/RearrangeableGrid';
 import { motion } from 'framer-motion';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
@@ -225,39 +226,7 @@ export default function Profile() {
 
           {/* Posts Grid */}
           <TabsContent value="posts" className="mt-0">
-            <div className="grid grid-cols-3 gap-0.5">
-              {mockPosts.map((post, index) => (
-                <motion.div
-                  key={post.id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="aspect-square relative group cursor-pointer overflow-hidden"
-                >
-                  <img 
-                    src={post.thumbnail} 
-                    alt="" 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  {post.isVideo && (
-                    <div className="absolute top-2 right-2">
-                      <Play className="h-4 w-4 text-white drop-shadow-lg fill-current" />
-                    </div>
-                  )}
-                  {/* Hover overlay with stats */}
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
-                    <div className="flex items-center gap-1 text-white font-semibold">
-                      <Heart className="h-5 w-5 fill-current" />
-                      {formatCount(post.likes)}
-                    </div>
-                    <div className="flex items-center gap-1 text-white font-semibold">
-                      <MessageCircle className="h-5 w-5 fill-current" />
-                      {formatCount(post.comments)}
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+            <RearrangeableGrid posts={mockPosts} isOwnProfile={isOwnProfile} />
           </TabsContent>
 
           {/* Reels Grid */}

@@ -721,6 +721,35 @@ export type Database = {
         }
         Relationships: []
       }
+      user_profile_grid_order: {
+        Row: {
+          id: string
+          ordered_post_ids: string[]
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          ordered_post_ids?: string[]
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          ordered_post_ids?: string[]
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_profile_grid_order_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string | null
