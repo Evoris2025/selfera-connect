@@ -166,6 +166,10 @@ export default {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
+        "jiggle": {
+          "0%, 100%": { transform: "rotate(-1deg)" },
+          "50%": { transform: "rotate(1deg)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -185,6 +189,7 @@ export default {
         "swipe-left": "swipe-left 0.3s ease-out forwards",
         "swipe-right": "swipe-right 0.3s ease-out forwards",
         "shimmer": "shimmer 2s linear infinite",
+        "jiggle": "jiggle 0.15s ease-in-out infinite",
       },
       boxShadow: {
         'glow': '0 0 40px -10px hsl(var(--primary) / 0.4)',
