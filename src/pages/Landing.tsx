@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Heart, Shield, Users, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import logo from '@/assets/logo.jpg';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -45,10 +46,8 @@ export default function Landing() {
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[hsl(217,91%,60%)] via-[hsl(270,70%,60%)] to-[hsl(25,95%,53%)] flex items-center justify-center">
-              <span className="text-lg font-bold text-foreground">S</span>
-            </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-[hsl(217,91%,60%)] via-[hsl(270,70%,60%)] to-[hsl(25,95%,53%)] bg-clip-text text-transparent">
+            <img src={logo} alt="SelfERA" className="w-9 h-9 rounded-xl object-cover" />
+            <span className="text-xl font-bold gradient-brand-text">
               SelfERA
             </span>
           </div>
@@ -130,7 +129,7 @@ export default function Landing() {
                 variants={fadeInUp}
                 className="bg-card border border-border rounded-2xl p-8 text-center hover:border-primary/30 transition-colors"
               >
-                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[hsl(217,91%,60%)]/20 to-[hsl(270,70%,60%)]/20 flex items-center justify-center mx-auto mb-6">
+                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mx-auto mb-6">
                   <feature.icon className="h-7 w-7 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold text-foreground mb-3">{feature.title}</h3>
@@ -152,10 +151,10 @@ export default function Landing() {
         >
           <motion.div
             variants={fadeInUp}
-            className="bg-gradient-to-br from-[hsl(25,95%,53%)]/10 to-[hsl(25,95%,53%)]/5 border border-[hsl(25,95%,53%)]/20 rounded-2xl p-8 md:p-12 text-center"
+            className="bg-gradient-to-br from-crisis/10 to-crisis/5 border border-crisis/20 rounded-2xl p-8 md:p-12 text-center"
           >
-            <div className="w-16 h-16 rounded-2xl bg-[hsl(25,95%,53%)]/20 flex items-center justify-center mx-auto mb-6">
-              <Phone className="h-8 w-8 text-[hsl(25,95%,53%)]" />
+            <div className="w-16 h-16 rounded-2xl bg-crisis/20 flex items-center justify-center mx-auto mb-6">
+              <Phone className="h-8 w-8 text-crisis" />
             </div>
             <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
               {t('landing.crisis.title')}
@@ -175,9 +174,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[hsl(217,91%,60%)] via-[hsl(270,70%,60%)] to-[hsl(25,95%,53%)] flex items-center justify-center">
-                <span className="text-sm font-bold text-foreground">S</span>
-              </div>
+              <img src={logo} alt="SelfERA" className="w-8 h-8 rounded-lg object-cover" />
               <span className="font-semibold text-foreground">SelfERA</span>
             </div>
 

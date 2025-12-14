@@ -7,15 +7,14 @@ import {
   User, 
   Heart,
   Settings,
-  BookOpen,
-  HelpCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CrisisWidget } from './CrisisWidget';
+import logo from '@/assets/logo.jpg';
 
 const mainNavItems = [
   { icon: Home, label: 'nav.home', href: '/feed' },
-  { icon: Search, label: 'nav.explore', href: '/explore' },
+  { icon: Search, label: 'nav.explore', href: '/search' },
   { icon: Heart, label: 'nav.directory', href: '/directory' },
   { icon: Bell, label: 'nav.notifications', href: '/notifications' },
   { icon: User, label: 'nav.profile', href: '/profile' },
@@ -34,9 +33,7 @@ export function DesktopSidebar() {
       <div className="flex-1">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 mb-8 px-3">
-          <div className="w-8 h-8 rounded-lg gradient-brand flex items-center justify-center">
-            <span className="text-lg font-bold text-foreground">S</span>
-          </div>
+          <img src={logo} alt="SelfERA" className="w-8 h-8 rounded-lg object-cover" />
           <span className="text-xl font-bold gradient-brand-text">SelfERA</span>
         </Link>
 
