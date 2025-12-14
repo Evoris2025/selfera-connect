@@ -5,7 +5,7 @@ import { ComposerBar } from '@/components/ComposerBar';
 import { ExpressionsRow } from '@/components/ExpressionsRow';
 import { PostCard } from '@/components/PostCard';
 import { PostCardSkeleton } from '@/components/SkeletonLoader';
-import { toast } from '@/hooks/use-toast';
+import { CreatorStudio } from '@/components/creator';
 
 // Mock data for demo
 const mockPosts = [
@@ -53,32 +53,35 @@ const mockPosts = [
   },
 ];
 
+type CreatorMode = 'expression' | 'post' | 'image' | 'video' | null;
+
 export default function Feed() {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
+  const [creatorOpen, setCreatorOpen] = useState(false);
+  const [creatorMode, setCreatorMode] = useState<CreatorMode>(null);
 
   const handleOpenComposer = (mode?: 'text' | 'video' | 'image' | 'reel') => {
-    // TODO: Open create post modal
-    toast({
-      title: 'Create Post',
-      description: `Opening composer in ${mode || 'text'} mode...`,
-    });
+    const modeMap: Record<string, CreatorMode> = {
+      text: 'post',
+      video: 'video',
+      image: 'image',
+      reel: 'expression',
+    };
+    setCreatorMode(mode ? modeMap[mode] : null);
+    setCreatorOpen(true);
   };
 
   const handleCreatePost = () => {
-    handleOpenComposer('text');
+    setCreatorMode(null);
+    setCreatorOpen(true);
   };
 
   return (
     <AppLayout onCreatePost={handleCreatePost}>
       <div className="flex flex-col gap-3 p-3">
-        {/* Top Composer Bar */}
         <ComposerBar onOpenComposer={handleOpenComposer} />
-
-        {/* Expressions Row */}
         <ExpressionsRow />
-
-        {/* Posts Feed */}
         <div className="space-y-3">
           {loading ? (
             <>
@@ -91,6 +94,12 @@ export default function Feed() {
           )}
         </div>
       </div>
+
+      <CreatorStudio
+        open={creatorOpen}
+        onOpenChange={setCreatorOpen}
+        initialMode={creatorMode}
+      />
     </AppLayout>
   );
 }
