@@ -250,6 +250,7 @@ export type Database = {
             | Database["public"]["Enums"]["moderation_status"]
             | null
           thumbnail_url: string | null
+          tone: Database["public"]["Enums"]["emotional_tone"] | null
           updated_at: string | null
           visibility: string | null
         }
@@ -270,6 +271,7 @@ export type Database = {
             | Database["public"]["Enums"]["moderation_status"]
             | null
           thumbnail_url?: string | null
+          tone?: Database["public"]["Enums"]["emotional_tone"] | null
           updated_at?: string | null
           visibility?: string | null
         }
@@ -290,6 +292,7 @@ export type Database = {
             | Database["public"]["Enums"]["moderation_status"]
             | null
           thumbnail_url?: string | null
+          tone?: Database["public"]["Enums"]["emotional_tone"] | null
           updated_at?: string | null
           visibility?: string | null
         }
@@ -623,6 +626,7 @@ export type Database = {
     Enums: {
       app_role: "admin" | "moderator" | "user"
       content_warning_type: "sensitive" | "triggering" | "graphic" | "other"
+      emotional_tone: "support" | "steady" | "inspiration" | "progress"
       follow_status: "requested" | "approved"
       moderation_status: "published" | "limited" | "removed"
       reaction_type: "heart" | "hug"
@@ -758,6 +762,7 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "moderator", "user"],
       content_warning_type: ["sensitive", "triggering", "graphic", "other"],
+      emotional_tone: ["support", "steady", "inspiration", "progress"],
       follow_status: ["requested", "approved"],
       moderation_status: ["published", "limited", "removed"],
       reaction_type: ["heart", "hug"],
