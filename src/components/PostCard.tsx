@@ -15,6 +15,7 @@ import {
 import { ReactionButton } from './ReactionButton';
 import { VerifiedBadge } from './VerifiedBadge';
 import { useReactions } from '@/hooks/useReactions';
+import { useLibrary } from '@/hooks/useLibrary';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
@@ -54,8 +55,8 @@ export function PostCard({
   const { t } = useTranslation();
   const { user } = useAuth();
   const [showContent, setShowContent] = useState(!hasContentWarning);
-  const [inLibrary, setInLibrary] = useState(false);
   const { heartCount, hasReacted, toggleReaction } = useReactions(id);
+  const { inLibrary, toggleLibrary } = useLibrary(id);
 
   const handleReaction = async () => {
     if (!user) {
@@ -69,8 +70,16 @@ export function PostCard({
     await toggleReaction();
   };
 
-  const handleLibraryToggle = () => {
-    setInLibrary(!inLibrary);
+  const handleLibraryToggle = async () => {
+    if (!user) {
+      toast({
+        title: t('auth.required'),
+        description: t('auth.loginToSave'),
+        variant: 'destructive',
+      });
+      return;
+    }
+    await toggleLibrary();
     toast({
       title: inLibrary ? t('library.removed') : t('library.added'),
       description: inLibrary ? t('library.removedDesc') : t('library.addedDesc'),
