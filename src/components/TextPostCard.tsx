@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MoreHorizontal, Flag, Ban, VolumeX, BookOpen, Share2, MessageCircle, Heart, Quote } from 'lucide-react';
+import { MoreHorizontal, Flag, Ban, VolumeX, BookOpen, Quote } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -12,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ReactionButton } from './ReactionButton';
+import { HeartButton, CommentButton, ShareButton, CommentSheet } from './interactions';
 import { VerifiedBadge } from './VerifiedBadge';
 import { useReactions } from '@/hooks/useReactions';
 import { useLibrary } from '@/hooks/useLibrary';
@@ -55,6 +56,7 @@ export function TextPostCard({
   const { user } = useAuth();
   const { heartCount, hasReacted, toggleReaction } = useReactions(id);
   const { inLibrary, toggleLibrary } = useLibrary(id);
+  const [showCommentSheet, setShowCommentSheet] = useState(false);
 
   const handleReaction = async () => {
     if (!user) {
@@ -155,30 +157,38 @@ export function TextPostCard({
 
         {/* Actions Row */}
         <div className="flex items-center gap-4 mt-4 text-muted-foreground">
-          <ReactionButton 
-            type="heart" 
-            count={heartCount} 
+          <HeartButton 
+            count={heartCount}
             active={hasReacted}
             onClick={handleReaction}
+            size="sm"
           />
-          <button className="flex items-center gap-1.5 hover:text-foreground transition-colors">
-            <MessageCircle className="h-4 w-4" />
-            <span className="text-sm">{commentCount}</span>
-          </button>
-          <button 
+          <CommentButton 
+            count={commentCount}
+            onClick={() => setShowCommentSheet(true)}
+            size="sm"
+          />
+          <motion.button 
+            whileTap={{ scale: 0.9 }}
             onClick={handleLibraryToggle}
             className={cn(
               'flex items-center gap-1.5 transition-colors',
               inLibrary ? 'text-primary' : 'hover:text-foreground'
             )}
           >
-            <BookOpen className={cn('h-4 w-4', inLibrary && 'fill-current')} />
-          </button>
-          <button className="flex items-center gap-1.5 hover:text-foreground transition-colors">
-            <Share2 className="h-4 w-4" />
-          </button>
+            <BookOpen className={cn('h-5 w-5', inLibrary && 'fill-current')} />
+          </motion.button>
+          <ShareButton postId={id} size="sm" />
         </div>
       </div>
+
+      {/* Comment Sheet */}
+      <CommentSheet
+        open={showCommentSheet}
+        onOpenChange={setShowCommentSheet}
+        postId={id}
+        commentCount={commentCount}
+      />
     </Card>
   );
 }

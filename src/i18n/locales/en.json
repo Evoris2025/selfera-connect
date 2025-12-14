@@ -115,7 +115,17 @@
   "comments": {
     "title": "Comments",
     "add": "Add a comment...",
-    "empty": "No comments yet. Start the conversation."
+    "empty": "No comments yet. Start the conversation.",
+    "placeholder": "Add a comment..."
+  },
+  "share": {
+    "title": "Share",
+    "copyLink": "Copy link",
+    "sendMessage": "Send",
+    "shareToCommunity": "Community",
+    "linkCopied": "Link copied",
+    "linkCopiedDesc": "Post link copied to clipboard",
+    "featureComingSoon": "This feature is coming soon"
   },
   "profile": {
     "posts": "Posts",
