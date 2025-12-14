@@ -14,10 +14,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { ReactionButton } from './ReactionButton';
 import { VerifiedBadge } from './VerifiedBadge';
+import { useReactions } from '@/hooks/useReactions';
+import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
 
 interface PostCardProps {
+  id: string;
   author: {
     name: string;
     handle: string;
@@ -31,9 +34,6 @@ interface PostCardProps {
     thumbnail?: string;
   };
   tags: string[];
-  reactions: {
-    heart: number;
-  };
   commentCount: number;
   createdAt: string;
   hasContentWarning?: boolean;
@@ -41,23 +41,32 @@ interface PostCardProps {
 }
 
 export function PostCard({
+  id,
   author,
   content,
   media,
   tags,
-  reactions,
   commentCount,
   createdAt,
   hasContentWarning,
   contentWarningType,
 }: PostCardProps) {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [showContent, setShowContent] = useState(!hasContentWarning);
-  const [activeReaction, setActiveReaction] = useState<string | null>(null);
   const [inLibrary, setInLibrary] = useState(false);
+  const { heartCount, hasReacted, toggleReaction } = useReactions(id);
 
-  const handleReaction = (type: string) => {
-    setActiveReaction(activeReaction === type ? null : type);
+  const handleReaction = async () => {
+    if (!user) {
+      toast({
+        title: t('auth.required'),
+        description: t('auth.loginToReact'),
+        variant: 'destructive',
+      });
+      return;
+    }
+    await toggleReaction();
   };
 
   const handleLibraryToggle = () => {
@@ -166,9 +175,9 @@ export function PostCard({
           <div className="flex items-center gap-4">
             <ReactionButton 
               type="heart" 
-              count={reactions.heart} 
-              active={activeReaction === 'heart'}
-              onClick={() => handleReaction('heart')}
+              count={heartCount} 
+              active={hasReacted}
+              onClick={handleReaction}
             />
             <button className="flex items-center gap-1.5 hover:text-foreground transition-colors">
               <MessageCircle className="h-4 w-4" />

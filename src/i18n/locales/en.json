@@ -57,7 +57,9 @@
     "noAccount": "Don't have an account?",
     "hasAccount": "Already have an account?",
     "orContinueWith": "Or continue with",
-    "termsAgreement": "By continuing, you agree to our Terms and Privacy Policy"
+    "termsAgreement": "By continuing, you agree to our Terms and Privacy Policy",
+    "required": "Login required",
+    "loginToReact": "Please log in to react to posts"
   },
   "onboarding": {
     "welcome": "Welcome to SELFERA",
