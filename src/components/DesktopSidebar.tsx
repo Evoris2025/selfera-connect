@@ -34,7 +34,7 @@ export function DesktopSidebar() {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-1 mb-8 px-3">
           <img src={logo} alt="SelfERA" className="w-10 h-10 rounded-xl object-cover" />
-          <span className="text-xl font-bold gradient-brand-text"><span className="tracking-[0.02em]">Self</span><span className="tracking-[0.04em]">ERA</span></span>
+          <span className="font-bold gradient-brand-text"><span className="text-base tracking-wider">Self</span><span className="text-xl tracking-widest">ERA</span></span>
         </Link>
 
         {/* Main Nav */}
