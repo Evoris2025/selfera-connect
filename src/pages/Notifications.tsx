@@ -9,7 +9,8 @@ import {
   AtSign, 
   Bell, 
   ArrowLeft,
-  Settings
+  Settings,
+  ChevronDown
 } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -512,6 +513,3 @@ export default function Notifications() {
     </div>
   );
 }
-
-// Need to import ChevronDown
-import { ChevronDown } from 'lucide-react';
