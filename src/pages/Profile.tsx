@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { MapPin, Globe, Calendar, Settings, Lock, Grid3X3, Bookmark, Play, MessageCircle, Heart } from 'lucide-react';
+import { MapPin, Globe, Calendar, Settings, Lock, Grid3X3, BookOpen, Play, MessageCircle, Heart } from 'lucide-react';
 import { DiscoverRow } from '@/components/DiscoverRow';
 import { motion } from 'framer-motion';
 import { AppLayout } from '@/components/AppLayout';
@@ -212,7 +212,7 @@ export default function Profile() {
               value="library" 
               className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-foreground data-[state=active]:bg-transparent h-full"
             >
-              <Bookmark className="h-5 w-5" />
+              <BookOpen className="h-5 w-5" />
             </TabsTrigger>
           </TabsList>
 
