@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { MapPin, Globe, Calendar, Settings, Lock, Grid3X3, BookOpen, Play, MessageCircle, Heart } from 'lucide-react';
+import { MapPin, Globe, Calendar, Settings, Lock, Grid3X3, BookOpen, Play, MessageCircle, Heart, Users } from 'lucide-react';
 import { DiscoverRow } from '@/components/DiscoverRow';
 import { motion } from 'framer-motion';
 import { AppLayout } from '@/components/AppLayout';
@@ -29,6 +29,7 @@ const mockUser = {
     posts: 147,
     followers: 12400,
     following: 567,
+    community: 12,
   },
 };
 
@@ -75,6 +76,7 @@ function StatButton({ count, label, onClick }: { count: number; label: string; o
 
 export default function Profile() {
   const { handle } = useParams();
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const [isFollowing, setIsFollowing] = useState(false);
   const [activeTab, setActiveTab] = useState('posts');
@@ -125,6 +127,11 @@ export default function Profile() {
               <StatButton count={mockUser.stats.posts} label="Posts" />
               <StatButton count={followerCount} label="Followers" />
               <StatButton count={mockUser.stats.following} label="Following" />
+              <StatButton 
+                count={mockUser.stats.community} 
+                label="Community" 
+                onClick={() => navigate('/community')}
+              />
             </div>
           </div>
 
