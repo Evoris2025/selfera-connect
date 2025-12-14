@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import logo from '@/assets/logo.jpg';
 
 interface AppHeaderProps {
   title?: string;
@@ -34,9 +35,7 @@ export function AppHeader({ title }: AppHeaderProps) {
       <div className="flex items-center justify-between h-14 px-4 max-w-lg mx-auto">
         {/* Logo */}
         <Link to="/feed" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg gradient-brand flex items-center justify-center">
-            <span className="text-sm font-bold text-white">S</span>
-          </div>
+          <img src={logo} alt="SelfERA" className="w-8 h-8 rounded-lg object-cover" />
           {title ? (
             <span className="font-semibold text-foreground">{title}</span>
           ) : (

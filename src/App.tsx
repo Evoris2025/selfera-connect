@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import '@/i18n';
 import { getCurrentLanguage, getLanguageDirection } from "@/i18n";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import logo from '@/assets/logo.jpg';
 
 import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
@@ -28,7 +29,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="w-8 h-8 rounded-lg gradient-brand animate-pulse" />
+        <img src={logo} alt="SelfERA" className="w-12 h-12 rounded-xl animate-pulse" />
       </div>
     );
   }
@@ -47,7 +48,7 @@ function HomeRoute() {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="w-8 h-8 rounded-lg gradient-brand animate-pulse" />
+        <img src={logo} alt="SelfERA" className="w-12 h-12 rounded-xl animate-pulse" />
       </div>
     );
   }
