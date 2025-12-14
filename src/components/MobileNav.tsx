@@ -50,7 +50,7 @@ export function MobileNav({ onCreateClick, notificationCount = 0, messageCount =
                 )}
                 aria-label="Create post"
               >
-                <item.icon className="h-5 w-5" strokeWidth={1.5} />
+                <item.icon className="h-6 w-6" strokeWidth={2} />
               </button>
             );
           }
