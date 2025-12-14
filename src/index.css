@@ -271,6 +271,16 @@
   background: hsl(var(--muted-foreground));
 }
 
+/* Hide scrollbar for horizontal scroll areas */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* Custom focus styles */
 *:focus-visible {
   outline: 2px solid hsl(var(--ring));
