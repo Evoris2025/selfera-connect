@@ -1,12 +1,11 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Compass, Plus, Play, Users, User } from 'lucide-react';
+import { Home, Compass, Plus, Users, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { icon: Home, href: '/feed', label: 'Home' },
   { icon: Compass, href: '/explore', label: 'Explore' },
   { icon: Plus, href: '#create', isCreate: true, label: 'Create' },
-  { icon: Play, href: '/videos', label: 'Videos' },
   { icon: Users, href: '/community', label: 'Community' },
   { icon: User, href: '/profile', label: 'Profile' },
 ];
@@ -23,7 +22,8 @@ export function MobileNav({ onCreateClick }: MobileNavProps) {
       <div className="flex items-center justify-around h-14 max-w-lg mx-auto px-4">
         {navItems.map((item, index) => {
           const isActive = location.pathname === item.href || 
-            (item.href === '/feed' && location.pathname === '/feed');
+            (item.href === '/feed' && location.pathname === '/feed') ||
+            (item.href === '/explore' && location.pathname.startsWith('/explore'));
           
           if (item.isCreate) {
             return (
