@@ -20,6 +20,8 @@ import { ContentWarningToggle } from './shared/ContentWarningToggle';
 interface PostComposerProps {
   onBack: () => void;
   onSuccess: () => void;
+  intent?: 'express' | 'share' | 'teach' | 'reflect' | null;
+  tone?: 'gentle' | 'neutral' | 'uplifting';
 }
 
 type Visibility = 'public' | 'followers' | 'private';
@@ -31,7 +33,7 @@ const visibilityOptions = [
   { value: 'private' as const, label: 'Only me', icon: Lock },
 ];
 
-export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
+export function PostComposer({ onBack, onSuccess, intent, tone }: PostComposerProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [content, setContent] = useState('');

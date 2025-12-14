@@ -1,13 +1,13 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Search, Plus, Bell, User } from 'lucide-react';
+import { Home, Compass, Plus, Play, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { icon: Home, href: '/feed' },
-  { icon: Search, href: '/search' },
-  { icon: Plus, href: '#create', isCreate: true },
-  { icon: Bell, href: '/notifications' },
-  { icon: User, href: '/profile' },
+  { icon: Home, href: '/feed', label: 'Home' },
+  { icon: Compass, href: '/explore', label: 'Explore' },
+  { icon: Plus, href: '#create', isCreate: true, label: 'Create' },
+  { icon: Play, href: '/videos', label: 'Videos' },
+  { icon: User, href: '/profile', label: 'Profile' },
 ];
 
 interface MobileNavProps {
