@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PostCard } from '@/components/PostCard';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
+import { DiscoverRow } from '@/components/DiscoverRow';
 import { toast } from '@/hooks/use-toast';
 
 // Mock user data
@@ -149,6 +150,9 @@ export default function Profile() {
             )}
           </div>
         </div>
+
+        {/* Discover Row */}
+        <DiscoverRow />
 
         {/* Content Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
