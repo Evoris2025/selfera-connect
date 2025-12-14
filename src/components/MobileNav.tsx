@@ -1,38 +1,41 @@
 import { Link, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { Home, Search, PlusSquare, Bell, User } from 'lucide-react';
+import { Home, Search, Plus, Bell, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { icon: Home, label: 'nav.home', href: '/feed' },
-  { icon: Search, label: 'nav.explore', href: '/search' },
-  { icon: PlusSquare, label: 'nav.createPost', href: '/feed?create=true', isCreate: true },
-  { icon: Bell, label: 'nav.notifications', href: '/notifications' },
-  { icon: User, label: 'nav.profile', href: '/profile' },
+  { icon: Home, href: '/feed' },
+  { icon: Search, href: '/search' },
+  { icon: Plus, href: '#create', isCreate: true },
+  { icon: Bell, href: '/notifications' },
+  { icon: User, href: '/profile' },
 ];
 
-export function MobileNav() {
-  const { t } = useTranslation();
+interface MobileNavProps {
+  onCreateClick?: () => void;
+}
+
+export function MobileNav({ onCreateClick }: MobileNavProps) {
   const location = useLocation();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-      <div className="flex items-center justify-around h-16 max-w-lg mx-auto">
-        {navItems.map((item) => {
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 pb-safe">
+      <div className="flex items-center justify-around h-14 max-w-lg mx-auto px-4">
+        {navItems.map((item, index) => {
           const isActive = location.pathname === item.href || 
             (item.href === '/feed' && location.pathname === '/feed');
           
           if (item.isCreate) {
             return (
-              <Link
-                key={item.href}
-                to={item.href}
-                className="flex items-center justify-center -mt-4"
+              <button
+                key={index}
+                onClick={onCreateClick}
+                className="flex items-center justify-center -mt-6"
+                aria-label="Create post"
               >
-                <div className="w-12 h-12 rounded-full gradient-brand flex items-center justify-center shadow-lg hover:scale-105 transition-transform">
-                  <item.icon className="h-6 w-6 text-white" />
+                <div className="w-14 h-14 rounded-full gradient-brand flex items-center justify-center shadow-lg shadow-primary/30 hover:scale-105 active:scale-95 transition-transform">
+                  <item.icon className="h-7 w-7 text-white" strokeWidth={2.5} />
                 </div>
-              </Link>
+              </button>
             );
           }
           
@@ -41,14 +44,13 @@ export function MobileNav() {
               key={item.href}
               to={item.href}
               className={cn(
-                'flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-colors min-w-[60px]',
+                'flex items-center justify-center p-3 rounded-xl transition-colors',
                 isActive 
                   ? 'text-primary' 
                   : 'text-muted-foreground hover:text-foreground'
               )}
             >
-              <item.icon className="h-6 w-6" />
-              <span className="text-[10px] font-medium">{t(item.label)}</span>
+              <item.icon className="h-6 w-6" strokeWidth={isActive ? 2.5 : 2} />
             </Link>
           );
         })}

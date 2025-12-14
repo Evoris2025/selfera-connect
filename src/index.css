@@ -108,6 +108,11 @@
   [dir="rtl"] .rtl-flip {
     transform: scaleX(-1);
   }
+
+  /* Safe area padding for iOS */
+  .pb-safe {
+    padding-bottom: max(env(safe-area-inset-bottom), 0px);
+  }
 }
 
 @layer utilities {
