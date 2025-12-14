@@ -22,7 +22,8 @@
     "profile": "Profil",
     "settings": "Paramètres",
     "crisisSupport": "Soutien en crise",
-    "createPost": "Créer une publication"
+    "createPost": "Créer une publication",
+    "interactions": "Interactions"
   },
   "landing": {
     "hero": {
@@ -78,6 +79,11 @@
     "emptyFollowing": "Suivez des personnes pour voir leurs publications ici",
     "emptyTrending": "Aucune publication tendance pour le moment"
   },
+  "expressions": {
+    "create": "Créer une expression",
+    "view": "Voir l'expression",
+    "empty": "Pas encore d'expressions"
+  },
   "post": {
     "create": "Créer une publication",
     "whatsOnMind": "Qu'avez-vous en tête?",
@@ -100,9 +106,8 @@
     "language": "Langue de la publication"
   },
   "reactions": {
-    "support": "Soutien",
-    "informative": "Informatif",
-    "relatable": "Identifiable"
+    "heart": "Cœur",
+    "hug": "Câlin"
   },
   "comments": {
     "title": "Commentaires",
@@ -111,7 +116,7 @@
   },
   "profile": {
     "posts": "Publications",
-    "saved": "Enregistrés",
+    "library": "Bibliothèque",
     "about": "À propos",
     "follow": "Suivre",
     "following": "Abonné",
@@ -122,6 +127,14 @@
     "verified": "Vérifié",
     "privateAccount": "Ce compte est privé",
     "requestFollow": "Demander à suivre"
+  },
+  "library": {
+    "title": "Ma Bibliothèque",
+    "empty": "Votre Bibliothèque est vide. Ajoutez des publications qui soutiennent votre parcours de bien-être.",
+    "added": "Ajouté à la Bibliothèque",
+    "addedDesc": "Cette publication a été sauvegardée dans votre bibliothèque de bien-être.",
+    "removed": "Retiré de la Bibliothèque",
+    "removedDesc": "Cette publication a été retirée de votre bibliothèque."
   },
   "directory": {
     "title": "Trouver de l'aide",

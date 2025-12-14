@@ -584,7 +584,7 @@ export type Database = {
       content_warning_type: "sensitive" | "triggering" | "graphic" | "other"
       follow_status: "requested" | "approved"
       moderation_status: "published" | "limited" | "removed"
-      reaction_type: "support" | "informative" | "relatable"
+      reaction_type: "heart" | "hug"
       report_status: "new" | "reviewing" | "actioned" | "dismissed"
       user_type: "individual" | "organization" | "professional"
       verification_status: "pending" | "approved" | "rejected"
@@ -719,7 +719,7 @@ export const Constants = {
       content_warning_type: ["sensitive", "triggering", "graphic", "other"],
       follow_status: ["requested", "approved"],
       moderation_status: ["published", "limited", "removed"],
-      reaction_type: ["support", "informative", "relatable"],
+      reaction_type: ["heart", "hug"],
       report_status: ["new", "reviewing", "actioned", "dismissed"],
       user_type: ["individual", "organization", "professional"],
       verification_status: ["pending", "approved", "rejected"],

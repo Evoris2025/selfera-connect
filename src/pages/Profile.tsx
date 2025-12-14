@@ -41,7 +41,7 @@ const mockPosts = [
     },
     content: 'Today was a good day. Small wins matter. Remember to celebrate your progress, no matter how small.',
     tags: ['Self-care', 'Mindfulness'],
-    reactions: { support: 89, informative: 12, relatable: 45 },
+    reactions: { heart: 101, hug: 45 },
     commentCount: 8,
     createdAt: '1 day ago',
   },
@@ -144,7 +144,7 @@ export default function Profile() {
                   {isFollowing ? t('profile.following') : t('profile.follow')}
                 </Button>
                 <Button variant="outline" size="sm" className="h-9">
-                  Message
+                  {t('nav.interactions')}
                 </Button>
               </>
             )}
@@ -165,10 +165,10 @@ export default function Profile() {
             </TabsTrigger>
             {isOwnProfile && (
               <TabsTrigger 
-                value="saved" 
+                value="library" 
                 className="flex-1 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent"
               >
-                {t('profile.saved')}
+                {t('profile.library')}
               </TabsTrigger>
             )}
             <TabsTrigger 
@@ -185,9 +185,9 @@ export default function Profile() {
             ))}
           </TabsContent>
 
-          <TabsContent value="saved" className="mt-0 p-3">
+          <TabsContent value="library" className="mt-0 p-3">
             <div className="text-center py-12 text-muted-foreground text-sm">
-              No saved posts yet
+              {t('library.empty')}
             </div>
           </TabsContent>
 

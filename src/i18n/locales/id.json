@@ -22,7 +22,8 @@
     "profile": "Profil",
     "settings": "Pengaturan",
     "crisisSupport": "Dukungan Krisis",
-    "createPost": "Buat Postingan"
+    "createPost": "Buat Postingan",
+    "interactions": "Interaksi"
   },
   "landing": {
     "hero": {
@@ -78,6 +79,11 @@
     "emptyFollowing": "Ikuti orang untuk melihat postingan mereka di sini",
     "emptyTrending": "Tidak ada postingan trending saat ini"
   },
+  "expressions": {
+    "create": "Buat ekspresi",
+    "view": "Lihat ekspresi",
+    "empty": "Belum ada ekspresi"
+  },
   "post": {
     "create": "Buat postingan",
     "whatsOnMind": "Apa yang Anda pikirkan?",
@@ -100,9 +106,8 @@
     "language": "Bahasa postingan"
   },
   "reactions": {
-    "support": "Dukungan",
-    "informative": "Informatif",
-    "relatable": "Relatable"
+    "heart": "Hati",
+    "hug": "Pelukan"
   },
   "comments": {
     "title": "Komentar",
@@ -111,7 +116,7 @@
   },
   "profile": {
     "posts": "Postingan",
-    "saved": "Disimpan",
+    "library": "Perpustakaan",
     "about": "Tentang",
     "follow": "Ikuti",
     "following": "Mengikuti",
@@ -122,6 +127,14 @@
     "verified": "Terverifikasi",
     "privateAccount": "Akun ini privat",
     "requestFollow": "Minta untuk mengikuti"
+  },
+  "library": {
+    "title": "Perpustakaan Saya",
+    "empty": "Perpustakaan Anda kosong. Tambahkan postingan yang mendukung perjalanan kesejahteraan Anda.",
+    "added": "Ditambahkan ke Perpustakaan",
+    "addedDesc": "Postingan ini telah disimpan ke perpustakaan kesejahteraan Anda.",
+    "removed": "Dihapus dari Perpustakaan",
+    "removedDesc": "Postingan ini telah dihapus dari perpustakaan Anda."
   },
   "directory": {
     "title": "Cari Bantuan",

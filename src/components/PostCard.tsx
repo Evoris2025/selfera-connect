@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MoreHorizontal, Flag, Ban, VolumeX, Bookmark, Share2, MessageCircle } from 'lucide-react';
+import { MoreHorizontal, Flag, Ban, VolumeX, BookOpen, Share2, MessageCircle } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -15,6 +15,7 @@ import {
 import { ReactionButton } from './ReactionButton';
 import { VerifiedBadge } from './VerifiedBadge';
 import { cn } from '@/lib/utils';
+import { toast } from '@/hooks/use-toast';
 
 interface PostCardProps {
   author: {
@@ -31,9 +32,8 @@ interface PostCardProps {
   };
   tags: string[];
   reactions: {
-    support: number;
-    informative: number;
-    relatable: number;
+    heart: number;
+    hug: number;
   };
   commentCount: number;
   createdAt: string;
@@ -55,10 +55,18 @@ export function PostCard({
   const { t } = useTranslation();
   const [showContent, setShowContent] = useState(!hasContentWarning);
   const [activeReaction, setActiveReaction] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
+  const [inLibrary, setInLibrary] = useState(false);
 
   const handleReaction = (type: string) => {
     setActiveReaction(activeReaction === type ? null : type);
+  };
+
+  const handleLibraryToggle = () => {
+    setInLibrary(!inLibrary);
+    toast({
+      title: inLibrary ? t('library.removed') : t('library.added'),
+      description: inLibrary ? t('library.removedDesc') : t('library.addedDesc'),
+    });
   };
 
   return (
@@ -157,22 +165,16 @@ export function PostCard({
       <div className="p-4 border-t border-border">
         <div className="flex flex-wrap items-center gap-2 mb-3">
           <ReactionButton 
-            type="support" 
-            count={reactions.support} 
-            active={activeReaction === 'support'}
-            onClick={() => handleReaction('support')}
+            type="heart" 
+            count={reactions.heart} 
+            active={activeReaction === 'heart'}
+            onClick={() => handleReaction('heart')}
           />
           <ReactionButton 
-            type="informative" 
-            count={reactions.informative}
-            active={activeReaction === 'informative'}
-            onClick={() => handleReaction('informative')}
-          />
-          <ReactionButton 
-            type="relatable" 
-            count={reactions.relatable}
-            active={activeReaction === 'relatable'}
-            onClick={() => handleReaction('relatable')}
+            type="hug" 
+            count={reactions.hug}
+            active={activeReaction === 'hug'}
+            onClick={() => handleReaction('hug')}
           />
         </div>
         
@@ -183,13 +185,13 @@ export function PostCard({
               <span className="text-sm">{commentCount}</span>
             </button>
             <button 
-              onClick={() => setSaved(!saved)}
+              onClick={handleLibraryToggle}
               className={cn(
                 'flex items-center gap-1.5 transition-colors',
-                saved ? 'text-primary' : 'hover:text-foreground'
+                inLibrary ? 'text-primary' : 'hover:text-foreground'
               )}
             >
-              <Bookmark className={cn('h-4 w-4', saved && 'fill-current')} />
+              <BookOpen className={cn('h-4 w-4', inLibrary && 'fill-current')} />
             </button>
             <button className="flex items-center gap-1.5 hover:text-foreground transition-colors">
               <Share2 className="h-4 w-4" />
