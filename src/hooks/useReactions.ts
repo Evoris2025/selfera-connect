@@ -17,6 +17,39 @@ export function useReactions(postId: string): UseReactionsResult {
 
   useEffect(() => {
     fetchReactions();
+
+    // Subscribe to real-time updates for this post's reactions
+    const channel = supabase
+      .channel(`reactions-${postId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'reactions',
+          filter: `post_id=eq.${postId}`,
+        },
+        (payload) => {
+          if (payload.eventType === 'INSERT') {
+            setHeartCount((prev) => prev + 1);
+            // Check if current user added the reaction
+            if (payload.new && (payload.new as { user_id: string }).user_id === user?.id) {
+              setHasReacted(true);
+            }
+          } else if (payload.eventType === 'DELETE') {
+            setHeartCount((prev) => Math.max(0, prev - 1));
+            // Check if current user removed the reaction
+            if (payload.old && (payload.old as { user_id: string }).user_id === user?.id) {
+              setHasReacted(false);
+            }
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [postId, user?.id]);
 
   const fetchReactions = async () => {
@@ -65,8 +98,7 @@ export function useReactions(postId: string): UseReactionsResult {
           .eq('type', 'heart');
 
         if (error) throw error;
-        setHasReacted(false);
-        setHeartCount((prev) => Math.max(0, prev - 1));
+        // Optimistic update handled by realtime
       } else {
         // Add reaction
         const { error } = await supabase
@@ -78,12 +110,10 @@ export function useReactions(postId: string): UseReactionsResult {
           });
 
         if (error) throw error;
-        setHasReacted(true);
-        setHeartCount((prev) => prev + 1);
+        // Optimistic update handled by realtime
       }
     } catch (error) {
       console.error('Error toggling reaction:', error);
-      // Revert optimistic update
       fetchReactions();
     }
   };

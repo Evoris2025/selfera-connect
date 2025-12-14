@@ -59,7 +59,8 @@
     "orContinueWith": "Or continue with",
     "termsAgreement": "By continuing, you agree to our Terms and Privacy Policy",
     "required": "Login required",
-    "loginToReact": "Please log in to react to posts"
+    "loginToReact": "Please log in to react to posts",
+    "loginToSave": "Please log in to save posts"
   },
   "onboarding": {
     "welcome": "Welcome to SELFERA",
