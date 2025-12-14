@@ -75,12 +75,17 @@ export default function Landing() {
       </header>
 
       {/* Hero */}
-      <section className="pt-32 pb-20 px-4">
+      <section className="relative pt-32 pb-20 px-4 overflow-hidden">
+        {/* Floating gradient blobs */}
+        <div className="blob-gradient w-96 h-96 bg-primary -top-20 -left-48 animate-float" />
+        <div className="blob-gradient w-80 h-80 bg-accent top-40 -right-40 animate-float" style={{ animationDelay: '-2s' }} />
+        <div className="blob-gradient w-64 h-64 bg-crisis bottom-0 left-1/4 animate-float" style={{ animationDelay: '-4s' }} />
+        
         <motion.div
           initial="hidden"
           animate="visible"
           variants={stagger}
-          className="max-w-4xl mx-auto text-center"
+          className="relative max-w-4xl mx-auto text-center"
         >
           <motion.div variants={fadeInUp} className="mb-6">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-8">
@@ -91,7 +96,7 @@ export default function Landing() {
 
           <motion.h1
             variants={fadeInUp}
-            className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground mb-6 leading-tight"
+            className="font-serif text-4xl sm:text-5xl md:text-7xl text-foreground mb-6 leading-tight"
           >
             {t('landing.hero.title')}
           </motion.h1>
@@ -131,13 +136,13 @@ export default function Landing() {
               <motion.div
                 key={index}
                 variants={fadeInUp}
-                className="bg-card border border-border rounded-2xl p-8 text-center hover:border-primary/30 transition-colors"
+                className="bg-card border border-border rounded-3xl p-8 text-center gradient-border-hover transition-all duration-400"
               >
-                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mx-auto mb-6">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mx-auto mb-6 brand-aura">
                   <feature.icon className="h-7 w-7 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold text-foreground mb-3">{feature.title}</h3>
-                <p className="text-muted-foreground">{feature.description}</p>
+                <h3 className="font-serif text-2xl text-foreground mb-3">{feature.title}</h3>
+                <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -155,12 +160,12 @@ export default function Landing() {
         >
           <motion.div
             variants={fadeInUp}
-            className="bg-gradient-to-br from-crisis/10 to-crisis/5 border border-crisis/20 rounded-2xl p-8 md:p-12 text-center"
+            className="bg-gradient-to-br from-crisis/10 to-crisis/5 border border-crisis/20 rounded-3xl p-8 md:p-12 text-center"
           >
             <div className="w-16 h-16 rounded-2xl bg-crisis/20 flex items-center justify-center mx-auto mb-6">
               <Phone className="h-8 w-8 text-crisis" />
             </div>
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
+            <h2 className="font-serif text-2xl md:text-4xl text-foreground mb-4">
               {t('landing.crisis.title')}
             </h2>
             <p className="text-muted-foreground mb-8 max-w-lg mx-auto">

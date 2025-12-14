@@ -19,6 +19,9 @@ export function MobileNav({ onCreateClick }: MobileNavProps) {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 pb-safe">
+      {/* Gradient accent line at top of nav */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+      
       <div className="flex items-center justify-around h-14 max-w-lg mx-auto px-4">
         {navItems.map((item, index) => {
           const isActive = location.pathname === item.href || 
@@ -32,7 +35,7 @@ export function MobileNav({ onCreateClick }: MobileNavProps) {
                 className="flex items-center justify-center -mt-6"
                 aria-label="Create post"
               >
-                <div className="w-14 h-14 rounded-full gradient-brand flex items-center justify-center shadow-lg shadow-primary/30 hover:scale-105 active:scale-95 transition-transform">
+                <div className="w-14 h-14 rounded-full gradient-brand flex items-center justify-center shadow-lg shadow-primary/30 hover:scale-105 active:scale-95 transition-all duration-300 animate-breathe">
                   <item.icon className="h-7 w-7 text-white" strokeWidth={2.5} />
                 </div>
               </button>
@@ -44,13 +47,16 @@ export function MobileNav({ onCreateClick }: MobileNavProps) {
               key={item.href}
               to={item.href}
               className={cn(
-                'flex items-center justify-center p-3 rounded-xl transition-colors',
+                'relative flex flex-col items-center justify-center p-3 rounded-xl transition-all duration-300',
                 isActive 
                   ? 'text-primary' 
                   : 'text-muted-foreground hover:text-foreground'
               )}
             >
               <item.icon className="h-6 w-6" strokeWidth={isActive ? 2.5 : 2} />
+              {isActive && (
+                <div className="absolute -bottom-1 w-6 h-0.5 rounded-full bg-gradient-to-r from-primary via-accent to-crisis" />
+              )}
             </Link>
           );
         })}
