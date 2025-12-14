@@ -2,7 +2,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { 
   Home, 
-  Search, 
+  Compass, 
+  Play,
   Bell, 
   User, 
   Heart,
@@ -14,7 +15,8 @@ import logo from '@/assets/logo.jpg';
 
 const mainNavItems = [
   { icon: Home, label: 'nav.home', href: '/feed' },
-  { icon: Search, label: 'nav.explore', href: '/search' },
+  { icon: Compass, label: 'nav.explore', href: '/explore' },
+  { icon: Play, label: 'Videos', href: '/videos' },
   { icon: Heart, label: 'nav.directory', href: '/directory' },
   { icon: Bell, label: 'nav.notifications', href: '/notifications' },
   { icon: User, label: 'nav.profile', href: '/profile' },
