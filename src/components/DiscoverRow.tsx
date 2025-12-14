@@ -8,6 +8,15 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
+// Fallback mock profiles when no real users exist
+const mockProfiles: SuggestedProfile[] = [
+  { id: 'mock-1', display_name: 'Sarah Chen', handle: 'sarahc', avatar_url: null, bio: 'Mental health advocate', isFollowing: false },
+  { id: 'mock-2', display_name: 'Mind Matters', handle: 'mindmatters', avatar_url: null, bio: 'Daily wellness tips', isFollowing: false },
+  { id: 'mock-3', display_name: 'James Wilson', handle: 'jwilson', avatar_url: null, bio: 'Sharing my journey', isFollowing: false },
+  { id: 'mock-4', display_name: 'Wellness Hub', handle: 'wellnesshub', avatar_url: null, bio: 'Your daily dose of calm', isFollowing: false },
+  { id: 'mock-5', display_name: 'Emma Roberts', handle: 'emmar', avatar_url: null, bio: 'Mindfulness coach', isFollowing: false },
+];
+
 interface SuggestedProfile {
   id: string;
   display_name: string | null;
@@ -54,20 +63,33 @@ export function DiscoverRow() {
       }
 
       setFollowingIds(followingSet);
-      setProfiles(
-        (profilesData || []).map(p => ({
-          ...p,
-          isFollowing: followingSet.has(p.id),
-        }))
-      );
+      
+      const realProfiles = (profilesData || []).map(p => ({
+        ...p,
+        isFollowing: followingSet.has(p.id),
+      }));
+      
+      // Use real profiles if available, otherwise show mock profiles
+      setProfiles(realProfiles.length > 0 ? realProfiles : mockProfiles);
     } catch (error) {
       console.error('Error fetching profiles:', error);
+      // On error, show mock profiles as fallback
+      setProfiles(mockProfiles);
     } finally {
       setLoading(false);
     }
   };
 
   const handleFollowToggle = async (profileId: string, isCurrentlyFollowing: boolean) => {
+    // Handle mock profiles - just toggle UI state
+    if (profileId.startsWith('mock-')) {
+      setProfiles(prev =>
+        prev.map(p => (p.id === profileId ? { ...p, isFollowing: !p.isFollowing } : p))
+      );
+      toast({ title: isCurrentlyFollowing ? 'Unfollowed' : 'Following!' });
+      return;
+    }
+    
     if (!user) {
       toast({
         title: 'Sign in required',
@@ -138,9 +160,7 @@ export function DiscoverRow() {
     );
   }
 
-  if (profiles.length === 0) {
-    return null;
-  }
+  // Always show - we have mock fallback now
 
   return (
     <div className="py-4">
