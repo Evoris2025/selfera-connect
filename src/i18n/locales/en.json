@@ -149,6 +149,17 @@
     "removed": "Removed from Library",
     "removedDesc": "This post has been removed from your library."
   },
+  "community": {
+    "title": "My Community",
+    "empty": "Add people to your community by tapping the community icon on their posts.",
+    "added": "Added to Community",
+    "addedDesc": "{{name}} is now part of your community.",
+    "removed": "Removed from Community", 
+    "removedDesc": "{{name}} has been removed from your community.",
+    "loginToAdd": "Please log in to add people to your community",
+    "cannotAddSelf": "Cannot add yourself",
+    "cannotAddSelfDesc": "You cannot add yourself to your own community."
+  },
   "directory": {
     "title": "Find Help",
     "subtitle": "Discover trusted mental health services and resources",

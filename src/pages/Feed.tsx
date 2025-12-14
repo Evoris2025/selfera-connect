@@ -16,6 +16,7 @@ const trendingHashtags = ['mentalhealth', 'selfcare', 'anxiety', 'recovery', 'mi
 const mockPosts = [
   {
     id: '1',
+    authorId: 'author-1-uuid',
     author: {
       name: 'Wellness Center',
       handle: 'wellnesscenter',
@@ -34,6 +35,7 @@ const mockPosts = [
   },
   {
     id: '2',
+    authorId: 'author-2-uuid',
     author: {
       name: 'Dr. Sarah Mitchell',
       handle: 'drsarahmitchell',
@@ -48,6 +50,7 @@ const mockPosts = [
   },
   {
     id: '3',
+    authorId: 'author-3-uuid',
     author: {
       name: 'Jamie',
       handle: 'jamie_journey',
@@ -61,6 +64,7 @@ const mockPosts = [
   },
   {
     id: '4',
+    authorId: 'author-4-uuid',
     author: {
       name: 'MindfulMoments',
       handle: 'mindfulmoments',

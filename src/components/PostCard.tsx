@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MoreHorizontal, Flag, Ban, VolumeX, BookOpen, Heart, Users } from 'lucide-react';
+import { MoreHorizontal, Flag, Ban, VolumeX, BookOpen, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,8 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { VerifiedBadge } from './VerifiedBadge';
 import { Hashtag } from './Hashtag';
-import { ShareToCommunityModal } from './ShareToCommunityModal';
-import { HeartButton, CommentButton, ShareButton, CommentSheet } from './interactions';
+import { HeartButton, CommentButton, ShareButton, CommentSheet, CommunityButton } from './interactions';
 import { useReactions } from '@/hooks/useReactions';
 import { useLibrary } from '@/hooks/useLibrary';
 import { useAuth } from '@/contexts/AuthContext';
@@ -24,6 +23,7 @@ import { toast } from '@/hooks/use-toast';
 
 interface PostCardProps {
   id: string;
+  authorId?: string;
   author: {
     name: string;
     handle: string;
@@ -52,6 +52,7 @@ function formatCount(count: number): string {
 
 export function PostCard({
   id,
+  authorId,
   author,
   content,
   media,
@@ -67,7 +68,6 @@ export function PostCard({
   const [showContent, setShowContent] = useState(!hasContentWarning);
   const [showHeartOverlay, setShowHeartOverlay] = useState(false);
   const [localLikes, setLocalLikes] = useState(likes);
-  const [showCommunityModal, setShowCommunityModal] = useState(false);
   const [showCommentSheet, setShowCommentSheet] = useState(false);
   const lastTapRef = useRef<number>(0);
   const { heartCount, hasReacted, toggleReaction } = useReactions(id);
@@ -258,13 +258,12 @@ export function PostCard({
               onClick={() => setShowCommentSheet(true)}
             />
             <ShareButton postId={id} />
-            <motion.button 
-              whileTap={{ scale: 0.9 }}
-              onClick={() => setShowCommunityModal(true)}
-              className="text-foreground hover:text-muted-foreground transition-colors"
-            >
-              <Users className="h-6 w-6" />
-            </motion.button>
+            {authorId && (
+              <CommunityButton 
+                authorId={authorId}
+                authorName={author.name}
+              />
+            )}
           </div>
           <motion.button 
             whileTap={{ scale: 0.9 }}
@@ -312,13 +311,6 @@ export function PostCard({
         onOpenChange={setShowCommentSheet}
         postId={id}
         commentCount={commentCount}
-      />
-
-      {/* Share to Community Modal */}
-      <ShareToCommunityModal
-        open={showCommunityModal}
-        onOpenChange={setShowCommunityModal}
-        postId={id}
       />
     </Card>
   );
