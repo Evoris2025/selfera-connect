@@ -104,12 +104,21 @@ export default {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-10px)" },
         },
+        "heart-pop": {
+          "0%": { transform: "scale(1)" },
+          "15%": { transform: "scale(1.35)" },
+          "30%": { transform: "scale(0.9)" },
+          "45%": { transform: "scale(1.1)" },
+          "60%": { transform: "scale(0.95)" },
+          "100%": { transform: "scale(1)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "pulse-soft": "pulse-soft 2s ease-in-out infinite",
         "float": "float 6s ease-in-out infinite",
+        "heart-pop": "heart-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
       },
       boxShadow: {
         'glow': '0 0 40px -10px hsl(var(--primary) / 0.4)',
