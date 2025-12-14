@@ -32,11 +32,14 @@ export function DesktopSidebar() {
     <aside className="hidden md:flex flex-col w-64 h-screen sticky top-0 border-r border-border bg-sidebar p-4">
       <div className="flex-1">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 mb-8 px-3">
-          <img src={logo} alt="SelfERA" className="w-10 h-10 rounded-xl object-cover" />
-          <span className="flex items-baseline">
-            <span className="text-xs font-medium text-muted-foreground tracking-tight">Self</span>
-            <span className="text-2xl font-bold gradient-brand-text tracking-[0.15em]">ERA</span>
+        <Link to="/" className="flex items-center gap-3 mb-8 px-3 group">
+          <div className="relative">
+            <img src={logo} alt="SelfERA" className="w-11 h-11 rounded-2xl object-cover ring-1 ring-foreground/10" />
+            <div className="absolute inset-0 rounded-2xl bg-primary/20 blur-xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          </div>
+          <span className="font-logo text-xl tracking-[0.2em] uppercase logo-glow">
+            <span className="font-light text-foreground/50">SELF</span>
+            <span className="font-semibold gradient-brand-text">ERA</span>
           </span>
         </Link>
 
