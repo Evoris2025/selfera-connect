@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CrisisWidget } from './CrisisWidget';
-import { LogoLink } from './Logo';
+import logo from '@/assets/logo.jpg';
 
 const mainNavItems = [
   { icon: Home, label: 'nav.home', href: '/feed' },
@@ -32,9 +32,10 @@ export function DesktopSidebar() {
     <aside className="hidden md:flex flex-col w-64 h-screen sticky top-0 border-r border-border bg-sidebar p-4">
       <div className="flex-1">
         {/* Logo */}
-        <div className="mb-8 px-3">
-          <LogoLink to="/" size="lg" />
-        </div>
+        <Link to="/" className="flex items-center gap-1 mb-8 px-3">
+          <img src={logo} alt="SelfERA" className="w-10 h-10 rounded-xl object-cover" />
+          <span className="text-xl font-bold gradient-brand-text"><span className="tracking-[0.02em]">Self</span><span className="tracking-[0.04em]">ERA</span></span>
+        </Link>
 
         {/* Main Nav */}
         <nav className="space-y-1">

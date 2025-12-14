@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Heart, Shield, Users, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import { Logo, LogoLink } from '@/components/Logo';
+import logo from '@/assets/logo.jpg';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -45,7 +45,12 @@ export default function Landing() {
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <LogoLink to="/" size="lg" />
+          <div className="flex items-center gap-1">
+            <img src={logo} alt="SelfERA" className="w-11 h-11 rounded-xl object-cover" />
+            <span className="text-xl font-bold gradient-brand-text">
+              <span className="tracking-[0.02em]">Self</span><span className="tracking-[0.04em]">ERA</span>
+            </span>
+          </div>
 
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="sm" asChild>
@@ -168,7 +173,10 @@ export default function Landing() {
       <footer className="border-t border-border py-12 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <Logo size="md" />
+            <div className="flex items-center gap-3">
+              <img src={logo} alt="SelfERA" className="w-10 h-10 rounded-lg object-cover" />
+              <span className="font-semibold text-foreground tracking-wide">SelfERA</span>
+            </div>
 
             <nav className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
               <Link to="/privacy" className="hover:text-foreground transition-colors">

@@ -10,7 +10,6 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { z } from 'zod';
-import { Logo } from '@/components/Logo';
 import logo from '@/assets/logo.jpg';
 
 const authSchema = z.object({
@@ -146,8 +145,11 @@ export default function Auth() {
             className="w-full max-w-md"
           >
             {/* Logo */}
-            <div className="mb-8">
-              <Logo size="xl" />
+            <div className="flex items-center gap-3 mb-8">
+              <img src={logo} alt="SelfERA" className="w-12 h-12 rounded-xl object-cover" />
+              <span className="text-2xl font-bold gradient-brand-text tracking-wide">
+                SelfERA
+              </span>
             </div>
 
             <h1 className="text-3xl font-bold text-foreground mb-2">
@@ -243,7 +245,7 @@ export default function Auth() {
       {/* Right Panel - Visual */}
       <div className="hidden lg:flex flex-1 bg-gradient-to-br from-primary/20 via-accent/20 to-crisis/20 items-center justify-center p-12">
         <div className="max-w-md text-center">
-          <img src={logo} alt="SelfERA" className="w-32 h-32 rounded-3xl object-cover mx-auto mb-8" />
+          <img src={logo} alt="SelfERA" className="w-[7.5rem] h-[7.5rem] rounded-3xl object-cover mx-auto mb-8" />
           <h2 className="text-3xl font-bold text-foreground mb-4">
             {t('landing.hero.title')}
           </h2>
