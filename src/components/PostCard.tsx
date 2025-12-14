@@ -116,21 +116,16 @@ export function PostCard({
   };
 
   return (
-    <Card className="overflow-hidden gradient-border-hover transition-all duration-400 rounded-3xl">
+    <Card className="overflow-hidden hover:border-primary/20 transition-colors">
       {/* Header */}
       <div className="p-4 flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <div className={cn(
-            "rounded-full p-0.5",
-            author.isVerified ? "avatar-ring-gradient" : "ring-2 ring-border rounded-full"
-          )}>
-            <Avatar className="h-10 w-10 border-2 border-background">
-              <AvatarImage src={author.avatar} alt={author.name} />
-              <AvatarFallback className="bg-secondary text-secondary-foreground">
-                {author.name.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
-          </div>
+          <Avatar className="h-10 w-10 ring-2 ring-border">
+            <AvatarImage src={author.avatar} alt={author.name} />
+            <AvatarFallback className="bg-secondary text-secondary-foreground">
+              {author.name.charAt(0)}
+            </AvatarFallback>
+          </Avatar>
           <div>
             <div className="flex items-center gap-1.5">
               <span className="font-semibold text-foreground">{author.name}</span>
@@ -167,7 +162,7 @@ export function PostCard({
       {/* Tags */}
       <div className="px-4 pb-3 flex flex-wrap gap-2">
         {tags.map((tag) => (
-          <Badge key={tag} variant="secondary" className="rounded-full text-xs bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 transition-colors duration-300">
+          <Badge key={tag} variant="secondary" className="rounded-full text-xs">
             {tag}
           </Badge>
         ))}

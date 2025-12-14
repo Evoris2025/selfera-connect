@@ -16,7 +16,6 @@ export default {
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         logo: ['Space Grotesk', 'system-ui', 'sans-serif'],
-        serif: ['DM Serif Display', 'Georgia', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -82,7 +81,6 @@ export default {
         sm: "calc(var(--radius) - 4px)",
         xl: "calc(var(--radius) + 4px)",
         "2xl": "calc(var(--radius) + 8px)",
-        "3xl": "1.5rem",
       },
       spacing: {
         '18': '4.5rem',
@@ -122,15 +120,6 @@ export default {
           "80%": { transform: "scale(1)", opacity: "1" },
           "100%": { transform: "scale(1)", opacity: "0" },
         },
-        "breathe": {
-          "0%, 100%": { transform: "scale(1)", opacity: "1" },
-          "50%": { transform: "scale(1.05)", opacity: "0.9" },
-        },
-        "gradient-shift": {
-          "0%": { backgroundPosition: "0% 50%" },
-          "50%": { backgroundPosition: "100% 50%" },
-          "100%": { backgroundPosition: "0% 50%" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -139,14 +128,6 @@ export default {
         "float": "float 6s ease-in-out infinite",
         "heart-pop": "heart-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
         "heart-burst": "heart-burst 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards",
-        "breathe": "breathe 3s ease-in-out infinite",
-        "gradient-shift": "gradient-shift 8s ease infinite",
-      },
-      transitionDuration: {
-        "400": "400ms",
-      },
-      transitionTimingFunction: {
-        "smooth": "cubic-bezier(0.4, 0, 0.2, 1)",
       },
       boxShadow: {
         'glow': '0 0 40px -10px hsl(var(--primary) / 0.4)',
