@@ -203,7 +203,7 @@ function NotificationItem({ notification, index }: { notification: Notification;
               <motion.div 
                 className="absolute -bottom-0.5 -right-0.5 p-1 rounded-full bg-background border border-border/50 shadow-sm"
                 initial={{ scale: 0 }}
-                animate={{ scale: [0, 1.3, 1] }}
+                animate={{ scale: 1 }}
                 transition={{ ...springPop, delay: index * 0.04 + 0.2 }}
               >
                 {getNotificationIcon(notification.type)}
@@ -258,11 +258,11 @@ function NotificationItem({ notification, index }: { notification: Notification;
           {/* Unread dot */}
           <AnimatePresence>
             {!notification.read && !notification.showFollowButton && !notification.thumbnailUrl && (
-              <motion.div 
-                initial={{ scale: 0 }}
-                animate={{ scale: [0, 1.5, 1] }}
-                exit={{ scale: 0 }}
-                transition={springPop}
+            <motion.div 
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0 }}
+              transition={springPop}
                 className="w-2 h-2 rounded-full bg-primary shrink-0 shadow-lg shadow-primary/40" 
               />
             )}
@@ -330,8 +330,8 @@ function HighlightCard({ notification, index }: { notification: Notification; in
       ) : notification.type === 'message' ? (
         <motion.div 
           className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0"
-          animate={{ scale: [1, 1.1, 1] }}
-          transition={{ duration: 2, repeat: Infinity }}
+          animate={{ scale: 1.1 }}
+          transition={{ duration: 2, repeat: Infinity, repeatType: 'reverse' }}
         >
           <MessageCircle className="h-5 w-5 text-primary" />
         </motion.div>
@@ -352,8 +352,8 @@ function EmptyState() {
     >
       <motion.div 
         className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-secondary/40 flex items-center justify-center mb-5"
-        animate={{ scale: [1, 1.05, 1], rotate: [0, 5, -5, 0] }}
-        transition={{ duration: 3, repeat: Infinity }}
+        animate={{ scale: 1.05 }}
+        transition={{ duration: 3, repeat: Infinity, repeatType: 'reverse' }}
       >
         <CheckCircle className="h-10 w-10 text-primary/60" />
       </motion.div>
