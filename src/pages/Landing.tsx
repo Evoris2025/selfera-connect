@@ -45,9 +45,9 @@ export default function Landing() {
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <img src={logo} alt="SelfERA" className="w-11 h-11 rounded-xl object-cover" />
-            <span className="text-xl font-bold gradient-brand-text tracking-wide">
+            <span className="text-xl font-bold gradient-brand-text tracking-[0.15em]">
               SelfERA
             </span>
           </div>
