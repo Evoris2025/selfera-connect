@@ -6,13 +6,12 @@ import {
   ArrowLeft, 
   Send, 
   Image, 
-  Check, 
   CheckCheck, 
   ChevronDown,
   Plus,
-  Circle,
   Camera,
-  Play
+  Phone,
+  Video
 } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
@@ -100,7 +99,7 @@ const mockConversations: Conversation[] = [
 ];
 
 const mockQuickAccess: QuickAccessUser[] = [
-  { id: 'note', name: 'Your note', hasNote: true, note: 'Feeling grateful today ✨' },
+  { id: 'note', name: 'Your note', hasNote: true, note: '✨' },
   { id: 'new', name: 'New', isOnline: false },
   { id: '1', name: 'Mind', isOnline: true },
   { id: '2', name: 'Sarah', isOnline: true },
@@ -110,68 +109,32 @@ const mockQuickAccess: QuickAccessUser[] = [
 ];
 
 const mockMessages: Message[] = [
-  {
-    id: '1',
-    content: 'Hey! I saw your post about managing anxiety. Really helpful!',
-    senderId: 'other',
-    timestamp: '10:30 AM',
-    read: true,
-    type: 'text',
-  },
-  {
-    id: '2',
-    content: 'Thank you so much! It means a lot to hear that.',
-    senderId: 'me',
-    timestamp: '10:32 AM',
-    read: true,
-    type: 'text',
-  },
-  {
-    id: '3',
-    content: 'Do you have any other resources you recommend?',
-    senderId: 'other',
-    timestamp: '10:33 AM',
-    read: true,
-    type: 'text',
-  },
-  {
-    id: '4',
-    content: 'Absolutely! I\'ll share some links with you.',
-    senderId: 'me',
-    timestamp: '10:35 AM',
-    read: true,
-    type: 'text',
-  },
-  {
-    id: '5',
-    content: 'Thanks for sharing that resource!',
-    senderId: 'other',
-    timestamp: '10:40 AM',
-    read: true,
-    type: 'text',
-  },
+  { id: '1', content: 'Hey! I saw your post about managing anxiety. Really helpful!', senderId: 'other', timestamp: '10:30 AM', read: true, type: 'text' },
+  { id: '2', content: 'Thank you so much! It means a lot to hear that.', senderId: 'me', timestamp: '10:32 AM', read: true, type: 'text' },
+  { id: '3', content: 'Do you have any other resources you recommend?', senderId: 'other', timestamp: '10:33 AM', read: true, type: 'text' },
+  { id: '4', content: 'Absolutely! I\'ll share some links with you.', senderId: 'me', timestamp: '10:35 AM', read: true, type: 'text' },
+  { id: '5', content: 'Thanks for sharing that resource!', senderId: 'other', timestamp: '10:40 AM', read: true, type: 'text' },
 ];
 
 function ConversationSkeleton() {
   return (
-    <div className="flex items-center gap-3 px-4 py-3">
+    <div className="flex items-center gap-4 px-5 py-4">
       <Skeleton className="h-14 w-14 rounded-full" />
-      <div className="flex-1 space-y-2">
-        <Skeleton className="h-4 w-28" />
-        <Skeleton className="h-3 w-44" />
+      <div className="flex-1 space-y-2.5">
+        <Skeleton className="h-4 w-32" />
+        <Skeleton className="h-3.5 w-48" />
       </div>
-      <Skeleton className="h-3 w-8" />
     </div>
   );
 }
 
 function QuickAccessSkeleton() {
   return (
-    <div className="flex gap-4 px-4 py-3">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="flex flex-col items-center gap-2">
-          <Skeleton className="h-16 w-16 rounded-full" />
-          <Skeleton className="h-3 w-12" />
+    <div className="flex gap-5 px-5 py-4">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <div key={i} className="flex flex-col items-center gap-2.5">
+          <Skeleton className="h-[72px] w-[72px] rounded-full" />
+          <Skeleton className="h-3 w-14" />
         </div>
       ))}
     </div>
@@ -180,25 +143,19 @@ function QuickAccessSkeleton() {
 
 function MessageSkeleton() {
   return (
-    <div className="space-y-3 p-4">
-      <div className="flex justify-start">
-        <Skeleton className="h-10 w-48 rounded-2xl" />
-      </div>
-      <div className="flex justify-end">
-        <Skeleton className="h-10 w-36 rounded-2xl" />
-      </div>
-      <div className="flex justify-start">
-        <Skeleton className="h-10 w-52 rounded-2xl" />
-      </div>
+    <div className="space-y-4 p-5">
+      <div className="flex justify-start"><Skeleton className="h-11 w-52 rounded-3xl" /></div>
+      <div className="flex justify-end"><Skeleton className="h-11 w-40 rounded-3xl" /></div>
+      <div className="flex justify-start"><Skeleton className="h-11 w-56 rounded-3xl" /></div>
     </div>
   );
 }
 
-function OnlineIndicator({ className }: { className?: string }) {
+function OnlineIndicator({ size = 'default' }: { size?: 'small' | 'default' }) {
   return (
     <div className={cn(
-      "absolute bottom-0 right-0 w-4 h-4 rounded-full bg-emerald-500 border-2 border-background",
-      className
+      "absolute rounded-full bg-emerald-500 border-[2.5px] border-background shadow-sm",
+      size === 'small' ? "bottom-0 right-0 w-3.5 h-3.5" : "bottom-0.5 right-0.5 w-4 h-4"
     )} />
   );
 }
@@ -212,7 +169,7 @@ export default function Messages() {
   const [messages] = useState<Message[]>(mockMessages);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const requestCount = 2; // Mock request count
+  const requestCount = 2;
 
   const filteredConversations = mockConversations.filter(
     (conv) =>
@@ -227,15 +184,10 @@ export default function Messages() {
 
   const getLastMessagePreview = (conv: Conversation) => {
     if (conv.lastMessageType === 'image') {
-      return (
-        <span className="flex items-center gap-1">
-          <Image className="h-3 w-3" />
-          Sent a photo
-        </span>
-      );
+      return <span className="flex items-center gap-1.5"><Image className="h-3.5 w-3.5" />Photo</span>;
     }
     if (conv.lastMessageType === 'reaction') {
-      return <span>Reacted {conv.lastMessage} to your message</span>;
+      return <span>Reacted {conv.lastMessage}</span>;
     }
     return conv.lastMessage;
   };
@@ -244,71 +196,69 @@ export default function Messages() {
   if (selectedConversation) {
     return (
       <div className="flex flex-col h-[100dvh] bg-background">
-        {/* Chat Header */}
-        <div className="flex items-center gap-3 px-4 py-3 border-b border-border bg-background">
+        {/* Header */}
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-4 px-4 py-3.5 border-b border-border/60 bg-background"
+        >
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setSelectedConversation(null)}
-            className="shrink-0 -ml-2"
+            className="shrink-0 -ml-2 h-9 w-9 rounded-full hover:bg-secondary"
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="relative">
-            <Avatar className="h-10 w-10">
-              <AvatarFallback className="bg-secondary text-secondary-foreground">
+            <Avatar className="h-11 w-11 ring-1 ring-border/50">
+              <AvatarFallback className="bg-gradient-to-br from-secondary to-secondary/60 text-foreground font-medium">
                 {selectedConversation.participant.name.charAt(0)}
               </AvatarFallback>
             </Avatar>
-            {selectedConversation.participant.isOnline && (
-              <OnlineIndicator className="w-3 h-3" />
-            )}
+            {selectedConversation.participant.isOnline && <OnlineIndicator size="small" />}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="font-semibold text-foreground truncate">
+            <p className="font-semibold text-[15px] text-foreground truncate tracking-tight">
               {selectedConversation.participant.name}
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-[13px] text-muted-foreground/80">
               {selectedConversation.participant.isOnline ? 'Active now' : `@${selectedConversation.participant.handle}`}
             </p>
           </div>
-          {/* Desktop quick actions */}
-          <div className="hidden md:flex items-center gap-1">
-            <Button variant="ghost" size="icon" className="text-muted-foreground">
-              <Camera className="h-5 w-5" />
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full text-muted-foreground hover:text-foreground">
+              <Phone className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="text-muted-foreground">
-              <Play className="h-5 w-5" />
+            <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full text-muted-foreground hover:text-foreground">
+              <Video className="h-5 w-5" />
             </Button>
           </div>
-        </div>
+        </motion.div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-2">
+        <div className="flex-1 overflow-y-auto px-4 py-5 space-y-3">
           {isLoading ? (
             <MessageSkeleton />
           ) : (
             <AnimatePresence>
-              {messages.map((message) => (
+              {messages.map((message, idx) => (
                 <motion.div
                   key={message.id}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.15 }}
-                  className={cn(
-                    'flex',
-                    message.senderId === 'me' ? 'justify-end' : 'justify-start'
-                  )}
+                  initial={{ opacity: 0, y: 12, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ duration: 0.2, delay: idx * 0.03 }}
+                  className={cn('flex', message.senderId === 'me' ? 'justify-end' : 'justify-start')}
                 >
                   <div
                     className={cn(
-                      'max-w-[75%] px-4 py-2.5 rounded-3xl',
+                      'max-w-[78%] px-4 py-3 shadow-sm',
                       message.senderId === 'me'
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-secondary text-secondary-foreground'
+                        ? 'bg-primary text-primary-foreground rounded-[22px] rounded-br-md'
+                        : 'bg-secondary/80 text-foreground rounded-[22px] rounded-bl-md'
                     )}
                   >
-                    <p className="text-sm leading-relaxed">{message.content}</p>
+                    <p className="text-[15px] leading-relaxed">{message.content}</p>
                   </div>
                 </motion.div>
               ))}
@@ -317,41 +267,58 @@ export default function Messages() {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Read receipt */}
-        <div className="px-4 pb-1 flex justify-end">
-          <span className="text-[10px] text-muted-foreground flex items-center gap-1">
-            <CheckCheck className="h-3 w-3" />
+        {/* Seen indicator */}
+        <div className="px-5 pb-2 flex justify-end">
+          <span className="text-[11px] text-muted-foreground/70 flex items-center gap-1 font-medium">
+            <CheckCheck className="h-3.5 w-3.5" />
             Seen
           </span>
         </div>
 
-        {/* Message Input */}
-        <div className="px-4 pb-4 pt-2 bg-background">
-          <div className="flex items-center gap-2 bg-secondary rounded-full px-3 py-1">
-            <Button variant="ghost" size="icon" className="shrink-0 h-8 w-8 text-muted-foreground hover:text-foreground">
+        {/* Input */}
+        <div className="px-4 pb-5 pt-2">
+          <div className="flex items-center gap-2 bg-secondary/60 rounded-full px-2 py-1.5 ring-1 ring-border/30">
+            <Button variant="ghost" size="icon" className="shrink-0 h-9 w-9 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary">
               <Camera className="h-5 w-5" />
             </Button>
             <Input
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder="Message..."
-              className="flex-1 border-0 bg-transparent focus-visible:ring-0 px-0 h-10"
+              className="flex-1 border-0 bg-transparent focus-visible:ring-0 px-1 h-10 text-[15px] placeholder:text-muted-foreground/60"
               onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
             />
-            {newMessage.trim() ? (
-              <Button
-                size="sm"
-                variant="ghost"
-                className="shrink-0 text-primary font-semibold hover:text-primary"
-                onClick={handleSendMessage}
-              >
-                Send
-              </Button>
-            ) : (
-              <Button variant="ghost" size="icon" className="shrink-0 h-8 w-8 text-muted-foreground hover:text-foreground">
-                <Image className="h-5 w-5" />
-              </Button>
-            )}
+            <AnimatePresence mode="wait">
+              {newMessage.trim() ? (
+                <motion.div
+                  key="send"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.15 }}
+                >
+                  <Button
+                    size="icon"
+                    className="shrink-0 h-9 w-9 rounded-full"
+                    onClick={handleSendMessage}
+                  >
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="image"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.15 }}
+                >
+                  <Button variant="ghost" size="icon" className="shrink-0 h-9 w-9 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary">
+                    <Image className="h-5 w-5" />
+                  </Button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>
@@ -362,52 +329,60 @@ export default function Messages() {
   return (
     <div className="flex flex-col h-[100dvh] bg-background">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-background">
-        <button className="flex items-center gap-1 hover:opacity-70 transition-opacity">
-          <span className="font-semibold text-lg text-foreground">username</span>
-          <ChevronDown className="h-4 w-4 text-foreground" />
+      <motion.div 
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center justify-between px-5 py-4 bg-background"
+      >
+        <button className="flex items-center gap-1.5 hover:opacity-70 transition-opacity group">
+          <span className="font-bold text-xl text-foreground tracking-tight">username</span>
+          <ChevronDown className="h-4 w-4 text-foreground/70 group-hover:text-foreground transition-colors" />
         </button>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {requestCount > 0 && (
-            <button className="text-sm text-primary font-medium hover:opacity-70 transition-opacity">
+            <motion.button 
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="text-[13px] text-primary font-semibold hover:opacity-80 transition-opacity"
+            >
               Requests ({requestCount})
-            </button>
+            </motion.button>
           )}
-          <Button variant="ghost" size="icon" className="text-foreground">
+          <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-foreground hover:bg-secondary">
             <Edit className="h-6 w-6" strokeWidth={1.5} />
           </Button>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Sticky Search */}
-      <div className="sticky top-0 z-10 px-4 py-3 bg-background">
+      {/* Search */}
+      <div className="sticky top-0 z-10 px-5 pb-3 bg-background">
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
           <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search messages or people"
-            className="pl-11 rounded-xl bg-secondary border-0 h-10"
+            placeholder="Search"
+            className="pl-11 rounded-xl bg-secondary/50 border-0 h-11 text-[15px] placeholder:text-muted-foreground/50 focus-visible:ring-1 focus-visible:ring-primary/30"
           />
         </div>
       </div>
 
-      {/* Quick Access Row */}
-      <div className="border-b border-border">
+      {/* Quick Access */}
+      <div className="border-b border-border/40">
         {isLoading ? (
           <QuickAccessSkeleton />
         ) : (
           <ScrollArea className="w-full">
-            <div className="flex gap-4 px-4 py-3">
-              {mockQuickAccess.map((user) => (
-                <button
+            <div className="flex gap-4 px-5 py-4">
+              {mockQuickAccess.map((user, idx) => (
+                <motion.button
                   key={user.id}
-                  className="flex flex-col items-center gap-1.5 min-w-[64px] group"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.04 }}
+                  className="flex flex-col items-center gap-2 min-w-[72px] group"
                   onClick={() => {
-                    if (user.id === 'new') {
-                      // Handle new message
-                    } else if (user.id !== 'note') {
-                      // Open conversation
+                    if (user.id !== 'new' && user.id !== 'note') {
                       const conv = mockConversations.find(c => c.participant.name.toLowerCase().includes(user.name.toLowerCase()));
                       if (conv) setSelectedConversation(conv);
                     }
@@ -415,17 +390,17 @@ export default function Messages() {
                 >
                   <div className="relative">
                     {user.id === 'note' ? (
-                      <div className="w-16 h-16 rounded-full border-2 border-dashed border-muted-foreground/30 flex items-center justify-center bg-secondary/50">
-                        <span className="text-2xl">✨</span>
+                      <div className="w-[72px] h-[72px] rounded-full bg-gradient-to-br from-secondary to-secondary/40 border-2 border-dashed border-muted-foreground/20 flex items-center justify-center group-hover:border-primary/40 transition-all">
+                        <span className="text-2xl">{user.note}</span>
                       </div>
                     ) : user.id === 'new' ? (
-                      <div className="w-16 h-16 rounded-full border-2 border-muted-foreground/30 flex items-center justify-center bg-secondary/50 group-hover:border-primary/50 transition-colors">
-                        <Plus className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
+                      <div className="w-[72px] h-[72px] rounded-full bg-gradient-to-br from-secondary to-secondary/40 border-2 border-muted-foreground/20 flex items-center justify-center group-hover:border-primary/40 group-hover:from-primary/10 group-hover:to-primary/5 transition-all">
+                        <Plus className="h-7 w-7 text-muted-foreground/70 group-hover:text-primary transition-colors" />
                       </div>
                     ) : (
                       <>
-                        <Avatar className="h-16 w-16 ring-2 ring-transparent group-hover:ring-primary/20 transition-all">
-                          <AvatarFallback className="bg-secondary text-secondary-foreground text-lg">
+                        <Avatar className="h-[72px] w-[72px] ring-2 ring-transparent group-hover:ring-primary/20 transition-all shadow-sm">
+                          <AvatarFallback className="bg-gradient-to-br from-secondary to-secondary/60 text-foreground text-lg font-medium">
                             {user.name.charAt(0)}
                           </AvatarFallback>
                         </Avatar>
@@ -433,10 +408,10 @@ export default function Messages() {
                       </>
                     )}
                   </div>
-                  <span className="text-xs text-muted-foreground truncate max-w-[64px]">
+                  <span className="text-[12px] text-muted-foreground/80 truncate max-w-[72px] font-medium">
                     {user.id === 'note' ? 'Your note' : user.id === 'new' ? 'New' : user.name}
                   </span>
-                </button>
+                </motion.button>
               ))}
             </div>
             <ScrollBar orientation="horizontal" className="invisible" />
@@ -444,76 +419,77 @@ export default function Messages() {
         )}
       </div>
 
-      {/* Messages Label */}
-      <div className="px-4 py-2">
-        <span className="font-semibold text-foreground">Messages</span>
+      {/* Label */}
+      <div className="px-5 py-3">
+        <span className="font-semibold text-[15px] text-foreground tracking-tight">Messages</span>
       </div>
 
-      {/* Conversations List */}
+      {/* Conversations */}
       <div className="flex-1 overflow-y-auto">
         {isLoading ? (
           Array.from({ length: 5 }).map((_, i) => <ConversationSkeleton key={`skeleton-${i}`} />)
         ) : filteredConversations.length === 0 ? (
-          <div className="p-8 text-center text-muted-foreground">
-            <p>No conversations found</p>
+          <div className="p-10 text-center">
+            <p className="text-muted-foreground/70 text-[15px]">No conversations yet</p>
           </div>
         ) : (
-          filteredConversations.map((conversation) => (
+          filteredConversations.map((conversation, idx) => (
             <motion.div
               key={conversation.id}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: idx * 0.03 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setSelectedConversation(conversation)}
-              className={cn(
-                'flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors hover:bg-secondary/30'
-              )}
+              className="flex items-center gap-4 px-5 py-3.5 cursor-pointer transition-colors hover:bg-secondary/30 active:bg-secondary/50"
             >
-              {/* Avatar with unread ring */}
               <div className="relative">
                 <Avatar className={cn(
-                  "h-14 w-14 transition-all",
-                  conversation.unread && "ring-2 ring-primary ring-offset-2 ring-offset-background"
+                  "h-[58px] w-[58px] transition-all shadow-sm",
+                  conversation.unread && "ring-[2.5px] ring-primary ring-offset-2 ring-offset-background"
                 )}>
-                  <AvatarFallback className="bg-secondary text-secondary-foreground text-lg">
+                  <AvatarFallback className="bg-gradient-to-br from-secondary to-secondary/60 text-foreground text-lg font-medium">
                     {conversation.participant.name.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
                 {conversation.participant.isOnline && <OnlineIndicator />}
               </div>
 
-              {/* Content */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2">
                   <p className={cn(
-                    'text-foreground truncate',
+                    'text-[15px] text-foreground truncate tracking-tight',
                     conversation.unread ? 'font-semibold' : 'font-normal'
                   )}>
                     {conversation.participant.name}
                   </p>
                   <span className={cn(
-                    'text-xs shrink-0 ml-2',
-                    conversation.unread ? 'text-foreground' : 'text-muted-foreground'
+                    'text-[12px] shrink-0',
+                    conversation.unread ? 'text-foreground/80 font-medium' : 'text-muted-foreground/60'
                   )}>
                     {conversation.lastMessageTime}
                   </span>
                 </div>
                 <p className={cn(
-                  'text-sm truncate mt-0.5',
-                  conversation.unread ? 'text-foreground font-medium' : 'text-muted-foreground'
+                  'text-[14px] truncate mt-0.5',
+                  conversation.unread ? 'text-foreground/90 font-medium' : 'text-muted-foreground/70'
                 )}>
                   {getLastMessagePreview(conversation)}
                 </p>
               </div>
 
-              {/* Unread indicator */}
               {conversation.unread && (
-                <div className="w-2 h-2 rounded-full bg-primary shrink-0" />
+                <motion.div 
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="w-2.5 h-2.5 rounded-full bg-primary shrink-0 shadow-sm shadow-primary/30" 
+                />
               )}
             </motion.div>
           ))
         )}
       </div>
 
-      {/* Bottom padding for nav */}
       <div className="h-20" />
     </div>
   );
