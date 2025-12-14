@@ -29,7 +29,13 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <img src={logo} alt="SelfERA" className="w-[3.75rem] h-[3.75rem] rounded-xl animate-pulse" />
+        <div className="flex items-center gap-3">
+          <img src={logo} alt="SelfERA" className="w-12 h-12 rounded-2xl object-cover animate-pulse" />
+          <span className="font-logo text-xl tracking-[0.2em] uppercase logo-glow">
+            <span className="font-light text-foreground/50">SELF</span>
+            <span className="font-semibold gradient-brand-text">ERA</span>
+          </span>
+        </div>
       </div>
     );
   }
@@ -48,7 +54,13 @@ function HomeRoute() {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <img src={logo} alt="SelfERA" className="w-[3.75rem] h-[3.75rem] rounded-xl animate-pulse" />
+        <div className="flex items-center gap-3">
+          <img src={logo} alt="SelfERA" className="w-12 h-12 rounded-2xl object-cover animate-pulse" />
+          <span className="font-logo text-xl tracking-[0.2em] uppercase logo-glow">
+            <span className="font-light text-foreground/50">SELF</span>
+            <span className="font-semibold gradient-brand-text">ERA</span>
+          </span>
+        </div>
       </div>
     );
   }
