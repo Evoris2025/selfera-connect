@@ -39,7 +39,7 @@ export function AppHeader({ title }: AppHeaderProps) {
           {title ? (
             <span className="font-semibold text-foreground tracking-widest">{title}</span>
           ) : (
-            <span className="text-lg font-semibold gradient-brand-text tracking-[0.15em]">SelfERA</span>
+            <span className="text-lg font-semibold gradient-brand-text tracking-[0.02em]">SelfERA</span>
           )}
         </Link>
 
