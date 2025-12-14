@@ -10,6 +10,8 @@ import { getCurrentLanguage, getLanguageDirection } from "@/i18n";
 import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
 import Feed from "./pages/Feed";
+import Search from "./pages/Search";
+import Notifications from "./pages/Notifications";
 import Profile from "./pages/Profile";
 import Directory from "./pages/Directory";
 import CrisisSupport from "./pages/CrisisSupport";
@@ -35,6 +37,8 @@ const App = () => {
             <Route path="/" element={<Landing />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/feed" element={<Feed />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/notifications" element={<Notifications />} />
             <Route path="/profile/:handle?" element={<Profile />} />
             <Route path="/directory" element={<Directory />} />
             <Route path="/crisis" element={<CrisisSupport />} />

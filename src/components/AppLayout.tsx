@@ -1,34 +1,21 @@
 import { ReactNode } from 'react';
-import { DesktopSidebar } from './DesktopSidebar';
 import { MobileNav } from './MobileNav';
 import { AppHeader } from './AppHeader';
 
 interface AppLayoutProps {
   children: ReactNode;
+  title?: string;
   showHeader?: boolean;
-  rightSidebar?: ReactNode;
 }
 
-export function AppLayout({ children, showHeader = true, rightSidebar }: AppLayoutProps) {
+export function AppLayout({ children, title, showHeader = true }: AppLayoutProps) {
   return (
-    <div className="min-h-screen bg-background flex w-full">
-      <DesktopSidebar />
+    <div className="min-h-screen bg-background flex flex-col w-full">
+      {showHeader && <AppHeader title={title} />}
       
-      <div className="flex-1 flex flex-col min-h-screen">
-        {showHeader && <AppHeader />}
-        
-        <div className="flex-1 flex">
-          <main className="flex-1 pb-20 md:pb-0">
-            {children}
-          </main>
-          
-          {rightSidebar && (
-            <aside className="hidden lg:block w-80 p-4 border-l border-border">
-              {rightSidebar}
-            </aside>
-          )}
-        </div>
-      </div>
+      <main className="flex-1 pb-20 max-w-lg mx-auto w-full">
+        {children}
+      </main>
       
       <MobileNav />
     </div>
