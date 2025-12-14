@@ -33,7 +33,7 @@ export function MobileNav({ onCreateClick, notificationCount = 0, messageCount =
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/50 bg-background/98 backdrop-blur-xl pb-safe">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background pb-safe">
       <div className="flex items-center justify-around h-16 max-w-lg mx-auto px-3">
         {navItems.map((item, index) => {
           const isActive = location.pathname === item.href || 
