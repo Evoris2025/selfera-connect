@@ -1,4 +1,5 @@
-import { Heart, HeartHandshake } from 'lucide-react';
+import { Heart } from 'lucide-react';
+import { HugIcon } from '@/components/icons/HugIcon';
 import { cn } from '@/lib/utils';
 
 interface ReactionButtonProps {
@@ -15,7 +16,7 @@ const reactionConfig = {
     hoverClass: 'hover:text-rose-500 hover:bg-rose-500/10',
   },
   hug: {
-    icon: HeartHandshake,
+    icon: HugIcon,
     activeClass: 'text-amber-500 bg-amber-500/20 border-amber-500/30',
     hoverClass: 'hover:text-amber-500 hover:bg-amber-500/10',
   },
