@@ -583,7 +583,7 @@ export default function Messages() {
                   {conversation.unread && (
                     <motion.div 
                       initial={{ scale: 0, opacity: 0 }}
-                      animate={{ scale: [0, 1.5, 1], opacity: 1 }}
+                      animate={{ scale: 1, opacity: 1 }}
                       exit={{ scale: 0, opacity: 0 }}
                       transition={springPop}
                       className="w-2.5 h-2.5 rounded-full bg-primary shrink-0 shadow-lg shadow-primary/40" 
