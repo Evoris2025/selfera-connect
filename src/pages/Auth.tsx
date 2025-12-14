@@ -146,7 +146,7 @@ export default function Auth() {
           >
             {/* Logo */}
             <div className="flex items-center gap-2 mb-8">
-              <img src={logo} alt="SelfERA" className="w-10 h-10 rounded-xl object-cover" />
+              <img src={logo} alt="SelfERA" className="w-12 h-12 rounded-xl object-cover" />
               <span className="text-2xl font-bold gradient-brand-text">
                 SelfERA
               </span>
@@ -245,7 +245,7 @@ export default function Auth() {
       {/* Right Panel - Visual */}
       <div className="hidden lg:flex flex-1 bg-gradient-to-br from-primary/20 via-accent/20 to-crisis/20 items-center justify-center p-12">
         <div className="max-w-md text-center">
-          <img src={logo} alt="SelfERA" className="w-24 h-24 rounded-3xl object-cover mx-auto mb-8" />
+          <img src={logo} alt="SelfERA" className="w-[7.5rem] h-[7.5rem] rounded-3xl object-cover mx-auto mb-8" />
           <h2 className="text-3xl font-bold text-foreground mb-4">
             {t('landing.hero.title')}
           </h2>

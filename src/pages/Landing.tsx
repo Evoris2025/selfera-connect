@@ -46,7 +46,7 @@ export default function Landing() {
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <img src={logo} alt="SelfERA" className="w-9 h-9 rounded-xl object-cover" />
+            <img src={logo} alt="SelfERA" className="w-11 h-11 rounded-xl object-cover" />
             <span className="text-xl font-bold gradient-brand-text">
               SelfERA
             </span>
@@ -174,7 +174,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-2">
-              <img src={logo} alt="SelfERA" className="w-8 h-8 rounded-lg object-cover" />
+              <img src={logo} alt="SelfERA" className="w-10 h-10 rounded-lg object-cover" />
               <span className="font-semibold text-foreground">SelfERA</span>
             </div>
 

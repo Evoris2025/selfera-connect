@@ -33,7 +33,7 @@ export function DesktopSidebar() {
       <div className="flex-1">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 mb-8 px-3">
-          <img src={logo} alt="SelfERA" className="w-8 h-8 rounded-lg object-cover" />
+          <img src={logo} alt="SelfERA" className="w-10 h-10 rounded-lg object-cover" />
           <span className="text-xl font-bold gradient-brand-text">SelfERA</span>
         </Link>
 
