@@ -209,7 +209,7 @@ export default function Profile() {
               <Play className="h-5 w-5" />
             </TabsTrigger>
             <TabsTrigger 
-              value="saved" 
+              value="library" 
               className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-foreground data-[state=active]:bg-transparent h-full"
             >
               <Bookmark className="h-5 w-5" />
@@ -278,10 +278,10 @@ export default function Profile() {
             </div>
           </TabsContent>
 
-          {/* Saved */}
-          <TabsContent value="saved" className="mt-0 p-4">
+          {/* Library */}
+          <TabsContent value="library" className="mt-0 p-4">
             <div className="text-center py-12 text-muted-foreground text-sm">
-              {isOwnProfile ? 'Only you can see what you\'ve saved' : 'Nothing saved yet'}
+              {isOwnProfile ? 'Your mental health & wellbeing library' : 'Nothing in library yet'}
             </div>
           </TabsContent>
         </Tabs>
