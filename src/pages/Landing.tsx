@@ -47,8 +47,8 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-1">
             <img src={logo} alt="SelfERA" className="w-11 h-11 rounded-xl object-cover" />
-            <span className="text-xl font-bold gradient-brand-text">
-              <span className="tracking-[0.02em]">Self</span><span className="tracking-[0.04em]">ERA</span>
+            <span className="font-bold gradient-brand-text">
+              <span className="text-base tracking-wider">Self</span><span className="text-xl tracking-widest">ERA</span>
             </span>
           </div>
 
