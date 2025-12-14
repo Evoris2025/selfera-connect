@@ -41,7 +41,7 @@ const mockPosts = [
     },
     content: 'Today was a good day. Small wins matter. Remember to celebrate your progress, no matter how small.',
     tags: ['Self-care', 'Mindfulness'],
-    reactions: { heart: 101, hug: 45 },
+    reactions: { heart: 101 },
     commentCount: 8,
     createdAt: '1 day ago',
   },
