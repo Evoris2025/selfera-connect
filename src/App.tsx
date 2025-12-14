@@ -14,6 +14,7 @@ import Auth from "./pages/Auth";
 import Feed from "./pages/Feed";
 import Explore from "./pages/Explore";
 import VideoHub from "./pages/VideoHub";
+import Community from "./pages/Community";
 import Notifications from "./pages/Notifications";
 import Profile from "./pages/Profile";
 import Directory from "./pages/Directory";
@@ -82,6 +83,7 @@ function AppRoutes() {
       <Route path="/explore" element={<ProtectedRoute><Explore /></ProtectedRoute>} />
       <Route path="/search" element={<ProtectedRoute><Explore /></ProtectedRoute>} />
       <Route path="/videos" element={<ProtectedRoute><VideoHub /></ProtectedRoute>} />
+      <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
       <Route path="/profile/:handle?" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
