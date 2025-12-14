@@ -20,6 +20,7 @@ import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { MobileNav } from '@/components/MobileNav';
 
 interface Conversation {
   id: string;
@@ -490,7 +491,7 @@ export default function Messages() {
         )}
       </div>
 
-      <div className="h-20" />
+      <MobileNav />
     </div>
   );
 }
