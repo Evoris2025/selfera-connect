@@ -2,7 +2,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { Home, Compass, Plus, Bell, MessageCircle, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
 
 interface NavItem {
   icon: typeof Home;
@@ -21,7 +20,6 @@ interface MobileNavProps {
 
 export function MobileNav({ onCreateClick, notificationCount = 0, messageCount = 0 }: MobileNavProps) {
   const location = useLocation();
-  const [isCreatePressed, setIsCreatePressed] = useState(false);
 
   const navItems: NavItem[] = [
     { icon: Home, href: '/feed', label: 'Home' },
@@ -46,27 +44,13 @@ export function MobileNav({ onCreateClick, notificationCount = 0, messageCount =
               <button
                 key={index}
                 onClick={onCreateClick}
-                onMouseDown={() => setIsCreatePressed(true)}
-                onMouseUp={() => setIsCreatePressed(false)}
-                onMouseLeave={() => setIsCreatePressed(false)}
-                onTouchStart={() => setIsCreatePressed(true)}
-                onTouchEnd={() => setIsCreatePressed(false)}
-                className="flex items-center justify-center -mt-4 relative"
+                className={cn(
+                  'relative flex items-center justify-center p-3 rounded-2xl transition-all duration-200',
+                  'text-muted-foreground/60 hover:text-muted-foreground'
+                )}
                 aria-label="Create post"
               >
-                {/* Soft radial glow */}
-                <div className="absolute inset-0 w-11 h-11 rounded-full bg-primary/20 blur-xl scale-150" />
-                
-                <motion.div 
-                  animate={isCreatePressed ? { scale: 0.95 } : { scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                  className={cn(
-                    "relative w-11 h-11 rounded-full flex items-center justify-center shadow-lg shadow-primary/20",
-                    isCreatePressed ? "gradient-brand" : "bg-gradient-to-br from-primary/90 to-primary"
-                  )}
-                >
-                  <item.icon className="h-5 w-5 text-white" strokeWidth={2} />
-                </motion.div>
+                <item.icon className="h-5 w-5" strokeWidth={1.5} />
               </button>
             );
           }
