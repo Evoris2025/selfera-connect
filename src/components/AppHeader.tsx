@@ -36,7 +36,7 @@ export function AppHeader({ title }: AppHeaderProps) {
         {/* Logo */}
         <Link to="/feed" className="flex items-center gap-3 group">
           <div className="relative">
-            <img src={logo} alt="SelfERA" className="w-10 h-10 rounded-2xl object-cover ring-1 ring-foreground/10" />
+            <img src={logo} alt="SelfERA" className="w-10 h-10 rounded-2xl object-cover" />
             <div className="absolute inset-0 rounded-2xl bg-primary/20 blur-xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </div>
           {title ? (

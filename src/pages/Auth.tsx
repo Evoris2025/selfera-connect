@@ -147,7 +147,7 @@ export default function Auth() {
             {/* Logo */}
             <div className="flex items-center gap-3 mb-8 group">
               <div className="relative">
-                <img src={logo} alt="SelfERA" className="w-12 h-12 rounded-2xl object-cover ring-1 ring-foreground/10" />
+                <img src={logo} alt="SelfERA" className="w-12 h-12 rounded-2xl object-cover" />
                 <div className="absolute inset-0 rounded-2xl bg-primary/20 blur-xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
               <span className="font-logo text-2xl tracking-[0.2em] uppercase logo-glow">

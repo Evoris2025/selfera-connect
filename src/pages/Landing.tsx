@@ -47,7 +47,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3 group">
             <div className="relative">
-              <img src={logo} alt="SelfERA" className="w-11 h-11 rounded-2xl object-cover ring-1 ring-foreground/10" />
+              <img src={logo} alt="SelfERA" className="w-11 h-11 rounded-2xl object-cover" />
               <div className="absolute inset-0 rounded-2xl bg-primary/20 blur-xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
             <span className="font-logo text-xl tracking-[0.2em] uppercase logo-glow">
@@ -178,7 +178,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
-              <img src={logo} alt="SelfERA" className="w-10 h-10 rounded-2xl object-cover ring-1 ring-foreground/10" />
+              <img src={logo} alt="SelfERA" className="w-10 h-10 rounded-2xl object-cover" />
               <span className="font-logo text-lg tracking-[0.2em] uppercase">
                 <span className="font-light text-foreground/50">SELF</span>
                 <span className="font-semibold gradient-brand-text">ERA</span>

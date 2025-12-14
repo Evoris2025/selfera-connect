@@ -34,7 +34,7 @@ export function DesktopSidebar() {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3 mb-8 px-3 group">
           <div className="relative">
-            <img src={logo} alt="SelfERA" className="w-11 h-11 rounded-2xl object-cover ring-1 ring-foreground/10" />
+            <img src={logo} alt="SelfERA" className="w-11 h-11 rounded-2xl object-cover" />
             <div className="absolute inset-0 rounded-2xl bg-primary/20 blur-xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </div>
           <span className="font-logo text-xl tracking-[0.2em] uppercase logo-glow">
