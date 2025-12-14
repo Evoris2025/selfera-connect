@@ -45,10 +45,11 @@ export default function Landing() {
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-1">
-            <img src={logo} alt="SelfERA" className="w-11 h-11 rounded-xl object-cover" />
-            <span className="font-bold gradient-brand-text">
-              <span className="text-base tracking-wider">Self</span><span className="text-xl tracking-widest">ERA</span>
+          <div className="flex items-center gap-2">
+            <img src={logo} alt="SelfERA" className="w-10 h-10 rounded-xl object-cover" />
+            <span className="flex items-baseline">
+              <span className="text-xs font-medium text-muted-foreground tracking-tight">Self</span>
+              <span className="text-2xl font-bold gradient-brand-text tracking-[0.15em]">ERA</span>
             </span>
           </div>
 
