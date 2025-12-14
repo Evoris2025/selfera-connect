@@ -26,11 +26,11 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { MobileNav } from '@/components/MobileNav';
 
-// Dopamine-driven spring configs
-const springSnap = { type: 'spring' as const, stiffness: 700, damping: 30, mass: 0.8 };
-const springBounce = { type: 'spring' as const, stiffness: 500, damping: 15, mass: 0.5 };
-const springPop = { type: 'spring' as const, stiffness: 600, damping: 12 };
-const springElastic = { type: 'spring' as const, stiffness: 400, damping: 8 };
+// Soft, calm motion configs for notifications
+const springSnap = { type: 'spring' as const, stiffness: 350, damping: 35, mass: 1 };
+const springBounce = { type: 'spring' as const, stiffness: 260, damping: 32, mass: 1 };
+const springPop = { type: 'spring' as const, stiffness: 280, damping: 30 };
+const springElastic = { type: 'spring' as const, stiffness: 220, damping: 30 };
 
 interface Notification {
   id: string;
@@ -306,8 +306,8 @@ function HighlightCard({ notification, index }: { notification: Notification; in
     >
       <motion.div 
         className="relative shrink-0"
-        animate={{ rotate: [0, -5, 5, 0] }}
-        transition={{ duration: 0.5, delay: index * 0.1 + 0.3 }}
+        animate={{ rotate: [0, -2, 2, 0] }}
+        transition={{ duration: 0.6, delay: index * 0.1 + 0.3, ease: 'easeInOut' }}
       >
         {notification.users && <StackedAvatars users={notification.users} />}
       </motion.div>
