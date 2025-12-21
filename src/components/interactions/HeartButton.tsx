@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Heart } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useAnimationControls } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 interface HeartButtonProps {
@@ -10,14 +10,22 @@ interface HeartButtonProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
-const springConfig = { type: "spring" as const, stiffness: 500, damping: 25 };
+interface Particle {
+  id: number;
+  angle: number;
+  distance: number;
+  size: number;
+  delay: number;
+}
 
 export function HeartButton({ count, active, onClick, size = 'md' }: HeartButtonProps) {
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [showBurst, setShowBurst] = useState(false);
+  const [particles, setParticles] = useState<Particle[]>([]);
   const [displayCount, setDisplayCount] = useState(count);
   const [countDirection, setCountDirection] = useState<'up' | 'down'>('up');
   const prevCountRef = useRef(count);
+  const prevActiveRef = useRef(active);
+  const isFirstRender = useRef(true);
+  const controls = useAnimationControls();
 
   const sizeClasses = {
     sm: 'h-5 w-5',
@@ -33,58 +41,121 @@ export function HeartButton({ count, active, onClick, size = 'md' }: HeartButton
     }
   }, [count]);
 
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    // Animate when liking (not active -> active)
+    if (active && !prevActiveRef.current) {
+      // Instagram-style scale bounce
+      controls.start({
+        scale: [1, 0.8, 1.2, 0.95, 1.05, 1],
+        transition: { 
+          duration: 0.45, 
+          times: [0, 0.1, 0.3, 0.5, 0.7, 1],
+          ease: "easeOut"
+        }
+      });
+
+      // Create particle burst
+      const newParticles = Array.from({ length: 6 }, (_, i) => ({
+        id: Date.now() + i,
+        angle: (i * 60) + (Math.random() * 30 - 15),
+        distance: 18 + Math.random() * 12,
+        size: 4 + Math.random() * 3,
+        delay: Math.random() * 0.05,
+      }));
+      setParticles(newParticles);
+      setTimeout(() => setParticles([]), 500);
+    }
+
+    // Animate when unliking (active -> not active)
+    if (!active && prevActiveRef.current) {
+      controls.start({
+        scale: [1, 0.9, 1],
+        transition: { duration: 0.2, ease: "easeOut" }
+      });
+    }
+
+    prevActiveRef.current = active;
+  }, [active, controls]);
+
   const handleClick = () => {
-    // Haptic feedback
     if (navigator.vibrate) {
       navigator.vibrate(10);
     }
-
-    if (!active) {
-      setIsAnimating(true);
-      setShowBurst(true);
-      setTimeout(() => setIsAnimating(false), 400);
-      setTimeout(() => setShowBurst(false), 400);
-    }
-    
     onClick();
   };
 
   return (
     <motion.button
-      whileTap={{ scale: 0.8 }}
-      transition={springConfig}
+      whileTap={{ scale: 0.75 }}
+      transition={{ type: "spring", stiffness: 400, damping: 17 }}
       onClick={handleClick}
       className="flex items-center gap-1.5 relative"
     >
-      <div className="relative">
-        <motion.div
-          animate={isAnimating ? {
-            scale: [1, 1.35, 0.9, 1.1, 0.95, 1],
-          } : {}}
-          transition={{ duration: 0.4, ease: [0.175, 0.885, 0.32, 1.275] }}
-        >
+      <div className="relative" style={{ overflow: 'visible' }}>
+        <motion.div animate={controls}>
           <Heart 
             className={cn(
               sizeClasses[size],
               'transition-colors duration-100',
               active 
                 ? 'fill-rose-500 text-rose-500' 
-                : 'text-foreground hover:text-rose-500'
+                : 'text-foreground hover:text-rose-500/70'
             )} 
           />
         </motion.div>
         
-        {/* Micro burst effect */}
+        {/* Instagram-style particle burst */}
+        <div className="absolute inset-0 pointer-events-none" style={{ overflow: 'visible' }}>
+          <AnimatePresence>
+            {particles.map((particle) => {
+              const radians = (particle.angle * Math.PI) / 180;
+              return (
+                <motion.div
+                  key={particle.id}
+                  initial={{ 
+                    x: 0, 
+                    y: 0, 
+                    scale: 0,
+                    opacity: 1 
+                  }}
+                  animate={{ 
+                    x: Math.cos(radians) * particle.distance,
+                    y: Math.sin(radians) * particle.distance,
+                    scale: [0, 1, 0],
+                    opacity: [1, 1, 0]
+                  }}
+                  transition={{ 
+                    duration: 0.4,
+                    delay: particle.delay,
+                    ease: [0.32, 0, 0.67, 0]
+                  }}
+                  style={{
+                    width: particle.size,
+                    height: particle.size,
+                  }}
+                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-rose-500"
+                />
+              );
+            })}
+          </AnimatePresence>
+        </div>
+
+        {/* Ring burst effect */}
         <AnimatePresence>
-          {showBurst && (
+          {particles.length > 0 && (
             <motion.div
-              initial={{ scale: 0, opacity: 1 }}
-              animate={{ scale: 2, opacity: 0 }}
+              initial={{ scale: 0.5, opacity: 0.8 }}
+              animate={{ scale: 2.5, opacity: 0 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
               className="absolute inset-0 flex items-center justify-center pointer-events-none"
             >
-              <div className="w-full h-full rounded-full border-2 border-rose-500/50" />
+              <div className="w-full h-full rounded-full border-2 border-rose-500" />
             </motion.div>
           )}
         </AnimatePresence>
