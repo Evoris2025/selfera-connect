@@ -80,10 +80,6 @@ export function TextPostCard({
       return;
     }
     await toggleLibrary();
-    toast({
-      title: inLibrary ? t('library.removed') : t('library.added'),
-      description: inLibrary ? t('library.removedDesc') : t('library.addedDesc'),
-    });
   };
 
   return (

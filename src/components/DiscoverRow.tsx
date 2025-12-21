@@ -86,7 +86,6 @@ export function DiscoverRow() {
       setProfiles(prev =>
         prev.map(p => (p.id === profileId ? { ...p, isFollowing: !p.isFollowing } : p))
       );
-      toast({ title: isCurrentlyFollowing ? 'Unfollowed' : 'Following!' });
       return;
     }
     
@@ -118,7 +117,6 @@ export function DiscoverRow() {
         setProfiles(prev =>
           prev.map(p => (p.id === profileId ? { ...p, isFollowing: false } : p))
         );
-        toast({ title: 'Unfollowed successfully' });
       } else {
         // Follow
         const { error } = await supabase.from('follows').insert({
@@ -133,7 +131,6 @@ export function DiscoverRow() {
         setProfiles(prev =>
           prev.map(p => (p.id === profileId ? { ...p, isFollowing: true } : p))
         );
-        toast({ title: 'Following!' });
       }
     } catch (error) {
       console.error('Error toggling follow:', error);

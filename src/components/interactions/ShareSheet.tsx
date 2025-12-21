@@ -34,11 +34,6 @@ export function ShareSheet({ open, onOpenChange, postId, onSuccess }: ShareSheet
       navigator.vibrate([10, 50, 10]);
     }
     
-    toast({
-      title: t('share.linkCopied'),
-      description: t('share.linkCopiedDesc'),
-    });
-    
     onSuccess?.();
     
     setTimeout(() => {
@@ -48,20 +43,12 @@ export function ShareSheet({ open, onOpenChange, postId, onSuccess }: ShareSheet
   };
 
   const handleSendMessage = () => {
-    // Navigate to messages with post attached
-    toast({
-      title: t('share.sendMessage'),
-      description: t('share.featureComingSoon'),
-    });
+    // Navigate to messages with post attached - coming soon
     onOpenChange(false);
   };
 
   const handleShareToCommunity = () => {
-    // Open community share modal
-    toast({
-      title: t('share.shareToCommunity'),
-      description: t('share.featureComingSoon'),
-    });
+    // Open community share modal - coming soon
     onOpenChange(false);
   };
 

@@ -113,11 +113,6 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
         await supabase.from('post_tag_map').insert(tagMappings);
       }
 
-      toast({
-        title: 'Posted!',
-        description: 'Your photo has been shared.',
-      });
-
       onSuccess();
     } catch (error) {
       console.error('Error creating post:', error);
