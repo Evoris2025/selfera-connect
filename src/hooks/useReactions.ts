@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { toast } from '@/hooks/use-toast';
 
 interface UseReactionsResult {
   heartCount: number;
@@ -9,50 +10,28 @@ interface UseReactionsResult {
   isLoading: boolean;
 }
 
-export function useReactions(postId: string): UseReactionsResult {
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const isUuid = (value: string) => UUID_RE.test(value);
+
+export function useReactions(postId: string, initialCount = 0): UseReactionsResult {
   const { user } = useAuth();
-  const [heartCount, setHeartCount] = useState(0);
+  const [heartCount, setHeartCount] = useState(() => initialCount);
   const [hasReacted, setHasReacted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    fetchReactions();
+  const isUuidPostId = isUuid(postId);
 
-    // Subscribe to real-time updates for this post's reactions
-    const channel = supabase
-      .channel(`reactions-${postId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'reactions',
-          filter: `post_id=eq.${postId}`,
-        },
-        (payload) => {
-          if (payload.eventType === 'INSERT') {
-            setHeartCount((prev) => prev + 1);
-            // Check if current user added the reaction
-            if (payload.new && (payload.new as { user_id: string }).user_id === user?.id) {
-              setHasReacted(true);
-            }
-          } else if (payload.eventType === 'DELETE') {
-            setHeartCount((prev) => Math.max(0, prev - 1));
-            // Check if current user removed the reaction
-            if (payload.old && (payload.old as { user_id: string }).user_id === user?.id) {
-              setHasReacted(false);
-            }
-          }
-        }
-      )
-      .subscribe();
+  // UI should stay deterministic under rapid taps; only the last state is persisted.
+  const desiredReactedRef = useRef(false);
+  const commitTimerRef = useRef<number | null>(null);
+  const reconcileTimerRef = useRef<number | null>(null);
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [postId, user?.id]);
+  const fetchReactions = useCallback(async () => {
+    if (!isUuidPostId) {
+      setIsLoading(false);
+      return;
+    }
 
-  const fetchReactions = async () => {
     try {
       // Get total heart count for this post
       const { count, error: countError } = await supabase
@@ -75,47 +54,113 @@ export function useReactions(postId: string): UseReactionsResult {
           .maybeSingle();
 
         if (userError) throw userError;
-        setHasReacted(!!data);
+        const reacted = !!data;
+        desiredReactedRef.current = reacted;
+        setHasReacted(reacted);
+      } else {
+        desiredReactedRef.current = false;
+        setHasReacted(false);
       }
     } catch (error) {
       console.error('Error fetching reactions:', error);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isUuidPostId, postId, user?.id]);
 
-  const toggleReaction = async () => {
-    if (!user?.id) return;
+  useEffect(() => {
+    // Reset per-post UI state
+    setHeartCount(initialCount);
+    setHasReacted(false);
+    desiredReactedRef.current = false;
+    setIsLoading(true);
+
+    if (!isUuidPostId) {
+      // Demo/mock posts (non-UUID) — keep UI functional without backend calls.
+      setIsLoading(false);
+      return;
+    }
+
+    fetchReactions();
+
+    // Subscribe to updates for this post's reactions; reconcile by refetching (prevents double-count drift).
+    const channel = supabase
+      .channel(`reactions-${postId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'reactions',
+          filter: `post_id=eq.${postId}`,
+        },
+        () => {
+          if (reconcileTimerRef.current) window.clearTimeout(reconcileTimerRef.current);
+          reconcileTimerRef.current = window.setTimeout(() => {
+            fetchReactions();
+          }, 150);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+      if (commitTimerRef.current) window.clearTimeout(commitTimerRef.current);
+      if (reconcileTimerRef.current) window.clearTimeout(reconcileTimerRef.current);
+    };
+  }, [postId, initialCount, isUuidPostId, fetchReactions]);
+
+  const commitDesired = useCallback(async () => {
+    if (!user?.id || !isUuidPostId) return;
+
+    const desired = desiredReactedRef.current;
 
     try {
-      if (hasReacted) {
-        // Remove reaction
+      if (desired) {
+        const { error } = await supabase.from('reactions').insert({
+          post_id: postId,
+          user_id: user.id,
+          type: 'heart',
+        });
+        if (error) throw error;
+      } else {
         const { error } = await supabase
           .from('reactions')
           .delete()
           .eq('post_id', postId)
           .eq('user_id', user.id)
           .eq('type', 'heart');
-
         if (error) throw error;
-        // Optimistic update handled by realtime
-      } else {
-        // Add reaction
-        const { error } = await supabase
-          .from('reactions')
-          .insert({
-            post_id: postId,
-            user_id: user.id,
-            type: 'heart',
-          });
-
-        if (error) throw error;
-        // Optimistic update handled by realtime
       }
     } catch (error) {
       console.error('Error toggling reaction:', error);
+      toast({
+        title: "Couldn't save like",
+        description: 'Please try again.',
+        variant: 'destructive',
+      });
       fetchReactions();
     }
+  }, [user?.id, isUuidPostId, postId, fetchReactions]);
+
+  const toggleReaction = async () => {
+    if (!user?.id) return;
+
+    const next = !desiredReactedRef.current;
+    desiredReactedRef.current = next;
+
+    // Optimistic UI (instant)
+    setHasReacted(next);
+    setHeartCount((prev) => Math.max(0, prev + (next ? 1 : -1)));
+
+    // Demo/mock posts: stop here.
+    if (!isUuidPostId) return;
+
+    // Debounce backend write; only persist the latest state.
+    if (commitTimerRef.current) window.clearTimeout(commitTimerRef.current);
+    commitTimerRef.current = window.setTimeout(() => {
+      commitDesired();
+    }, 300);
   };
 
   return { heartCount, hasReacted, toggleReaction, isLoading };

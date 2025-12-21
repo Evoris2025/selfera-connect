@@ -97,7 +97,7 @@ export function HeartButton({ count, active, onClick, size = 'md' }: HeartButton
         <Heart 
           className={cn(
             sizeClasses[size],
-            active ? 'fill-rose-500 text-rose-500' : 'text-foreground hover:text-rose-500/70'
+            active ? 'text-primary fill-current' : 'text-foreground hover:text-primary/70'
           )}
         />
         
@@ -114,7 +114,7 @@ export function HeartButton({ count, active, onClick, size = 'md' }: HeartButton
                   y: Math.sin(particle.angle * Math.PI / 180) * 20,
                 }}
                 transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-                className="absolute left-1/2 top-1/2 w-1.5 h-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-rose-500"
+                className="absolute left-1/2 top-1/2 w-1.5 h-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary"
               />
             ))}
           </AnimatePresence>
@@ -128,7 +128,7 @@ export function HeartButton({ count, active, onClick, size = 'md' }: HeartButton
               transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="absolute inset-0 flex items-center justify-center pointer-events-none"
             >
-              <div className="w-full h-full rounded-full border-2 border-rose-500" />
+              <div className="w-full h-full rounded-full border-2 border-primary" />
             </motion.div>
           )}
         </AnimatePresence>
@@ -142,7 +142,7 @@ export function HeartButton({ count, active, onClick, size = 'md' }: HeartButton
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: countDirection === 'up' ? -20 : 20, opacity: 0 }}
             transition={{ duration: 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className={cn('text-sm tabular-nums block', active ? 'text-rose-500' : 'text-foreground')}
+            className={cn('text-sm tabular-nums block', active ? 'text-primary' : 'text-foreground')}
           >
             {displayCount > 0 ? displayCount : ''}
           </motion.span>
