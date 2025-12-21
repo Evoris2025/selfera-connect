@@ -69,11 +69,8 @@ export function PostCard({
   const [showHeartOverlay, setShowHeartOverlay] = useState(false);
   const [showCommentSheet, setShowCommentSheet] = useState(false);
   const lastTapRef = useRef<number>(0);
-  const { heartCount, hasReacted, toggleReaction } = useReactions(id);
+  const { heartCount, hasReacted, toggleReaction } = useReactions(id, likes);
   const { inLibrary, toggleLibrary } = useLibrary(id);
-  
-  // Calculate display count: base likes from props + dynamic heart reactions
-  const displayLikeCount = likes + heartCount;
 
   const handleDoubleTap = async () => {
     const now = Date.now();
@@ -223,7 +220,7 @@ export function PostCard({
                   transition={{ duration: 0.4, times: [0, 0.6, 1], ease: "easeOut" }}
                   className="absolute inset-0 flex items-center justify-center pointer-events-none"
                 >
-                  <Heart className="h-24 w-24 fill-red-500 text-red-500 drop-shadow-lg" />
+                  <Heart className="h-24 w-24 fill-current text-primary drop-shadow-lg" />
                 </motion.div>
               )}
             </div>
@@ -245,7 +242,7 @@ export function PostCard({
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-4">
             <HeartButton 
-              count={displayLikeCount}
+              count={heartCount}
               active={hasReacted}
               onClick={handleReaction}
             />

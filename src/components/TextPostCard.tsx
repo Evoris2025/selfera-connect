@@ -54,7 +54,7 @@ export function TextPostCard({
 }: TextPostCardProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const { heartCount, hasReacted, toggleReaction } = useReactions(id);
+  const { heartCount, hasReacted, toggleReaction } = useReactions(id, 0);
   const { inLibrary, toggleLibrary } = useLibrary(id);
   const [showCommentSheet, setShowCommentSheet] = useState(false);
 
