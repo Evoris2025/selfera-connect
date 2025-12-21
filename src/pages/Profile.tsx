@@ -10,8 +10,8 @@ import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
+import { FollowButton } from '@/components/interactions';
 import { toast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
 
 // Mock user data with full social metrics
 const mockUser = {
@@ -177,19 +177,12 @@ export default function Profile() {
               </>
             ) : (
               <>
-                <motion.div className="flex-1" whileTap={{ scale: 0.95 }}>
-                  <Button
-                    variant={isFollowing ? 'outline' : 'default'}
-                    size="sm"
-                    className={cn(
-                      'w-full h-9 font-semibold transition-all',
-                      !isFollowing && 'bg-primary hover:bg-primary/90 animate-glow-pulse'
-                    )}
-                    onClick={handleFollow}
-                  >
-                    {isFollowing ? 'Following' : 'Follow'}
-                  </Button>
-                </motion.div>
+                <FollowButton
+                  isFollowing={isFollowing}
+                  onToggle={handleFollow}
+                  size="md"
+                  className="flex-1"
+                />
                 <Button variant="outline" size="sm" className="flex-1 h-9 font-semibold">
                   Message
                 </Button>

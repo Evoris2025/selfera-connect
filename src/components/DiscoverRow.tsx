@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { ChevronRight } from 'lucide-react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+import { FollowButton } from '@/components/interactions';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -196,14 +196,12 @@ export function DiscoverRow() {
                 @{profile.handle || 'user'}
               </p>
 
-              <Button
-                variant={profile.isFollowing ? 'outline' : 'default'}
+              <FollowButton
+                isFollowing={profile.isFollowing}
+                onToggle={() => handleFollowToggle(profile.id, profile.isFollowing)}
                 size="sm"
-                className="w-full h-7 text-xs"
-                onClick={() => handleFollowToggle(profile.id, profile.isFollowing)}
-              >
-                {profile.isFollowing ? 'Following' : 'Follow'}
-              </Button>
+                className="w-full"
+              />
             </div>
           ))}
         </div>
