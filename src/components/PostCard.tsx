@@ -223,11 +223,12 @@ export function PostCard({
               {showHeartOverlay && (
                 <motion.div 
                   initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 1.5, opacity: 0 }}
+                  animate={{ scale: [0, 1.2, 1], opacity: 1 }}
+                  exit={{ scale: 1.3, opacity: 0 }}
+                  transition={{ duration: 0.4, times: [0, 0.6, 1], ease: "easeOut" }}
                   className="absolute inset-0 flex items-center justify-center pointer-events-none"
                 >
-                  <Heart className="h-24 w-24 fill-white text-white drop-shadow-lg animate-heart-burst" />
+                  <Heart className="h-24 w-24 fill-red-500 text-red-500 drop-shadow-lg" />
                 </motion.div>
               )}
             </div>

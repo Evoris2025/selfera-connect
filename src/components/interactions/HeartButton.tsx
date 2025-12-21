@@ -49,13 +49,13 @@ export function HeartButton({ count, active, onClick, size = 'md' }: HeartButton
 
     // Animate when liking (not active -> active)
     if (active && !prevActiveRef.current) {
-      // Instagram-style scale bounce
+      // Instagram-style scale bounce - snappy squish, dramatic overshoot, quick settle
       controls.start({
-        scale: [1, 0.8, 1.2, 0.95, 1.05, 1],
+        scale: [1, 0.7, 1.35, 0.9, 1.1, 1],
         transition: { 
-          duration: 0.45, 
-          times: [0, 0.1, 0.3, 0.5, 0.7, 1],
-          ease: "easeOut"
+          duration: 0.5, 
+          times: [0, 0.12, 0.32, 0.52, 0.72, 1],
+          ease: [0.215, 0.61, 0.355, 1]
         }
       });
 
@@ -101,7 +101,6 @@ export function HeartButton({ count, active, onClick, size = 'md' }: HeartButton
           <Heart 
             className={cn(
               sizeClasses[size],
-              'transition-colors duration-100',
               active 
                 ? 'fill-rose-500 text-rose-500' 
                 : 'text-foreground hover:text-rose-500/70'
