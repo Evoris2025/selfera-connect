@@ -119,11 +119,6 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
 
       if (expressionError) throw expressionError;
 
-      toast({
-        title: 'Expression added!',
-        description: 'Your expression will be visible for 24 hours.',
-      });
-
       onSuccess();
     } catch (error) {
       console.error('Error creating expression:', error);

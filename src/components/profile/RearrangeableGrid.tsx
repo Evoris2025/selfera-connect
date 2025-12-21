@@ -47,22 +47,15 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
   const exitRearrangeMode = useCallback(async (save: boolean) => {
     if (save) {
       const success = await saveOrder();
-      if (success) {
-        toast({ 
-          title: 'Saved',
-          description: 'Grid order updated',
-        });
-      } else {
+      if (!success) {
         toast({ 
           title: 'Error',
           description: 'Failed to save order',
           variant: 'destructive',
         });
       }
-    } else {
-      // Revert to original
-      // This will be handled by the hook's fallback
     }
+    // Revert to original will be handled by the hook's fallback
     setIsRearrangeMode(false);
     setDraggingIndex(null);
     setDragOverIndex(null);

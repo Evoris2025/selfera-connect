@@ -161,12 +161,7 @@ export const RearrangeableTabBar = memo(function RearrangeableTabBar({
   const exitRearrangeMode = useCallback(async (save: boolean) => {
     if (save) {
       const success = await saveOrder();
-      if (success) {
-        toast({
-          title: 'Tab order saved',
-          description: 'Your tab arrangement has been updated.',
-        });
-      } else {
+      if (!success) {
         toast({
           title: 'Failed to save',
           description: 'Could not save tab order. Please try again.',

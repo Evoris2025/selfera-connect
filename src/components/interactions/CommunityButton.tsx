@@ -52,17 +52,10 @@ export function CommunityButton({ authorId, authorName, size = 'md' }: Community
       navigator.vibrate(10);
     }
 
-    const wasAdded = await toggleCommunityMember(authorId);
+    await toggleCommunityMember(authorId);
     
     setShowSuccess(true);
     setTimeout(() => setShowSuccess(false), 400);
-
-    toast({
-      title: wasAdded ? t('community.added') : t('community.removed'),
-      description: wasAdded 
-        ? t('community.addedDesc', { name: authorName })
-        : t('community.removedDesc', { name: authorName }),
-    });
   };
 
   // Determine which icon to show

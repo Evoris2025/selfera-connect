@@ -174,11 +174,6 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
         await supabase.from('post_tag_map').insert(tagMappings);
       }
 
-      toast({
-        title: 'Video uploaded!',
-        description: 'Your video has been shared.',
-      });
-
       onSuccess();
     } catch (error) {
       console.error('Error uploading video:', error);

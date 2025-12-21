@@ -127,13 +127,8 @@ export function PostComposer({ onBack, onSuccess, intent, tone }: PostComposerPr
           .from('post_tag_map')
           .insert(tagMappings);
 
-        if (tagError) throw tagError;
+      if (tagError) throw tagError;
       }
-
-      toast({
-        title: 'Posted!',
-        description: 'Your post has been shared.',
-      });
 
       onSuccess();
     } catch (error) {
