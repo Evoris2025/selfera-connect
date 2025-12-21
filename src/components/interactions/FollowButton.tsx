@@ -38,8 +38,7 @@ export function FollowButton({
       onClick={handleClick}
       disabled={disabled}
       whileTap={{ scale: 0.9 }}
-      animate={isFollowing ? { scale: 1 } : { scale: [1, 1.1, 1] }}
-      transition={springConfig}
+      transition={{ type: "spring", stiffness: 500, damping: 25 }}
       className={cn(
         'relative font-semibold rounded-md overflow-hidden transition-colors duration-150',
         sizeClasses[size],
