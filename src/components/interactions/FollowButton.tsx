@@ -1,4 +1,5 @@
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useRef } from 'react';
+import { motion, AnimatePresence, useAnimationControls } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 interface FollowButtonProps {
@@ -15,8 +16,6 @@ const sizeClasses = {
   lg: 'h-10 text-base px-5',
 };
 
-const springConfig = { type: "spring" as const, stiffness: 500, damping: 25 };
-
 export function FollowButton({ 
   isFollowing, 
   onToggle, 
@@ -24,19 +23,33 @@ export function FollowButton({
   className,
   disabled = false,
 }: FollowButtonProps) {
+  const controls = useAnimationControls();
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    
+    // Trigger pop animation on state change
+    controls.start({
+      scale: [1, 1.15, 1],
+      transition: { duration: 0.3, ease: [0.175, 0.885, 0.32, 1.275] }
+    });
+  }, [isFollowing, controls]);
   
   const handleClick = () => {
-    // Haptic feedback
     if (navigator.vibrate) {
       navigator.vibrate(10);
     }
     onToggle();
   };
-
   return (
     <motion.button
       onClick={handleClick}
       disabled={disabled}
+      animate={controls}
       whileTap={{ scale: 0.9 }}
       transition={{ type: "spring", stiffness: 500, damping: 25 }}
       className={cn(
