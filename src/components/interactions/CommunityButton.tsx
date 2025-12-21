@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
-import { Users, UserPlus, UserCheck } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
+import { Users, UserCheck } from 'lucide-react';
+import { motion, AnimatePresence, useAnimationControls } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { usePersonalCommunity } from '@/hooks/usePersonalCommunity';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
+import { instagramAnimations, useReducedMotion, triggerHaptic } from '@/hooks/useInstagramAnimation';
 
 interface CommunityButtonProps {
   authorId: string;
@@ -13,87 +14,65 @@ interface CommunityButtonProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
-const springConfig = { type: "spring" as const, stiffness: 500, damping: 25 };
-
 export function CommunityButton({ authorId, authorName, size = 'md' }: CommunityButtonProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const controls = useAnimationControls();
+  const prefersReducedMotion = useReducedMotion();
   const { isInCommunity, isLoading, toggleCommunityMember } = usePersonalCommunity(authorId);
   const [showSuccess, setShowSuccess] = useState(false);
+  const prevInCommunityRef = useRef(isInCommunity);
+  const isFirstRender = useRef(true);
 
-  const sizeClasses = {
-    sm: 'h-5 w-5',
-    md: 'h-6 w-6',
-    lg: 'h-7 w-7',
-  };
+  const sizeClasses = { sm: 'h-5 w-5', md: 'h-6 w-6', lg: 'h-7 w-7' };
 
-  const handleClick = async () => {
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      prevInCommunityRef.current = isInCommunity;
+      return;
+    }
+
+    if (isInCommunity && !prevInCommunityRef.current) {
+      if (!prefersReducedMotion) controls.start(instagramAnimations.like);
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 400);
+    } else if (!isInCommunity && prevInCommunityRef.current) {
+      if (!prefersReducedMotion) controls.start(instagramAnimations.unlike);
+    }
+    prevInCommunityRef.current = isInCommunity;
+  }, [isInCommunity, controls, prefersReducedMotion]);
+
+  const handlePointerDown = async (e: React.PointerEvent) => {
+    e.preventDefault();
     if (!user) {
-      toast({
-        title: t('auth.required'),
-        description: t('community.loginToAdd'),
-        variant: 'destructive',
-      });
+      toast({ title: t('auth.required'), description: t('community.loginToAdd'), variant: 'destructive' });
       return;
     }
-
-    // Prevent adding yourself
     if (user.id === authorId) {
-      toast({
-        title: t('community.cannotAddSelf'),
-        description: t('community.cannotAddSelfDesc'),
-        variant: 'destructive',
-      });
+      toast({ title: t('community.cannotAddSelf'), description: t('community.cannotAddSelfDesc'), variant: 'destructive' });
       return;
     }
-
-    // Haptic feedback
-    if (navigator.vibrate) {
-      navigator.vibrate(10);
-    }
-
+    triggerHaptic('light');
     await toggleCommunityMember(authorId);
-    
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 400);
   };
 
-  // Determine which icon to show
   const IconComponent = isInCommunity ? UserCheck : Users;
 
   return (
     <motion.button
-      whileTap={{ scale: 0.9 }}
-      transition={springConfig}
-      onClick={handleClick}
+      animate={controls}
+      onPointerDown={handlePointerDown}
       disabled={isLoading}
-      className={cn(
-        'flex items-center transition-colors relative',
-        isInCommunity 
-          ? 'text-primary' 
-          : 'text-foreground hover:text-muted-foreground',
-        isLoading && 'opacity-50'
-      )}
+      className={cn('flex items-center relative touch-none select-none p-1', isInCommunity ? 'text-primary' : 'text-foreground hover:text-foreground/70', isLoading && 'opacity-50')}
+      aria-label={isInCommunity ? 'Remove from community' : 'Add to community'}
     >
-      <motion.div
-        animate={showSuccess ? { scale: [1, 1.3, 1] } : {}}
-        transition={{ duration: 0.3 }}
-      >
-        <IconComponent 
-          className={cn(
-            sizeClasses[size],
-            isInCommunity && 'fill-primary/20'
-          )} 
-        />
-      </motion.div>
-      
-      {/* Success burst effect */}
+      <IconComponent className={cn(sizeClasses[size], isInCommunity && 'fill-primary/20')} />
       <AnimatePresence>
         {showSuccess && isInCommunity && (
           <motion.div
             initial={{ scale: 0, opacity: 1 }}
             animate={{ scale: 2, opacity: 0 }}
-            exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
             className="absolute inset-0 flex items-center justify-center pointer-events-none"
           >
