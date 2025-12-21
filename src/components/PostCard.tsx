@@ -257,6 +257,8 @@ export function PostCard({
               count={commentCount}
               onClick={() => setShowCommentSheet(true)}
             />
+          </div>
+          <div className="flex items-center gap-4">
             <ShareButton postId={id} />
             {authorId && (
               <CommunityButton 
@@ -264,17 +266,17 @@ export function PostCard({
                 authorName={author.name}
               />
             )}
+            <motion.button 
+              whileTap={{ scale: 0.9 }}
+              onClick={handleLibraryToggle}
+              className={cn(
+                'transition-colors',
+                inLibrary ? 'text-foreground' : 'text-foreground hover:text-muted-foreground'
+              )}
+            >
+              <BookOpen className={cn('h-6 w-6', inLibrary && 'fill-current')} />
+            </motion.button>
           </div>
-          <motion.button 
-            whileTap={{ scale: 0.9 }}
-            onClick={handleLibraryToggle}
-            className={cn(
-              'transition-colors',
-              inLibrary ? 'text-foreground' : 'text-foreground hover:text-muted-foreground'
-            )}
-          >
-            <BookOpen className={cn('h-6 w-6', inLibrary && 'fill-current')} />
-          </motion.button>
         </div>
 
         {/* Content */}
