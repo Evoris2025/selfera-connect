@@ -1,17 +1,17 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { 
-  Home, 
-  Compass, 
+import {
+  Home,
+  Compass,
   Play,
-  Bell, 
-  User, 
+  Bell,
+  User,
   Heart,
   Settings,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CrisisWidget } from './CrisisWidget';
-import logo from '@/assets/selfera-app-logo.png';
+import { BrandMark } from '@/components/BrandMark';
 
 const mainNavItems = [
   { icon: Home, label: 'nav.home', href: '/feed' },
@@ -33,13 +33,9 @@ export function DesktopSidebar() {
   return (
     <aside className="hidden md:flex flex-col w-64 h-screen sticky top-0 border-r border-border bg-sidebar p-4">
       <div className="flex-1">
-        {/* Logo - Capacitor-style sizing */}
+        {/* Logo - crop + scale to counter PNG padding */}
         <Link to="/" className="flex items-center mb-6 px-3">
-          <img 
-            src={logo} 
-            alt="SelfERA" 
-            className="h-7 lg:h-8 w-auto object-contain" 
-          />
+          <BrandMark alt="SelfERA" className="h-10 w-[176px] lg:h-11 lg:w-[196px]" />
         </Link>
 
         {/* Main Nav */}

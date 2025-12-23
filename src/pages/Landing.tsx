@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Heart, Shield, Users, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import logo from '@/assets/selfera-app-logo.png';
+import { BrandMark } from '@/components/BrandMark';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -45,12 +45,11 @@ export default function Landing() {
       {/* Header - Capacitor-style clean sizing */}
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 md:px-6 h-14 flex items-center justify-between">
-          {/* Logo - left aligned, 24-32px height */}
+          {/* Logo - left aligned (crop + scale to counter PNG padding) */}
           <Link to="/" className="flex items-center">
-            <img 
-              src={logo} 
-              alt="SelfERA" 
-              className="h-6 sm:h-7 md:h-8 w-auto object-contain" 
+            <BrandMark
+              alt="SelfERA"
+              className="h-10 w-[160px] sm:h-10 sm:w-[176px] md:h-11 md:w-[196px]"
             />
           </Link>
 
@@ -177,7 +176,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center">
-              <img src={logo} alt="SelfERA" className="h-6 object-contain" />
+              <BrandMark alt="SelfERA" className="h-9 w-[156px]" />
             </div>
 
             <nav className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
