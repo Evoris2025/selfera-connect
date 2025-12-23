@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import logo from '@/assets/selfera-app-logo.png';
+import { BrandMark } from '@/components/BrandMark';
 
 interface AppHeaderProps {
   title?: string;
@@ -33,23 +33,20 @@ export function AppHeader({ title }: AppHeaderProps) {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <div className="flex items-center justify-between h-14 px-4 max-w-lg mx-auto">
-        {/* Logo - Capacitor-style 24-32px height */}
+        {/* Logo - crop + scale to counter PNG padding */}
         <Link to="/feed" className="flex items-center">
           {title ? (
             <>
-              <img 
-                src={logo} 
-                alt="SelfERA" 
-                className="h-6 sm:h-7 w-auto object-contain" 
+              <BrandMark
+                alt="SelfERA"
+                className="h-9 w-[148px] sm:h-10 sm:w-[164px]"
               />
-              <span className="font-logo font-semibold text-foreground tracking-widest ml-2">{title}</span>
+              <span className="font-logo font-semibold text-foreground tracking-widest ml-2">
+                {title}
+              </span>
             </>
           ) : (
-            <img 
-              src={logo} 
-              alt="SelfERA" 
-              className="h-6 sm:h-7 w-auto object-contain" 
-            />
+            <BrandMark alt="SelfERA" className="h-9 w-[148px] sm:h-10 sm:w-[164px]" />
           )}
         </Link>
 
