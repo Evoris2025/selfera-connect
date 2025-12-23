@@ -10,7 +10,7 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { z } from 'zod';
-import logo from '@/assets/selfera-logo.png';
+import { BrandMark } from '@/components/BrandMark';
 
 const authSchema = z.object({
   email: z.string().email('Please enter a valid email'),
@@ -146,7 +146,7 @@ export default function Auth() {
           >
             {/* Logo */}
             <div className="flex items-center mb-8">
-              <img src={logo} alt="SelfERA" className="h-12 object-contain" />
+              <BrandMark />
             </div>
 
             <h1 className="text-3xl font-bold text-foreground mb-2">
@@ -242,7 +242,9 @@ export default function Auth() {
       {/* Right Panel - Visual */}
       <div className="hidden lg:flex flex-1 bg-gradient-to-br from-primary/20 via-accent/20 to-crisis/20 items-center justify-center p-12">
         <div className="max-w-md text-center">
-          <img src={logo} alt="SelfERA" className="h-24 object-contain mx-auto mb-8" />
+          <div className="flex justify-center mb-8">
+            <BrandMark />
+          </div>
           <h2 className="text-3xl font-bold text-foreground mb-4">
             {t('landing.hero.title')}
           </h2>
