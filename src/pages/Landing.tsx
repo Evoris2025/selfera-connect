@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Heart, Shield, Users, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import logo from '@/assets/selfera-logo.png';
+import logo from '@/assets/selfera-app-logo.png';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -42,32 +42,31 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      {/* Header - 76px height with brand-scale logo */}
+      {/* Header - Capacitor-style clean sizing */}
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto pl-6 pr-4 md:pl-8 md:pr-6 h-[72px] md:h-[76px] flex items-center justify-between">
-          {/* Logo Container - scales with header */}
-          <Link to="/" className="flex items-center h-[56px] md:h-[60px]">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 h-14 flex items-center justify-between">
+          {/* Logo - left aligned, 24-32px height */}
+          <Link to="/" className="flex items-center">
             <img 
               src={logo} 
               alt="SelfERA" 
-              className="h-[28px] sm:h-[34px] md:h-[40px] lg:h-[44px] w-auto object-contain" 
+              className="h-6 sm:h-7 md:h-8 w-auto object-contain" 
             />
           </Link>
 
-          {/* Navigation - sized to match logo presence */}
-          <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
-            <Button variant="ghost" size="default" asChild className="hidden sm:flex">
+          {/* Navigation */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Button variant="ghost" size="sm" asChild className="hidden sm:flex">
               <Link to="/crisis">
-                <Phone className="h-4 w-4 mr-2" />
+                <Phone className="h-4 w-4 mr-1" />
                 {t('nav.crisisSupport')}
               </Link>
             </Button>
             <LanguageSwitcher />
-            <Button variant="outline" size="default" asChild>
+            <Button variant="outline" size="sm" asChild>
               <Link to="/auth">{t('auth.login')}</Link>
             </Button>
-            <Button variant="gradient" size="default" asChild className="hidden sm:flex">
+            <Button variant="gradient" size="sm" asChild className="hidden sm:flex">
               <Link to="/auth?mode=signup">{t('auth.signup')}</Link>
             </Button>
           </div>
@@ -75,8 +74,7 @@ export default function Landing() {
       </header>
 
       {/* Hero */}
-      {/* Hero - adjusted for taller header */}
-      <section className="pt-36 pb-20 px-4">
+      <section className="pt-24 pb-20 px-4">
         <motion.div
           initial="hidden"
           animate="visible"
@@ -179,7 +177,7 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center">
-              <img src={logo} alt="SelfERA" className="h-10 object-contain" />
+              <img src={logo} alt="SelfERA" className="h-6 object-contain" />
             </div>
 
             <nav className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">

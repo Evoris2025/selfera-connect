@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CrisisWidget } from './CrisisWidget';
-import logo from '@/assets/selfera-logo.png';
+import logo from '@/assets/selfera-app-logo.png';
 
 const mainNavItems = [
   { icon: Home, label: 'nav.home', href: '/feed' },
@@ -33,12 +33,12 @@ export function DesktopSidebar() {
   return (
     <aside className="hidden md:flex flex-col w-64 h-screen sticky top-0 border-r border-border bg-sidebar p-4">
       <div className="flex-1">
-        {/* Logo - Brand-scale sizing */}
-        <Link to="/" className="flex items-center h-[56px] mb-6 px-3">
+        {/* Logo - Capacitor-style sizing */}
+        <Link to="/" className="flex items-center mb-6 px-3">
           <img 
             src={logo} 
             alt="SelfERA" 
-            className="h-[36px] lg:h-[40px] w-auto object-contain" 
+            className="h-7 lg:h-8 w-auto object-contain" 
           />
         </Link>
 

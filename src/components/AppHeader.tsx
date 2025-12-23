@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import logo from '@/assets/selfera-logo.png';
+import logo from '@/assets/selfera-app-logo.png';
 
 interface AppHeaderProps {
   title?: string;
@@ -32,15 +32,15 @@ export function AppHeader({ title }: AppHeaderProps) {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-      <div className="flex items-center justify-between h-[64px] md:h-[72px] pl-5 pr-4 md:pl-6 md:pr-4 max-w-lg mx-auto">
-        {/* Logo Container - brand-scale sizing */}
-        <Link to="/feed" className="flex items-center h-[48px] md:h-[56px]">
+      <div className="flex items-center justify-between h-14 px-4 max-w-lg mx-auto">
+        {/* Logo - Capacitor-style 24-32px height */}
+        <Link to="/feed" className="flex items-center">
           {title ? (
             <>
               <img 
                 src={logo} 
                 alt="SelfERA" 
-                className="h-[28px] sm:h-[32px] md:h-[36px] w-auto object-contain" 
+                className="h-6 sm:h-7 w-auto object-contain" 
               />
               <span className="font-logo font-semibold text-foreground tracking-widest ml-2">{title}</span>
             </>
@@ -48,7 +48,7 @@ export function AppHeader({ title }: AppHeaderProps) {
             <img 
               src={logo} 
               alt="SelfERA" 
-              className="h-[28px] sm:h-[32px] md:h-[36px] w-auto object-contain" 
+              className="h-6 sm:h-7 w-auto object-contain" 
             />
           )}
         </Link>
