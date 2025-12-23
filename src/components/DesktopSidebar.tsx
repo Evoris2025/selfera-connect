@@ -35,7 +35,7 @@ export function DesktopSidebar() {
       <div className="flex-1">
         {/* Logo */}
         <Link to="/" className="flex items-center mb-8 px-3 group">
-          <img src={logo} alt="SelfERA" className="h-10 object-contain" />
+          <img src={logo} alt="SelfERA" className="h-12 object-contain" />
         </Link>
 
         {/* Main Nav */}

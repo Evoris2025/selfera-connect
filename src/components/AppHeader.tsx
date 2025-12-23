@@ -37,11 +37,11 @@ export function AppHeader({ title }: AppHeaderProps) {
         <Link to="/feed" className="flex items-center group">
           {title ? (
             <>
-              <img src={logo} alt="SelfERA" className="h-8 object-contain" />
+              <img src={logo} alt="SelfERA" className="h-10 object-contain" />
               <span className="font-logo font-semibold text-foreground tracking-widest ml-2">{title}</span>
             </>
           ) : (
-            <img src={logo} alt="SelfERA" className="h-8 object-contain" />
+            <img src={logo} alt="SelfERA" className="h-10 object-contain" />
           )}
         </Link>
 
