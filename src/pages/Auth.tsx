@@ -10,7 +10,7 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { z } from 'zod';
-import logo from '@/assets/logo.jpg';
+import logo from '@/assets/selfera-logo.png';
 
 const authSchema = z.object({
   email: z.string().email('Please enter a valid email'),
@@ -145,15 +145,8 @@ export default function Auth() {
             className="w-full max-w-md"
           >
             {/* Logo */}
-            <div className="flex items-center gap-3 mb-8 group">
-              <div className="relative">
-                <img src={logo} alt="SelfERA" className="w-12 h-12 rounded-2xl object-cover" />
-                <div className="absolute inset-0 rounded-2xl bg-primary/20 blur-xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </div>
-              <span className="font-logo text-2xl tracking-[0.2em] uppercase logo-glow">
-                <span className="font-light text-foreground/50">SELF</span>
-                <span className="font-semibold gradient-brand-text">ERA</span>
-              </span>
+            <div className="flex items-center mb-8">
+              <img src={logo} alt="SelfERA" className="h-12 object-contain" />
             </div>
 
             <h1 className="text-3xl font-bold text-foreground mb-2">
@@ -249,7 +242,7 @@ export default function Auth() {
       {/* Right Panel - Visual */}
       <div className="hidden lg:flex flex-1 bg-gradient-to-br from-primary/20 via-accent/20 to-crisis/20 items-center justify-center p-12">
         <div className="max-w-md text-center">
-          <img src={logo} alt="SelfERA" className="w-[7.5rem] h-[7.5rem] rounded-3xl object-cover mx-auto mb-8" />
+          <img src={logo} alt="SelfERA" className="h-24 object-contain mx-auto mb-8" />
           <h2 className="text-3xl font-bold text-foreground mb-4">
             {t('landing.hero.title')}
           </h2>
