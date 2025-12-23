@@ -33,25 +33,17 @@ export function AppHeader({ title }: AppHeaderProps) {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <div className="flex items-center justify-between h-14 px-4 max-w-lg mx-auto">
-        {/* Logo - crop + scale to counter PNG padding */}
+        {/* Logo */}
         <Link to="/feed" className="flex items-center">
           {title ? (
             <>
-              <BrandMark
-                alt="SelfERA"
-                className="h-11 w-[180px] sm:h-11 sm:w-[210px] md:h-11 md:w-[240px]"
-                imgClassName="scale-[4.5]"
-              />
+              <BrandMark />
               <span className="font-logo font-semibold text-foreground tracking-widest ml-2">
                 {title}
               </span>
             </>
           ) : (
-            <BrandMark
-              alt="SelfERA"
-              className="h-11 w-[180px] sm:h-11 sm:w-[210px] md:h-11 md:w-[240px]"
-              imgClassName="scale-[4.5]"
-            />
+            <BrandMark />
           )}
         </Link>
 
