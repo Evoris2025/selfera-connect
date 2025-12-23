@@ -39,14 +39,19 @@ export function AppHeader({ title }: AppHeaderProps) {
             <>
               <BrandMark
                 alt="SelfERA"
-                className="h-9 w-[148px] sm:h-10 sm:w-[164px]"
+                className="h-11 w-[180px] sm:h-11 sm:w-[210px] md:h-11 md:w-[240px]"
+                imgClassName="scale-[4.5]"
               />
               <span className="font-logo font-semibold text-foreground tracking-widest ml-2">
                 {title}
               </span>
             </>
           ) : (
-            <BrandMark alt="SelfERA" className="h-9 w-[148px] sm:h-10 sm:w-[164px]" />
+            <BrandMark
+              alt="SelfERA"
+              className="h-11 w-[180px] sm:h-11 sm:w-[210px] md:h-11 md:w-[240px]"
+              imgClassName="scale-[4.5]"
+            />
           )}
         </Link>
 
