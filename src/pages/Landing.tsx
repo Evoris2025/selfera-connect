@@ -49,8 +49,8 @@ export default function Landing() {
           <Link to="/" className="flex items-center">
             <BrandMark
               alt="SelfERA"
-              className="h-14 w-[240px] sm:h-14 sm:w-[280px] md:h-14 md:w-[320px]"
-              imgClassName="scale-[6]"
+              className="h-11 w-[180px] sm:h-11 sm:w-[210px] md:h-11 md:w-[240px]"
+              imgClassName="scale-[4.5]"
             />
           </Link>
 
