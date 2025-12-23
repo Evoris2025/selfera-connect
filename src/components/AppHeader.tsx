@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import logo from '@/assets/logo.jpg';
+import logo from '@/assets/selfera-logo.png';
 
 interface AppHeaderProps {
   title?: string;
@@ -34,18 +34,14 @@ export function AppHeader({ title }: AppHeaderProps) {
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <div className="flex items-center justify-between h-14 px-4 max-w-lg mx-auto">
         {/* Logo */}
-        <Link to="/feed" className="flex items-center gap-3 group">
-          <div className="relative">
-            <img src={logo} alt="SelfERA" className="w-10 h-10 rounded-2xl object-cover" />
-            <div className="absolute inset-0 rounded-2xl bg-primary/20 blur-xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          </div>
+        <Link to="/feed" className="flex items-center group">
           {title ? (
-            <span className="font-logo font-semibold text-foreground tracking-widest">{title}</span>
+            <>
+              <img src={logo} alt="SelfERA" className="h-8 object-contain" />
+              <span className="font-logo font-semibold text-foreground tracking-widest ml-2">{title}</span>
+            </>
           ) : (
-            <span className="font-logo text-lg tracking-[0.2em] uppercase logo-glow">
-              <span className="font-light text-foreground/50">SELF</span>
-              <span className="font-semibold gradient-brand-text">ERA</span>
-            </span>
+            <img src={logo} alt="SelfERA" className="h-8 object-contain" />
           )}
         </Link>
 

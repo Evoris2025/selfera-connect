@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Heart, Shield, Users, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import logo from '@/assets/logo.jpg';
+import logo from '@/assets/selfera-logo.png';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -45,15 +45,8 @@ export default function Landing() {
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3 group">
-            <div className="relative">
-              <img src={logo} alt="SelfERA" className="w-11 h-11 rounded-2xl object-cover" />
-              <div className="absolute inset-0 rounded-2xl bg-primary/20 blur-xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </div>
-            <span className="font-logo text-xl tracking-[0.2em] uppercase logo-glow">
-              <span className="font-light text-foreground/50">SELF</span>
-              <span className="font-semibold gradient-brand-text">ERA</span>
-            </span>
+          <div className="flex items-center group">
+            <img src={logo} alt="SelfERA" className="h-10 object-contain" />
           </div>
 
           <div className="flex items-center gap-3">
@@ -177,12 +170,8 @@ export default function Landing() {
       <footer className="border-t border-border py-12 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-3">
-              <img src={logo} alt="SelfERA" className="w-10 h-10 rounded-2xl object-cover" />
-              <span className="font-logo text-lg tracking-[0.2em] uppercase">
-                <span className="font-light text-foreground/50">SELF</span>
-                <span className="font-semibold gradient-brand-text">ERA</span>
-              </span>
+            <div className="flex items-center">
+              <img src={logo} alt="SelfERA" className="h-8 object-contain" />
             </div>
 
             <nav className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
