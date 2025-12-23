@@ -177,7 +177,11 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center">
-              <BrandMark alt="SelfERA" className="h-9 w-[156px]" />
+              <BrandMark
+                alt="SelfERA"
+                className="h-11 w-[180px] sm:h-11 sm:w-[210px] md:h-11 md:w-[240px]"
+                imgClassName="scale-[4.5]"
+              />
             </div>
 
             <nav className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
