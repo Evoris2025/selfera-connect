@@ -7,6 +7,9 @@ type BrandMarkProps = {
   imgClassName?: string;
 };
 
+const DEFAULT_CONTAINER = "h-11 w-[180px] sm:w-[210px] md:w-[240px]";
+const DEFAULT_IMG_SCALE = "scale-[4.5]";
+
 /**
  * BrandMark
  * 
@@ -19,13 +22,14 @@ export function BrandMark({
   imgClassName,
 }: BrandMarkProps) {
   return (
-    <div className={cn("relative overflow-hidden", className ?? "h-10 w-[156px]")}> 
+    <div className={cn("relative overflow-hidden", DEFAULT_CONTAINER, className)}>
       <img
         src={logo}
         alt={alt}
         loading="eager"
         className={cn(
-          "h-full w-auto max-w-none object-contain origin-left scale-[1.8]",
+          "h-full w-auto max-w-none object-contain origin-left",
+          DEFAULT_IMG_SCALE,
           imgClassName
         )}
       />
