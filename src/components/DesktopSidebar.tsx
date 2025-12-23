@@ -33,9 +33,13 @@ export function DesktopSidebar() {
   return (
     <aside className="hidden md:flex flex-col w-64 h-screen sticky top-0 border-r border-border bg-sidebar p-4">
       <div className="flex-1">
-        {/* Logo */}
-        <Link to="/" className="flex items-center mb-8 px-3 group">
-          <img src={logo} alt="SelfERA" className="h-12 object-contain" />
+        {/* Logo - Brand-scale sizing */}
+        <Link to="/" className="flex items-center h-[56px] mb-6 px-3">
+          <img 
+            src={logo} 
+            alt="SelfERA" 
+            className="h-[36px] lg:h-[40px] w-auto object-contain" 
+          />
         </Link>
 
         {/* Main Nav */}
