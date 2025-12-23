@@ -7,7 +7,7 @@ import { useEffect } from "react";
 import '@/i18n';
 import { getCurrentLanguage, getLanguageDirection } from "@/i18n";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
-import logo from '@/assets/logo.jpg';
+import logo from '@/assets/selfera-logo.png';
 
 import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
@@ -31,12 +31,8 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="flex items-center gap-3">
-          <img src={logo} alt="SelfERA" className="w-12 h-12 rounded-2xl object-cover animate-pulse" />
-          <span className="font-logo text-xl tracking-[0.2em] uppercase logo-glow">
-            <span className="font-light text-foreground/50">SELF</span>
-            <span className="font-semibold gradient-brand-text">ERA</span>
-          </span>
+        <div className="flex items-center">
+          <img src={logo} alt="SelfERA" className="h-10 object-contain animate-pulse" />
         </div>
       </div>
     );
@@ -56,12 +52,8 @@ function HomeRoute() {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="flex items-center gap-3">
-          <img src={logo} alt="SelfERA" className="w-12 h-12 rounded-2xl object-cover animate-pulse" />
-          <span className="font-logo text-xl tracking-[0.2em] uppercase logo-glow">
-            <span className="font-light text-foreground/50">SELF</span>
-            <span className="font-semibold gradient-brand-text">ERA</span>
-          </span>
+        <div className="flex items-center">
+          <img src={logo} alt="SelfERA" className="h-10 object-contain animate-pulse" />
         </div>
       </div>
     );
