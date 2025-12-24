@@ -259,25 +259,7 @@ export default function Profile() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.35 }}
               >
-                {isOwnProfile ? (
-                  <>
-                    <Button
-                      variant="outline"
-                      className="px-6 h-9 rounded-full font-semibold text-sm uppercase tracking-wide border-border hover:bg-accent transition-all duration-200 active:scale-[0.97]"
-                      onClick={() => navigate('/settings')}
-                    >
-                      Edit Profile
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-9 w-9 rounded-full border border-border hover:bg-accent transition-all duration-200 active:scale-95"
-                      onClick={() => navigate('/settings')}
-                    >
-                      <Settings className="w-4 h-4" />
-                    </Button>
-                  </>
-                ) : (
+                {!isOwnProfile && (
                   <>
                     <FollowButton
                       isFollowing={isFollowing}
