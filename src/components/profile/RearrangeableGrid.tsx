@@ -196,6 +196,22 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
             // Featured layout: first post spans 2x2
             const isFeaturedFirst = layoutStyle === 'featured' && index === 0;
             
+            // Masonry aspect ratio pattern for visual variety
+            const masonryPatterns = [
+              'aspect-square',           // 1:1
+              'aspect-[3/4]',            // Portrait
+              'aspect-square',           // 1:1
+              'aspect-[4/5]',            // Tall portrait
+              'aspect-[3/4]',            // Portrait
+              'aspect-square',           // 1:1
+              'aspect-[5/4]',            // Slightly wide
+              'aspect-[3/4]',            // Portrait
+              'aspect-square',           // 1:1
+            ];
+            const masonryAspect = layoutStyle === 'masonry' 
+              ? masonryPatterns[index % masonryPatterns.length] 
+              : 'aspect-square';
+            
             return (
               <motion.div 
                 key={post.id} 
@@ -207,13 +223,14 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
                   layout: { duration: 0.4, ease: [0.4, 0, 0.2, 1] },
                   opacity: { duration: 0.25 },
                   scale: { duration: 0.25 },
-                  delay: index * 0.02 // Staggered animation
+                  delay: index * 0.02
                 }}
                 data-grid-index={index}
                 className={cn(
-                  'relative',
-                  isFeaturedFirst && 'col-span-2 row-span-2',
-                  layoutStyle === 'masonry' && 'break-inside-avoid'
+                  'relative overflow-hidden',
+                  layoutStyle === 'uniform' && 'aspect-square',
+                  layoutStyle === 'masonry' && `break-inside-avoid mb-[1px] ${masonryAspect}`,
+                  isFeaturedFirst && 'col-span-2 row-span-2 aspect-square'
                 )}
                 onMouseEnter={() => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}
