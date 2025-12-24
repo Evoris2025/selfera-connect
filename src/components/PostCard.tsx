@@ -1,10 +1,8 @@
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MoreHorizontal, Flag, Ban, VolumeX, BookOpen, Heart } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { Card } from '@/components/ui/card';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +13,9 @@ import {
 import { VerifiedBadge } from './VerifiedBadge';
 import { Hashtag } from './Hashtag';
 import { HeartButton, CommentButton, ShareButton, CommentSheet, CommunityButton } from './interactions';
+import { CinematicAvatar } from './ui/CinematicAvatar';
+import { ImmersiveMedia } from './ui/ImmersiveMedia';
+import { FloatingActionBar } from './ui/FloatingActionBar';
 import { useReactions } from '@/hooks/useReactions';
 import { useLibrary } from '@/hooks/useLibrary';
 import { useAuth } from '@/contexts/AuthContext';
@@ -68,39 +69,29 @@ export function PostCard({
   const [showContent, setShowContent] = useState(!hasContentWarning);
   const [showHeartOverlay, setShowHeartOverlay] = useState(false);
   const [showCommentSheet, setShowCommentSheet] = useState(false);
-  const lastTapRef = useRef<number>(0);
   const { heartCount, hasReacted, toggleReaction } = useReactions(id, likes);
   const { inLibrary, toggleLibrary } = useLibrary(id);
 
   const handleDoubleTap = async () => {
-    const now = Date.now();
-    const DOUBLE_TAP_DELAY = 300;
-    
-    if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
-      if (!user) {
-        toast({
-          title: t('auth.required'),
-          description: t('auth.loginToReact'),
-          variant: 'destructive',
-        });
-        return;
-      }
-      
-      // Show heart overlay animation
-      setShowHeartOverlay(true);
-      setTimeout(() => setShowHeartOverlay(false), 800);
-      
-      // Haptic feedback
-      if (navigator.vibrate) {
-        navigator.vibrate(10);
-      }
-      
-      // Only add reaction if not already reacted
-      if (!hasReacted) {
-        await toggleReaction();
-      }
+    if (!user) {
+      toast({
+        title: t('auth.required'),
+        description: t('auth.loginToReact'),
+        variant: 'destructive',
+      });
+      return;
     }
-    lastTapRef.current = now;
+    
+    setShowHeartOverlay(true);
+    setTimeout(() => setShowHeartOverlay(false), 1000);
+    
+    if (navigator.vibrate) {
+      navigator.vibrate([10, 50, 10]);
+    }
+    
+    if (!hasReacted) {
+      await toggleReaction();
+    }
   };
 
   const handleReaction = async () => {
@@ -132,7 +123,6 @@ export function PostCard({
     });
   };
 
-  // Parse content for hashtags
   const renderContent = () => {
     const parts = content.split(/(#\w+)/g);
     return parts.map((part, i) => {
@@ -143,170 +133,253 @@ export function PostCard({
     });
   };
 
-  return (
-    <Card className="overflow-hidden border-0 border-b border-border rounded-none bg-transparent">
-      {/* Header */}
-      <div className="p-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Avatar className="h-10 w-10 ring-2 ring-primary/20">
-              <AvatarImage src={author.avatar} alt={author.name} />
-              <AvatarFallback className="bg-secondary text-secondary-foreground">
-                {author.name.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
-          </motion.div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-foreground text-sm">{author.name}</span>
-              {author.isVerified && <VerifiedBadge size="sm" />}
+  // Text-only post
+  if (!media) {
+    return (
+      <motion.article 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="px-4 py-5 border-b border-border/40"
+      >
+        <div className="flex gap-3">
+          <CinematicAvatar
+            src={author.avatar}
+            alt={author.name}
+            fallback={author.name.charAt(0)}
+            size="md"
+            ring="muted"
+            interactive
+          />
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center gap-1.5">
+                <span className="font-semibold text-foreground text-[15px]">{author.name}</span>
+                {author.isVerified && <VerifiedBadge size="sm" />}
+                <span className="text-muted-foreground text-sm">· {createdAt}</span>
+              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="glass-card">
+                  <DropdownMenuItem className="gap-2">
+                    <Flag className="h-4 w-4" />
+                    {t('safety.report')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="gap-2">
+                    <VolumeX className="h-4 w-4" />
+                    {t('safety.mute')}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="gap-2 text-destructive">
+                    <Ban className="h-4 w-4" />
+                    {t('safety.block')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
-            <p className="text-xs text-muted-foreground">@{author.handle} · {createdAt}</p>
+            
+            <p className="text-[15px] text-foreground leading-relaxed mb-3">
+              {renderContent()}
+            </p>
+
+            {tags.length > 0 && !content.includes('#') && (
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {tags.map((tag) => (
+                  <Hashtag key={tag} tag={tag} size="sm" />
+                ))}
+              </div>
+            )}
+
+            <div className="flex items-center gap-5 pt-1">
+              <HeartButton 
+                count={heartCount}
+                active={hasReacted}
+                onClick={handleReaction}
+              />
+              <CommentButton 
+                count={commentCount}
+                onClick={() => setShowCommentSheet(true)}
+              />
+              <ShareButton postId={id} />
+              <motion.button 
+                whileTap={{ scale: 0.9 }}
+                onClick={handleLibraryToggle}
+                className={cn(
+                  'transition-colors ml-auto',
+                  inLibrary ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+                )}
+              >
+                <BookOpen className={cn('h-5 w-5', inLibrary && 'fill-current')} />
+              </motion.button>
+            </div>
           </div>
         </div>
-        
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem className="gap-2">
-              <Flag className="h-4 w-4" />
-              {t('safety.report')}
-            </DropdownMenuItem>
-            <DropdownMenuItem className="gap-2">
-              <VolumeX className="h-4 w-4" />
-              {t('safety.mute')}
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 text-destructive">
-              <Ban className="h-4 w-4" />
-              {t('safety.block')}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
 
-      {/* Media */}
-      {media && (
-        <div className="relative">
-          {hasContentWarning && !showContent ? (
-            <div 
-              className="aspect-square bg-secondary/50 backdrop-blur-xl flex items-center justify-center cursor-pointer"
-              onClick={() => setShowContent(true)}
-            >
-              <div className="text-center">
-                <span className="text-sm text-warning font-medium">{contentWarningType}</span>
-                <p className="text-muted-foreground text-sm mt-1">Tap to view</p>
+        <CommentSheet
+          open={showCommentSheet}
+          onOpenChange={setShowCommentSheet}
+          postId={id}
+          commentCount={commentCount}
+        />
+      </motion.article>
+    );
+  }
+
+  // Media post - edge-to-edge immersive
+  return (
+    <motion.article 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      className="relative w-full"
+    >
+      {/* Content Warning Overlay */}
+      {hasContentWarning && !showContent ? (
+        <div 
+          className="aspect-[4/5] bg-card/80 backdrop-blur-xl flex items-center justify-center cursor-pointer"
+          onClick={() => setShowContent(true)}
+        >
+          <div className="text-center px-8">
+            <div className="w-14 h-14 rounded-full bg-warning/20 flex items-center justify-center mx-auto mb-4">
+              <span className="text-2xl">⚠️</span>
+            </div>
+            <span className="text-base text-warning font-medium block mb-2">{contentWarningType || 'Sensitive Content'}</span>
+            <p className="text-muted-foreground text-sm">Tap to view</p>
+          </div>
+        </div>
+      ) : (
+        <ImmersiveMedia
+          src={media.url}
+          type={media.type}
+          poster={media.thumbnail}
+          aspectRatio="portrait"
+          overlay="full"
+          onDoubleTap={handleDoubleTap}
+          showHeartOnDoubleTap={true}
+        >
+          {/* Floating Header - Author Info */}
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="absolute top-4 left-4 right-4 flex items-center justify-between z-20"
+          >
+            <div className="flex items-center gap-3">
+              <CinematicAvatar
+                src={author.avatar}
+                alt={author.name}
+                fallback={author.name.charAt(0)}
+                size="md"
+                ring="gradient"
+              />
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="font-semibold text-foreground text-[15px] drop-shadow-md">{author.name}</span>
+                  {author.isVerified && <VerifiedBadge size="sm" />}
+                </div>
+                <p className="text-sm text-foreground/70 drop-shadow-sm">@{author.handle}</p>
               </div>
             </div>
-          ) : media.type === 'image' ? (
-            <div 
-              className="relative cursor-pointer select-none"
-              onClick={handleDoubleTap}
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full glass-subtle">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="glass-card">
+                <DropdownMenuItem className="gap-2">
+                  <Flag className="h-4 w-4" />
+                  {t('safety.report')}
+                </DropdownMenuItem>
+                <DropdownMenuItem className="gap-2">
+                  <VolumeX className="h-4 w-4" />
+                  {t('safety.mute')}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="gap-2 text-destructive">
+                  <Ban className="h-4 w-4" />
+                  {t('safety.block')}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </motion.div>
+
+          {/* Bottom Content - Caption & Tags */}
+          <div className="absolute bottom-0 left-0 right-0 p-4 z-20">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
             >
-              <img 
-                src={media.url} 
-                alt="" 
-                className="w-full aspect-square object-cover"
-              />
-              {showHeartOverlay && (
-                <motion.div 
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: [0, 1.2, 1], opacity: 1 }}
-                  exit={{ scale: 1.3, opacity: 0 }}
-                  transition={{ duration: 0.4, times: [0, 0.6, 1], ease: "easeOut" }}
-                  className="absolute inset-0 flex items-center justify-center pointer-events-none"
-                >
-                  <Heart className="h-24 w-24 fill-current text-primary drop-shadow-lg" />
-                </motion.div>
+              <p className="text-[15px] text-foreground leading-relaxed mb-2 drop-shadow-md">
+                <span className="font-semibold mr-1.5">{author.handle}</span>
+                {renderContent()}
+              </p>
+
+              {tags.length > 0 && !content.includes('#') && (
+                <div className="flex flex-wrap gap-1.5 mb-4">
+                  {tags.map((tag) => (
+                    <span key={tag} className="text-sm text-foreground/80 font-medium">#{tag}</span>
+                  ))}
+                </div>
               )}
-            </div>
-          ) : (
-            <div className="aspect-square bg-secondary flex items-center justify-center">
-              <video 
-                src={media.url} 
-                poster={media.thumbnail}
-                controls
-                className="w-full h-full object-cover"
-              />
-            </div>
-          )}
-        </div>
+
+              {/* Actions Bar */}
+              <div className="flex items-center justify-between pt-2">
+                <div className="flex items-center gap-5">
+                  <HeartButton 
+                    count={heartCount}
+                    active={hasReacted}
+                    onClick={handleReaction}
+                  />
+                  <CommentButton 
+                    count={commentCount}
+                    onClick={() => setShowCommentSheet(true)}
+                  />
+                  <ShareButton postId={id} />
+                  {authorId && (
+                    <CommunityButton 
+                      authorId={authorId}
+                      authorName={author.name}
+                    />
+                  )}
+                </div>
+                <motion.button 
+                  whileTap={{ scale: 0.9 }}
+                  onClick={handleLibraryToggle}
+                  className={cn(
+                    'transition-colors p-2',
+                    inLibrary ? 'text-primary' : 'text-foreground/80 hover:text-foreground'
+                  )}
+                >
+                  <BookOpen className={cn('h-6 w-6', inLibrary && 'fill-current')} />
+                </motion.button>
+              </div>
+
+              {commentCount > 0 && (
+                <button 
+                  onClick={() => setShowCommentSheet(true)}
+                  className="text-sm text-muted-foreground mt-2 hover:text-foreground transition-colors"
+                >
+                  View all {formatCount(commentCount)} comments
+                </button>
+              )}
+            </motion.div>
+          </div>
+        </ImmersiveMedia>
       )}
 
-      {/* Actions - Instagram Style */}
-      <div className="p-3">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-4">
-            <HeartButton 
-              count={heartCount}
-              active={hasReacted}
-              onClick={handleReaction}
-            />
-            <CommentButton 
-              count={commentCount}
-              onClick={() => setShowCommentSheet(true)}
-            />
-          </div>
-          <div className="flex items-center gap-4">
-            <ShareButton postId={id} />
-            {authorId && (
-              <CommunityButton 
-                authorId={authorId}
-                authorName={author.name}
-              />
-            )}
-            <motion.button 
-              whileTap={{ scale: 0.9 }}
-              onClick={handleLibraryToggle}
-              className={cn(
-                'transition-colors',
-                inLibrary ? 'text-foreground' : 'text-foreground hover:text-muted-foreground'
-              )}
-            >
-              <BookOpen className={cn('h-6 w-6', inLibrary && 'fill-current')} />
-            </motion.button>
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="mt-1">
-          <p className="text-sm text-foreground">
-            <span className="font-semibold mr-1">{author.handle}</span>
-            {renderContent()}
-          </p>
-        </div>
-
-        {/* Tags as hashtags */}
-        {tags.length > 0 && !content.includes('#') && (
-          <div className="flex flex-wrap gap-1 mt-2">
-            {tags.map((tag) => (
-              <Hashtag key={tag} tag={tag} size="sm" />
-            ))}
-          </div>
-        )}
-
-        {/* Comments link */}
-        {commentCount > 0 && (
-          <button 
-            onClick={() => setShowCommentSheet(true)}
-            className="text-sm text-muted-foreground mt-1 hover:text-foreground transition-colors"
-          >
-            View all {formatCount(commentCount)} comments
-          </button>
-        )}
-      </div>
-
-      {/* Comment Sheet */}
       <CommentSheet
         open={showCommentSheet}
         onOpenChange={setShowCommentSheet}
         postId={id}
         commentCount={commentCount}
       />
-    </Card>
+    </motion.article>
   );
 }

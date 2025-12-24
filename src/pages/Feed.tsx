@@ -12,7 +12,7 @@ import { Hashtag } from '@/components/Hashtag';
 // Trending hashtags
 const trendingHashtags = ['mentalhealth', 'selfcare', 'anxiety', 'recovery', 'mindfulness'];
 
-// Mock data for demo with hashtags
+// Mock data with rich media
 const mockPosts = [
   {
     id: '1',
@@ -20,13 +20,13 @@ const mockPosts = [
     author: {
       name: 'Wellness Center',
       handle: 'wellnesscenter',
-      avatar: '',
+      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop',
       isVerified: true,
     },
-    content: 'Remember: taking a break is not giving up. Your mental health matters more than any deadline. Take care of yourself today.',
+    content: 'Remember: taking a break is not giving up. Your mental health matters more than any deadline.',
     media: {
       type: 'image' as const,
-      url: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&h=600&fit=crop',
+      url: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&h=1000&fit=crop',
     },
     tags: ['selfcare', 'mindfulness', 'wellness'],
     commentCount: 32,
@@ -39,10 +39,10 @@ const mockPosts = [
     author: {
       name: 'Dr. Sarah Mitchell',
       handle: 'drsarahmitchell',
-      avatar: '',
+      avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=200&h=200&fit=crop',
       isVerified: true,
     },
-    content: 'Anxiety tip: Try the 5-4-3-2-1 grounding technique. Name 5 things you can see, 4 you can touch, 3 you can hear, 2 you can smell, and 1 you can taste. This helps bring you back to the present moment. #anxiety #mentalhealth #copingskills',
+    content: 'Anxiety tip: Try the 5-4-3-2-1 grounding technique. Name 5 things you can see, 4 you can touch, 3 you can hear, 2 you can smell, and 1 you can taste. #anxiety #mentalhealth',
     tags: ['anxiety', 'mentalhealth', 'copingskills'],
     commentCount: 78,
     createdAt: '4h',
@@ -54,9 +54,13 @@ const mockPosts = [
     author: {
       name: 'Jamie',
       handle: 'jamie_journey',
-      avatar: '',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop',
     },
-    content: "Today marks 1 year since I started my recovery journey. It hasn't been easy, but I'm grateful for this community and everyone who has supported me. There is hope. 💙 #recovery #mentalhealth #oneyear",
+    content: "Today marks 1 year since I started my recovery journey. It hasn't been easy, but I'm grateful for this community. 💙",
+    media: {
+      type: 'image' as const,
+      url: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=800&h=1000&fit=crop',
+    },
     tags: ['recovery', 'mentalhealth', 'milestone'],
     commentCount: 156,
     createdAt: '6h',
@@ -68,13 +72,13 @@ const mockPosts = [
     author: {
       name: 'MindfulMoments',
       handle: 'mindfulmoments',
-      avatar: '',
+      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop',
       isVerified: true,
     },
-    content: "Morning meditation complete ✨ 10 minutes of stillness can change your entire day. Who else meditates in the morning? #meditation #mindfulness #morningroutine",
+    content: "Morning meditation complete ✨ 10 minutes of stillness can change your entire day.",
     media: {
       type: 'image' as const,
-      url: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=800&h=600&fit=crop',
+      url: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=800&h=1000&fit=crop',
     },
     tags: ['meditation', 'mindfulness', 'morningroutine'],
     commentCount: 45,
@@ -90,17 +94,17 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.08,
+      staggerChildren: 0.12,
+      delayChildren: 0.1,
     },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20, scale: 0.98 },
+  hidden: { opacity: 0, y: 30 },
   visible: { 
     opacity: 1, 
-    y: 0, 
-    scale: 1,
+    y: 0,
   },
 };
 
@@ -128,45 +132,55 @@ export default function Feed() {
 
   return (
     <AppLayout onCreatePost={handleCreatePost}>
-      <div className="flex flex-col gap-3 p-3">
-        {/* Trending Hashtags */}
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          {trendingHashtags.map((tag, index) => (
-            <motion.div
-              key={tag}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.05 }}
-            >
-              <Hashtag tag={tag} size="md" animated />
-            </motion.div>
-          ))}
+      <div className="flex flex-col bg-cinematic min-h-screen">
+        {/* Trending Hashtags - Horizontal scroll */}
+        <div className="px-4 pt-3 pb-2">
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+            {trendingHashtags.map((tag, index) => (
+              <motion.div
+                key={tag}
+                initial={{ opacity: 0, x: -15 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.06, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <Hashtag tag={tag} size="md" animated />
+              </motion.div>
+            ))}
+          </div>
         </div>
 
-        <ComposerBar onOpenComposer={handleOpenComposer} />
-        <ExpressionsRow />
+        {/* Composer Bar */}
+        <div className="px-4 pb-3">
+          <ComposerBar onOpenComposer={handleOpenComposer} />
+        </div>
+
+        {/* Expressions/Stories Row */}
+        <div className="mb-4">
+          <ExpressionsRow />
+        </div>
         
-        {/* Posts Feed with animations */}
+        {/* Posts Feed - Edge to edge for media posts */}
         <motion.div 
-          className="space-y-3"
+          className="flex flex-col"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
           <AnimatePresence mode="popLayout">
             {loading ? (
-              <>
+              <div className="px-4 space-y-4">
                 <PostCardSkeleton />
                 <PostCardSkeleton />
                 <PostCardSkeleton />
-              </>
+              </div>
             ) : (
-              mockPosts.map((post) => (
+              mockPosts.map((post, index) => (
                 <motion.div
                   key={post.id}
                   variants={itemVariants}
                   layout
                   exit={{ opacity: 0, scale: 0.95 }}
+                  className={post.media ? '' : 'px-0'}
                 >
                   <PostCard {...post} />
                 </motion.div>
