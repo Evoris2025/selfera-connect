@@ -153,10 +153,6 @@ export function DiscoverRow() {
         return filtered;
       });
       
-      toast({
-        title: 'Following',
-        description: 'You are now following this user.',
-      });
       return;
     }
     
@@ -198,10 +194,6 @@ export function DiscoverRow() {
         return filtered;
       });
 
-      toast({
-        title: 'Following',
-        description: 'You are now following this user.',
-      });
     } catch (error) {
       console.error('Error following user:', error);
       toast({
