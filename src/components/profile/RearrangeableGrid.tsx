@@ -28,31 +28,52 @@ function formatCount(count: number): string {
   return count.toString();
 }
 
-// Generate consistent size from post ID for masonry row spans
-function getMasonrySize(postId: string): 'small' | 'medium' | 'large' {
-  let hash = 0;
-  for (let i = 0; i < postId.length; i++) {
-    hash = ((hash << 5) - hash) + postId.charCodeAt(i);
-    hash = hash & hash;
-  }
-  
-  // Distribution: 2 small, 3 medium, 1 large for better gap filling
-  const sizes: ('small' | 'medium' | 'large')[] = [
-    'small', 'small', 
-    'medium', 'medium', 'medium',
-    'large'
-  ];
-  
-  return sizes[Math.abs(hash) % sizes.length];
-}
+// Mosaic pattern definitions - each pattern repeats cyclically
+const MOSAIC_PATTERNS: Record<string, { colSpan: number; rowSpan: number }[]> = {
+  // Mosaic 4: Wide banner on top + 4 squares below (repeats every 5)
+  mosaic4: [
+    { colSpan: 3, rowSpan: 1 },  // wide banner
+    { colSpan: 1, rowSpan: 1 },  // square
+    { colSpan: 1, rowSpan: 1 },  // square
+    { colSpan: 1, rowSpan: 1 },  // square
+  ],
+  // Mosaic 5: Tall left + 4 squares on right (repeats every 5)
+  mosaic5: [
+    { colSpan: 1, rowSpan: 2 },  // tall left
+    { colSpan: 1, rowSpan: 1 },  // top mid
+    { colSpan: 1, rowSpan: 1 },  // top right
+    { colSpan: 1, rowSpan: 1 },  // bottom mid
+    { colSpan: 1, rowSpan: 1 },  // bottom right
+  ],
+  // Mosaic 6: Tall left + 2 wide right stacked (repeats every 3)
+  mosaic6: [
+    { colSpan: 1, rowSpan: 2 },  // tall left
+    { colSpan: 2, rowSpan: 1 },  // wide top right
+    { colSpan: 2, rowSpan: 1 },  // wide bottom right
+  ],
+  // Mosaic 7: Wide banner + large left + 2 squares right (repeats every 4)
+  mosaic7: [
+    { colSpan: 3, rowSpan: 1 },  // wide banner
+    { colSpan: 2, rowSpan: 2 },  // large left
+    { colSpan: 1, rowSpan: 1 },  // top right
+    { colSpan: 1, rowSpan: 1 },  // bottom right
+  ],
+  // Mosaic 8: Complex mixed pattern (repeats every 5)
+  mosaic8: [
+    { colSpan: 1, rowSpan: 2 },  // tall left
+    { colSpan: 1, rowSpan: 1 },  // top mid
+    { colSpan: 1, rowSpan: 1 },  // top right
+    { colSpan: 2, rowSpan: 1 },  // wide bottom
+  ],
+};
 
-// Map size to row span class for CSS Grid
-function getMasonryRowSpan(size: 'small' | 'medium' | 'large'): string {
-  switch (size) {
-    case 'small': return 'row-span-1';
-    case 'medium': return 'row-span-2';
-    case 'large': return 'row-span-3';
+// Get mosaic spans for a post at a given index
+function getMosaicSpans(layoutStyle: GridLayoutStyle, index: number): { colSpan: number; rowSpan: number } {
+  const pattern = MOSAIC_PATTERNS[layoutStyle];
+  if (!pattern) {
+    return { colSpan: 1, rowSpan: 1 }; // Default for uniform
   }
+  return pattern[index % pattern.length];
 }
 
 export const RearrangeableGrid = memo(function RearrangeableGrid({ 
@@ -175,6 +196,8 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
     mass: 0.8,
   };
 
+  const isMosaicLayout = layoutStyle.startsWith('mosaic');
+
   return (
     <LayoutGroup>
     <div className="relative">
@@ -231,23 +254,29 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
           'bg-border/20',
           isRearrangeMode && 'pb-20',
           isTransitioning && 'overflow-hidden',
-          // All layouts use CSS Grid
+          // All layouts use CSS Grid with 3 columns
           'grid grid-cols-3 gap-[1px]'
         )}
-        style={layoutStyle === 'masonry' ? {
-          gridAutoRows: '100px',
+        style={isMosaicLayout ? {
+          gridAutoRows: '120px',
           gridAutoFlow: 'dense'
         } : undefined}
         transition={layoutTransition}
       >
         <AnimatePresence mode="sync">
           {orderedPosts.map((post, index) => {
-            // Featured layout: first post spans 2x2
-            const isFeaturedFirst = layoutStyle === 'featured' && index === 0;
+            // Get mosaic spans for this position
+            const { colSpan, rowSpan } = getMosaicSpans(layoutStyle, index);
             
-            // Get consistent size for masonry layout
-            const masonrySize = getMasonrySize(post.id);
-            const masonryRowSpan = getMasonryRowSpan(masonrySize);
+            // Build dynamic class for grid spans
+            const spanClasses = isMosaicLayout 
+              ? cn(
+                  colSpan === 2 && 'col-span-2',
+                  colSpan === 3 && 'col-span-3',
+                  rowSpan === 2 && 'row-span-2',
+                  rowSpan === 3 && 'row-span-3'
+                )
+              : '';
             
             return (
               <motion.div 
@@ -269,8 +298,7 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
                 className={cn(
                   'relative overflow-hidden',
                   layoutStyle === 'uniform' && 'aspect-square',
-                  layoutStyle === 'masonry' && masonryRowSpan,
-                  isFeaturedFirst && 'col-span-2 row-span-2 aspect-square'
+                  spanClasses
                 )}
                 onMouseEnter={() => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}

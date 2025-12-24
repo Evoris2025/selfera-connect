@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
-export type GridLayoutStyle = 'uniform' | 'masonry' | 'featured';
+export type GridLayoutStyle = 'uniform' | 'mosaic4' | 'mosaic5' | 'mosaic6' | 'mosaic7' | 'mosaic8';
 
 interface UseGridLayoutResult {
   layoutStyle: GridLayoutStyle;
