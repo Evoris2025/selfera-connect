@@ -357,47 +357,30 @@ export default function Profile() {
             ))}
           </motion.div>
 
-          {/* Action Buttons - Premium Gradient & Glass */}
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.5 }}
-            className="flex gap-3 mb-6"
-          >
-            {isOwnProfile ? (
-              <>
-                <Button 
-                  variant="outline" 
-                  className="flex-1 h-12 rounded-2xl glass-subtle border-border/30 font-semibold hover:bg-secondary/50 transition-all duration-300"
-                >
-                  Edit profile
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="flex-1 h-12 rounded-2xl glass-subtle border-border/30 font-semibold hover:bg-secondary/50 transition-all duration-300"
-                >
-                  Share profile
-                </Button>
-              </>
-            ) : (
-              <>
-                <FollowButton
-                  isFollowing={isFollowing}
-                  onToggle={handleFollow}
-                  size="lg"
-                  className="flex-1 h-12 rounded-2xl"
-                  variant="gradient"
-                />
-                <Button 
-                  variant="outline" 
-                  size="icon"
-                  className="h-12 w-12 rounded-2xl glass-subtle border-border/30"
-                >
-                  <MessageCircle className="h-5 w-5" />
-                </Button>
-              </>
-            )}
-          </motion.div>
+          {/* Action Buttons - Only show for other users */}
+          {!isOwnProfile && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.5 }}
+              className="flex gap-3 mb-6"
+            >
+              <FollowButton
+                isFollowing={isFollowing}
+                onToggle={handleFollow}
+                size="lg"
+                className="flex-1 h-12 rounded-2xl"
+                variant="gradient"
+              />
+              <Button 
+                variant="outline" 
+                size="icon"
+                className="h-12 w-12 rounded-2xl glass-subtle border-border/30"
+              >
+                <MessageCircle className="h-5 w-5" />
+              </Button>
+            </motion.div>
+          )}
         </div>
 
         {/* Discover People Row - Premium Glass Cards */}
