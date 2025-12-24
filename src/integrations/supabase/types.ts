@@ -913,6 +913,30 @@ export type Database = {
           },
         ]
       }
+      user_grid_layout_preference: {
+        Row: {
+          created_at: string
+          id: string
+          layout_style: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          layout_style?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          layout_style?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_profile_grid_order: {
         Row: {
           id: string

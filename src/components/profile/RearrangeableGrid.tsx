@@ -6,6 +6,7 @@ import { DraggableGridItem } from './DraggableGridItem';
 import { useProfileGridOrder } from '@/hooks/useProfileGridOrder';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { GridLayoutStyle } from '@/hooks/useGridLayout';
 
 interface Post {
   id: string;
@@ -18,6 +19,7 @@ interface Post {
 interface RearrangeableGridProps {
   posts: Post[];
   isOwnProfile: boolean;
+  layoutStyle?: GridLayoutStyle;
 }
 
 function formatCount(count: number): string {
@@ -28,7 +30,8 @@ function formatCount(count: number): string {
 
 export const RearrangeableGrid = memo(function RearrangeableGrid({ 
   posts, 
-  isOwnProfile 
+  isOwnProfile,
+  layoutStyle = 'uniform',
 }: RearrangeableGridProps) {
   const { orderedPosts, loading, saving, reorderPosts, saveOrder } = useProfileGridOrder(posts);
   const [isRearrangeMode, setIsRearrangeMode] = useState(false);
@@ -173,21 +176,35 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
         )}
       </AnimatePresence>
 
-      {/* Tight Grid - Minimal Gaps */}
+      {/* Grid with layout styles */}
       <div 
         className={cn(
-          'grid grid-cols-3 gap-[1px] bg-border/20',
-          isRearrangeMode && 'pb-20'
+          'bg-border/20',
+          isRearrangeMode && 'pb-20',
+          // Uniform: classic 3-column equal grid
+          layoutStyle === 'uniform' && 'grid grid-cols-3 gap-[1px]',
+          // Masonry: CSS columns for variable heights
+          layoutStyle === 'masonry' && 'columns-3 gap-[1px] space-y-[1px]',
+          // Featured: first item larger
+          layoutStyle === 'featured' && 'grid grid-cols-3 gap-[1px]'
         )}
       >
-        {orderedPosts.map((post, index) => (
-          <div 
-            key={post.id} 
-            data-grid-index={index}
-            className="relative"
-            onMouseEnter={() => setHoveredIndex(index)}
-            onMouseLeave={() => setHoveredIndex(null)}
-          >
+        {orderedPosts.map((post, index) => {
+          // Featured layout: first post spans 2x2
+          const isFeaturedFirst = layoutStyle === 'featured' && index === 0;
+          
+          return (
+            <div 
+              key={post.id} 
+              data-grid-index={index}
+              className={cn(
+                'relative',
+                isFeaturedFirst && 'col-span-2 row-span-2',
+                layoutStyle === 'masonry' && 'break-inside-avoid'
+              )}
+              onMouseEnter={() => setHoveredIndex(index)}
+              onMouseLeave={() => setHoveredIndex(null)}
+            >
             <DraggableGridItem
               post={post}
               index={index}
@@ -232,7 +249,8 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
               )}
             </AnimatePresence>
           </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Long-press hint for own profile */}
