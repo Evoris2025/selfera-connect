@@ -10,8 +10,6 @@ import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
 import { FollowButton } from '@/components/interactions';
-import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
-import { GlassCard } from '@/components/ui/GlassCard';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -35,6 +33,7 @@ const mockUser = {
     posts: 147,
     followers: 12400,
     following: 567,
+    community: 24,
   },
 };
 
@@ -60,22 +59,23 @@ function formatCount(count: number): string {
   return count.toString();
 }
 
-// Cinematic stat display
-function StatItem({ count, label }: { count: number; label: string }) {
+// Cinematic stat display for hero section
+function HeroStatItem({ count, label, delay = 0 }: { count: number; label: string; delay?: number }) {
   return (
     <motion.button 
       whileTap={{ scale: 0.95 }}
-      className="flex flex-col items-center flex-1"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      className="flex flex-col items-center"
     >
       <motion.span 
         key={count}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-xl font-bold text-foreground tracking-tight"
+        className="text-2xl font-bold text-white tracking-tight drop-shadow-lg"
       >
         {formatCount(count)}
       </motion.span>
-      <span className="text-xs text-muted-foreground font-medium">{label}</span>
+      <span className="text-[10px] text-white/70 font-semibold uppercase tracking-wider">{label}</span>
     </motion.button>
   );
 }
@@ -118,8 +118,9 @@ export default function Profile() {
             transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
             className="w-full h-full object-cover"
           />
-          {/* Gradient overlays for readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/40" />
+          {/* Cinematic gradient overlays */}
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-transparent" />
         </div>
 
         {/* Content - Above background */}
@@ -144,103 +145,107 @@ export default function Profile() {
             )}
           </div>
 
-          {/* Spacer for top content */}
-          <div className="h-[200px]" />
+          {/* Cinematic Hero Section - Centered Avatar with Stats */}
+          <div className="pt-16 pb-6">
+            {/* Stats + Avatar Row */}
+            <div className="flex items-center justify-center px-6 gap-4 sm:gap-8">
+              {/* Left Stats - Following & Followers */}
+              <div className="flex flex-col gap-4 items-end">
+                <HeroStatItem count={mockUser.stats.following} label="Following" delay={0.3} />
+                <HeroStatItem count={followerCount} label="Followers" delay={0.35} />
+              </div>
 
-          {/* Avatar with simple gradient ring */}
-          <motion.div 
-            initial={{ opacity: 0, y: 30, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="px-5 mb-4"
-          >
-            <div className="relative inline-block">
-              <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-orange-400" />
-              <div className="relative w-28 h-28 rounded-full overflow-hidden border-4 border-background">
-                <img 
-                  src={mockUser.avatar} 
-                  alt={mockUser.name}
-                  className="w-full h-full object-cover"
-                />
+              {/* Centered Avatar with Cinematic Glow */}
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.15, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="relative"
+              >
+                {/* Radial glow effect behind avatar */}
+                <div className="absolute inset-0 scale-150 rounded-full bg-gradient-radial from-amber-500/40 via-orange-500/20 to-transparent blur-2xl" />
+                <div className="absolute inset-0 scale-125 rounded-full bg-gradient-radial from-rose-500/30 via-pink-500/15 to-transparent blur-xl" />
+                
+                {/* Avatar with gradient ring */}
+                <div className="relative">
+                  {/* Outer glow ring */}
+                  <div 
+                    className="absolute -inset-1.5 rounded-full bg-gradient-to-br from-amber-400 via-orange-500 to-rose-500 opacity-80"
+                    style={{ 
+                      boxShadow: '0 0 40px rgba(251, 146, 60, 0.5), 0 0 80px rgba(251, 113, 133, 0.3)' 
+                    }}
+                  />
+                  <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 border-background/80">
+                    <img 
+                      src={mockUser.avatar} 
+                      alt={mockUser.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Right Stats - Posts & Community */}
+              <div className="flex flex-col gap-4 items-start">
+                <HeroStatItem count={mockUser.stats.posts} label="Posts" delay={0.4} />
+                <HeroStatItem count={mockUser.stats.community} label="Community" delay={0.45} />
               </div>
             </div>
-          </motion.div>
 
-        {/* Profile Content */}
+            {/* Centered Name & Handle */}
+            <motion.div 
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.6 }}
+              className="text-center mt-6"
+            >
+              <div className="flex items-center justify-center gap-2">
+                <h1 className="text-2xl font-bold text-white tracking-tight drop-shadow-lg">{mockUser.name}</h1>
+                {mockUser.isVerified && <VerifiedBadge size="md" />}
+                {mockUser.isPrivate && <Lock className="h-4 w-4 text-white/70" />}
+              </div>
+              <p className="text-white/60 text-sm mt-0.5">@{mockUser.handle}</p>
+              
+              {/* Location */}
+              {mockUser.location && (
+                <div className="flex items-center justify-center gap-1.5 text-white/50 text-sm mt-2">
+                  <MapPin className="h-3.5 w-3.5" />
+                  <span>{mockUser.location}</span>
+                </div>
+              )}
+            </motion.div>
+          </div>
+
+        {/* Profile Content - Below Hero */}
         <div className="px-5 pt-2 pb-4">
-          {/* Name & Handle */}
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35, duration: 0.5 }}
-            className="mb-2"
-          >
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold text-foreground tracking-tight">{mockUser.name}</h1>
-              {mockUser.isVerified && <VerifiedBadge size="md" />}
-              {mockUser.isPrivate && <Lock className="h-4 w-4 text-muted-foreground" />}
-            </div>
-            <p className="text-muted-foreground text-sm">@{mockUser.handle}</p>
-          </motion.div>
-
           {/* Bio */}
           <motion.p 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.5 }}
-            className="text-foreground/90 text-[15px] leading-relaxed mb-3"
+            transition={{ delay: 0.55, duration: 0.5 }}
+            className="text-foreground/90 text-[15px] leading-relaxed text-center mb-4"
           >
             {mockUser.bio}
           </motion.p>
-
-          {/* Location */}
-          {mockUser.location && (
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.45, duration: 0.5 }}
-              className="flex items-center gap-1.5 text-muted-foreground text-sm mb-4"
-            >
-              <MapPin className="h-3.5 w-3.5" />
-              <span>{mockUser.location}</span>
-            </motion.div>
-          )}
 
           {/* Interest Tags Row */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.5 }}
-            className="flex flex-wrap gap-2 mb-5"
+            transition={{ delay: 0.6, duration: 0.5 }}
+            className="flex flex-wrap justify-center gap-2 mb-5"
           >
             {mockUser.interests.map((interest, index) => (
               <motion.span
                 key={interest}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.5 + index * 0.05 }}
+                transition={{ delay: 0.6 + index * 0.05 }}
                 className="px-3 py-1.5 text-xs font-medium rounded-full glass border border-border/30 text-muted-foreground"
               >
                 {interest}
               </motion.span>
             ))}
-          </motion.div>
-
-          {/* Stats Row - Premium Glass Style */}
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.55, duration: 0.5 }}
-          >
-            <GlassCard variant="subtle" className="py-4 px-2 mb-5">
-              <div className="flex justify-around">
-                <StatItem count={followerCount} label="Followers" />
-                <div className="w-px bg-border/50" />
-                <StatItem count={mockUser.stats.following} label="Following" />
-                <div className="w-px bg-border/50" />
-                <StatItem count={mockUser.stats.posts} label="Creations" />
-              </div>
-            </GlassCard>
           </motion.div>
 
           {/* Action Buttons - Premium Gradient & Glass */}
