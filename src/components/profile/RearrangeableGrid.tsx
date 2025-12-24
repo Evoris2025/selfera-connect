@@ -177,7 +177,8 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
       </AnimatePresence>
 
       {/* Grid with layout styles */}
-      <div 
+      <motion.div 
+        layout
         className={cn(
           'bg-border/20',
           isRearrangeMode && 'pb-20',
@@ -188,70 +189,88 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
           // Featured: first item larger
           layoutStyle === 'featured' && 'grid grid-cols-3 gap-[1px]'
         )}
+        transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
       >
-        {orderedPosts.map((post, index) => {
-          // Featured layout: first post spans 2x2
-          const isFeaturedFirst = layoutStyle === 'featured' && index === 0;
-          
-          return (
-            <div 
-              key={post.id} 
-              data-grid-index={index}
-              className={cn(
-                'relative',
-                isFeaturedFirst && 'col-span-2 row-span-2',
-                layoutStyle === 'masonry' && 'break-inside-avoid'
-              )}
-              onMouseEnter={() => setHoveredIndex(index)}
-              onMouseLeave={() => setHoveredIndex(null)}
-            >
-            <DraggableGridItem
-              post={post}
-              index={index}
-              isRearrangeMode={isRearrangeMode}
-              isDragging={draggingIndex === index}
-              dragOverIndex={dragOverIndex}
-              onLongPress={enterRearrangeMode}
-              onDragStart={handleDragStart}
-              onDragOver={handleDragOver}
-              onDragEnd={handleDragEnd}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-            />
+        <AnimatePresence mode="popLayout">
+          {orderedPosts.map((post, index) => {
+            // Featured layout: first post spans 2x2
+            const isFeaturedFirst = layoutStyle === 'featured' && index === 0;
             
-            {/* Video Indicator */}
-            {post.isVideo && !isRearrangeMode && (
-              <div className="absolute top-2 right-2 pointer-events-none">
-                <Play className="h-4 w-4 text-white drop-shadow-lg fill-current" />
-              </div>
-            )}
-            
-            {/* Hover Overlay with Stats */}
-            <AnimatePresence>
-              {hoveredIndex === index && !isRearrangeMode && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.15 }}
-                  className="absolute inset-0 bg-background/60 backdrop-blur-[2px] flex items-center justify-center gap-4 pointer-events-none"
-                >
-                  <div className="flex items-center gap-1.5 text-white font-semibold text-sm">
-                    <Heart className="h-4 w-4 fill-current" />
-                    {formatCount(post.likes)}
-                  </div>
-                  <div className="flex items-center gap-1.5 text-white font-semibold text-sm">
-                    <MessageCircle className="h-4 w-4 fill-current" />
-                    {formatCount(post.comments)}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-          );
-        })}
-      </div>
+            return (
+              <motion.div 
+                key={post.id} 
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ 
+                  layout: { duration: 0.4, ease: [0.4, 0, 0.2, 1] },
+                  opacity: { duration: 0.25 },
+                  scale: { duration: 0.25 },
+                  delay: index * 0.02 // Staggered animation
+                }}
+                data-grid-index={index}
+                className={cn(
+                  'relative',
+                  isFeaturedFirst && 'col-span-2 row-span-2',
+                  layoutStyle === 'masonry' && 'break-inside-avoid'
+                )}
+                onMouseEnter={() => setHoveredIndex(index)}
+                onMouseLeave={() => setHoveredIndex(null)}
+              >
+                <DraggableGridItem
+                  post={post}
+                  index={index}
+                  isRearrangeMode={isRearrangeMode}
+                  isDragging={draggingIndex === index}
+                  dragOverIndex={dragOverIndex}
+                  onLongPress={enterRearrangeMode}
+                  onDragStart={handleDragStart}
+                  onDragOver={handleDragOver}
+                  onDragEnd={handleDragEnd}
+                  onTouchStart={handleTouchStart}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
+                />
+                
+                {/* Video Indicator */}
+                {post.isVideo && !isRearrangeMode && (
+                  <motion.div 
+                    className="absolute top-2 right-2 pointer-events-none"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <Play className="h-4 w-4 text-white drop-shadow-lg fill-current" />
+                  </motion.div>
+                )}
+                
+                {/* Hover Overlay with Stats */}
+                <AnimatePresence>
+                  {hoveredIndex === index && !isRearrangeMode && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute inset-0 bg-background/60 backdrop-blur-[2px] flex items-center justify-center gap-4 pointer-events-none"
+                    >
+                      <div className="flex items-center gap-1.5 text-white font-semibold text-sm">
+                        <Heart className="h-4 w-4 fill-current" />
+                        {formatCount(post.likes)}
+                      </div>
+                      <div className="flex items-center gap-1.5 text-white font-semibold text-sm">
+                        <MessageCircle className="h-4 w-4 fill-current" />
+                        {formatCount(post.comments)}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
+      </motion.div>
 
       {/* Long-press hint for own profile */}
       {isOwnProfile && !isRearrangeMode && orderedPosts.length > 1 && (
