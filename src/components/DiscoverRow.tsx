@@ -331,42 +331,48 @@ export function DiscoverRow() {
                       </p>
 
                       {/* Follow Button with Checkmark Animation */}
-                      <Button
-                        size="sm"
-                        onClick={() => handleFollowToggle(profile.id, profile.isFollowing)}
-                        disabled={isPending}
-                        className={`w-full h-8 text-xs font-semibold rounded-lg transition-all duration-300 overflow-hidden ${
-                          isPending 
-                            ? 'bg-blue-500 hover:bg-blue-500 text-white' 
-                            : 'bg-gradient-to-r from-primary via-pink-500 to-orange-400 hover:opacity-90 text-white'
-                        }`}
+                      <motion.div
+                        animate={isPending ? {
+                          scale: [1, 1.05, 1],
+                          transition: {
+                            duration: 0.4,
+                            repeat: Infinity,
+                            repeatDelay: 0.1,
+                            ease: "easeInOut"
+                          }
+                        } : {}}
+                        className="w-full"
                       >
-                        <AnimatePresence mode="wait">
-                          {isPending ? (
-                            <motion.div
-                              key="check"
-                              initial={{ scale: 0, opacity: 0 }}
-                              animate={{ 
-                                scale: [0, 1.3, 1],
-                                opacity: 1,
-                              }}
-                              exit={{ scale: 0, opacity: 0 }}
-                              transition={{ 
-                                duration: 0.4,
-                                ease: [0.34, 1.56, 0.64, 1],
-                                times: [0, 0.6, 1]
-                              }}
-                              className="flex items-center justify-center"
-                            >
+                        <Button
+                          size="sm"
+                          onClick={() => handleFollowToggle(profile.id, profile.isFollowing)}
+                          disabled={isPending}
+                          className={`w-full h-8 text-xs font-semibold rounded-lg transition-all duration-300 overflow-hidden ${
+                            isPending 
+                              ? 'bg-blue-500 hover:bg-blue-500 text-white shadow-[0_0_12px_rgba(59,130,246,0.5)]' 
+                              : 'bg-gradient-to-r from-primary via-pink-500 to-orange-400 hover:opacity-90 text-white'
+                          }`}
+                        >
+                          <AnimatePresence mode="wait">
+                            {isPending ? (
                               <motion.div
-                                initial={{ pathLength: 0 }}
-                                animate={{ pathLength: 1 }}
-                                transition={{ duration: 0.3, delay: 0.1 }}
+                                key="check"
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{ 
+                                  scale: [0, 1.3, 1],
+                                  opacity: 1,
+                                }}
+                                exit={{ scale: 0, opacity: 0 }}
+                                transition={{ 
+                                  duration: 0.4,
+                                  ease: [0.34, 1.56, 0.64, 1],
+                                  times: [0, 0.6, 1]
+                                }}
+                                className="flex items-center justify-center"
                               >
                                 <Check className="h-4 w-4" strokeWidth={3} />
                               </motion.div>
-                            </motion.div>
-                          ) : (
+                            ) : (
                             <motion.span
                               key="follow"
                               initial={{ opacity: 0, y: 10 }}
@@ -379,6 +385,7 @@ export function DiscoverRow() {
                           )}
                         </AnimatePresence>
                       </Button>
+                    </motion.div>
                     </GlassCard>
                   </motion.div>
                 );
