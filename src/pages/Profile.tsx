@@ -150,78 +150,80 @@ export default function Profile() {
     <AppLayout showHeader={false} onCreatePost={handleCreatePost}>
       <div className="flex flex-col min-h-screen relative">
         
-        {/* ========== CLEAN CARD-STYLE PROFILE HERO ========== */}
+        {/* ========== FULL-WIDTH PROFILE HERO ========== */}
         <motion.section
           ref={heroRef}
-          className="relative w-full bg-background"
+          className="relative w-full"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3, ease: 'easeOut' }}
         >
-          {/* Card Container */}
-          <div className="max-w-lg mx-auto bg-card rounded-b-3xl shadow-xl overflow-hidden border-x border-b border-border/50">
+          {/* Full-Width Cover Image Banner */}
+          <motion.div
+            className="relative h-56 sm:h-64 overflow-hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4 }}
+          >
+            <motion.img
+              src={mockUser.coverImage}
+              alt=""
+              className="w-full h-full object-cover"
+              style={{ scale: avatarScale }}
+            />
+            {/* Gradient overlay for blending into background */}
+            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
             
-            {/* Cover Image Banner */}
-            <motion.div
-              className="relative h-56 sm:h-64 overflow-hidden"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.4 }}
-            >
-              <motion.img
-                src={mockUser.coverImage}
-                alt=""
-                className="w-full h-full object-cover"
-                style={{ scale: avatarScale }}
-              />
-              {/* Subtle gradient overlay at bottom for avatar blending */}
-              <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-card to-transparent" />
-              
-              {/* Top Right Menu Button */}
-              {isOwnProfile && (
-                <motion.div
-                  className="absolute top-3 right-3 z-10"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-9 w-9 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/50 transition-all duration-200 active:scale-95"
-                      >
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-44">
-                      <DropdownMenuItem className="gap-2 cursor-pointer">
-                        <Share2 className="h-4 w-4" />
-                        Share profile
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate('/settings')}>
-                        <Settings className="h-4 w-4" />
-                        Settings
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </motion.div>
-              )}
-            </motion.div>
-
-            {/* Avatar - Overlapping the cover */}
-            <div className="relative flex justify-center -mt-16 sm:-mt-20">
+            {/* Top Right Menu Button */}
+            {isOwnProfile && (
               <motion.div
-                className="relative"
-                style={{ y: avatarY }}
-                initial={{ opacity: 0, scale: 0.8 }}
+                className="absolute top-3 right-3 z-10"
+                initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.15, duration: 0.35, ease: 'easeOut' }}
+                transition={{ delay: 0.2 }}
               >
-                {/* Avatar Ring */}
-                <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full p-1 bg-gradient-to-br from-primary via-primary/80 to-primary/60 shadow-lg">
-                  <div className="w-full h-full rounded-full overflow-hidden border-4 border-card">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/50 transition-all duration-200 active:scale-95"
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-44">
+                    <DropdownMenuItem className="gap-2 cursor-pointer">
+                      <Share2 className="h-4 w-4" />
+                      Share profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate('/settings')}>
+                      <Settings className="h-4 w-4" />
+                      Settings
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </motion.div>
+            )}
+          </motion.div>
+
+          {/* Profile Info Section */}
+          <div className="px-4 sm:px-6 -mt-16 sm:-mt-20 pb-5">
+            
+            {/* Avatar + Name/Handle Row */}
+            <motion.div
+              className="flex items-center gap-4 sm:gap-5"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15, duration: 0.35, ease: 'easeOut' }}
+            >
+              {/* Avatar */}
+              <motion.div
+                className="relative flex-shrink-0"
+                style={{ y: avatarY }}
+              >
+                <div className="w-36 h-36 sm:w-[10.5rem] sm:h-[10.5rem] rounded-full p-1 bg-gradient-to-br from-primary via-primary/80 to-primary/60 shadow-lg">
+                  <div className="w-full h-full rounded-full overflow-hidden border-4 border-background">
                     <img
                       src={mockUser.avatar}
                       alt={mockUser.name}
@@ -230,107 +232,94 @@ export default function Profile() {
                   </div>
                 </div>
               </motion.div>
-            </div>
 
-            {/* Profile Info - Centered */}
-            <div className="px-6 pt-3 pb-5 text-center">
-              
-              {/* Name + Verified Badge */}
+              {/* Name + Handle + Location */}
+              <div className="flex flex-col justify-center min-w-0 pt-16 sm:pt-20">
+                {/* Name + Verified Badge */}
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
+                    {mockUser.name}
+                  </h1>
+                  {mockUser.isVerified && <VerifiedBadge size="md" />}
+                  {mockUser.isPrivate && <Lock className="h-4 w-4 text-muted-foreground" />}
+                </div>
+
+                {/* Handle + Location */}
+                <p className="text-base text-muted-foreground">
+                  @{mockUser.handle}
+                  {mockUser.location && (
+                    <span className="inline-flex items-center gap-1 ml-2">
+                      <span className="w-1 h-1 rounded-full bg-muted-foreground/50" />
+                      <MapPin className="w-3.5 h-3.5" />
+                      {mockUser.location}
+                    </span>
+                  )}
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Bio - Full Width Below */}
+            <motion.p
+              className="text-sm sm:text-base text-foreground/80 leading-relaxed mt-4 max-w-xl"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              {renderBioWithHashtags(mockUser.bio)}
+            </motion.p>
+
+            {/* Stats Row */}
+            <motion.div
+              className="flex items-center mt-5 border-t border-border pt-4"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35 }}
+            >
+              <CardStatItem count={mockUser.stats.posts} label="Posts" />
+              <div className="w-px h-8 bg-border" />
+              <CardStatItem 
+                count={followerCount} 
+                label="Followers" 
+                onClick={() => openListModal('followers')}
+              />
+              <div className="w-px h-8 bg-border" />
+              <CardStatItem 
+                count={mockUser.stats.following} 
+                label="Following" 
+                onClick={() => openListModal('following')}
+              />
+              <div className="w-px h-8 bg-border" />
+              <CardStatItem 
+                count={mockUser.stats.community || 0} 
+                label="Community" 
+                onClick={() => openListModal('community')}
+              />
+            </motion.div>
+
+            {/* CTA Buttons - Below Stats */}
+            {!isOwnProfile && (
               <motion.div
-                className="flex items-center justify-center gap-2 mb-1"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.3 }}
-              >
-                <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">
-                  {mockUser.name}
-                </h1>
-                {mockUser.isVerified && <VerifiedBadge size="md" />}
-                {mockUser.isPrivate && <Lock className="h-4 w-4 text-muted-foreground" />}
-              </motion.div>
-
-              {/* Handle */}
-              <motion.p
-                className="text-sm text-muted-foreground mb-3"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.25 }}
-              >
-                @{mockUser.handle}
-                {mockUser.location && (
-                  <span className="inline-flex items-center gap-1 ml-2">
-                    <span className="w-1 h-1 rounded-full bg-muted-foreground/50" />
-                    <MapPin className="w-3 h-3" />
-                    {mockUser.location}
-                  </span>
-                )}
-              </motion.p>
-
-              {/* Bio with Inline Hashtags */}
-              <motion.p
-                className="text-sm text-foreground/80 leading-relaxed mb-5 max-w-xs mx-auto"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-              >
-                {renderBioWithHashtags(mockUser.bio)}
-              </motion.p>
-
-              {/* CTA Buttons */}
-              <motion.div
-                className="flex items-center justify-center gap-3 mb-5"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35 }}
-              >
-                {!isOwnProfile && (
-                  <>
-                    <FollowButton
-                      isFollowing={isFollowing}
-                      onToggle={handleFollow}
-                      size="md"
-                      className="px-8 h-9 rounded-full font-semibold text-sm uppercase tracking-wide transition-all duration-200 active:scale-[0.97]"
-                      variant="gradient"
-                    />
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="h-9 w-9 rounded-full border-border hover:bg-accent transition-all duration-200 active:scale-95"
-                    >
-                      <MessageCircle className="w-4 h-4" />
-                    </Button>
-                  </>
-                )}
-              </motion.div>
-
-              {/* Stats Row */}
-              <motion.div
-                className="flex items-center justify-center border-t border-border pt-4"
+                className="flex items-center gap-3 mt-4"
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
               >
-                <CardStatItem count={mockUser.stats.posts} label="Posts" />
-                <div className="w-px h-8 bg-border" />
-                <CardStatItem 
-                  count={followerCount} 
-                  label="Followers" 
-                  onClick={() => openListModal('followers')}
+                <FollowButton
+                  isFollowing={isFollowing}
+                  onToggle={handleFollow}
+                  size="md"
+                  className="px-8 h-9 rounded-full font-semibold text-sm uppercase tracking-wide transition-all duration-200 active:scale-[0.97]"
+                  variant="gradient"
                 />
-                <div className="w-px h-8 bg-border" />
-                <CardStatItem 
-                  count={mockUser.stats.following} 
-                  label="Following" 
-                  onClick={() => openListModal('following')}
-                />
-                <div className="w-px h-8 bg-border" />
-                <CardStatItem 
-                  count={mockUser.stats.community || 0} 
-                  label="Community" 
-                  onClick={() => openListModal('community')}
-                />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-9 w-9 rounded-full border-border hover:bg-accent transition-all duration-200 active:scale-95"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                </Button>
               </motion.div>
-            </div>
+            )}
           </div>
         </motion.section>
 
