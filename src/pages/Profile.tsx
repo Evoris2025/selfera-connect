@@ -182,12 +182,12 @@ export default function Profile() {
               />
             </div>
 
-            {/* Stats + Avatar Row */}
-            <div className="flex items-center justify-center px-4 sm:px-8 relative">
+            {/* Stats + Avatar Row - Full Width Distribution */}
+            <div className="flex items-center justify-between px-6 sm:px-12 md:px-16 max-w-lg mx-auto relative">
               {/* Left Stats - Following & Followers */}
-              <div className="flex flex-col gap-6 mr-6 sm:mr-10">
-                <HeroStatItem count={followerCount} label="Followers" delay={0.25} align="right" />
-                <HeroStatItem count={mockUser.stats.following} label="Following" delay={0.3} align="right" />
+              <div className="flex flex-col gap-5 flex-1">
+                <HeroStatItem count={followerCount} label="Followers" delay={0.25} align="center" />
+                <HeroStatItem count={mockUser.stats.following} label="Following" delay={0.3} align="center" />
               </div>
 
               {/* Centered Avatar with True Ambient Glow */}
@@ -262,9 +262,9 @@ export default function Profile() {
               </motion.div>
 
               {/* Right Stats - Posts & Community */}
-              <div className="flex flex-col gap-6 ml-6 sm:ml-10">
-                <HeroStatItem count={mockUser.stats.posts} label="Posts" delay={0.35} align="left" />
-                <HeroStatItem count={mockUser.stats.community} label="Community" delay={0.4} align="left" />
+              <div className="flex flex-col gap-5 flex-1">
+                <HeroStatItem count={mockUser.stats.posts} label="Posts" delay={0.35} align="center" />
+                <HeroStatItem count={mockUser.stats.community} label="Community" delay={0.4} align="center" />
               </div>
             </div>
 
