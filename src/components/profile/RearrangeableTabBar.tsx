@@ -74,7 +74,7 @@ const DraggableTab = memo(function DraggableTab({
         navigator.vibrate(100);
       }
       onLongPress();
-    }, 3000); // 3 second hold
+    }, 2000); // 2 second hold
   }, [isRearrangeMode, isOwnProfile, isGridTab, onLongPress]);
 
   const handlePointerUp = useCallback(() => {

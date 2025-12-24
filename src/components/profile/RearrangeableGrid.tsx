@@ -28,27 +28,31 @@ function formatCount(count: number): string {
   return count.toString();
 }
 
-// Generate consistent random aspect ratio from post ID
-function getMasonryAspect(postId: string): string {
-  // Simple hash from post ID for consistent randomization
+// Generate consistent size from post ID for masonry row spans
+function getMasonrySize(postId: string): 'small' | 'medium' | 'large' {
   let hash = 0;
   for (let i = 0; i < postId.length; i++) {
     hash = ((hash << 5) - hash) + postId.charCodeAt(i);
     hash = hash & hash;
   }
   
-  const aspects = [
-    'aspect-square',      // 1:1
-    'aspect-[3/4]',       // Portrait
-    'aspect-[4/5]',       // Tall portrait
-    'aspect-[5/6]',       // Taller
-    'aspect-[2/3]',       // Classic portrait
-    'aspect-[4/3]',       // Landscape
-    'aspect-square',      // 1:1 (weighted)
-    'aspect-[3/4]',       // Portrait (weighted)
+  // Distribution: 2 small, 3 medium, 1 large for better gap filling
+  const sizes: ('small' | 'medium' | 'large')[] = [
+    'small', 'small', 
+    'medium', 'medium', 'medium',
+    'large'
   ];
   
-  return aspects[Math.abs(hash) % aspects.length];
+  return sizes[Math.abs(hash) % sizes.length];
+}
+
+// Map size to row span class for CSS Grid
+function getMasonryRowSpan(size: 'small' | 'medium' | 'large'): string {
+  switch (size) {
+    case 'small': return 'row-span-1';
+    case 'medium': return 'row-span-2';
+    case 'large': return 'row-span-3';
+  }
 }
 
 export const RearrangeableGrid = memo(function RearrangeableGrid({ 
@@ -207,11 +211,15 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
           isRearrangeMode && 'pb-20',
           // Uniform: classic 3-column equal grid
           layoutStyle === 'uniform' && 'grid grid-cols-3 gap-[1px]',
-          // Masonry: CSS columns for variable heights
-          layoutStyle === 'masonry' && 'columns-3 gap-[1px] space-y-[1px]',
+          // Masonry: CSS Grid with dense packing - fills gaps automatically
+          layoutStyle === 'masonry' && 'grid grid-cols-3 gap-[1px]',
           // Featured: first item larger
           layoutStyle === 'featured' && 'grid grid-cols-3 gap-[1px]'
         )}
+        style={layoutStyle === 'masonry' ? {
+          gridAutoRows: '100px',
+          gridAutoFlow: 'dense'
+        } : undefined}
         transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
       >
         <AnimatePresence mode="popLayout">
@@ -219,8 +227,9 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
             // Featured layout: first post spans 2x2
             const isFeaturedFirst = layoutStyle === 'featured' && index === 0;
             
-            // Get consistent random aspect ratio from post ID for masonry
-            const masonryAspect = getMasonryAspect(post.id);
+            // Get consistent size for masonry layout
+            const masonrySize = getMasonrySize(post.id);
+            const masonryRowSpan = getMasonryRowSpan(masonrySize);
             
             return (
               <motion.div 
@@ -239,7 +248,7 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
                 className={cn(
                   'relative overflow-hidden',
                   layoutStyle === 'uniform' && 'aspect-square',
-                  layoutStyle === 'masonry' && `break-inside-avoid mb-[1px] ${masonryAspect}`,
+                  layoutStyle === 'masonry' && masonryRowSpan,
                   isFeaturedFirst && 'col-span-2 row-span-2 aspect-square'
                 )}
                 onMouseEnter={() => setHoveredIndex(index)}
