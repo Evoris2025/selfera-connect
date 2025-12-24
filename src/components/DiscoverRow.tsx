@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
-import { ChevronRight } from 'lucide-react';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { useState, useEffect, useRef } from 'react';
+import { ChevronRight, ChevronDown } from 'lucide-react';
 import { FollowButton } from '@/components/interactions';
 import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
 import { GlassCard } from '@/components/ui/GlassCard';
@@ -8,7 +7,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import { motion } from 'framer-motion';
+import { motion, useAnimationControls } from 'framer-motion';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 
 // Fallback mock profiles when no real users exist
 const mockProfiles: SuggestedProfile[] = [
@@ -28,16 +32,54 @@ interface SuggestedProfile {
   isFollowing: boolean;
 }
 
+const CARD_WIDTH = 168; // w-40 (160px) + gap (8px approximate)
+const SCROLL_SPEED = 40; // seconds for full loop
+
 export function DiscoverRow() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [profiles, setProfiles] = useState<SuggestedProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [followingIds, setFollowingIds] = useState<Set<string>>(new Set());
+  const [isOpen, setIsOpen] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
+  const controls = useAnimationControls();
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchProfiles();
   }, [user]);
+
+  // Start marquee animation when profiles are loaded
+  useEffect(() => {
+    if (profiles.length > 0 && isOpen) {
+      startMarquee();
+    }
+  }, [profiles, isOpen]);
+
+  // Handle pause/resume
+  useEffect(() => {
+    if (isPaused) {
+      controls.stop();
+    } else if (profiles.length > 0 && isOpen) {
+      startMarquee();
+    }
+  }, [isPaused]);
+
+  const startMarquee = () => {
+    const totalWidth = profiles.length * CARD_WIDTH;
+    controls.start({
+      x: -totalWidth,
+      transition: {
+        x: {
+          repeat: Infinity,
+          repeatType: "loop",
+          duration: SCROLL_SPEED,
+          ease: "linear",
+        },
+      },
+    });
+  };
 
   const fetchProfiles = async () => {
     try {
@@ -144,6 +186,56 @@ export function DiscoverRow() {
     }
   };
 
+  // Duplicate profiles for seamless loop
+  const duplicatedProfiles = [...profiles, ...profiles];
+
+  const renderProfileCard = (profile: SuggestedProfile, index: number) => (
+    <div
+      key={`${profile.id}-${index}`}
+      className="flex-shrink-0"
+    >
+      <GlassCard
+        variant="card"
+        hover
+        className="w-40 p-4 flex flex-col items-center text-center"
+      >
+        {/* Premium Avatar with Gradient Ring */}
+        <div 
+          className="mb-3 cursor-pointer"
+          onClick={() => navigate(`/profile/${profile.handle || profile.id}`)}
+        >
+          <CinematicAvatar
+            src={profile.avatar_url || ''}
+            alt={profile.display_name || ''}
+            fallback={(profile.display_name || 'U').charAt(0)}
+            size="lg"
+            ring="gradient"
+            interactive
+          />
+        </div>
+
+        {/* Name */}
+        <p className="text-sm font-semibold text-foreground truncate w-full mb-0.5">
+          {profile.display_name || 'User'}
+        </p>
+        
+        {/* Handle */}
+        <p className="text-xs text-muted-foreground truncate w-full mb-3">
+          @{profile.handle || 'user'}
+        </p>
+
+        {/* Gradient Follow Button */}
+        <FollowButton
+          isFollowing={profile.isFollowing}
+          onToggle={() => handleFollowToggle(profile.id, profile.isFollowing)}
+          size="sm"
+          variant="gradient"
+          className="w-full"
+        />
+      </GlassCard>
+    </div>
+  );
+
   if (loading) {
     return (
       <div className="py-5 px-5">
@@ -160,10 +252,17 @@ export function DiscoverRow() {
   }
 
   return (
-    <div className="py-5">
-      {/* Section Header */}
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="py-5">
+      {/* Section Header - Collapsible Trigger */}
       <div className="flex items-center justify-between px-5 mb-4">
-        <h3 className="text-base font-semibold text-foreground">Discover People</h3>
+        <CollapsibleTrigger className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <h3 className="text-base font-semibold text-foreground">Discover People</h3>
+          <ChevronDown 
+            className={`h-4 w-4 text-muted-foreground transition-transform duration-300 ${
+              isOpen ? '' : '-rotate-90'
+            }`} 
+          />
+        </CollapsibleTrigger>
         <button
           className="text-sm text-primary font-medium flex items-center gap-0.5 hover:opacity-80 transition-opacity"
           onClick={() => navigate('/directory')}
@@ -173,60 +272,25 @@ export function DiscoverRow() {
         </button>
       </div>
 
-      {/* Premium Glass Cards Scroll */}
-      <ScrollArea className="w-full">
-        <div className="flex gap-3 px-5 pb-3">
-          {profiles.map((profile, index) => (
-            <motion.div
-              key={profile.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05, duration: 0.4 }}
-            >
-              <GlassCard
-                variant="card"
-                hover
-                className="flex-shrink-0 w-40 p-4 flex flex-col items-center text-center"
-              >
-                {/* Premium Avatar with Gradient Ring */}
-                <div 
-                  className="mb-3 cursor-pointer"
-                  onClick={() => navigate(`/profile/${profile.handle || profile.id}`)}
-                >
-                  <CinematicAvatar
-                    src={profile.avatar_url || ''}
-                    alt={profile.display_name || ''}
-                    fallback={(profile.display_name || 'U').charAt(0)}
-                    size="lg"
-                    ring="gradient"
-                    interactive
-                  />
-                </div>
-
-                {/* Name */}
-                <p className="text-sm font-semibold text-foreground truncate w-full mb-0.5">
-                  {profile.display_name || 'User'}
-                </p>
-                
-                {/* Handle */}
-                <p className="text-xs text-muted-foreground truncate w-full mb-3">
-                  @{profile.handle || 'user'}
-                </p>
-
-                {/* Gradient Follow Button */}
-                <FollowButton
-                  isFollowing={profile.isFollowing}
-                  onToggle={() => handleFollowToggle(profile.id, profile.isFollowing)}
-                  size="sm"
-                  variant="gradient"
-                  className="w-full"
-                />
-              </GlassCard>
-            </motion.div>
-          ))}
+      {/* Collapsible Content - Marquee */}
+      <CollapsibleContent className="overflow-hidden">
+        <div 
+          ref={containerRef}
+          className="overflow-hidden"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+          onTouchStart={() => setIsPaused(true)}
+          onTouchEnd={() => setIsPaused(false)}
+        >
+          <motion.div
+            className="flex gap-3 px-5"
+            animate={controls}
+            initial={{ x: 0 }}
+          >
+            {duplicatedProfiles.map((profile, index) => renderProfileCard(profile, index))}
+          </motion.div>
         </div>
-        <ScrollBar orientation="horizontal" className="opacity-0" />
-      </ScrollArea>
-    </div>
+      </CollapsibleContent>
+    </Collapsible>
   );
 }
