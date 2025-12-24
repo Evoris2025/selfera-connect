@@ -8,9 +8,10 @@ import { RearrangeableTabBar } from '@/components/profile/RearrangeableTabBar';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
 import { FollowButton } from '@/components/interactions';
+import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
+import { GlassCard } from '@/components/ui/GlassCard';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -29,6 +30,7 @@ const mockUser = {
   isVerified: true,
   isPrivate: false,
   userType: 'individual' as const,
+  interests: ['@bookreader', '@traveler', '@mindfulness', '@wellness'],
   stats: {
     posts: 147,
     followers: 12400,
@@ -61,17 +63,20 @@ function formatCount(count: number): string {
 // Cinematic stat display
 function StatItem({ count, label }: { count: number; label: string }) {
   return (
-    <div className="flex flex-col items-center">
+    <motion.button 
+      whileTap={{ scale: 0.95 }}
+      className="flex flex-col items-center flex-1"
+    >
       <motion.span 
         key={count}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-xl font-semibold text-foreground tracking-tight"
+        className="text-xl font-bold text-foreground tracking-tight"
       >
         {formatCount(count)}
       </motion.span>
-      <span className="text-xs text-muted-foreground uppercase tracking-wider">{label}</span>
-    </div>
+      <span className="text-xs text-muted-foreground font-medium">{label}</span>
+    </motion.button>
   );
 }
 
@@ -102,74 +107,79 @@ export default function Profile() {
 
   return (
     <AppLayout showHeader={false} onCreatePost={handleCreatePost}>
-      <div className="flex flex-col min-h-screen bg-cinematic">
-        {/* Cinematic Hero Section */}
+      <div className="flex flex-col min-h-screen bg-background">
+        {/* Cinematic Hero Section - Full Bleed */}
         <div className="relative">
-          {/* Background Image with Gradient Overlay */}
-          <div className="h-[280px] relative overflow-hidden">
+          {/* Background Image with Cinematic Gradient Overlay */}
+          <div className="h-[320px] relative overflow-hidden">
             <motion.img 
               src={mockUser.coverImage} 
               alt=""
               initial={{ scale: 1.1 }}
               animate={{ scale: 1 }}
-              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-              className="w-full h-full object-cover img-cinematic"
+              transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full h-full object-cover"
             />
-            {/* Cinematic gradient overlays */}
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-r from-background/30 via-transparent to-background/30" />
+            {/* Multi-layer cinematic gradient */}
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-transparent" />
           </div>
 
-          {/* Profile Info Overlay */}
-          <div className="absolute bottom-0 left-0 right-0 px-5 pb-4">
-            {/* Large Avatar with Gradient Ring */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="relative w-28 h-28 -mb-14"
-            >
-              <div className="w-full h-full rounded-full p-[3px] gradient-brand shadow-elevated">
-                <Avatar className="w-full h-full ring-4 ring-background">
-                  <AvatarImage src={mockUser.avatar} alt={mockUser.name} className="object-cover" />
-                  <AvatarFallback className="bg-secondary text-secondary-foreground text-3xl">
-                    {mockUser.name.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-              </div>
-            </motion.div>
-          </div>
-
-          {/* Top Actions */}
-          <div className="absolute top-4 right-4 flex gap-2">
+          {/* Top Actions - Glass Style */}
+          <div className="absolute top-4 right-4 flex gap-2 z-10">
             {isOwnProfile && (
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-9 w-9 rounded-full glass"
-                onClick={() => navigate('/settings')}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 }}
               >
-                <Settings className="h-4 w-4" />
-              </Button>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-10 w-10 rounded-full glass-heavy"
+                  onClick={() => navigate('/settings')}
+                >
+                  <Settings className="h-5 w-5" />
+                </Button>
+              </motion.div>
             )}
+          </div>
+
+          {/* Profile Info - Positioned at bottom of hero */}
+          <div className="absolute bottom-0 left-0 right-0 px-5">
+            {/* Large Avatar with Premium Gradient Ring */}
+            <motion.div 
+              initial={{ opacity: 0, y: 30, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              className="mb-4"
+            >
+              <CinematicAvatar
+                src={mockUser.avatar}
+                alt={mockUser.name}
+                fallback={mockUser.name.charAt(0)}
+                size="2xl"
+                ring="gradient"
+              />
+            </motion.div>
           </div>
         </div>
 
         {/* Profile Content */}
-        <div className="px-5 pt-16">
+        <div className="px-5 pt-2 pb-4">
           {/* Name & Handle */}
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-            className="mb-3"
+            transition={{ delay: 0.35, duration: 0.5 }}
+            className="mb-2"
           >
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-bold text-foreground tracking-tight">{mockUser.name}</h1>
               {mockUser.isVerified && <VerifiedBadge size="md" />}
               {mockUser.isPrivate && <Lock className="h-4 w-4 text-muted-foreground" />}
             </div>
-            <p className="text-muted-foreground">@{mockUser.handle}</p>
+            <p className="text-muted-foreground text-sm">@{mockUser.handle}</p>
           </motion.div>
 
           {/* Bio */}
@@ -195,36 +205,61 @@ export default function Profile() {
             </motion.div>
           )}
 
-          {/* Stats Row - Cinematic Style */}
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
+          {/* Interest Tags Row */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 0.5 }}
-            className="flex justify-around py-5 border-y border-border/50 mb-5"
+            className="flex flex-wrap gap-2 mb-5"
           >
-            <StatItem count={mockUser.stats.posts} label="Posts" />
-            <StatItem count={followerCount} label="Followers" />
-            <StatItem count={mockUser.stats.following} label="Following" />
+            {mockUser.interests.map((interest, index) => (
+              <motion.span
+                key={interest}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.5 + index * 0.05 }}
+                className="px-3 py-1.5 text-xs font-medium rounded-full glass border border-border/30 text-muted-foreground"
+              >
+                {interest}
+              </motion.span>
+            ))}
           </motion.div>
 
-          {/* Action Buttons - Glass Style */}
+          {/* Stats Row - Premium Glass Style */}
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.55, duration: 0.5 }}
+          >
+            <GlassCard variant="subtle" className="py-4 px-2 mb-5">
+              <div className="flex justify-around">
+                <StatItem count={followerCount} label="Followers" />
+                <div className="w-px bg-border/50" />
+                <StatItem count={mockUser.stats.following} label="Following" />
+                <div className="w-px bg-border/50" />
+                <StatItem count={mockUser.stats.posts} label="Creations" />
+              </div>
+            </GlassCard>
+          </motion.div>
+
+          {/* Action Buttons - Premium Gradient & Glass */}
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.5 }}
             className="flex gap-3 mb-6"
           >
             {isOwnProfile ? (
               <>
                 <Button 
                   variant="outline" 
-                  className="flex-1 h-11 rounded-xl glass border-border/50 font-medium hover:bg-secondary/50 transition-all duration-300"
+                  className="flex-1 h-12 rounded-2xl glass-subtle border-border/30 font-semibold hover:bg-secondary/50 transition-all duration-300"
                 >
                   Edit profile
                 </Button>
                 <Button 
                   variant="outline" 
-                  className="flex-1 h-11 rounded-xl glass border-border/50 font-medium hover:bg-secondary/50 transition-all duration-300"
+                  className="flex-1 h-12 rounded-2xl glass-subtle border-border/30 font-semibold hover:bg-secondary/50 transition-all duration-300"
                 >
                   Share profile
                 </Button>
@@ -234,12 +269,14 @@ export default function Profile() {
                 <FollowButton
                   isFollowing={isFollowing}
                   onToggle={handleFollow}
-                  size="md"
-                  className="flex-1 h-11 rounded-xl"
+                  size="lg"
+                  className="flex-1 h-12 rounded-2xl"
+                  variant="gradient"
                 />
                 <Button 
                   variant="outline" 
-                  className="h-11 w-11 rounded-xl glass border-border/50"
+                  size="icon"
+                  className="h-12 w-12 rounded-2xl glass-subtle border-border/30"
                 >
                   <MessageCircle className="h-5 w-5" />
                 </Button>
@@ -248,10 +285,10 @@ export default function Profile() {
           </motion.div>
         </div>
 
-        {/* Discover People Row */}
+        {/* Discover People Row - Premium Glass Cards */}
         <DiscoverRow />
 
-        {/* Content Tabs */}
+        {/* Content Tabs - Minimal Style */}
         <RearrangeableTabBar
           activeTab={activeTab}
           onTabChange={setActiveTab}
@@ -304,7 +341,7 @@ export default function Profile() {
                     <img 
                       src={reel.thumbnail} 
                       alt="" 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-cinematic"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     <div className="absolute bottom-2 left-2 flex items-center gap-1 text-white text-xs font-medium">

@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, X, Move } from 'lucide-react';
+import { Check, X, Move, Play, Heart, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DraggableGridItem } from './DraggableGridItem';
 import { useProfileGridOrder } from '@/hooks/useProfileGridOrder';
@@ -20,6 +20,12 @@ interface RearrangeableGridProps {
   isOwnProfile: boolean;
 }
 
+function formatCount(count: number): string {
+  if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`;
+  if (count >= 1000) return `${(count / 1000).toFixed(1)}K`;
+  return count.toString();
+}
+
 export const RearrangeableGrid = memo(function RearrangeableGrid({ 
   posts, 
   isOwnProfile 
@@ -29,6 +35,7 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [originalOrder, setOriginalOrder] = useState<Post[]>([]);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   
   // Touch handling
   const touchStartPos = useRef<{ x: number; y: number } | null>(null);
@@ -111,7 +118,7 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
 
   if (loading) {
     return (
-      <div className="grid grid-cols-3 gap-0.5">
+      <div className="grid grid-cols-3 gap-[1px]">
         {[1, 2, 3, 4, 5, 6].map((i) => (
           <div key={i} className="aspect-square bg-muted animate-pulse" />
         ))}
@@ -128,7 +135,7 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-border px-4 py-3 flex items-center justify-between"
+            className="sticky top-0 z-20 glass-heavy px-4 py-3 flex items-center justify-between"
           >
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Move className="h-4 w-4" />
@@ -140,6 +147,7 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
                 size="sm"
                 onClick={() => exitRearrangeMode(false)}
                 disabled={saving}
+                className="rounded-xl"
               >
                 <X className="h-4 w-4 mr-1" />
                 Cancel
@@ -149,6 +157,7 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
                 size="sm"
                 onClick={() => exitRearrangeMode(true)}
                 disabled={saving}
+                className="rounded-xl"
               >
                 {saving ? (
                   <span className="animate-pulse">Saving...</span>
@@ -164,15 +173,21 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
         )}
       </AnimatePresence>
 
-      {/* Grid */}
+      {/* Tight Grid - Minimal Gaps */}
       <div 
         className={cn(
-          'grid grid-cols-3 gap-0.5',
+          'grid grid-cols-3 gap-[1px] bg-border/20',
           isRearrangeMode && 'pb-20'
         )}
       >
         {orderedPosts.map((post, index) => (
-          <div key={post.id} data-grid-index={index}>
+          <div 
+            key={post.id} 
+            data-grid-index={index}
+            className="relative"
+            onMouseEnter={() => setHoveredIndex(index)}
+            onMouseLeave={() => setHoveredIndex(null)}
+          >
             <DraggableGridItem
               post={post}
               index={index}
@@ -187,6 +202,35 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
             />
+            
+            {/* Video Indicator */}
+            {post.isVideo && !isRearrangeMode && (
+              <div className="absolute top-2 right-2 pointer-events-none">
+                <Play className="h-4 w-4 text-white drop-shadow-lg fill-current" />
+              </div>
+            )}
+            
+            {/* Hover Overlay with Stats */}
+            <AnimatePresence>
+              {hoveredIndex === index && !isRearrangeMode && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute inset-0 bg-background/60 backdrop-blur-[2px] flex items-center justify-center gap-4 pointer-events-none"
+                >
+                  <div className="flex items-center gap-1.5 text-white font-semibold text-sm">
+                    <Heart className="h-4 w-4 fill-current" />
+                    {formatCount(post.likes)}
+                  </div>
+                  <div className="flex items-center gap-1.5 text-white font-semibold text-sm">
+                    <MessageCircle className="h-4 w-4 fill-current" />
+                    {formatCount(post.comments)}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         ))}
       </div>
@@ -197,7 +241,7 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
-          className="text-center text-xs text-muted-foreground py-3"
+          className="text-center text-xs text-muted-foreground py-4"
         >
           Long-press to rearrange your grid
         </motion.p>

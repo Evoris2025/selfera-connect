@@ -1,20 +1,22 @@
 import { useState, useEffect } from 'react';
 import { ChevronRight } from 'lucide-react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { FollowButton } from '@/components/interactions';
+import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
+import { GlassCard } from '@/components/ui/GlassCard';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { motion } from 'framer-motion';
 
 // Fallback mock profiles when no real users exist
 const mockProfiles: SuggestedProfile[] = [
-  { id: 'mock-1', display_name: 'Sarah Chen', handle: 'sarahc', avatar_url: null, bio: 'Mental health advocate', isFollowing: false },
-  { id: 'mock-2', display_name: 'Mind Matters', handle: 'mindmatters', avatar_url: null, bio: 'Daily wellness tips', isFollowing: false },
-  { id: 'mock-3', display_name: 'James Wilson', handle: 'jwilson', avatar_url: null, bio: 'Sharing my journey', isFollowing: false },
-  { id: 'mock-4', display_name: 'Wellness Hub', handle: 'wellnesshub', avatar_url: null, bio: 'Your daily dose of calm', isFollowing: false },
-  { id: 'mock-5', display_name: 'Emma Roberts', handle: 'emmar', avatar_url: null, bio: 'Mindfulness coach', isFollowing: false },
+  { id: 'mock-1', display_name: 'Sarah Chen', handle: 'sarahc', avatar_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop', bio: 'Mental health advocate', isFollowing: false },
+  { id: 'mock-2', display_name: 'Mind Matters', handle: 'mindmatters', avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop', bio: 'Daily wellness tips', isFollowing: false },
+  { id: 'mock-3', display_name: 'James Wilson', handle: 'jwilson', avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop', bio: 'Sharing my journey', isFollowing: false },
+  { id: 'mock-4', display_name: 'Wellness Hub', handle: 'wellnesshub', avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop', bio: 'Your daily dose of calm', isFollowing: false },
+  { id: 'mock-5', display_name: 'Emma Roberts', handle: 'emmar', avatar_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop', bio: 'Mindfulness coach', isFollowing: false },
 ];
 
 interface SuggestedProfile {
@@ -144,68 +146,86 @@ export function DiscoverRow() {
 
   if (loading) {
     return (
-      <div className="py-4">
-        <div className="flex items-center justify-between px-4 mb-3">
-          <div className="h-4 w-28 bg-muted rounded animate-pulse" />
+      <div className="py-5 px-5">
+        <div className="flex items-center justify-between mb-4">
+          <div className="h-4 w-32 bg-muted rounded animate-pulse" />
         </div>
-        <div className="flex gap-3 px-4">
+        <div className="flex gap-3">
           {[1, 2, 3].map(i => (
-            <div key={i} className="flex-shrink-0 w-36 h-32 bg-muted rounded-xl animate-pulse" />
+            <div key={i} className="flex-shrink-0 w-40 h-44 bg-muted/50 rounded-2xl animate-pulse" />
           ))}
         </div>
       </div>
     );
   }
 
-  // Always show - we have mock fallback now
-
   return (
-    <div className="py-4">
-      <div className="flex items-center justify-between px-4 mb-3">
-        <h3 className="text-sm font-semibold text-foreground">Discover People</h3>
+    <div className="py-5">
+      {/* Section Header */}
+      <div className="flex items-center justify-between px-5 mb-4">
+        <h3 className="text-base font-semibold text-foreground">Discover People</h3>
         <button
-          className="text-xs text-primary flex items-center gap-0.5"
+          className="text-sm text-primary font-medium flex items-center gap-0.5 hover:opacity-80 transition-opacity"
           onClick={() => navigate('/directory')}
         >
           See all
-          <ChevronRight className="h-3 w-3" />
+          <ChevronRight className="h-4 w-4" />
         </button>
       </div>
 
+      {/* Premium Glass Cards Scroll */}
       <ScrollArea className="w-full">
-        <div className="flex gap-3 px-4 pb-2">
-          {profiles.map(profile => (
-            <div
+        <div className="flex gap-3 px-5 pb-3">
+          {profiles.map((profile, index) => (
+            <motion.div
               key={profile.id}
-              className="flex-shrink-0 w-36 bg-card border border-border rounded-xl p-3 flex flex-col items-center text-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05, duration: 0.4 }}
             >
-              <Avatar
-                className="h-14 w-14 mb-2 cursor-pointer"
-                onClick={() => navigate(`/profile/${profile.handle || profile.id}`)}
+              <GlassCard
+                variant="card"
+                hover
+                className="flex-shrink-0 w-40 p-4 flex flex-col items-center text-center"
               >
-                <AvatarImage src={profile.avatar_url || ''} alt={profile.display_name || ''} />
-                <AvatarFallback className="bg-secondary text-secondary-foreground text-lg">
-                  {(profile.display_name || 'U').charAt(0)}
-                </AvatarFallback>
-              </Avatar>
+                {/* Premium Avatar with Gradient Ring */}
+                <div 
+                  className="mb-3 cursor-pointer"
+                  onClick={() => navigate(`/profile/${profile.handle || profile.id}`)}
+                >
+                  <CinematicAvatar
+                    src={profile.avatar_url || ''}
+                    alt={profile.display_name || ''}
+                    fallback={(profile.display_name || 'U').charAt(0)}
+                    size="lg"
+                    ring="gradient"
+                    interactive
+                  />
+                </div>
 
-              <p className="text-sm font-medium text-foreground truncate w-full">
-                {profile.display_name || 'User'}
-              </p>
-              <p className="text-xs text-muted-foreground truncate w-full mb-2">
-                @{profile.handle || 'user'}
-              </p>
+                {/* Name */}
+                <p className="text-sm font-semibold text-foreground truncate w-full mb-0.5">
+                  {profile.display_name || 'User'}
+                </p>
+                
+                {/* Handle */}
+                <p className="text-xs text-muted-foreground truncate w-full mb-3">
+                  @{profile.handle || 'user'}
+                </p>
 
-              <FollowButton
-                isFollowing={profile.isFollowing}
-                onToggle={() => handleFollowToggle(profile.id, profile.isFollowing)}
-                size="sm"
-                className="w-full"
-              />
-            </div>
+                {/* Gradient Follow Button */}
+                <FollowButton
+                  isFollowing={profile.isFollowing}
+                  onToggle={() => handleFollowToggle(profile.id, profile.isFollowing)}
+                  size="sm"
+                  variant="gradient"
+                  className="w-full"
+                />
+              </GlassCard>
+            </motion.div>
           ))}
         </div>
-        <ScrollBar orientation="horizontal" />
+        <ScrollBar orientation="horizontal" className="opacity-0" />
       </ScrollArea>
     </div>
   );
