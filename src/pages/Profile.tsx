@@ -107,26 +107,25 @@ export default function Profile() {
 
   return (
     <AppLayout showHeader={false} onCreatePost={handleCreatePost}>
-      <div className="flex flex-col min-h-screen bg-background">
-        {/* Cinematic Hero Section - Full Bleed Cover Photo */}
-        <div className="relative">
-          {/* Full-Bleed Cover Image */}
-          <div className="h-[280px] relative overflow-hidden">
-            <motion.img 
-              src={mockUser.coverImage} 
-              alt=""
-              initial={{ scale: 1.1 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-              className="w-full h-full object-cover"
-            />
-            {/* Cinematic gradient overlay at bottom */}
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-transparent to-transparent" />
-          </div>
+      <div className="flex flex-col min-h-screen relative">
+        {/* Full Page Background Cover Image - Fixed */}
+        <div className="fixed inset-0 z-0">
+          <motion.img 
+            src={mockUser.coverImage} 
+            alt=""
+            initial={{ scale: 1.05, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+            className="w-full h-full object-cover"
+          />
+          {/* Gradient overlays for readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/40" />
+        </div>
 
+        {/* Content - Above background */}
+        <div className="relative z-10">
           {/* Top Actions - Glass Style */}
-          <div className="absolute top-4 right-4 flex gap-2 z-10">
+          <div className="absolute top-4 right-4 flex gap-2 z-20">
             {isOwnProfile && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -145,15 +144,17 @@ export default function Profile() {
             )}
           </div>
 
-          {/* Avatar - Overlapping the cover with simple gradient ring */}
+          {/* Spacer for top content */}
+          <div className="h-[200px]" />
+
+          {/* Avatar with simple gradient ring */}
           <motion.div 
             initial={{ opacity: 0, y: 30, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute -bottom-14 left-5"
+            className="px-5 mb-4"
           >
-            {/* Simple circular avatar with gradient ring only */}
-            <div className="relative">
+            <div className="relative inline-block">
               <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-orange-400" />
               <div className="relative w-28 h-28 rounded-full overflow-hidden border-4 border-background">
                 <img 
@@ -164,10 +165,6 @@ export default function Profile() {
               </div>
             </div>
           </motion.div>
-        </div>
-
-        {/* Spacer for avatar overlap */}
-        <div className="h-16" />
 
         {/* Profile Content */}
         <div className="px-5 pt-2 pb-4">
@@ -381,6 +378,7 @@ export default function Profile() {
               </motion.div>
             )}
           </AnimatePresence>
+        </div>
         </div>
       </div>
     </AppLayout>
