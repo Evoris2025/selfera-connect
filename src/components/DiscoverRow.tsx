@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ChevronRight, ChevronDown } from 'lucide-react';
-import { FollowButton } from '@/components/interactions';
+import { ChevronRight, ChevronDown, Check } from 'lucide-react';
 import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { useNavigate } from 'react-router-dom';
@@ -13,10 +12,12 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+import { Button } from '@/components/ui/button';
 
 const VISIBLE_COUNT = 8;
 const FETCH_COUNT = 20;
 const HIDDEN_PROFILES_KEY = 'selfera_hidden_discover_profiles';
+const CHECKMARK_DELAY = 600; // ms to show checkmark before dismissing
 
 // Fallback mock profiles when no real users exist
 const mockProfiles: SuggestedProfile[] = [
@@ -67,6 +68,7 @@ export function DiscoverRow() {
   const [loading, setLoading] = useState(true);
   const [followingIds, setFollowingIds] = useState<Set<string>>(new Set());
   const [isOpen, setIsOpen] = useState(true);
+  const [pendingFollows, setPendingFollows] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetchProfiles();
@@ -131,32 +133,53 @@ export function DiscoverRow() {
     }
   };
 
+  const dismissProfile = useCallback((profileId: string) => {
+    // Add to hidden profiles
+    const newHidden = new Set(hiddenProfiles).add(profileId);
+    setHiddenProfiles(newHidden);
+    saveHiddenProfiles(newHidden);
+    
+    // Remove from visible and add from reserve
+    setProfiles(prev => {
+      const filtered = prev.filter(p => p.id !== profileId);
+      if (reserveProfiles.length > 0) {
+        const [nextProfile, ...remaining] = reserveProfiles;
+        setReserveProfiles(remaining);
+        return [...filtered, nextProfile];
+      }
+      return filtered;
+    });
+    
+    // Clear pending state
+    setPendingFollows(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(profileId);
+      return newSet;
+    });
+  }, [hiddenProfiles, reserveProfiles]);
+
   const handleFollowToggle = useCallback(async (profileId: string, isCurrentlyFollowing: boolean) => {
     // Only handle follow action for dismiss behavior (not unfollow)
-    if (isCurrentlyFollowing) return;
+    if (isCurrentlyFollowing || pendingFollows.has(profileId)) return;
+
+    // Mark as pending (shows checkmark)
+    setPendingFollows(prev => new Set(prev).add(profileId));
 
     // Handle mock profiles
     if (profileId.startsWith('mock-')) {
-      // Add to hidden profiles
-      const newHidden = new Set(hiddenProfiles).add(profileId);
-      setHiddenProfiles(newHidden);
-      saveHiddenProfiles(newHidden);
-      
-      // Remove from visible and add from reserve
-      setProfiles(prev => {
-        const filtered = prev.filter(p => p.id !== profileId);
-        if (reserveProfiles.length > 0) {
-          const [nextProfile, ...remaining] = reserveProfiles;
-          setReserveProfiles(remaining);
-          return [...filtered, nextProfile];
-        }
-        return filtered;
-      });
-      
+      // Wait for checkmark animation, then dismiss
+      setTimeout(() => {
+        dismissProfile(profileId);
+      }, CHECKMARK_DELAY);
       return;
     }
     
     if (!user) {
+      setPendingFollows(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(profileId);
+        return newSet;
+      });
       toast({
         title: 'Sign in required',
         description: 'Please sign in to follow users.',
@@ -175,34 +198,28 @@ export function DiscoverRow() {
 
       if (error) throw error;
 
-      // Add to hidden profiles so they don't reappear
-      const newHidden = new Set(hiddenProfiles).add(profileId);
-      setHiddenProfiles(newHidden);
-      saveHiddenProfiles(newHidden);
-
       // Update following set
       setFollowingIds(prev => new Set(prev).add(profileId));
 
-      // Remove from visible and add from reserve
-      setProfiles(prev => {
-        const filtered = prev.filter(p => p.id !== profileId);
-        if (reserveProfiles.length > 0) {
-          const [nextProfile, ...remaining] = reserveProfiles;
-          setReserveProfiles(remaining);
-          return [...filtered, nextProfile];
-        }
-        return filtered;
-      });
+      // Wait for checkmark animation, then dismiss
+      setTimeout(() => {
+        dismissProfile(profileId);
+      }, CHECKMARK_DELAY);
 
     } catch (error) {
       console.error('Error following user:', error);
+      setPendingFollows(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(profileId);
+        return newSet;
+      });
       toast({
         title: 'Error',
         description: 'Failed to follow user.',
         variant: 'destructive',
       });
     }
-  }, [user, hiddenProfiles, reserveProfiles]);
+  }, [user, pendingFollows, dismissProfile]);
 
   if (loading) {
     return (
@@ -249,60 +266,96 @@ export function DiscoverRow() {
         <div className="overflow-x-auto scrollbar-hide">
           <div className="flex gap-3 px-5">
             <AnimatePresence mode="popLayout">
-              {profiles.map(profile => (
-                <motion.div
-                  key={profile.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.8, x: 20 }}
-                  animate={{ opacity: 1, scale: 1, x: 0 }}
-                  exit={{ opacity: 0, scale: 0.8, x: -20 }}
-                  transition={{ 
-                    duration: 0.3,
-                    layout: { duration: 0.3 }
-                  }}
-                  className="flex-shrink-0"
-                >
-                  <GlassCard
-                    variant="card"
-                    hover
-                    className="w-40 p-4 flex flex-col items-center text-center"
+              {profiles.map(profile => {
+                const isPending = pendingFollows.has(profile.id);
+                
+                return (
+                  <motion.div
+                    key={profile.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.8, x: 20 }}
+                    animate={{ opacity: 1, scale: 1, x: 0 }}
+                    exit={{ opacity: 0, scale: 0.8, x: -20 }}
+                    transition={{ 
+                      duration: 0.3,
+                      layout: { duration: 0.3 }
+                    }}
+                    className="flex-shrink-0"
                   >
-                    {/* Premium Avatar with Gradient Ring */}
-                    <div 
-                      className="mb-3 cursor-pointer"
-                      onClick={() => navigate(`/profile/${profile.handle || profile.id}`)}
+                    <GlassCard
+                      variant="card"
+                      hover
+                      className="w-40 p-4 flex flex-col items-center text-center"
                     >
-                      <CinematicAvatar
-                        src={profile.avatar_url || ''}
-                        alt={profile.display_name || ''}
-                        fallback={(profile.display_name || 'U').charAt(0)}
-                        size="lg"
-                        ring="gradient"
-                        interactive
-                      />
-                    </div>
+                      {/* Premium Avatar with Gradient Ring */}
+                      <div 
+                        className="mb-3 cursor-pointer"
+                        onClick={() => navigate(`/profile/${profile.handle || profile.id}`)}
+                      >
+                        <CinematicAvatar
+                          src={profile.avatar_url || ''}
+                          alt={profile.display_name || ''}
+                          fallback={(profile.display_name || 'U').charAt(0)}
+                          size="lg"
+                          ring="gradient"
+                          interactive
+                        />
+                      </div>
 
-                    {/* Name */}
-                    <p className="text-sm font-semibold text-foreground truncate w-full mb-0.5">
-                      {profile.display_name || 'User'}
-                    </p>
-                    
-                    {/* Handle */}
-                    <p className="text-xs text-muted-foreground truncate w-full mb-3">
-                      @{profile.handle || 'user'}
-                    </p>
+                      {/* Name */}
+                      <p className="text-sm font-semibold text-foreground truncate w-full mb-0.5">
+                        {profile.display_name || 'User'}
+                      </p>
+                      
+                      {/* Handle */}
+                      <p className="text-xs text-muted-foreground truncate w-full mb-3">
+                        @{profile.handle || 'user'}
+                      </p>
 
-                    {/* Gradient Follow Button */}
-                    <FollowButton
-                      isFollowing={profile.isFollowing}
-                      onToggle={() => handleFollowToggle(profile.id, profile.isFollowing)}
-                      size="sm"
-                      variant="gradient"
-                      className="w-full"
-                    />
-                  </GlassCard>
-                </motion.div>
-              ))}
+                      {/* Follow Button with Checkmark Animation */}
+                      <Button
+                        size="sm"
+                        onClick={() => handleFollowToggle(profile.id, profile.isFollowing)}
+                        disabled={isPending}
+                        className={`w-full h-8 text-xs font-semibold rounded-lg transition-all duration-300 overflow-hidden ${
+                          isPending 
+                            ? 'bg-green-500 hover:bg-green-500 text-white' 
+                            : 'bg-gradient-to-r from-primary via-pink-500 to-orange-400 hover:opacity-90 text-white'
+                        }`}
+                      >
+                        <AnimatePresence mode="wait">
+                          {isPending ? (
+                            <motion.div
+                              key="check"
+                              initial={{ scale: 0, rotate: -180 }}
+                              animate={{ scale: 1, rotate: 0 }}
+                              exit={{ scale: 0 }}
+                              transition={{ 
+                                type: "spring",
+                                stiffness: 500,
+                                damping: 25
+                              }}
+                              className="flex items-center justify-center"
+                            >
+                              <Check className="h-4 w-4" strokeWidth={3} />
+                            </motion.div>
+                          ) : (
+                            <motion.span
+                              key="follow"
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -10 }}
+                              transition={{ duration: 0.15 }}
+                            >
+                              Follow
+                            </motion.span>
+                          )}
+                        </AnimatePresence>
+                      </Button>
+                    </GlassCard>
+                  </motion.div>
+                );
+              })}
             </AnimatePresence>
           </div>
         </div>
