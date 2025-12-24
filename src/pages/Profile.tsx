@@ -65,31 +65,23 @@ function formatCount(count: number): string {
   return count.toString();
 }
 
-// Elevated cinematic stat display
-function HeroStatItem({ count, label, delay = 0, align = 'center' }: { count: number; label: string; delay?: number; align?: 'left' | 'right' | 'center' }) {
+// Clean stat display - matching reference design
+function HeroStatItem({ count, label, delay = 0 }: { count: number; label: string; delay?: number }) {
   return (
     <motion.button 
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      initial={{ opacity: 0, y: 16 }}
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.97 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className={cn(
-        "flex flex-col gap-0.5 group",
-        align === 'left' && "items-start",
-        align === 'right' && "items-end",
-        align === 'center' && "items-center"
-      )}
+      transition={{ delay, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      className="flex flex-col items-center group"
     >
-      <span 
-        className="text-[28px] sm:text-[32px] font-bold text-white tracking-tight"
-        style={{ 
-          textShadow: '0 2px 20px rgba(0,0,0,0.5), 0 0 40px rgba(251,146,60,0.15)' 
-        }}
-      >
+      <span className="text-xl sm:text-2xl font-bold text-white">
         {formatCount(count)}
       </span>
-      <span className="text-[9px] sm:text-[10px] text-white/50 font-semibold uppercase tracking-[0.15em] group-hover:text-white/70 transition-colors">{label}</span>
+      <span className="text-[10px] text-white/60 font-semibold uppercase tracking-[0.2em] group-hover:text-white/80 transition-colors">
+        {label}
+      </span>
     </motion.button>
   );
 }
@@ -122,35 +114,25 @@ export default function Profile() {
   return (
     <AppLayout showHeader={false} onCreatePost={handleCreatePost}>
       <div className="flex flex-col min-h-screen relative">
-        {/* Full Page Background Cover Image - Cinematic Treatment */}
+        {/* Full Page Background Cover Image - Clean Treatment */}
         <div className="fixed inset-0 z-0">
           <motion.img 
             src={mockUser.coverImage} 
             alt=""
-            initial={{ scale: 1.1, opacity: 0 }}
+            initial={{ scale: 1.05, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 2, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
             className="w-full h-full object-cover"
-            style={{ filter: 'contrast(1.05) saturate(1.1)' }}
           />
-          {/* Vignette effect - opens up toward center */}
+          {/* Soft vignette */}
           <div 
             className="absolute inset-0"
             style={{
-              background: 'radial-gradient(ellipse 80% 60% at 50% 30%, transparent 0%, hsl(230 25% 4% / 0.4) 60%, hsl(230 25% 4% / 0.85) 100%)'
+              background: 'radial-gradient(ellipse 90% 70% at 50% 35%, transparent 0%, hsl(var(--background) / 0.5) 70%, hsl(var(--background) / 0.9) 100%)'
             }}
           />
           {/* Bottom gradient for content readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
-          {/* Top subtle fade */}
-          <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-transparent to-transparent" />
-          {/* Film grain overlay */}
-          <div 
-            className="absolute inset-0 opacity-[0.015] pointer-events-none mix-blend-overlay"
-            style={{
-              backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\'/%3E%3C/svg%3E")',
-            }}
-          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
         </div>
 
         {/* Content - Above background */}
@@ -192,131 +174,98 @@ export default function Profile() {
             )}
           </div>
 
-          {/* Elevated Cinematic Hero Section */}
-          <div className="pt-20 pb-8 relative">
-            {/* Centered ambient light source */}
+          {/* Clean Hero Section - Reference Design */}
+          <div className="pt-16 pb-6 relative">
+            {/* Soft centered light burst behind avatar */}
             <div className="absolute inset-0 flex items-start justify-center pointer-events-none overflow-hidden">
               <div 
-                className="w-[500px] h-[400px] -mt-20 rounded-full opacity-60"
+                className="w-[600px] h-[500px] -mt-32 rounded-full"
                 style={{
-                  background: 'radial-gradient(ellipse at center, rgba(251,146,60,0.25) 0%, rgba(244,114,182,0.12) 35%, transparent 70%)',
-                  filter: 'blur(60px)',
+                  background: 'radial-gradient(ellipse at center, rgba(255,250,240,0.15) 0%, rgba(255,245,230,0.08) 30%, transparent 60%)',
+                  filter: 'blur(40px)',
                 }}
               />
             </div>
 
-            {/* Stats + Avatar Row - Full Width Distribution */}
-            <div className="flex items-center justify-between px-6 sm:px-12 md:px-16 max-w-lg mx-auto relative">
-              {/* Left Stats - Following & Followers */}
-              <div className="flex flex-col gap-5 flex-1">
-                <HeroStatItem count={followerCount} label="Followers" delay={0.25} align="center" />
-                <HeroStatItem count={mockUser.stats.following} label="Following" delay={0.3} align="center" />
+            {/* Stats + Avatar Row - 2x2 Grid Layout */}
+            <div className="flex items-center justify-center gap-6 sm:gap-10 px-4 max-w-md mx-auto relative">
+              {/* Left Stats Column */}
+              <div className="flex flex-col gap-4">
+                <HeroStatItem count={followerCount} label="Followers" delay={0.2} />
+                <HeroStatItem count={mockUser.stats.following} label="Following" delay={0.25} />
               </div>
 
-              {/* Centered Avatar with True Ambient Glow */}
+              {/* Centered Avatar with Clean Gradient Ring */}
               <motion.div 
-                initial={{ opacity: 0, scale: 0.85 }}
+                initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.1, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ delay: 0.1, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
                 className="relative flex-shrink-0"
               >
-                {/* Outer ambient glow - softer, more natural */}
-                <motion.div 
-                  animate={{ 
-                    opacity: [0.5, 0.7, 0.5],
-                    scale: [1, 1.05, 1] 
-                  }}
-                  transition={{ 
-                    duration: 4, 
-                    repeat: Infinity, 
-                    ease: "easeInOut" 
-                  }}
-                  className="absolute -inset-8 sm:-inset-10 rounded-full"
-                  style={{
-                    background: 'radial-gradient(circle, rgba(251,146,60,0.35) 0%, rgba(244,114,182,0.2) 40%, transparent 70%)',
-                    filter: 'blur(30px)',
-                  }}
-                />
-                
-                {/* Secondary glow layer */}
+                {/* Soft glow behind avatar */}
                 <div 
-                  className="absolute -inset-4 rounded-full"
+                  className="absolute -inset-6 rounded-full"
                   style={{
-                    background: 'radial-gradient(circle, rgba(251,191,36,0.3) 0%, rgba(251,146,60,0.15) 50%, transparent 80%)',
+                    background: 'radial-gradient(circle, rgba(255,250,245,0.12) 0%, transparent 70%)',
                     filter: 'blur(20px)',
                   }}
                 />
 
-                {/* Avatar container with luminous thin ring */}
+                {/* Avatar container with thin gradient ring */}
                 <div className="relative">
-                  {/* Animated gradient ring - thin and luminous */}
+                  {/* Rotating gradient ring - thin and clean */}
                   <motion.div 
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                    className="absolute -inset-[3px] rounded-full"
+                    transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+                    className="absolute -inset-[2px] rounded-full p-[2px]"
                     style={{
-                      background: 'conic-gradient(from 0deg, #fbbf24, #f97316, #ec4899, #a855f7, #fbbf24)',
-                      padding: '2.5px',
+                      background: 'conic-gradient(from 0deg, #f97316, #ec4899, #a855f7, #f97316)',
                     }}
                   >
                     <div className="w-full h-full rounded-full bg-background" />
                   </motion.div>
                   
-                  {/* Inner glow on ring */}
-                  <div 
-                    className="absolute -inset-[3px] rounded-full"
-                    style={{
-                      boxShadow: 'inset 0 0 20px rgba(251,191,36,0.4), 0 0 30px rgba(251,146,60,0.3), 0 0 60px rgba(244,114,182,0.2)',
-                    }}
-                  />
-                  
                   {/* Avatar image */}
-                  <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden">
+                  <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden">
                     <img 
                       src={mockUser.avatar} 
                       alt={mockUser.name}
                       className="w-full h-full object-cover"
-                      style={{ filter: 'contrast(1.05) saturate(1.1)' }}
                     />
-                    {/* Subtle inner shadow for depth */}
-                    <div className="absolute inset-0 rounded-full" style={{ boxShadow: 'inset 0 0 30px rgba(0,0,0,0.3)' }} />
                   </div>
                 </div>
               </motion.div>
 
-              {/* Right Stats - Posts & Community */}
-              <div className="flex flex-col gap-5 flex-1">
-                <HeroStatItem count={mockUser.stats.posts} label="Posts" delay={0.35} align="center" />
-                <HeroStatItem count={mockUser.stats.community} label="Community" delay={0.4} align="center" />
+              {/* Right Stats Column */}
+              <div className="flex flex-col gap-4">
+                <HeroStatItem count={mockUser.stats.posts} label="Posts" delay={0.3} />
+                <HeroStatItem count={mockUser.stats.community} label="Community" delay={0.35} />
               </div>
             </div>
 
-            {/* Centered Name & Handle - Refined Typography */}
+            {/* Name & Handle - Clean Typography */}
             <motion.div 
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.45, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-              className="text-center mt-7"
+              transition={{ delay: 0.4, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className="text-center mt-5"
             >
               <div className="flex items-center justify-center gap-2">
-                <h1 
-                  className="text-[26px] sm:text-[28px] font-bold text-white tracking-tight"
-                  style={{ textShadow: '0 2px 30px rgba(0,0,0,0.5)' }}
-                >
+                <h1 className="text-2xl sm:text-[26px] font-bold text-white">
                   {mockUser.name}
                 </h1>
                 {mockUser.isVerified && <VerifiedBadge size="md" />}
                 {mockUser.isPrivate && <Lock className="h-4 w-4 text-white/60" />}
               </div>
-              <p className="text-white/50 text-sm mt-1 font-medium tracking-wide">@{mockUser.handle}</p>
+              <p className="text-white/50 text-sm mt-0.5 font-medium">@{mockUser.handle}</p>
               
-              {/* Location - subtle */}
+              {/* Location */}
               {mockUser.location && (
                 <motion.div 
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.55 }}
-                  className="flex items-center justify-center gap-1.5 text-white/40 text-[13px] mt-2.5"
+                  transition={{ delay: 0.5 }}
+                  className="flex items-center justify-center gap-1.5 text-white/45 text-[13px] mt-2"
                 >
                   <MapPin className="h-3.5 w-3.5" />
                   <span>{mockUser.location}</span>
