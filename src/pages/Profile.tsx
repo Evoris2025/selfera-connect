@@ -108,10 +108,10 @@ export default function Profile() {
   return (
     <AppLayout showHeader={false} onCreatePost={handleCreatePost}>
       <div className="flex flex-col min-h-screen bg-background">
-        {/* Cinematic Hero Section - Full Bleed */}
+        {/* Cinematic Hero Section - Full Bleed Cover Photo */}
         <div className="relative">
-          {/* Background Image with Cinematic Gradient Overlay */}
-          <div className="h-[320px] relative overflow-hidden">
+          {/* Full-Bleed Cover Image */}
+          <div className="h-[280px] relative overflow-hidden">
             <motion.img 
               src={mockUser.coverImage} 
               alt=""
@@ -120,9 +120,9 @@ export default function Profile() {
               transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
               className="w-full h-full object-cover"
             />
-            {/* Multi-layer cinematic gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-transparent" />
+            {/* Cinematic gradient overlay at bottom */}
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-transparent to-transparent" />
           </div>
 
           {/* Top Actions - Glass Style */}
@@ -145,25 +145,29 @@ export default function Profile() {
             )}
           </div>
 
-          {/* Profile Info - Positioned at bottom of hero */}
-          <div className="absolute bottom-0 left-0 right-0 px-5">
-            {/* Large Avatar with Premium Gradient Ring */}
-            <motion.div 
-              initial={{ opacity: 0, y: 30, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ delay: 0.2, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-              className="mb-4"
-            >
-              <CinematicAvatar
-                src={mockUser.avatar}
-                alt={mockUser.name}
-                fallback={mockUser.name.charAt(0)}
-                size="2xl"
-                ring="gradient"
-              />
-            </motion.div>
-          </div>
+          {/* Avatar - Overlapping the cover with simple gradient ring */}
+          <motion.div 
+            initial={{ opacity: 0, y: 30, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ delay: 0.2, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute -bottom-14 left-5"
+          >
+            {/* Simple circular avatar with gradient ring only */}
+            <div className="relative">
+              <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-orange-400" />
+              <div className="relative w-28 h-28 rounded-full overflow-hidden border-4 border-background">
+                <img 
+                  src={mockUser.avatar} 
+                  alt={mockUser.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+          </motion.div>
         </div>
+
+        {/* Spacer for avatar overlap */}
+        <div className="h-16" />
 
         {/* Profile Content */}
         <div className="px-5 pt-2 pb-4">
