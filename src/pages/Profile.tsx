@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Settings, Lock, Play, MapPin, MessageCircle } from 'lucide-react';
+import { MoreVertical, Lock, Play, MapPin, MessageCircle, Pencil, Share2, Settings } from 'lucide-react';
 import { DiscoverRow } from '@/components/DiscoverRow';
 import { RearrangeableGrid } from '@/components/profile/RearrangeableGrid';
 import { RearrangeableTabBar } from '@/components/profile/RearrangeableTabBar';
@@ -12,6 +12,12 @@ import { VerifiedBadge } from '@/components/VerifiedBadge';
 import { FollowButton } from '@/components/interactions';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 // Mock user data with full social metrics
 const mockUser = {
@@ -149,22 +155,39 @@ export default function Profile() {
 
         {/* Content - Above background */}
         <div className="relative z-10">
-          {/* Top Actions - Glass Style */}
-          <div className="absolute top-4 right-4 flex gap-2 z-20">
+          {/* Top Actions - Three Dot Menu */}
+          <div className="absolute top-4 right-4 z-20">
             {isOwnProfile && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.3 }}
               >
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-10 w-10 rounded-full glass-heavy"
-                  onClick={() => navigate('/settings')}
-                >
-                  <Settings className="h-5 w-5" />
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-10 w-10 rounded-full glass-heavy"
+                    >
+                      <MoreVertical className="h-5 w-5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48 glass-heavy border-border/30">
+                    <DropdownMenuItem className="gap-3 cursor-pointer">
+                      <Pencil className="h-4 w-4" />
+                      Edit profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="gap-3 cursor-pointer">
+                      <Share2 className="h-4 w-4" />
+                      Share profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="gap-3 cursor-pointer" onClick={() => navigate('/settings')}>
+                      <Settings className="h-4 w-4" />
+                      Settings
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </motion.div>
             )}
           </div>
