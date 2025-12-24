@@ -291,6 +291,8 @@ export default function Profile() {
                 <CardStatItem count={followerCount} label="Followers" />
                 <div className="w-px h-8 bg-border" />
                 <CardStatItem count={mockUser.stats.following} label="Following" />
+                <div className="w-px h-8 bg-border" />
+                <CardStatItem count={mockUser.stats.community || 0} label="Community" />
               </motion.div>
             </div>
           </div>
