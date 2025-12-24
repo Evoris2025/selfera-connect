@@ -333,11 +333,11 @@ export function DiscoverRow() {
                       {/* Follow Button with Checkmark Animation */}
                       <motion.div
                         animate={isPending ? {
-                          scale: [1, 1.05, 1],
+                          scale: [1, 1.08, 1],
                           transition: {
-                            duration: 0.8,
+                            duration: 1.6,
                             repeat: Infinity,
-                            repeatDelay: 0.2,
+                            repeatDelay: 0.4,
                             ease: "easeInOut"
                           }
                         } : {}}
@@ -359,18 +359,18 @@ export function DiscoverRow() {
                                 key="check"
                                 initial={{ scale: 0, opacity: 0 }}
                                 animate={{ 
-                                  scale: [0, 1.3, 1],
+                                  scale: [0, 1.4, 1],
                                   opacity: 1,
                                 }}
                                 exit={{ scale: 0, opacity: 0 }}
                                 transition={{ 
-                                  duration: 0.4,
+                                  duration: 0.5,
                                   ease: [0.34, 1.56, 0.64, 1],
                                   times: [0, 0.6, 1]
                                 }}
                                 className="flex items-center justify-center"
                               >
-                                <Check className="h-4 w-4" strokeWidth={3} />
+                                <Check className="h-5 w-5" strokeWidth={3.5} />
                               </motion.div>
                             ) : (
                             <motion.span
