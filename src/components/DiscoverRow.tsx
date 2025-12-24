@@ -19,7 +19,7 @@ const FETCH_COUNT = 20;
 const HIDDEN_PROFILES_KEY = 'selfera_hidden_discover_profiles';
 const CHECKMARK_DELAY = 600; // ms to show checkmark before dismissing
 
-// Fallback mock profiles when no real users exist
+// Fallback mock profiles when no real users exist - always have enough to show
 const mockProfiles: SuggestedProfile[] = [
   { id: 'mock-1', display_name: 'Sarah Chen', handle: 'sarahc', avatar_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop', bio: 'Mental health advocate', isFollowing: false },
   { id: 'mock-2', display_name: 'Mind Matters', handle: 'mindmatters', avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop', bio: 'Daily wellness tips', isFollowing: false },
@@ -29,6 +29,10 @@ const mockProfiles: SuggestedProfile[] = [
   { id: 'mock-6', display_name: 'Alex Turner', handle: 'alext', avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop', bio: 'Daily reflections', isFollowing: false },
   { id: 'mock-7', display_name: 'Calm Corner', handle: 'calmcorner', avatar_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop', bio: 'Peace of mind', isFollowing: false },
   { id: 'mock-8', display_name: 'Mike Chen', handle: 'mikec', avatar_url: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop', bio: 'Growth mindset', isFollowing: false },
+  { id: 'mock-9', display_name: 'Luna Park', handle: 'lunapark', avatar_url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&h=200&fit=crop', bio: 'Finding inner peace', isFollowing: false },
+  { id: 'mock-10', display_name: 'David Lee', handle: 'davidlee', avatar_url: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=200&h=200&fit=crop', bio: 'Mental wellness journey', isFollowing: false },
+  { id: 'mock-11', display_name: 'Zen Garden', handle: 'zengarden', avatar_url: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=200&h=200&fit=crop', bio: 'Meditation & mindfulness', isFollowing: false },
+  { id: 'mock-12', display_name: 'Hope Rising', handle: 'hoperising', avatar_url: 'https://images.unsplash.com/photo-1463453091185-61582044d556?w=200&h=200&fit=crop', bio: 'Spreading positivity', isFollowing: false },
 ];
 
 interface SuggestedProfile {
@@ -117,7 +121,15 @@ export function DiscoverRow() {
         setReserveProfiles(availableProfiles.slice(VISIBLE_COUNT));
       } else {
         // Use mock profiles as fallback, also filtered
-        const availableMocks = mockProfiles.filter(p => !hidden.has(p.id));
+        let availableMocks = mockProfiles.filter(p => !hidden.has(p.id));
+        
+        // If all mocks are hidden, reset hidden profiles and show all mocks
+        if (availableMocks.length === 0) {
+          localStorage.removeItem(HIDDEN_PROFILES_KEY);
+          setHiddenProfiles(new Set());
+          availableMocks = [...mockProfiles];
+        }
+        
         setProfiles(availableMocks.slice(0, VISIBLE_COUNT));
         setReserveProfiles(availableMocks.slice(VISIBLE_COUNT));
       }
@@ -125,7 +137,15 @@ export function DiscoverRow() {
       console.error('Error fetching profiles:', error);
       // On error, show mock profiles as fallback
       const hidden = loadHiddenProfiles();
-      const availableMocks = mockProfiles.filter(p => !hidden.has(p.id));
+      let availableMocks = mockProfiles.filter(p => !hidden.has(p.id));
+      
+      // If all mocks are hidden, reset and show all
+      if (availableMocks.length === 0) {
+        localStorage.removeItem(HIDDEN_PROFILES_KEY);
+        setHiddenProfiles(new Set());
+        availableMocks = [...mockProfiles];
+      }
+      
       setProfiles(availableMocks.slice(0, VISIBLE_COUNT));
       setReserveProfiles(availableMocks.slice(VISIBLE_COUNT));
     } finally {
@@ -236,9 +256,7 @@ export function DiscoverRow() {
     );
   }
 
-  if (profiles.length === 0) {
-    return null; // Hide section if no profiles to show
-  }
+  // Always show the row - we reset hidden profiles if all are hidden
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="py-5">
