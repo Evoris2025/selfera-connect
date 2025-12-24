@@ -59,23 +59,31 @@ function formatCount(count: number): string {
   return count.toString();
 }
 
-// Cinematic stat display for hero section
-function HeroStatItem({ count, label, delay = 0 }: { count: number; label: string; delay?: number }) {
+// Elevated cinematic stat display
+function HeroStatItem({ count, label, delay = 0, align = 'center' }: { count: number; label: string; delay?: number; align?: 'left' | 'right' | 'center' }) {
   return (
     <motion.button 
+      whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      className="flex flex-col items-center"
+      transition={{ delay, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      className={cn(
+        "flex flex-col gap-0.5 group",
+        align === 'left' && "items-start",
+        align === 'right' && "items-end",
+        align === 'center' && "items-center"
+      )}
     >
-      <motion.span 
-        key={count}
-        className="text-2xl font-bold text-white tracking-tight drop-shadow-lg"
+      <span 
+        className="text-[28px] sm:text-[32px] font-bold text-white tracking-tight"
+        style={{ 
+          textShadow: '0 2px 20px rgba(0,0,0,0.5), 0 0 40px rgba(251,146,60,0.15)' 
+        }}
       >
         {formatCount(count)}
-      </motion.span>
-      <span className="text-[10px] text-white/70 font-semibold uppercase tracking-wider">{label}</span>
+      </span>
+      <span className="text-[9px] sm:text-[10px] text-white/50 font-semibold uppercase tracking-[0.15em] group-hover:text-white/70 transition-colors">{label}</span>
     </motion.button>
   );
 }
@@ -108,19 +116,35 @@ export default function Profile() {
   return (
     <AppLayout showHeader={false} onCreatePost={handleCreatePost}>
       <div className="flex flex-col min-h-screen relative">
-        {/* Full Page Background Cover Image - Fixed */}
+        {/* Full Page Background Cover Image - Cinematic Treatment */}
         <div className="fixed inset-0 z-0">
           <motion.img 
             src={mockUser.coverImage} 
             alt=""
-            initial={{ scale: 1.05, opacity: 0 }}
+            initial={{ scale: 1.1, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 2, ease: [0.22, 1, 0.36, 1] }}
             className="w-full h-full object-cover"
+            style={{ filter: 'contrast(1.05) saturate(1.1)' }}
           />
-          {/* Cinematic gradient overlays */}
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-transparent" />
+          {/* Vignette effect - opens up toward center */}
+          <div 
+            className="absolute inset-0"
+            style={{
+              background: 'radial-gradient(ellipse 80% 60% at 50% 30%, transparent 0%, hsl(230 25% 4% / 0.4) 60%, hsl(230 25% 4% / 0.85) 100%)'
+            }}
+          />
+          {/* Bottom gradient for content readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+          {/* Top subtle fade */}
+          <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-transparent to-transparent" />
+          {/* Film grain overlay */}
+          <div 
+            className="absolute inset-0 opacity-[0.015] pointer-events-none mix-blend-overlay"
+            style={{
+              backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\'/%3E%3C/svg%3E")',
+            }}
+          />
         </div>
 
         {/* Content - Above background */}
@@ -145,73 +169,135 @@ export default function Profile() {
             )}
           </div>
 
-          {/* Cinematic Hero Section - Centered Avatar with Stats */}
-          <div className="pt-16 pb-6">
+          {/* Elevated Cinematic Hero Section */}
+          <div className="pt-20 pb-8 relative">
+            {/* Centered ambient light source */}
+            <div className="absolute inset-0 flex items-start justify-center pointer-events-none overflow-hidden">
+              <div 
+                className="w-[500px] h-[400px] -mt-20 rounded-full opacity-60"
+                style={{
+                  background: 'radial-gradient(ellipse at center, rgba(251,146,60,0.25) 0%, rgba(244,114,182,0.12) 35%, transparent 70%)',
+                  filter: 'blur(60px)',
+                }}
+              />
+            </div>
+
             {/* Stats + Avatar Row */}
-            <div className="flex items-center justify-center px-6 gap-4 sm:gap-8">
+            <div className="flex items-center justify-center px-4 sm:px-8 relative">
               {/* Left Stats - Following & Followers */}
-              <div className="flex flex-col gap-4 items-end">
-                <HeroStatItem count={mockUser.stats.following} label="Following" delay={0.3} />
-                <HeroStatItem count={followerCount} label="Followers" delay={0.35} />
+              <div className="flex flex-col gap-6 mr-6 sm:mr-10">
+                <HeroStatItem count={followerCount} label="Followers" delay={0.25} align="right" />
+                <HeroStatItem count={mockUser.stats.following} label="Following" delay={0.3} align="right" />
               </div>
 
-              {/* Centered Avatar with Cinematic Glow */}
+              {/* Centered Avatar with True Ambient Glow */}
               <motion.div 
-                initial={{ opacity: 0, scale: 0.8 }}
+                initial={{ opacity: 0, scale: 0.85 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.15, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="relative"
+                transition={{ delay: 0.1, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+                className="relative flex-shrink-0"
               >
-                {/* Radial glow effect behind avatar */}
-                <div className="absolute inset-0 scale-150 rounded-full bg-gradient-radial from-amber-500/40 via-orange-500/20 to-transparent blur-2xl" />
-                <div className="absolute inset-0 scale-125 rounded-full bg-gradient-radial from-rose-500/30 via-pink-500/15 to-transparent blur-xl" />
+                {/* Outer ambient glow - softer, more natural */}
+                <motion.div 
+                  animate={{ 
+                    opacity: [0.5, 0.7, 0.5],
+                    scale: [1, 1.05, 1] 
+                  }}
+                  transition={{ 
+                    duration: 4, 
+                    repeat: Infinity, 
+                    ease: "easeInOut" 
+                  }}
+                  className="absolute -inset-8 sm:-inset-10 rounded-full"
+                  style={{
+                    background: 'radial-gradient(circle, rgba(251,146,60,0.35) 0%, rgba(244,114,182,0.2) 40%, transparent 70%)',
+                    filter: 'blur(30px)',
+                  }}
+                />
                 
-                {/* Avatar with gradient ring */}
+                {/* Secondary glow layer */}
+                <div 
+                  className="absolute -inset-4 rounded-full"
+                  style={{
+                    background: 'radial-gradient(circle, rgba(251,191,36,0.3) 0%, rgba(251,146,60,0.15) 50%, transparent 80%)',
+                    filter: 'blur(20px)',
+                  }}
+                />
+
+                {/* Avatar container with luminous thin ring */}
                 <div className="relative">
-                  {/* Outer glow ring */}
+                  {/* Animated gradient ring - thin and luminous */}
+                  <motion.div 
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                    className="absolute -inset-[3px] rounded-full"
+                    style={{
+                      background: 'conic-gradient(from 0deg, #fbbf24, #f97316, #ec4899, #a855f7, #fbbf24)',
+                      padding: '2.5px',
+                    }}
+                  >
+                    <div className="w-full h-full rounded-full bg-background" />
+                  </motion.div>
+                  
+                  {/* Inner glow on ring */}
                   <div 
-                    className="absolute -inset-1.5 rounded-full bg-gradient-to-br from-amber-400 via-orange-500 to-rose-500 opacity-80"
-                    style={{ 
-                      boxShadow: '0 0 40px rgba(251, 146, 60, 0.5), 0 0 80px rgba(251, 113, 133, 0.3)' 
+                    className="absolute -inset-[3px] rounded-full"
+                    style={{
+                      boxShadow: 'inset 0 0 20px rgba(251,191,36,0.4), 0 0 30px rgba(251,146,60,0.3), 0 0 60px rgba(244,114,182,0.2)',
                     }}
                   />
-                  <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 border-background/80">
+                  
+                  {/* Avatar image */}
+                  <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden">
                     <img 
                       src={mockUser.avatar} 
                       alt={mockUser.name}
                       className="w-full h-full object-cover"
+                      style={{ filter: 'contrast(1.05) saturate(1.1)' }}
                     />
+                    {/* Subtle inner shadow for depth */}
+                    <div className="absolute inset-0 rounded-full" style={{ boxShadow: 'inset 0 0 30px rgba(0,0,0,0.3)' }} />
                   </div>
                 </div>
               </motion.div>
 
               {/* Right Stats - Posts & Community */}
-              <div className="flex flex-col gap-4 items-start">
-                <HeroStatItem count={mockUser.stats.posts} label="Posts" delay={0.4} />
-                <HeroStatItem count={mockUser.stats.community} label="Community" delay={0.45} />
+              <div className="flex flex-col gap-6 ml-6 sm:ml-10">
+                <HeroStatItem count={mockUser.stats.posts} label="Posts" delay={0.35} align="left" />
+                <HeroStatItem count={mockUser.stats.community} label="Community" delay={0.4} align="left" />
               </div>
             </div>
 
-            {/* Centered Name & Handle */}
+            {/* Centered Name & Handle - Refined Typography */}
             <motion.div 
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.6 }}
-              className="text-center mt-6"
+              transition={{ delay: 0.45, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              className="text-center mt-7"
             >
               <div className="flex items-center justify-center gap-2">
-                <h1 className="text-2xl font-bold text-white tracking-tight drop-shadow-lg">{mockUser.name}</h1>
+                <h1 
+                  className="text-[26px] sm:text-[28px] font-bold text-white tracking-tight"
+                  style={{ textShadow: '0 2px 30px rgba(0,0,0,0.5)' }}
+                >
+                  {mockUser.name}
+                </h1>
                 {mockUser.isVerified && <VerifiedBadge size="md" />}
-                {mockUser.isPrivate && <Lock className="h-4 w-4 text-white/70" />}
+                {mockUser.isPrivate && <Lock className="h-4 w-4 text-white/60" />}
               </div>
-              <p className="text-white/60 text-sm mt-0.5">@{mockUser.handle}</p>
+              <p className="text-white/50 text-sm mt-1 font-medium tracking-wide">@{mockUser.handle}</p>
               
-              {/* Location */}
+              {/* Location - subtle */}
               {mockUser.location && (
-                <div className="flex items-center justify-center gap-1.5 text-white/50 text-sm mt-2">
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.55 }}
+                  className="flex items-center justify-center gap-1.5 text-white/40 text-[13px] mt-2.5"
+                >
                   <MapPin className="h-3.5 w-3.5" />
                   <span>{mockUser.location}</span>
-                </div>
+                </motion.div>
               )}
             </motion.div>
           </div>
