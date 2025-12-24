@@ -5,11 +5,15 @@ import { cn } from '@/lib/utils';
 import { ProfileTab, useProfileTabOrder } from '@/hooks/useProfileTabOrder';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
+import { GridLayoutPicker } from './GridLayoutPicker';
+import { useGridLayout, GridLayoutStyle } from '@/hooks/useGridLayout';
 
 interface RearrangeableTabBarProps {
   activeTab: string;
   onTabChange: (tabId: string) => void;
   isOwnProfile: boolean;
+  profileUserId?: string;
+  onLayoutChange?: (layout: GridLayoutStyle) => void;
 }
 
 const ICON_MAP: Record<string, React.FC<{ className?: string }>> = {
@@ -27,8 +31,10 @@ interface DraggableTabProps {
   isRearrangeMode: boolean;
   isDragging: boolean;
   dragOverIndex: number | null;
+  isOwnProfile: boolean;
   onTabChange: (tabId: string) => void;
   onTap: () => void;
+  onLongPress: () => void;
   onDragStart: (index: number) => void;
   onDragOver: (index: number) => void;
   onDragEnd: () => void;
@@ -41,20 +47,52 @@ const DraggableTab = memo(function DraggableTab({
   isRearrangeMode,
   isDragging,
   dragOverIndex,
+  isOwnProfile,
   onTabChange,
   onTap,
+  onLongPress,
   onDragStart,
   onDragOver,
   onDragEnd,
 }: DraggableTabProps) {
   const tapCount = useRef(0);
   const tapTimer = useRef<NodeJS.Timeout | null>(null);
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const isLongPressing = useRef(false);
 
   const Icon = ICON_MAP[tab.icon];
   const isBeingDraggedOver = dragOverIndex === index && !isDragging;
+  const isGridTab = tab.id === 'posts';
+
+  const handlePointerDown = useCallback(() => {
+    if (isRearrangeMode || !isOwnProfile || !isGridTab) return;
+    
+    isLongPressing.current = false;
+    longPressTimer.current = setTimeout(() => {
+      isLongPressing.current = true;
+      if (navigator.vibrate) {
+        navigator.vibrate(100);
+      }
+      onLongPress();
+    }, 3000); // 3 second hold
+  }, [isRearrangeMode, isOwnProfile, isGridTab, onLongPress]);
+
+  const handlePointerUp = useCallback(() => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  }, []);
+
+  const handlePointerLeave = useCallback(() => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  }, []);
 
   const handleClick = () => {
-    if (isRearrangeMode) return;
+    if (isRearrangeMode || isLongPressing.current) return;
     
     tapCount.current += 1;
     
@@ -69,7 +107,6 @@ const DraggableTab = memo(function DraggableTab({
         navigator.vibrate(100);
       }
     } else {
-      // Single tap - switch tab after short delay to detect multi-tap
       const currentTaps = tapCount.current;
       tapTimer.current = setTimeout(() => {
         if (tapCount.current === currentTaps && currentTaps < 3) {
@@ -84,6 +121,9 @@ const DraggableTab = memo(function DraggableTab({
     return () => {
       if (tapTimer.current) {
         clearTimeout(tapTimer.current);
+      }
+      if (longPressTimer.current) {
+        clearTimeout(longPressTimer.current);
       }
     };
   }, []);
@@ -106,6 +146,9 @@ const DraggableTab = memo(function DraggableTab({
         !isActive && !isRearrangeMode && 'text-muted-foreground hover:text-foreground/70'
       )}
       onClick={handleClick}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onPointerLeave={handlePointerLeave}
       draggable={isRearrangeMode}
       onDragStart={() => {
         if (isRearrangeMode) {
@@ -128,7 +171,6 @@ const DraggableTab = memo(function DraggableTab({
       ) : (
         <>
           {Icon && <Icon className="h-5 w-5" />}
-          {/* Active Indicator - Subtle Line */}
           {isActive && (
             <motion.div
               layoutId="activeTabIndicator"
@@ -146,6 +188,8 @@ export const RearrangeableTabBar = memo(function RearrangeableTabBar({
   activeTab,
   onTabChange,
   isOwnProfile,
+  profileUserId,
+  onLayoutChange,
 }: RearrangeableTabBarProps) {
   const {
     orderedTabs,
@@ -157,7 +201,10 @@ export const RearrangeableTabBar = memo(function RearrangeableTabBar({
     restoreOriginalOrder,
   } = useProfileTabOrder();
 
+  const { layoutStyle, saving: savingLayout, setLayoutStyle } = useGridLayout(profileUserId);
+
   const [isRearrangeMode, setIsRearrangeMode] = useState(false);
+  const [isLayoutPickerOpen, setIsLayoutPickerOpen] = useState(false);
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
@@ -185,6 +232,28 @@ export const RearrangeableTabBar = memo(function RearrangeableTabBar({
     }
     setIsRearrangeMode(false);
   }, [saveOrder, restoreOriginalOrder]);
+
+  const openLayoutPicker = useCallback(() => {
+    setIsLayoutPickerOpen(true);
+  }, []);
+
+  const handleLayoutSelect = useCallback(async (layout: GridLayoutStyle) => {
+    const success = await setLayoutStyle(layout);
+    if (success) {
+      onLayoutChange?.(layout);
+      toast({
+        title: 'Layout updated',
+        description: `Grid layout changed to ${layout}`,
+      });
+    } else {
+      toast({
+        title: 'Failed to update',
+        description: 'Could not save layout preference.',
+        variant: 'destructive',
+      });
+    }
+    setIsLayoutPickerOpen(false);
+  }, [setLayoutStyle, onLayoutChange]);
 
   const handleDragStart = useCallback((index: number) => {
     setDraggingIndex(index);
@@ -260,8 +329,10 @@ export const RearrangeableTabBar = memo(function RearrangeableTabBar({
             isRearrangeMode={isRearrangeMode}
             isDragging={draggingIndex === index}
             dragOverIndex={dragOverIndex}
+            isOwnProfile={isOwnProfile}
             onTabChange={onTabChange}
             onTap={enterRearrangeMode}
+            onLongPress={openLayoutPicker}
             onDragStart={handleDragStart}
             onDragOver={handleDragOver}
             onDragEnd={handleDragEnd}
@@ -269,12 +340,21 @@ export const RearrangeableTabBar = memo(function RearrangeableTabBar({
         ))}
       </div>
 
-      {/* Hint text - More subtle */}
+      {/* Hint text */}
       {isOwnProfile && !isRearrangeMode && (
         <p className="text-[11px] text-center text-muted-foreground/60 py-1.5">
-          Triple-tap any tab to rearrange
+          Triple-tap to rearrange • Hold grid icon for layout
         </p>
       )}
+
+      {/* Grid Layout Picker */}
+      <GridLayoutPicker
+        isOpen={isLayoutPickerOpen}
+        currentLayout={layoutStyle}
+        saving={savingLayout}
+        onSelect={handleLayoutSelect}
+        onClose={() => setIsLayoutPickerOpen(false)}
+      />
     </div>
   );
 });

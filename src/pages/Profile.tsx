@@ -13,6 +13,7 @@ import { VerifiedBadge } from '@/components/VerifiedBadge';
 import { FollowButton } from '@/components/interactions';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { GridLayoutStyle } from '@/hooks/useGridLayout';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -116,6 +117,7 @@ export default function Profile() {
   const [followerCount, setFollowerCount] = useState(mockUser.stats.followers);
   const [listModalOpen, setListModalOpen] = useState(false);
   const [listModalType, setListModalType] = useState<ListType>('followers');
+  const [gridLayout, setGridLayout] = useState<GridLayoutStyle>('uniform');
   const isOwnProfile = !handle || handle === mockUser.handle;
 
   const openListModal = (type: ListType) => {
@@ -337,6 +339,8 @@ export default function Profile() {
             activeTab={activeTab}
             onTabChange={setActiveTab}
             isOwnProfile={isOwnProfile}
+            profileUserId={mockUser.id}
+            onLayoutChange={setGridLayout}
           />
         </div>
 
@@ -351,7 +355,7 @@ export default function Profile() {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <RearrangeableGrid posts={mockPosts} isOwnProfile={isOwnProfile} />
+                <RearrangeableGrid posts={mockPosts} isOwnProfile={isOwnProfile} layoutStyle={gridLayout} />
               </motion.div>
             )}
 
