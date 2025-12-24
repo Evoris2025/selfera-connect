@@ -1,5 +1,5 @@
-import { useState, useCallback, useRef, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useCallback, useRef, memo, useEffect } from 'react';
+import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { Check, X, Move, Play, Heart, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DraggableGridItem } from './DraggableGridItem';
@@ -66,10 +66,21 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [originalOrder, setOriginalOrder] = useState<Post[]>([]);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const prevLayoutRef = useRef(layoutStyle);
   // Touch handling
   const touchStartPos = useRef<{ x: number; y: number } | null>(null);
   const touchCurrentIndex = useRef<number | null>(null);
+
+  // Trigger transition animation when layout changes
+  useEffect(() => {
+    if (prevLayoutRef.current !== layoutStyle) {
+      setIsTransitioning(true);
+      prevLayoutRef.current = layoutStyle;
+      const timer = setTimeout(() => setIsTransitioning(false), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [layoutStyle]);
 
   const enterRearrangeMode = useCallback(() => {
     if (!isOwnProfile) return;
@@ -156,7 +167,16 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
     );
   }
 
+  // Spring config for smooth layout transitions
+  const layoutTransition = {
+    type: 'spring' as const,
+    stiffness: 300,
+    damping: 30,
+    mass: 0.8,
+  };
+
   return (
+    <LayoutGroup>
     <div className="relative">
       {/* Rearrange mode header */}
       <AnimatePresence>
@@ -206,23 +226,21 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
       {/* Grid with layout styles */}
       <motion.div 
         layout
+        layoutId="grid-container"
         className={cn(
           'bg-border/20',
           isRearrangeMode && 'pb-20',
-          // Uniform: classic 3-column equal grid
-          layoutStyle === 'uniform' && 'grid grid-cols-3 gap-[1px]',
-          // Masonry: CSS Grid with dense packing - fills gaps automatically
-          layoutStyle === 'masonry' && 'grid grid-cols-3 gap-[1px]',
-          // Featured: first item larger
-          layoutStyle === 'featured' && 'grid grid-cols-3 gap-[1px]'
+          isTransitioning && 'overflow-hidden',
+          // All layouts use CSS Grid
+          'grid grid-cols-3 gap-[1px]'
         )}
         style={layoutStyle === 'masonry' ? {
           gridAutoRows: '100px',
           gridAutoFlow: 'dense'
         } : undefined}
-        transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+        transition={layoutTransition}
       >
-        <AnimatePresence mode="popLayout">
+        <AnimatePresence mode="sync">
           {orderedPosts.map((post, index) => {
             // Featured layout: first post spans 2x2
             const isFeaturedFirst = layoutStyle === 'featured' && index === 0;
@@ -235,14 +253,17 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
               <motion.div 
                 key={post.id} 
                 layout
+                layoutId={`grid-item-${post.id}`}
                 initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
+                animate={{ 
+                  opacity: 1, 
+                  scale: 1,
+                }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ 
-                  layout: { duration: 0.4, ease: [0.4, 0, 0.2, 1] },
-                  opacity: { duration: 0.25 },
-                  scale: { duration: 0.25 },
-                  delay: index * 0.02
+                  layout: layoutTransition,
+                  opacity: { duration: 0.2 },
+                  scale: { duration: 0.2 },
                 }}
                 data-grid-index={index}
                 className={cn(
@@ -320,5 +341,6 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
         </motion.p>
       )}
     </div>
+    </LayoutGroup>
   );
 });
