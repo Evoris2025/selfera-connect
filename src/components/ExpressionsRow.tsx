@@ -1,6 +1,8 @@
 import { Plus, ChevronRight } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { motion } from 'framer-motion';
+import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
 
 interface Expression {
   id: string;
@@ -14,37 +16,44 @@ interface Expression {
 const mockExpressions: Expression[] = [
   {
     id: '1',
-    userName: 'Jennifer Love Hewitt',
-    userAvatar: '',
+    userName: 'Jennifer',
+    userAvatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop',
     thumbnailUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=300&fit=crop',
     hasUnseenExpression: true,
   },
   {
     id: '2',
-    userName: "Cody's collaborations",
-    userAvatar: '',
+    userName: 'Cody',
+    userAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop',
     thumbnailUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=300&fit=crop',
     hasUnseenExpression: true,
   },
   {
     id: '3',
-    userName: 'Amy Fell',
-    userAvatar: '',
+    userName: 'Amy',
+    userAvatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop',
     thumbnailUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=300&fit=crop',
     hasUnseenExpression: true,
   },
   {
     id: '4',
-    userName: 'Trent Mitchel Livori',
-    userAvatar: '',
+    userName: 'Trent',
+    userAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop',
     thumbnailUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=300&fit=crop',
     hasUnseenExpression: false,
   },
   {
     id: '5',
-    userName: 'Donna Karen',
-    userAvatar: '',
+    userName: 'Donna',
+    userAvatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop',
     thumbnailUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=300&fit=crop',
+    hasUnseenExpression: true,
+  },
+  {
+    id: '6',
+    userName: 'Marcus',
+    userAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=300&fit=crop',
     hasUnseenExpression: true,
   },
 ];
@@ -57,86 +66,65 @@ export function ExpressionsRow() {
   return (
     <div className="relative">
       <ScrollArea className="w-full">
-        <div className="flex gap-2 pb-2">
-          {/* Create Story Card */}
-          <div className="flex-shrink-0 w-[110px]">
-            <div className="relative h-[160px] rounded-xl overflow-hidden bg-secondary">
-              {/* User's image as background */}
-              <div className="absolute inset-0 bg-gradient-to-b from-secondary to-secondary/50 flex items-center justify-center">
-                <span className="text-4xl font-semibold text-secondary-foreground/30">
+        <div className="flex gap-3 px-4 py-2">
+          {/* Create Expression Card */}
+          <motion.button
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="flex-shrink-0 flex flex-col items-center gap-2"
+          >
+            <div className="relative">
+              <div className="w-[72px] h-[72px] rounded-full bg-gradient-to-br from-secondary to-card flex items-center justify-center ring-2 ring-border/50">
+                <span className="text-2xl font-semibold text-muted-foreground">
                   {userInitial}
                 </span>
               </div>
-              
-              {/* Bottom section */}
-              <div className="absolute bottom-0 left-0 right-0 bg-card pt-5 pb-2 px-2">
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <div className="w-8 h-8 rounded-full gradient-brand flex items-center justify-center ring-4 ring-card">
-                    <Plus className="h-5 w-5 text-white" />
-                  </div>
-                </div>
-                <p className="text-xs text-center text-foreground font-medium mt-1">
-                  Create expression
-                </p>
+              <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full gradient-brand flex items-center justify-center ring-3 ring-background shadow-glow">
+                <Plus className="h-4 w-4 text-primary-foreground" />
               </div>
             </div>
-          </div>
+            <span className="text-xs text-muted-foreground font-medium">Your story</span>
+          </motion.button>
 
           {/* Expression Cards */}
-          {mockExpressions.map((expression) => (
-            <button
+          {mockExpressions.map((expression, index) => (
+            <motion.button
               key={expression.id}
-              className="flex-shrink-0 w-[110px] group"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: (index + 1) * 0.05, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="flex-shrink-0 flex flex-col items-center gap-2"
             >
-              <div className="relative h-[160px] rounded-xl overflow-hidden">
-                {/* Expression thumbnail */}
-                <img
-                  src={expression.thumbnailUrl}
-                  alt={expression.userName}
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                
-                {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60" />
-                
-                {/* User avatar with gradient ring */}
-                <div className="absolute top-2 left-2">
-                  <div className={`w-10 h-10 rounded-full p-[2px] ${expression.hasUnseenExpression ? 'gradient-brand' : 'bg-muted'}`}>
-                    <div className="w-full h-full rounded-full bg-card p-[2px]">
-                      <div className="w-full h-full rounded-full bg-secondary flex items-center justify-center overflow-hidden">
-                        {expression.userAvatar ? (
-                          <img
-                            src={expression.userAvatar}
-                            alt={expression.userName}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <span className="text-xs font-medium text-secondary-foreground">
-                            {expression.userName.charAt(0)}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Username */}
-                <div className="absolute bottom-2 left-2 right-2">
-                  <p className="text-xs text-white font-medium line-clamp-2 leading-tight">
-                    {expression.userName}
-                  </p>
-                </div>
-              </div>
-            </button>
+              <CinematicAvatar
+                src={expression.userAvatar}
+                alt={expression.userName}
+                fallback={expression.userName.charAt(0)}
+                size="xl"
+                ring={expression.hasUnseenExpression ? 'gradient' : 'muted'}
+              />
+              <span className="text-xs text-foreground/80 font-medium max-w-[72px] truncate">
+                {expression.userName}
+              </span>
+            </motion.button>
           ))}
         </div>
         <ScrollBar orientation="horizontal" className="hidden" />
       </ScrollArea>
 
       {/* Right scroll indicator */}
-      <button className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-card/90 backdrop-blur flex items-center justify-center shadow-lg hover:bg-card transition-colors">
-        <ChevronRight className="h-5 w-5 text-foreground" />
-      </button>
+      <motion.button 
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.5 }}
+        className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full glass-floating flex items-center justify-center shadow-elevated hover:scale-105 transition-transform"
+      >
+        <ChevronRight className="h-4 w-4 text-foreground" />
+      </motion.button>
     </div>
   );
 }
