@@ -81,12 +81,12 @@ function CardStatItem({
       onClick={onClick}
       disabled={!onClick}
       className={cn(
-        "text-center flex-1 py-1 rounded-lg transition-colors",
-        onClick && "hover:bg-muted/50 active:scale-[0.98] cursor-pointer"
+        "text-center flex-1 py-3 px-2 rounded-xl transition-all duration-300",
+        onClick && "hover:bg-primary/5 active:scale-[0.97] cursor-pointer"
       )}
     >
-      <p className="text-xl sm:text-2xl font-bold text-foreground">{formatCount(count)}</p>
-      <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
+      <p className="text-lg sm:text-xl font-bold text-foreground tracking-tight">{formatCount(count)}</p>
+      <p className="text-xs text-muted-foreground mt-1 font-medium uppercase tracking-wider">{label}</p>
     </button>
   );
 }
@@ -153,26 +153,27 @@ export default function Profile() {
         {/* ========== FULL-WIDTH PROFILE HERO ========== */}
         <motion.section
           ref={heroRef}
-          className="relative w-full"
+          className="relative w-full bg-cinematic"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.3, ease: 'easeOut' }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
         >
           {/* Full-Width Cover Image Banner */}
           <motion.div
-            className="relative h-56 sm:h-64 overflow-hidden"
+            className="relative h-48 sm:h-56 md:h-64 overflow-hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.4 }}
+            transition={{ duration: 0.5 }}
           >
             <motion.img
               src={mockUser.coverImage}
               alt=""
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover img-cinematic"
               style={{ scale: avatarScale }}
             />
-            {/* Gradient overlay for blending into background */}
-            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
+            {/* Premium gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-b from-background/30 to-transparent h-24" />
             
             {/* Top Right Menu Button */}
             {isOwnProfile && (
@@ -208,36 +209,36 @@ export default function Profile() {
           </motion.div>
 
           {/* Profile Info Section */}
-          <div className="px-4 sm:px-6 -mt-16 sm:-mt-20 pb-5">
+          <div className="px-5 sm:px-8 md:px-10 -mt-14 sm:-mt-16 pb-6">
             
             {/* Avatar + Name/Handle Row */}
             <motion.div
-              className="flex items-center gap-4 sm:gap-5"
-              initial={{ opacity: 0, y: 10 }}
+              className="flex items-end gap-5 sm:gap-6"
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15, duration: 0.35, ease: 'easeOut' }}
+              transition={{ delay: 0.15, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             >
-              {/* Avatar */}
+              {/* Avatar with gradient ring */}
               <motion.div
                 className="relative flex-shrink-0"
                 style={{ y: avatarY }}
               >
-                <div className="w-36 h-36 sm:w-[10.5rem] sm:h-[10.5rem] rounded-full p-1 bg-gradient-to-br from-primary via-primary/80 to-primary/60 shadow-lg">
-                  <div className="w-full h-full rounded-full overflow-hidden border-4 border-background">
+                <div className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full p-[3px] gradient-brand shadow-glow">
+                  <div className="w-full h-full rounded-full overflow-hidden border-[3px] border-background">
                     <img
                       src={mockUser.avatar}
                       alt={mockUser.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover img-cinematic"
                     />
                   </div>
                 </div>
               </motion.div>
 
               {/* Name + Handle + Location */}
-              <div className="flex flex-col justify-center min-w-0 pt-16 sm:pt-20">
+              <div className="flex flex-col justify-end min-w-0 pb-1">
                 {/* Name + Verified Badge */}
-                <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground tracking-tight leading-tight">
                     {mockUser.name}
                   </h1>
                   {mockUser.isVerified && <VerifiedBadge size="md" />}
@@ -245,13 +246,13 @@ export default function Profile() {
                 </div>
 
                 {/* Handle + Location */}
-                <p className="text-base text-muted-foreground">
-                  @{mockUser.handle}
+                <p className="text-sm sm:text-base text-muted-foreground mt-1 flex items-center flex-wrap gap-x-2">
+                  <span className="font-medium">@{mockUser.handle}</span>
                   {mockUser.location && (
-                    <span className="inline-flex items-center gap-1 ml-2">
-                      <span className="w-1 h-1 rounded-full bg-muted-foreground/50" />
+                    <span className="inline-flex items-center gap-1.5 text-muted-foreground/70">
+                      <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
                       <MapPin className="w-3.5 h-3.5" />
-                      {mockUser.location}
+                      <span>{mockUser.location}</span>
                     </span>
                   )}
                 </p>
@@ -260,35 +261,35 @@ export default function Profile() {
 
             {/* Bio - Full Width Below */}
             <motion.p
-              className="text-sm sm:text-base text-foreground/80 leading-relaxed mt-4 max-w-xl"
+              className="text-sm sm:text-base text-foreground/85 leading-relaxed mt-5 max-w-2xl"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.25 }}
             >
               {renderBioWithHashtags(mockUser.bio)}
             </motion.p>
 
             {/* Stats Row */}
             <motion.div
-              className="flex items-center mt-5 border-t border-border pt-4"
+              className="flex items-center mt-6 -mx-2"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35 }}
+              transition={{ delay: 0.3 }}
             >
               <CardStatItem count={mockUser.stats.posts} label="Posts" />
-              <div className="w-px h-8 bg-border" />
+              <div className="w-px h-10 bg-border/50" />
               <CardStatItem 
                 count={followerCount} 
                 label="Followers" 
                 onClick={() => openListModal('followers')}
               />
-              <div className="w-px h-8 bg-border" />
+              <div className="w-px h-10 bg-border/50" />
               <CardStatItem 
                 count={mockUser.stats.following} 
                 label="Following" 
                 onClick={() => openListModal('following')}
               />
-              <div className="w-px h-8 bg-border" />
+              <div className="w-px h-10 bg-border/50" />
               <CardStatItem 
                 count={mockUser.stats.community || 0} 
                 label="Community" 
@@ -299,22 +300,22 @@ export default function Profile() {
             {/* CTA Buttons - Below Stats */}
             {!isOwnProfile && (
               <motion.div
-                className="flex items-center gap-3 mt-4"
+                className="flex items-center gap-3 mt-5 pt-5 border-t border-border/50"
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
+                transition={{ delay: 0.35 }}
               >
                 <FollowButton
                   isFollowing={isFollowing}
                   onToggle={handleFollow}
                   size="md"
-                  className="px-8 h-9 rounded-full font-semibold text-sm uppercase tracking-wide transition-all duration-200 active:scale-[0.97]"
+                  className="px-8 h-10 rounded-full font-semibold text-sm tracking-wide transition-all duration-300 active:scale-[0.97] shadow-soft"
                   variant="gradient"
                 />
                 <Button
                   variant="outline"
                   size="icon"
-                  className="h-9 w-9 rounded-full border-border hover:bg-accent transition-all duration-200 active:scale-95"
+                  className="h-10 w-10 rounded-full border-border/60 hover:bg-primary/10 hover:border-primary/30 transition-all duration-300 active:scale-95"
                 >
                   <MessageCircle className="w-4 h-4" />
                 </Button>
@@ -326,17 +327,21 @@ export default function Profile() {
         {/* ========== CONTENT BELOW HERO ========== */}
         
         {/* Discover People Row */}
-        <DiscoverRow />
+        <div className="mt-2">
+          <DiscoverRow />
+        </div>
 
         {/* Content Tabs */}
-        <RearrangeableTabBar
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          isOwnProfile={isOwnProfile}
-        />
+        <div className="mt-4 border-t border-border/40">
+          <RearrangeableTabBar
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            isOwnProfile={isOwnProfile}
+          />
+        </div>
 
         {/* Tab Content */}
-        <div className="mt-0">
+        <div className="mt-1">
           <AnimatePresence mode="wait">
             {activeTab === 'posts' && (
               <motion.div
