@@ -62,7 +62,8 @@ const DraggableTab = memo(function DraggableTab({
 
   const Icon = ICON_MAP[tab.icon];
   const isBeingDraggedOver = dragOverIndex === index && !isDragging;
-  const isGridTab = tab.id === 'posts';
+  // Allow layout picker on posts, expressions, and reels tabs
+  const isGridTab = ['posts', 'expressions', 'reels'].includes(tab.id);
 
   const handlePointerDown = useCallback(() => {
     if (isRearrangeMode || !isOwnProfile || !isGridTab) return;

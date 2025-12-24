@@ -1,6 +1,6 @@
-import { memo, useRef, useEffect, forwardRef } from 'react';
+import { memo, useRef, useEffect, forwardRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Play, Heart, MessageCircle, GripVertical } from 'lucide-react';
+import { GripVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface Post {
@@ -26,11 +26,8 @@ interface DraggableGridItemProps {
   onTouchEnd: () => void;
 }
 
-function formatCount(count: number): string {
-  if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`;
-  if (count >= 1000) return `${(count / 1000).toFixed(1)}K`;
-  return count.toString();
-}
+const LONG_PRESS_DURATION = 500; // ms
+const MOVE_THRESHOLD = 10; // px
 
 export const DraggableGridItem = memo(forwardRef<HTMLDivElement, DraggableGridItemProps>(function DraggableGridItem({
   post,
@@ -46,40 +43,53 @@ export const DraggableGridItem = memo(forwardRef<HTMLDivElement, DraggableGridIt
   onTouchMove,
   onTouchEnd,
 }, ref) {
-  const tapCount = useRef(0);
-  const tapTimer = useRef<NodeJS.Timeout | null>(null);
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const touchStartPos = useRef<{ x: number; y: number } | null>(null);
+  const isLongPressTriggered = useRef(false);
 
-  const handleTap = () => {
+  // Cancel long press
+  const cancelLongPress = useCallback(() => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  }, []);
+
+  // Start long press timer
+  const startLongPress = useCallback((x: number, y: number) => {
     if (isRearrangeMode) return;
     
-    tapCount.current += 1;
+    touchStartPos.current = { x, y };
+    isLongPressTriggered.current = false;
     
-    // Reset tap count after 500ms of no taps
-    if (tapTimer.current) {
-      clearTimeout(tapTimer.current);
-    }
-    
-    if (tapCount.current >= 3) {
-      tapCount.current = 0;
-      onLongPress();
+    longPressTimer.current = setTimeout(() => {
+      isLongPressTriggered.current = true;
       // Haptic feedback
       if (navigator.vibrate) {
-        navigator.vibrate(100);
+        navigator.vibrate(50);
       }
-    } else {
-      tapTimer.current = setTimeout(() => {
-        tapCount.current = 0;
-      }, 500);
-    }
-  };
+      onLongPress();
+    }, LONG_PRESS_DURATION);
+  }, [isRearrangeMode, onLongPress]);
 
+  // Handle pointer/touch move - cancel if moved too far
+  const handleMove = useCallback((x: number, y: number) => {
+    if (!touchStartPos.current) return;
+    
+    const dx = Math.abs(x - touchStartPos.current.x);
+    const dy = Math.abs(y - touchStartPos.current.y);
+    
+    if (dx > MOVE_THRESHOLD || dy > MOVE_THRESHOLD) {
+      cancelLongPress();
+    }
+  }, [cancelLongPress]);
+
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (tapTimer.current) {
-        clearTimeout(tapTimer.current);
-      }
+      cancelLongPress();
     };
-  }, []);
+  }, [cancelLongPress]);
 
   const isBeingDraggedOver = dragOverIndex === index && !isDragging;
 
@@ -100,17 +110,60 @@ export const DraggableGridItem = memo(forwardRef<HTMLDivElement, DraggableGridIt
         layout: { type: 'spring', stiffness: 400, damping: 30 }
       }}
       className={cn(
-        'aspect-square relative group cursor-pointer overflow-hidden',
+        'w-full h-full relative group cursor-pointer overflow-hidden',
         isRearrangeMode && 'cursor-grab active:cursor-grabbing animate-jiggle',
         isDragging && 'shadow-2xl ring-2 ring-primary animate-none',
         isBeingDraggedOver && 'ring-2 ring-primary/50'
       )}
-      onClick={handleTap}
-      onTouchStart={(e) => {
-        onTouchStart(e, index);
+      style={{
+        WebkitTouchCallout: 'none',
+        userSelect: 'none',
+        touchAction: isRearrangeMode ? 'none' : 'auto',
       }}
-      onTouchMove={onTouchMove}
-      onTouchEnd={onTouchEnd}
+      // Block browser context menu
+      onContextMenu={(e) => e.preventDefault()}
+      // Long press handling for touch
+      onTouchStart={(e) => {
+        const touch = e.touches[0];
+        startLongPress(touch.clientX, touch.clientY);
+        if (isRearrangeMode) {
+          onTouchStart(e, index);
+        }
+      }}
+      onTouchMove={(e) => {
+        const touch = e.touches[0];
+        handleMove(touch.clientX, touch.clientY);
+        if (isRearrangeMode) {
+          onTouchMove(e);
+        }
+      }}
+      onTouchEnd={() => {
+        cancelLongPress();
+        touchStartPos.current = null;
+        if (isRearrangeMode) {
+          onTouchEnd();
+        }
+      }}
+      onTouchCancel={() => {
+        cancelLongPress();
+        touchStartPos.current = null;
+      }}
+      // Long press handling for mouse
+      onMouseDown={(e) => {
+        startLongPress(e.clientX, e.clientY);
+      }}
+      onMouseMove={(e) => {
+        handleMove(e.clientX, e.clientY);
+      }}
+      onMouseUp={() => {
+        cancelLongPress();
+        touchStartPos.current = null;
+      }}
+      onMouseLeave={() => {
+        cancelLongPress();
+        touchStartPos.current = null;
+      }}
+      // Drag handlers for rearrange mode
       draggable={isRearrangeMode}
       onDragStart={() => {
         if (isRearrangeMode) {
@@ -125,7 +178,7 @@ export const DraggableGridItem = memo(forwardRef<HTMLDivElement, DraggableGridIt
       }}
       onDragEnd={onDragEnd}
     >
-      {/* Image */}
+      {/* Image - block context menu */}
       <img 
         src={post.thumbnail} 
         alt="" 
@@ -134,14 +187,12 @@ export const DraggableGridItem = memo(forwardRef<HTMLDivElement, DraggableGridIt
           !isRearrangeMode && 'group-hover:scale-105'
         )}
         draggable={false}
+        onContextMenu={(e) => e.preventDefault()}
+        style={{
+          WebkitTouchCallout: 'none',
+          userSelect: 'none',
+        }}
       />
-
-      {/* Video indicator */}
-      {post.isVideo && (
-        <div className="absolute top-2 right-2">
-          <Play className="h-4 w-4 text-white drop-shadow-lg fill-current" />
-        </div>
-      )}
 
       {/* Rearrange mode overlay */}
       {isRearrangeMode && (
@@ -152,20 +203,6 @@ export const DraggableGridItem = memo(forwardRef<HTMLDivElement, DraggableGridIt
         >
           <GripVertical className="h-8 w-8 text-white drop-shadow-lg" />
         </motion.div>
-      )}
-
-      {/* Hover overlay with stats (only when not in rearrange mode) */}
-      {!isRearrangeMode && (
-        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
-          <div className="flex items-center gap-1 text-white font-semibold">
-            <Heart className="h-5 w-5 fill-current" />
-            {formatCount(post.likes)}
-          </div>
-          <div className="flex items-center gap-1 text-white font-semibold">
-            <MessageCircle className="h-5 w-5 fill-current" />
-            {formatCount(post.comments)}
-          </div>
-        </div>
       )}
 
       {/* Skeleton placeholder when being dragged over */}

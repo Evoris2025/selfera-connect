@@ -365,9 +365,9 @@ export default function Profile() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="text-center py-16 text-muted-foreground text-sm"
+                transition={{ duration: 0.3 }}
               >
-                {isOwnProfile ? 'Your expressions will appear here' : 'No expressions yet'}
+                <RearrangeableGrid posts={mockPosts} isOwnProfile={isOwnProfile} layoutStyle={gridLayout} />
               </motion.div>
             )}
 
@@ -377,28 +377,9 @@ export default function Profile() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="grid grid-cols-3 gap-0.5"
+                transition={{ duration: 0.3 }}
               >
-                {mockReels.map((reel, index) => (
-                  <motion.div
-                    key={reel.id}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: index * 0.05, duration: 0.4 }}
-                    className="aspect-[9/16] relative group cursor-pointer overflow-hidden"
-                  >
-                    <img 
-                      src={reel.thumbnail} 
-                      alt="" 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <div className="absolute bottom-2 left-2 flex items-center gap-1 text-white text-xs font-medium">
-                      <Play className="h-3 w-3 fill-current" />
-                      {formatCount(reel.views)}
-                    </div>
-                  </motion.div>
-                ))}
+                <RearrangeableGrid posts={mockPosts} isOwnProfile={isOwnProfile} layoutStyle={gridLayout} />
               </motion.div>
             )}
 
