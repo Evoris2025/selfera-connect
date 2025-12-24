@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, X, Grid3X3, LayoutGrid, Sparkles } from 'lucide-react';
+import { Check, X, Grid3X3, LayoutPanelTop, Columns, LayoutDashboard, Layers, LayoutGrid } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { GridLayoutStyle } from '@/hooks/useGridLayout';
 
@@ -20,6 +20,7 @@ interface LayoutOption {
   preview: React.ReactNode;
 }
 
+// Uniform: 3x3 equal grid
 const UniformPreview = () => (
   <div className="grid grid-cols-3 gap-0.5 w-full aspect-square">
     {[...Array(9)].map((_, i) => (
@@ -28,10 +29,19 @@ const UniformPreview = () => (
   </div>
 );
 
-const MasonryPreview = () => (
-  <div className="grid grid-cols-3 gap-0.5 w-full aspect-square">
-    <div className="bg-muted-foreground/30 rounded-[2px] row-span-2" />
+// Mosaic 4: Wide banner on top + 4 squares below
+const Mosaic4Preview = () => (
+  <div className="grid grid-cols-3 gap-0.5 w-full aspect-square" style={{ gridAutoRows: '1fr' }}>
+    <div className="bg-muted-foreground/30 rounded-[2px] col-span-3" />
     <div className="bg-muted-foreground/30 rounded-[2px]" />
+    <div className="bg-muted-foreground/30 rounded-[2px]" />
+    <div className="bg-muted-foreground/30 rounded-[2px]" />
+  </div>
+);
+
+// Mosaic 5: Tall left + 4 squares on right
+const Mosaic5Preview = () => (
+  <div className="grid grid-cols-3 gap-0.5 w-full aspect-square" style={{ gridAutoRows: '1fr' }}>
     <div className="bg-muted-foreground/30 rounded-[2px] row-span-2" />
     <div className="bg-muted-foreground/30 rounded-[2px]" />
     <div className="bg-muted-foreground/30 rounded-[2px]" />
@@ -40,14 +50,32 @@ const MasonryPreview = () => (
   </div>
 );
 
-const FeaturedPreview = () => (
-  <div className="grid grid-cols-3 gap-0.5 w-full aspect-square">
+// Mosaic 6: Tall left + 2 wide right stacked
+const Mosaic6Preview = () => (
+  <div className="grid grid-cols-3 gap-0.5 w-full aspect-square" style={{ gridAutoRows: '1fr' }}>
+    <div className="bg-muted-foreground/30 rounded-[2px] row-span-2" />
+    <div className="bg-muted-foreground/30 rounded-[2px] col-span-2" />
+    <div className="bg-muted-foreground/30 rounded-[2px] col-span-2" />
+  </div>
+);
+
+// Mosaic 7: Wide banner + large left + 2 squares right
+const Mosaic7Preview = () => (
+  <div className="grid grid-cols-3 gap-0.5 w-full aspect-square" style={{ gridAutoRows: '1fr' }}>
+    <div className="bg-muted-foreground/30 rounded-[2px] col-span-3" />
     <div className="bg-muted-foreground/30 rounded-[2px] col-span-2 row-span-2" />
     <div className="bg-muted-foreground/30 rounded-[2px]" />
     <div className="bg-muted-foreground/30 rounded-[2px]" />
+  </div>
+);
+
+// Mosaic 8: Complex mixed pattern
+const Mosaic8Preview = () => (
+  <div className="grid grid-cols-3 gap-0.5 w-full aspect-square" style={{ gridAutoRows: '1fr' }}>
+    <div className="bg-muted-foreground/30 rounded-[2px] row-span-2" />
     <div className="bg-muted-foreground/30 rounded-[2px]" />
     <div className="bg-muted-foreground/30 rounded-[2px]" />
-    <div className="bg-muted-foreground/30 rounded-[2px]" />
+    <div className="bg-muted-foreground/30 rounded-[2px] col-span-2" />
   </div>
 );
 
@@ -60,18 +88,39 @@ const LAYOUT_OPTIONS: LayoutOption[] = [
     preview: <UniformPreview />,
   },
   {
-    id: 'masonry',
-    name: 'Masonry',
-    description: 'Pinterest-style flow',
-    icon: <LayoutGrid className="h-5 w-5" />,
-    preview: <MasonryPreview />,
+    id: 'mosaic4',
+    name: 'Mosaic 4',
+    description: 'Banner spotlight',
+    icon: <LayoutPanelTop className="h-5 w-5" />,
+    preview: <Mosaic4Preview />,
   },
   {
-    id: 'featured',
-    name: 'Featured',
-    description: 'Highlight best posts',
-    icon: <Sparkles className="h-5 w-5" />,
-    preview: <FeaturedPreview />,
+    id: 'mosaic5',
+    name: 'Mosaic 5',
+    description: 'Tall focus',
+    icon: <Columns className="h-5 w-5" />,
+    preview: <Mosaic5Preview />,
+  },
+  {
+    id: 'mosaic6',
+    name: 'Mosaic 6',
+    description: 'Mixed blocks',
+    icon: <LayoutDashboard className="h-5 w-5" />,
+    preview: <Mosaic6Preview />,
+  },
+  {
+    id: 'mosaic7',
+    name: 'Mosaic 7',
+    description: 'Hero feature',
+    icon: <Layers className="h-5 w-5" />,
+    preview: <Mosaic7Preview />,
+  },
+  {
+    id: 'mosaic8',
+    name: 'Mosaic 8',
+    description: 'Dynamic grid',
+    icon: <LayoutGrid className="h-5 w-5" />,
+    preview: <Mosaic8Preview />,
   },
 ];
 
@@ -101,7 +150,7 @@ export const GridLayoutPicker = memo(function GridLayoutPicker({
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed bottom-0 left-0 right-0 z-50 glass-heavy rounded-t-3xl overflow-hidden"
+            className="fixed bottom-0 left-0 right-0 z-50 glass-heavy rounded-t-3xl overflow-hidden max-h-[70vh] flex flex-col"
           >
             {/* Handle */}
             <div className="flex justify-center pt-3 pb-2">
@@ -119,8 +168,8 @@ export const GridLayoutPicker = memo(function GridLayoutPicker({
               </button>
             </div>
             
-            {/* Layout Options */}
-            <div className="px-5 pb-8 space-y-3">
+            {/* Layout Options - Scrollable */}
+            <div className="px-5 pb-8 space-y-3 overflow-y-auto flex-1">
               {LAYOUT_OPTIONS.map((option) => {
                 const isSelected = currentLayout === option.id;
                 
