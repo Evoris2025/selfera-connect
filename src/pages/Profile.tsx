@@ -12,6 +12,7 @@ import { VerifiedBadge } from '@/components/VerifiedBadge';
 import { FollowButton } from '@/components/interactions';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { useImageBrightness } from '@/hooks/useImageBrightness';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -65,8 +66,21 @@ function formatCount(count: number): string {
   return count.toString();
 }
 
-// Clean stat display - matching reference design
-function HeroStatItem({ count, label, delay = 0 }: { count: number; label: string; delay?: number }) {
+// Stat item with dynamic text color
+function HeroStatItem({ 
+  count, 
+  label, 
+  delay = 0,
+  textColorMode 
+}: { 
+  count: number; 
+  label: string; 
+  delay?: number;
+  textColorMode: 'light' | 'dark';
+}) {
+  const textColor = textColorMode === 'light' ? 'text-white' : 'text-gray-900';
+  const subTextColor = textColorMode === 'light' ? 'text-white/60' : 'text-gray-900/60';
+  
   return (
     <motion.button 
       whileHover={{ scale: 1.03 }}
@@ -74,12 +88,14 @@ function HeroStatItem({ count, label, delay = 0 }: { count: number; label: strin
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="flex flex-col items-center group"
+      className="flex flex-col items-start group"
     >
-      <span className="text-xl sm:text-2xl font-bold text-white">
+      <span className={cn("text-2xl sm:text-3xl font-bold", textColor)}
+        style={{ textShadow: textColorMode === 'light' ? '0 1px 8px rgba(0,0,0,0.3)' : '0 1px 4px rgba(255,255,255,0.3)' }}
+      >
         {formatCount(count)}
       </span>
-      <span className="text-[10px] text-white/60 font-semibold uppercase tracking-[0.2em] group-hover:text-white/80 transition-colors">
+      <span className={cn("text-[10px] font-semibold uppercase tracking-[0.15em] group-hover:opacity-80 transition-opacity", subTextColor)}>
         {label}
       </span>
     </motion.button>
@@ -94,6 +110,12 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState('posts');
   const [followerCount, setFollowerCount] = useState(mockUser.stats.followers);
   const isOwnProfile = !handle || handle === mockUser.handle;
+  
+  // Dynamic text color based on cover image brightness
+  const textColorMode = useImageBrightness(mockUser.coverImage);
+  const textColor = textColorMode === 'light' ? 'text-white' : 'text-gray-900';
+  const subTextColor = textColorMode === 'light' ? 'text-white/70' : 'text-gray-900/70';
+  const mutedTextColor = textColorMode === 'light' ? 'text-white/50' : 'text-gray-900/50';
 
   const handleFollow = () => {
     setIsFollowing(!isFollowing);
@@ -114,7 +136,7 @@ export default function Profile() {
   return (
     <AppLayout showHeader={false} onCreatePost={handleCreatePost}>
       <div className="flex flex-col min-h-screen relative">
-        {/* Full Page Background Cover Image - Clean Treatment */}
+        {/* Full Page Background Cover Image */}
         <div className="fixed inset-0 z-0">
           <motion.img 
             src={mockUser.coverImage} 
@@ -124,15 +146,13 @@ export default function Profile() {
             transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
             className="w-full h-full object-cover"
           />
-          {/* Soft vignette */}
+          {/* Gradient overlay for content readability */}
           <div 
             className="absolute inset-0"
             style={{
-              background: 'radial-gradient(ellipse 90% 70% at 50% 35%, transparent 0%, hsl(var(--background) / 0.5) 70%, hsl(var(--background) / 0.9) 100%)'
+              background: 'linear-gradient(to bottom, transparent 0%, hsl(var(--background) / 0.3) 50%, hsl(var(--background) / 0.85) 80%, hsl(var(--background)) 100%)'
             }}
           />
-          {/* Bottom gradient for content readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
         </div>
 
         {/* Content - Above background */}
@@ -174,257 +194,262 @@ export default function Profile() {
             )}
           </div>
 
-          {/* Clean Hero Section - Reference Design */}
-          <div className="pt-16 pb-6 relative">
-            {/* Soft centered light burst behind avatar */}
-            <div className="absolute inset-0 flex items-start justify-center pointer-events-none overflow-hidden">
-              <div 
-                className="w-[600px] h-[500px] -mt-32 rounded-full"
-                style={{
-                  background: 'radial-gradient(ellipse at center, rgba(255,250,240,0.15) 0%, rgba(255,245,230,0.08) 30%, transparent 60%)',
-                  filter: 'blur(40px)',
-                }}
-              />
-            </div>
-
-            {/* Stats + Avatar Row - 2x2 Grid Layout */}
-            <div className="flex items-center justify-center gap-6 sm:gap-10 px-4 max-w-md mx-auto relative">
-              {/* Left Stats Column */}
-              <div className="flex flex-col gap-4">
-                <HeroStatItem count={followerCount} label="Followers" delay={0.2} />
-                <HeroStatItem count={mockUser.stats.following} label="Following" delay={0.25} />
-              </div>
-
-              {/* Centered Avatar with Clean Gradient Ring */}
+          {/* Editorial Hero Section - Left Avatar, Right Content */}
+          <div className="pt-12 pb-6 px-5">
+            <div className="flex flex-row gap-6 sm:gap-8 max-w-2xl mx-auto">
+              {/* Left Side - Rectangle Avatar with Blurred Edges */}
               <motion.div 
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.1, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
                 className="relative flex-shrink-0"
               >
-                {/* Soft glow behind avatar */}
+                {/* Rectangle avatar container with soft blurred edges */}
                 <div 
-                  className="absolute -inset-6 rounded-full"
-                  style={{
-                    background: 'radial-gradient(circle, rgba(255,250,245,0.12) 0%, transparent 70%)',
-                    filter: 'blur(20px)',
-                  }}
-                />
-
-                {/* Avatar container with thin gradient ring */}
-                <div className="relative">
-                  {/* Rotating gradient ring - thin and clean */}
-                  <motion.div 
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-                    className="absolute -inset-[2px] rounded-full p-[2px]"
+                  className="relative w-28 h-36 sm:w-36 sm:h-44 md:w-40 md:h-52 overflow-visible"
+                >
+                  {/* The avatar image with mask for blurred edges */}
+                  <div 
+                    className="w-full h-full rounded-xl overflow-hidden"
                     style={{
-                      background: 'conic-gradient(from 0deg, #f97316, #ec4899, #a855f7, #f97316)',
+                      maskImage: 'linear-gradient(to right, black 50%, transparent 100%), linear-gradient(to bottom, black 60%, transparent 100%)',
+                      maskComposite: 'intersect',
+                      WebkitMaskImage: 'linear-gradient(to right, black 50%, transparent 100%), linear-gradient(to bottom, black 60%, transparent 100%)',
+                      WebkitMaskComposite: 'source-in',
                     }}
                   >
-                    <div className="w-full h-full rounded-full bg-background" />
-                  </motion.div>
-                  
-                  {/* Avatar image */}
-                  <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden">
                     <img 
                       src={mockUser.avatar} 
                       alt={mockUser.name}
                       className="w-full h-full object-cover"
                     />
                   </div>
+                  
+                  {/* Soft blur overlay on edges */}
+                  <div 
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background: 'linear-gradient(to right, transparent 40%, hsl(var(--background) / 0.2) 70%, hsl(var(--background) / 0.5) 90%)',
+                      backdropFilter: 'blur(8px)',
+                      maskImage: 'linear-gradient(to right, transparent 50%, black 100%)',
+                      WebkitMaskImage: 'linear-gradient(to right, transparent 50%, black 100%)',
+                    }}
+                  />
+                  
+                  {/* Bottom edge blur */}
+                  <div 
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background: 'linear-gradient(to bottom, transparent 50%, hsl(var(--background) / 0.3) 80%, hsl(var(--background) / 0.6) 100%)',
+                      backdropFilter: 'blur(6px)',
+                      maskImage: 'linear-gradient(to bottom, transparent 60%, black 100%)',
+                      WebkitMaskImage: 'linear-gradient(to bottom, transparent 60%, black 100%)',
+                    }}
+                  />
                 </div>
               </motion.div>
 
-              {/* Right Stats Column */}
-              <div className="flex flex-col gap-4">
-                <HeroStatItem count={mockUser.stats.posts} label="Posts" delay={0.3} />
-                <HeroStatItem count={mockUser.stats.community} label="Community" delay={0.35} />
-              </div>
-            </div>
+              {/* Right Side - All Profile Content */}
+              <div className="flex-1 flex flex-col justify-center min-w-0">
+                {/* Name & Handle */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h1 
+                      className={cn("text-2xl sm:text-3xl font-bold", textColor)}
+                      style={{ textShadow: textColorMode === 'light' ? '0 2px 12px rgba(0,0,0,0.4)' : '0 1px 6px rgba(255,255,255,0.3)' }}
+                    >
+                      {mockUser.name}
+                    </h1>
+                    {mockUser.isVerified && <VerifiedBadge size="md" />}
+                    {mockUser.isPrivate && <Lock className={cn("h-4 w-4", mutedTextColor)} />}
+                  </div>
+                  <p className={cn("text-sm font-medium mt-0.5", mutedTextColor)}>@{mockUser.handle}</p>
+                </motion.div>
 
-            {/* Name & Handle - Clean Typography */}
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className="text-center mt-5"
-            >
-              <div className="flex items-center justify-center gap-2">
-                <h1 className="text-2xl sm:text-[26px] font-bold text-white">
-                  {mockUser.name}
-                </h1>
-                {mockUser.isVerified && <VerifiedBadge size="md" />}
-                {mockUser.isPrivate && <Lock className="h-4 w-4 text-white/60" />}
-              </div>
-              <p className="text-white/50 text-sm mt-0.5 font-medium">@{mockUser.handle}</p>
-              
-              {/* Location */}
-              {mockUser.location && (
+                {/* Location */}
+                {mockUser.location && (
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className={cn("flex items-center gap-1.5 text-[13px] mt-2", mutedTextColor)}
+                  >
+                    <MapPin className="h-3.5 w-3.5" />
+                    <span>{mockUser.location}</span>
+                  </motion.div>
+                )}
+
+                {/* Bio */}
+                <motion.p 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.35, duration: 0.5 }}
+                  className={cn("text-[14px] sm:text-[15px] leading-relaxed mt-3 line-clamp-3", subTextColor)}
+                  style={{ textShadow: textColorMode === 'light' ? '0 1px 4px rgba(0,0,0,0.2)' : 'none' }}
+                >
+                  {mockUser.bio}
+                </motion.p>
+
+                {/* Stats Row */}
                 <motion.div 
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                  className="flex items-center justify-center gap-1.5 text-white/45 text-[13px] mt-2"
+                  transition={{ delay: 0.4, duration: 0.5 }}
+                  className="flex items-center gap-5 sm:gap-6 mt-4"
                 >
-                  <MapPin className="h-3.5 w-3.5" />
-                  <span>{mockUser.location}</span>
+                  <HeroStatItem count={mockUser.stats.posts} label="Posts" delay={0.45} textColorMode={textColorMode} />
+                  <HeroStatItem count={followerCount} label="Followers" delay={0.5} textColorMode={textColorMode} />
+                  <HeroStatItem count={mockUser.stats.following} label="Following" delay={0.55} textColorMode={textColorMode} />
                 </motion.div>
-              )}
-            </motion.div>
+              </div>
+            </div>
           </div>
 
-        {/* Profile Content - Below Hero */}
-        <div className="px-5 pt-2 pb-4">
-          {/* Bio */}
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.55, duration: 0.5 }}
-            className="text-foreground/90 text-[15px] leading-relaxed text-center mb-4"
-          >
-            {mockUser.bio}
-          </motion.p>
-
-          {/* Interest Tags Row */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6, duration: 0.5 }}
-            className="flex flex-wrap justify-center gap-2 mb-5"
-          >
-            {mockUser.interests.map((interest, index) => (
-              <motion.span
-                key={interest}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.6 + index * 0.05 }}
-                className="px-3 py-1.5 text-xs font-medium rounded-full glass border border-border/30 text-muted-foreground"
-              >
-                {interest}
-              </motion.span>
-            ))}
-          </motion.div>
-
-          {/* Action Buttons - Only show for other users */}
-          {!isOwnProfile && (
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
+          {/* Profile Content Below Hero */}
+          <div className="px-5 pt-2 pb-4">
+            {/* Interest Tags Row */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               transition={{ delay: 0.6, duration: 0.5 }}
-              className="flex gap-3 mb-6"
+              className="flex flex-wrap gap-2 mb-5"
             >
-              <FollowButton
-                isFollowing={isFollowing}
-                onToggle={handleFollow}
-                size="lg"
-                className="flex-1 h-12 rounded-2xl"
-                variant="gradient"
-              />
-              <Button 
-                variant="outline" 
-                size="icon"
-                className="h-12 w-12 rounded-2xl glass-subtle border-border/30"
-              >
-                <MessageCircle className="h-5 w-5" />
-              </Button>
+              {mockUser.interests.map((interest, index) => (
+                <motion.span
+                  key={interest}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.6 + index * 0.05 }}
+                  className="px-3 py-1.5 text-xs font-medium rounded-full glass border border-border/30 text-muted-foreground"
+                >
+                  {interest}
+                </motion.span>
+              ))}
             </motion.div>
-          )}
-        </div>
 
-        {/* Discover People Row - Premium Glass Cards */}
-        <DiscoverRow />
-
-        {/* Content Tabs - Minimal Style */}
-        <RearrangeableTabBar
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          isOwnProfile={isOwnProfile}
-        />
-
-        {/* Tab Content */}
-        <div className="mt-0">
-          <AnimatePresence mode="wait">
-            {activeTab === 'posts' && (
-              <motion.div
-                key="posts"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
+            {/* Action Buttons - Only show for other users */}
+            {!isOwnProfile && (
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.65, duration: 0.5 }}
+                className="flex gap-3 mb-6"
               >
-                <RearrangeableGrid posts={mockPosts} isOwnProfile={isOwnProfile} />
+                <FollowButton
+                  isFollowing={isFollowing}
+                  onToggle={handleFollow}
+                  size="lg"
+                  className="flex-1 h-12 rounded-2xl"
+                  variant="gradient"
+                />
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  className="h-12 w-12 rounded-2xl glass-subtle border-border/30"
+                >
+                  <MessageCircle className="h-5 w-5" />
+                </Button>
               </motion.div>
             )}
+          </div>
 
-            {activeTab === 'expressions' && (
-              <motion.div
-                key="expressions"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="text-center py-16 text-muted-foreground text-sm"
-              >
-                {isOwnProfile ? 'Your expressions will appear here' : 'No expressions yet'}
-              </motion.div>
-            )}
+          {/* Discover People Row */}
+          <DiscoverRow />
 
-            {activeTab === 'reels' && (
-              <motion.div
-                key="reels"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="grid grid-cols-3 gap-0.5"
-              >
-                {mockReels.map((reel, index) => (
-                  <motion.div
-                    key={reel.id}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: index * 0.05, duration: 0.4 }}
-                    className="aspect-[9/16] relative group cursor-pointer overflow-hidden"
-                  >
-                    <img 
-                      src={reel.thumbnail} 
-                      alt="" 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <div className="absolute bottom-2 left-2 flex items-center gap-1 text-white text-xs font-medium">
-                      <Play className="h-3 w-3 fill-current" />
-                      {formatCount(reel.views)}
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
-            )}
+          {/* Content Tabs */}
+          <RearrangeableTabBar
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            isOwnProfile={isOwnProfile}
+          />
 
-            {activeTab === 'community' && (
-              <motion.div
-                key="community"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="text-center py-16 text-muted-foreground text-sm"
-              >
-                {isOwnProfile ? 'Communities you\'ve joined' : 'No communities yet'}
-              </motion.div>
-            )}
+          {/* Tab Content */}
+          <div className="mt-0">
+            <AnimatePresence mode="wait">
+              {activeTab === 'posts' && (
+                <motion.div
+                  key="posts"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <RearrangeableGrid posts={mockPosts} isOwnProfile={isOwnProfile} />
+                </motion.div>
+              )}
 
-            {activeTab === 'library' && (
-              <motion.div
-                key="library"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="text-center py-16 text-muted-foreground text-sm"
-              >
-                {isOwnProfile ? 'Your mental health & wellbeing library' : 'Nothing in library yet'}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+              {activeTab === 'expressions' && (
+                <motion.div
+                  key="expressions"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="text-center py-16 text-muted-foreground text-sm"
+                >
+                  {isOwnProfile ? 'Your expressions will appear here' : 'No expressions yet'}
+                </motion.div>
+              )}
+
+              {activeTab === 'reels' && (
+                <motion.div
+                  key="reels"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="grid grid-cols-3 gap-0.5"
+                >
+                  {mockReels.map((reel, index) => (
+                    <motion.div
+                      key={reel.id}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: index * 0.05, duration: 0.4 }}
+                      className="aspect-[9/16] relative group cursor-pointer overflow-hidden"
+                    >
+                      <img 
+                        src={reel.thumbnail} 
+                        alt="" 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <div className="absolute bottom-2 left-2 flex items-center gap-1 text-white text-xs font-medium">
+                        <Play className="h-3 w-3 fill-current" />
+                        {formatCount(reel.views)}
+                      </div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              )}
+
+              {activeTab === 'community' && (
+                <motion.div
+                  key="community"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="text-center py-16 text-muted-foreground text-sm"
+                >
+                  {isOwnProfile ? 'Communities you\'ve joined' : 'No communities yet'}
+                </motion.div>
+              )}
+
+              {activeTab === 'library' && (
+                <motion.div
+                  key="library"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="text-center py-16 text-muted-foreground text-sm"
+                >
+                  {isOwnProfile ? 'Your saved content' : 'Library is private'}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </AppLayout>
