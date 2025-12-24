@@ -5,6 +5,7 @@ import { MoreVertical, Lock, MapPin, MessageCircle, Pencil, Share2, Settings, Pl
 import { DiscoverRow } from '@/components/DiscoverRow';
 import { RearrangeableGrid } from '@/components/profile/RearrangeableGrid';
 import { RearrangeableTabBar } from '@/components/profile/RearrangeableTabBar';
+import { UserListModal, ListType } from '@/components/profile/UserListModal';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
@@ -21,6 +22,7 @@ import {
 
 // Mock user data with full social metrics
 const mockUser = {
+  id: 'mock-user-id',
   name: 'Alex Johnson',
   handle: 'alexj',
   avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop',
@@ -64,13 +66,28 @@ function formatCount(count: number): string {
   return count.toString();
 }
 
-// Stat item for the card profile
-function CardStatItem({ count, label }: { count: number; label: string }) {
+// Clickable stat item for the card profile
+function CardStatItem({ 
+  count, 
+  label, 
+  onClick 
+}: { 
+  count: number; 
+  label: string; 
+  onClick?: () => void;
+}) {
   return (
-    <div className="text-center flex-1">
+    <button
+      onClick={onClick}
+      disabled={!onClick}
+      className={cn(
+        "text-center flex-1 py-1 rounded-lg transition-colors",
+        onClick && "hover:bg-muted/50 active:scale-[0.98] cursor-pointer"
+      )}
+    >
       <p className="text-xl sm:text-2xl font-bold text-foreground">{formatCount(count)}</p>
       <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
-    </div>
+    </button>
   );
 }
 
@@ -97,7 +114,14 @@ export default function Profile() {
   const [isFollowing, setIsFollowing] = useState(false);
   const [activeTab, setActiveTab] = useState('posts');
   const [followerCount, setFollowerCount] = useState(mockUser.stats.followers);
+  const [listModalOpen, setListModalOpen] = useState(false);
+  const [listModalType, setListModalType] = useState<ListType>('followers');
   const isOwnProfile = !handle || handle === mockUser.handle;
+
+  const openListModal = (type: ListType) => {
+    setListModalType(type);
+    setListModalOpen(true);
+  };
 
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollY } = useScroll();
@@ -288,11 +312,23 @@ export default function Profile() {
               >
                 <CardStatItem count={mockUser.stats.posts} label="Posts" />
                 <div className="w-px h-8 bg-border" />
-                <CardStatItem count={followerCount} label="Followers" />
+                <CardStatItem 
+                  count={followerCount} 
+                  label="Followers" 
+                  onClick={() => openListModal('followers')}
+                />
                 <div className="w-px h-8 bg-border" />
-                <CardStatItem count={mockUser.stats.following} label="Following" />
+                <CardStatItem 
+                  count={mockUser.stats.following} 
+                  label="Following" 
+                  onClick={() => openListModal('following')}
+                />
                 <div className="w-px h-8 bg-border" />
-                <CardStatItem count={mockUser.stats.community || 0} label="Community" />
+                <CardStatItem 
+                  count={mockUser.stats.community || 0} 
+                  label="Community" 
+                  onClick={() => openListModal('community')}
+                />
               </motion.div>
             </div>
           </div>
@@ -394,6 +430,15 @@ export default function Profile() {
           </AnimatePresence>
         </div>
       </div>
+
+      {/* User List Modal */}
+      <UserListModal
+        isOpen={listModalOpen}
+        onClose={() => setListModalOpen(false)}
+        type={listModalType}
+        userId={mockUser.id}
+        userName={mockUser.name}
+      />
     </AppLayout>
   );
 }
