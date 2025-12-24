@@ -335,9 +335,9 @@ export function DiscoverRow() {
                         animate={isPending ? {
                           scale: [1, 1.05, 1],
                           transition: {
-                            duration: 0.4,
+                            duration: 0.8,
                             repeat: Infinity,
-                            repeatDelay: 0.1,
+                            repeatDelay: 0.2,
                             ease: "easeInOut"
                           }
                         } : {}}
