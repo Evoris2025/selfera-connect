@@ -28,6 +28,29 @@ function formatCount(count: number): string {
   return count.toString();
 }
 
+// Generate consistent random aspect ratio from post ID
+function getMasonryAspect(postId: string): string {
+  // Simple hash from post ID for consistent randomization
+  let hash = 0;
+  for (let i = 0; i < postId.length; i++) {
+    hash = ((hash << 5) - hash) + postId.charCodeAt(i);
+    hash = hash & hash;
+  }
+  
+  const aspects = [
+    'aspect-square',      // 1:1
+    'aspect-[3/4]',       // Portrait
+    'aspect-[4/5]',       // Tall portrait
+    'aspect-[5/6]',       // Taller
+    'aspect-[2/3]',       // Classic portrait
+    'aspect-[4/3]',       // Landscape
+    'aspect-square',      // 1:1 (weighted)
+    'aspect-[3/4]',       // Portrait (weighted)
+  ];
+  
+  return aspects[Math.abs(hash) % aspects.length];
+}
+
 export const RearrangeableGrid = memo(function RearrangeableGrid({ 
   posts, 
   isOwnProfile,
@@ -196,21 +219,8 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
             // Featured layout: first post spans 2x2
             const isFeaturedFirst = layoutStyle === 'featured' && index === 0;
             
-            // Masonry aspect ratio pattern for visual variety
-            const masonryPatterns = [
-              'aspect-square',           // 1:1
-              'aspect-[3/4]',            // Portrait
-              'aspect-square',           // 1:1
-              'aspect-[4/5]',            // Tall portrait
-              'aspect-[3/4]',            // Portrait
-              'aspect-square',           // 1:1
-              'aspect-[5/4]',            // Slightly wide
-              'aspect-[3/4]',            // Portrait
-              'aspect-square',           // 1:1
-            ];
-            const masonryAspect = layoutStyle === 'masonry' 
-              ? masonryPatterns[index % masonryPatterns.length] 
-              : 'aspect-square';
+            // Get consistent random aspect ratio from post ID for masonry
+            const masonryAspect = getMasonryAspect(post.id);
             
             return (
               <motion.div 
