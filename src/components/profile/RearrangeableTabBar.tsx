@@ -99,10 +99,11 @@ const DraggableTab = memo(function DraggableTab({
       }}
       transition={{ type: 'spring', stiffness: 400, damping: 30 }}
       className={cn(
-        'flex-1 h-full flex items-center justify-center relative',
+        'flex-1 h-full flex items-center justify-center relative transition-colors duration-200',
         isRearrangeMode && 'cursor-grab active:cursor-grabbing animate-jiggle',
         isDragging && 'z-50',
-        isActive && !isRearrangeMode && 'border-b-2 border-foreground'
+        isActive && !isRearrangeMode && 'text-foreground',
+        !isActive && !isRearrangeMode && 'text-muted-foreground hover:text-foreground/70'
       )}
       onClick={handleClick}
       draggable={isRearrangeMode}
@@ -125,7 +126,17 @@ const DraggableTab = memo(function DraggableTab({
           {Icon && <Icon className="h-4 w-4" />}
         </div>
       ) : (
-        Icon && <Icon className="h-5 w-5" />
+        <>
+          {Icon && <Icon className="h-5 w-5" />}
+          {/* Active Indicator - Subtle Line */}
+          {isActive && (
+            <motion.div
+              layoutId="activeTabIndicator"
+              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[2px] bg-foreground rounded-full"
+              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            />
+          )}
+        </>
       )}
     </motion.button>
   );
@@ -194,7 +205,7 @@ export const RearrangeableTabBar = memo(function RearrangeableTabBar({
 
   if (loading) {
     return (
-      <div className="w-full h-12 border-y border-border flex items-center justify-center">
+      <div className="w-full h-11 border-t border-border/30 flex items-center justify-center">
         <div className="flex gap-8">
           {[1, 2, 3, 4, 5].map(i => (
             <div key={i} className="w-5 h-5 bg-muted rounded animate-pulse" />
@@ -211,32 +222,34 @@ export const RearrangeableTabBar = memo(function RearrangeableTabBar({
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-border px-4 py-2 flex items-center justify-between"
+          className="sticky top-0 z-20 glass-heavy px-4 py-2 flex items-center justify-between"
         >
           <Button
             variant="ghost"
             size="sm"
             onClick={() => exitRearrangeMode(false)}
             disabled={saving}
+            className="rounded-xl text-muted-foreground"
           >
             Cancel
           </Button>
-          <span className="text-sm font-medium">Rearrange Tabs</span>
+          <span className="text-sm font-medium text-foreground">Rearrange Tabs</span>
           <Button
             variant="default"
             size="sm"
             onClick={() => exitRearrangeMode(true)}
             disabled={saving}
+            className="rounded-xl"
           >
             {saving ? 'Saving...' : 'Done'}
           </Button>
         </motion.div>
       )}
 
-      {/* Tab bar */}
+      {/* Minimal Tab Bar */}
       <div className={cn(
-        'w-full h-12 border-y border-border flex',
-        isRearrangeMode && 'bg-muted/30'
+        'w-full h-11 border-t border-border/30 flex bg-background',
+        isRearrangeMode && 'bg-muted/20'
       )}>
         {orderedTabs.map((tab, index) => (
           <DraggableTab
@@ -256,9 +269,9 @@ export const RearrangeableTabBar = memo(function RearrangeableTabBar({
         ))}
       </div>
 
-      {/* Hint text */}
+      {/* Hint text - More subtle */}
       {isOwnProfile && !isRearrangeMode && (
-        <p className="text-xs text-center text-muted-foreground py-1">
+        <p className="text-[11px] text-center text-muted-foreground/60 py-1.5">
           Triple-tap any tab to rearrange
         </p>
       )}
