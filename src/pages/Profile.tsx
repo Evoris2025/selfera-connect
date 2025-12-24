@@ -139,7 +139,7 @@ export default function Profile() {
             
             {/* Cover Image Banner */}
             <motion.div
-              className="relative h-40 sm:h-48 overflow-hidden"
+              className="relative h-56 sm:h-64 overflow-hidden"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.4 }}
@@ -151,7 +151,7 @@ export default function Profile() {
                 style={{ scale: avatarScale }}
               />
               {/* Subtle gradient overlay at bottom for avatar blending */}
-              <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-card to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-card to-transparent" />
               
               {/* Top Right Menu Button */}
               {isOwnProfile && (
