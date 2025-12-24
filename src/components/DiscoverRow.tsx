@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 import { FollowButton } from '@/components/interactions';
 import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import { motion, useAnimationControls } from 'framer-motion';
 import {
   Collapsible,
   CollapsibleContent,
@@ -32,9 +31,6 @@ interface SuggestedProfile {
   isFollowing: boolean;
 }
 
-const CARD_WIDTH = 168; // w-40 (160px) + gap (8px approximate)
-const SCROLL_SPEED = 40; // seconds for full loop
-
 export function DiscoverRow() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -42,44 +38,10 @@ export function DiscoverRow() {
   const [loading, setLoading] = useState(true);
   const [followingIds, setFollowingIds] = useState<Set<string>>(new Set());
   const [isOpen, setIsOpen] = useState(true);
-  const [isPaused, setIsPaused] = useState(false);
-  const controls = useAnimationControls();
-  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchProfiles();
   }, [user]);
-
-  // Start marquee animation when profiles are loaded
-  useEffect(() => {
-    if (profiles.length > 0 && isOpen) {
-      startMarquee();
-    }
-  }, [profiles, isOpen]);
-
-  // Handle pause/resume
-  useEffect(() => {
-    if (isPaused) {
-      controls.stop();
-    } else if (profiles.length > 0 && isOpen) {
-      startMarquee();
-    }
-  }, [isPaused]);
-
-  const startMarquee = () => {
-    const totalWidth = profiles.length * CARD_WIDTH;
-    controls.start({
-      x: -totalWidth,
-      transition: {
-        x: {
-          repeat: Infinity,
-          repeatType: "loop",
-          duration: SCROLL_SPEED,
-          ease: "linear",
-        },
-      },
-    });
-  };
 
   const fetchProfiles = async () => {
     try {
@@ -186,12 +148,9 @@ export function DiscoverRow() {
     }
   };
 
-  // Duplicate profiles for seamless loop
-  const duplicatedProfiles = [...profiles, ...profiles];
-
-  const renderProfileCard = (profile: SuggestedProfile, index: number) => (
+  const renderProfileCard = (profile: SuggestedProfile) => (
     <div
-      key={`${profile.id}-${index}`}
+      key={profile.id}
       className="flex-shrink-0"
     >
       <GlassCard
@@ -272,23 +231,12 @@ export function DiscoverRow() {
         </button>
       </div>
 
-      {/* Collapsible Content - Marquee */}
-      <CollapsibleContent className="overflow-hidden">
-        <div 
-          ref={containerRef}
-          className="overflow-hidden"
-          onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
-          onTouchStart={() => setIsPaused(true)}
-          onTouchEnd={() => setIsPaused(false)}
-        >
-          <motion.div
-            className="flex gap-3 px-5"
-            animate={controls}
-            initial={{ x: 0 }}
-          >
-            {duplicatedProfiles.map((profile, index) => renderProfileCard(profile, index))}
-          </motion.div>
+      {/* Collapsible Content - Manual Scroll */}
+      <CollapsibleContent>
+        <div className="overflow-x-auto scrollbar-hide">
+          <div className="flex gap-3 px-5">
+            {profiles.map(profile => renderProfileCard(profile))}
+          </div>
         </div>
       </CollapsibleContent>
     </Collapsible>
