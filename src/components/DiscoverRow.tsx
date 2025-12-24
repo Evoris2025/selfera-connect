@@ -337,7 +337,7 @@ export function DiscoverRow() {
                         disabled={isPending}
                         className={`w-full h-8 text-xs font-semibold rounded-lg transition-all duration-300 overflow-hidden ${
                           isPending 
-                            ? 'bg-green-500 hover:bg-green-500 text-white' 
+                            ? 'bg-blue-500 hover:bg-blue-500 text-white' 
                             : 'bg-gradient-to-r from-primary via-pink-500 to-orange-400 hover:opacity-90 text-white'
                         }`}
                       >
@@ -345,17 +345,26 @@ export function DiscoverRow() {
                           {isPending ? (
                             <motion.div
                               key="check"
-                              initial={{ scale: 0, rotate: -180 }}
-                              animate={{ scale: 1, rotate: 0 }}
-                              exit={{ scale: 0 }}
+                              initial={{ scale: 0, opacity: 0 }}
+                              animate={{ 
+                                scale: [0, 1.3, 1],
+                                opacity: 1,
+                              }}
+                              exit={{ scale: 0, opacity: 0 }}
                               transition={{ 
-                                type: "spring",
-                                stiffness: 500,
-                                damping: 25
+                                duration: 0.4,
+                                ease: [0.34, 1.56, 0.64, 1],
+                                times: [0, 0.6, 1]
                               }}
                               className="flex items-center justify-center"
                             >
-                              <Check className="h-4 w-4" strokeWidth={3} />
+                              <motion.div
+                                initial={{ pathLength: 0 }}
+                                animate={{ pathLength: 1 }}
+                                transition={{ duration: 0.3, delay: 0.1 }}
+                              >
+                                <Check className="h-4 w-4" strokeWidth={3} />
+                              </motion.div>
                             </motion.div>
                           ) : (
                             <motion.span
