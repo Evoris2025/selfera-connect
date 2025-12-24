@@ -64,12 +64,12 @@ function formatCount(count: number): string {
   return count.toString();
 }
 
-// Stat item for the hero section
-function HeroStatItem({ count, label }: { count: number; label: string }) {
+// Stat item for the card profile
+function CardStatItem({ count, label }: { count: number; label: string }) {
   return (
-    <div className="text-center">
-      <p className="text-lg sm:text-xl font-bold text-white">{formatCount(count)}</p>
-      <p className="text-[10px] uppercase tracking-wider text-white/60">{label}</p>
+    <div className="text-center flex-1">
+      <p className="text-xl sm:text-2xl font-bold text-foreground">{formatCount(count)}</p>
+      <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
     </div>
   );
 }
@@ -126,224 +126,191 @@ export default function Profile() {
     <AppLayout showHeader={false} onCreatePost={handleCreatePost}>
       <div className="flex flex-col min-h-screen relative">
         
-        {/* ========== SPOTIFY-STYLE HERO SECTION ========== */}
+        {/* ========== CLEAN CARD-STYLE PROFILE HERO ========== */}
         <motion.section
           ref={heroRef}
-          className="relative w-full h-[52vh] sm:h-[50vh] min-h-[400px] max-h-[550px] overflow-hidden"
+          className="relative w-full bg-background"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.35, ease: 'easeOut' }}
+          transition={{ duration: 0.3, ease: 'easeOut' }}
         >
-          {/* Background Image with Blur */}
-          <div className="absolute inset-0">
-            <motion.img
-              src={mockUser.coverImage}
-              alt=""
-              className="w-full h-full object-cover scale-110 blur-sm"
-              initial={{ scale: 1.15, opacity: 0 }}
-              animate={{ scale: 1.1, opacity: 1 }}
-              transition={{ duration: 0.8, ease: 'easeOut' }}
-            />
-          </div>
-
-          {/* Layered Gradient Overlays for Spotify-like depth */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/70 to-background" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/40" />
-          
-          {/* Subtle accent color wash */}
-          <div
-            className="absolute inset-0 opacity-25 pointer-events-none"
-            style={{
-              background: 'radial-gradient(ellipse 90% 60% at 20% 60%, hsl(var(--primary) / 0.2), transparent 60%)',
-            }}
-          />
-
-          {/* Top Actions Bar */}
-          <motion.div
-            className="absolute top-0 left-0 right-0 z-20 flex justify-between items-center px-4 pt-12 sm:pt-6"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15, duration: 0.3 }}
-          >
-            <div className="w-10" />
-            {isOwnProfile && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-10 w-10 rounded-full bg-black/30 backdrop-blur-md border border-white/10 text-white/80 hover:text-white hover:bg-black/40 transition-all duration-200 active:scale-95"
-                  >
-                    <MoreVertical className="h-5 w-5" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48 glass-heavy border-border/30">
-                  <DropdownMenuItem className="gap-3 cursor-pointer">
-                    <Pencil className="h-4 w-4" />
-                    Edit profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="gap-3 cursor-pointer">
-                    <Share2 className="h-4 w-4" />
-                    Share profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="gap-3 cursor-pointer" onClick={() => navigate('/settings')}>
-                    <Settings className="h-4 w-4" />
-                    Settings
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-          </motion.div>
-
-          {/* Split Layout Container: 50/50 on desktop, stacked on mobile */}
-          <div className="absolute inset-0 flex flex-col sm:flex-row items-center sm:items-center justify-end sm:justify-center px-5 sm:px-8 lg:px-16 pb-8 sm:pb-0 pt-20 sm:pt-0">
+          {/* Card Container */}
+          <div className="max-w-lg mx-auto bg-card rounded-b-3xl shadow-xl overflow-hidden border-x border-b border-border/50">
             
-            {/* Left Column - Avatar Dominance (50% on desktop) */}
+            {/* Cover Image Banner */}
             <motion.div
-              className="w-full sm:w-1/2 flex items-center justify-center sm:justify-end sm:pr-6 lg:pr-10 mb-5 sm:mb-0"
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1, duration: 0.4, ease: 'easeOut' }}
+              className="relative h-40 sm:h-48 overflow-hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4 }}
             >
+              <motion.img
+                src={mockUser.coverImage}
+                alt=""
+                className="w-full h-full object-cover"
+                style={{ scale: avatarScale }}
+              />
+              {/* Subtle gradient overlay at bottom for avatar blending */}
+              <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-card to-transparent" />
+              
+              {/* Top Right Menu Button */}
+              {isOwnProfile && (
+                <motion.div
+                  className="absolute top-3 right-3 z-10"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-9 w-9 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/50 transition-all duration-200 active:scale-95"
+                      >
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-44">
+                      <DropdownMenuItem className="gap-2 cursor-pointer">
+                        <Share2 className="h-4 w-4" />
+                        Share profile
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate('/settings')}>
+                        <Settings className="h-4 w-4" />
+                        Settings
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </motion.div>
+              )}
+            </motion.div>
+
+            {/* Avatar - Overlapping the cover */}
+            <div className="relative flex justify-center -mt-16 sm:-mt-20">
               <motion.div
                 className="relative"
-                style={{ scale: avatarScale, y: avatarY }}
+                style={{ y: avatarY }}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.15, duration: 0.35, ease: 'easeOut' }}
               >
-                {/* Soft glow behind avatar */}
-                <div
-                  className="absolute -inset-6 rounded-2xl blur-3xl opacity-40 pointer-events-none"
-                  style={{
-                    background: 'radial-gradient(circle, rgba(255,255,255,0.15), transparent 70%)',
-                  }}
-                />
-
-                {/* Main Avatar - Large rounded square (Spotify artist style) */}
-                <div className="relative w-36 h-36 sm:w-48 sm:h-48 lg:w-56 lg:h-56 rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10">
-                  <img
-                    src={mockUser.avatar}
-                    alt={mockUser.name}
-                    className="w-full h-full object-cover"
-                  />
-                  {/* Inner vignette for premium feel */}
-                  <div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                      background: 'radial-gradient(circle at center, transparent 50%, rgba(0,0,0,0.25) 100%)',
-                    }}
-                  />
-                  {/* Subtle edge blend gradient */}
-                  <div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                      background: 'linear-gradient(135deg, transparent 60%, rgba(0,0,0,0.4) 100%)',
-                    }}
-                  />
+                {/* Avatar Ring */}
+                <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full p-1 bg-gradient-to-br from-primary via-primary/80 to-primary/60 shadow-lg">
+                  <div className="w-full h-full rounded-full overflow-hidden border-4 border-card">
+                    <img
+                      src={mockUser.avatar}
+                      alt={mockUser.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                 </div>
               </motion.div>
-            </motion.div>
+            </div>
 
-            {/* Right Column - Professional Typography (50% on desktop) */}
-            <motion.div
-              className="w-full sm:w-1/2 flex flex-col items-center sm:items-start sm:pl-4 lg:pl-8"
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.15, duration: 0.4, ease: 'easeOut' }}
-            >
-              {/* Glassmorphism Container */}
-              <div className="backdrop-blur-xl bg-white/5 rounded-2xl p-5 sm:p-6 border border-white/10 max-w-sm w-full shadow-2xl">
-                
-                {/* Name + Verified + Private Lock */}
-                <motion.div
-                  className="flex items-center gap-2 flex-wrap mb-1"
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2, duration: 0.35 }}
-                >
-                  <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-                    {mockUser.name}
-                  </h1>
-                  {mockUser.isVerified && <VerifiedBadge size="md" />}
-                  {mockUser.isPrivate && <Lock className="h-4 w-4 text-white/50" />}
-                </motion.div>
+            {/* Profile Info - Centered */}
+            <div className="px-6 pt-3 pb-5 text-center">
+              
+              {/* Name + Verified Badge */}
+              <motion.div
+                className="flex items-center justify-center gap-2 mb-1"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.3 }}
+              >
+                <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">
+                  {mockUser.name}
+                </h1>
+                {mockUser.isVerified && <VerifiedBadge size="md" />}
+                {mockUser.isPrivate && <Lock className="h-4 w-4 text-muted-foreground" />}
+              </motion.div>
 
-                {/* Handle + Location Line */}
-                <motion.div
-                  className="flex items-center gap-2 text-white/50 text-sm mb-3"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.25 }}
-                >
-                  <span>@{mockUser.handle}</span>
-                  {mockUser.location && (
-                    <>
-                      <span className="w-1 h-1 rounded-full bg-white/30" />
-                      <span className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3" />
-                        {mockUser.location}
-                      </span>
-                    </>
-                  )}
-                </motion.div>
+              {/* Handle */}
+              <motion.p
+                className="text-sm text-muted-foreground mb-3"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.25 }}
+              >
+                @{mockUser.handle}
+                {mockUser.location && (
+                  <span className="inline-flex items-center gap-1 ml-2">
+                    <span className="w-1 h-1 rounded-full bg-muted-foreground/50" />
+                    <MapPin className="w-3 h-3" />
+                    {mockUser.location}
+                  </span>
+                )}
+              </motion.p>
 
-                {/* Bio with Inline Hashtags */}
-                <motion.p
-                  className="text-white/75 text-sm sm:text-base leading-relaxed mb-4 line-clamp-2"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  {renderBioWithHashtags(mockUser.bio)}
-                </motion.p>
+              {/* Bio with Inline Hashtags */}
+              <motion.p
+                className="text-sm text-foreground/80 leading-relaxed mb-5 max-w-xs mx-auto"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+              >
+                {renderBioWithHashtags(mockUser.bio)}
+              </motion.p>
 
-                {/* Stats Row */}
-                <motion.div
-                  className="flex items-center justify-start gap-5 sm:gap-6 mb-5"
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.35 }}
-                >
-                  <HeroStatItem count={mockUser.stats.posts} label="Posts" />
-                  <HeroStatItem count={followerCount} label="Followers" />
-                  <HeroStatItem count={mockUser.stats.following} label="Following" />
-                </motion.div>
-
-                {/* CTA Buttons */}
-                <motion.div
-                  className="flex items-center gap-3"
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  {isOwnProfile ? (
+              {/* CTA Buttons */}
+              <motion.div
+                className="flex items-center justify-center gap-3 mb-5"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.35 }}
+              >
+                {isOwnProfile ? (
+                  <>
                     <Button
                       variant="outline"
-                      className="flex-1 border-white/20 bg-white/5 hover:bg-white/10 text-white rounded-full h-10 font-semibold transition-all duration-200 active:scale-[0.97]"
+                      className="px-6 h-9 rounded-full font-semibold text-sm uppercase tracking-wide border-border hover:bg-accent transition-all duration-200 active:scale-[0.97]"
                       onClick={() => navigate('/settings')}
                     >
-                      <Pencil className="w-4 h-4 mr-2" />
                       Edit Profile
                     </Button>
-                  ) : (
-                    <>
-                      <FollowButton
-                        isFollowing={isFollowing}
-                        onToggle={handleFollow}
-                        size="md"
-                        className="flex-1 rounded-full h-10 font-semibold transition-all duration-200 active:scale-[0.97] hover:shadow-lg hover:shadow-primary/25"
-                        variant="gradient"
-                      />
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-10 w-10 border-white/20 bg-white/5 hover:bg-white/10 text-white rounded-full transition-all duration-200 active:scale-[0.97]"
-                      >
-                        <MessageCircle className="w-4 h-4" />
-                      </Button>
-                    </>
-                  )}
-                </motion.div>
-              </div>
-            </motion.div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9 rounded-full border border-border hover:bg-accent transition-all duration-200 active:scale-95"
+                      onClick={() => navigate('/settings')}
+                    >
+                      <Settings className="w-4 h-4" />
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <FollowButton
+                      isFollowing={isFollowing}
+                      onToggle={handleFollow}
+                      size="md"
+                      className="px-8 h-9 rounded-full font-semibold text-sm uppercase tracking-wide transition-all duration-200 active:scale-[0.97]"
+                      variant="gradient"
+                    />
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-9 w-9 rounded-full border-border hover:bg-accent transition-all duration-200 active:scale-95"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                    </Button>
+                  </>
+                )}
+              </motion.div>
+
+              {/* Stats Row */}
+              <motion.div
+                className="flex items-center justify-center border-t border-border pt-4"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <CardStatItem count={mockUser.stats.posts} label="Posts" />
+                <div className="w-px h-8 bg-border" />
+                <CardStatItem count={followerCount} label="Followers" />
+                <div className="w-px h-8 bg-border" />
+                <CardStatItem count={mockUser.stats.following} label="Following" />
+              </motion.div>
+            </div>
           </div>
         </motion.section>
 
