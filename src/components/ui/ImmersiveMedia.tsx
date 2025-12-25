@@ -13,6 +13,7 @@ export interface ImmersiveMediaProps {
   className?: string;
   children?: ReactNode;
   onDoubleTap?: () => void;
+  onClick?: () => void;
   showHeartOnDoubleTap?: boolean;
 }
 
@@ -41,6 +42,7 @@ const ImmersiveMedia = forwardRef<HTMLDivElement, ImmersiveMediaProps>(
     className, 
     children,
     onDoubleTap,
+    onClick,
     showHeartOnDoubleTap = true,
   }, ref) => {
     const [showHeart, setShowHeart] = useState(false);
@@ -58,6 +60,9 @@ const ImmersiveMedia = forwardRef<HTMLDivElement, ImmersiveMediaProps>(
         if (navigator.vibrate) {
           navigator.vibrate([10, 50, 10]);
         }
+      } else {
+        // Single tap - call onClick
+        onClick?.();
       }
       setLastTap(now);
     };

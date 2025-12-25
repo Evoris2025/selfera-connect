@@ -7,9 +7,31 @@ import { ExpressionsRow } from '@/components/ExpressionsRow';
 import { PostCard } from '@/components/PostCard';
 import { PostCardSkeleton } from '@/components/SkeletonLoader';
 import { CreatorStudio } from '@/components/creator';
+import { PostViewerModal } from '@/components/feed/PostViewerModal';
+
+interface MockPost {
+  id: string;
+  authorId: string;
+  author: {
+    name: string;
+    handle: string;
+    avatar: string;
+    isVerified?: boolean;
+  };
+  content: string;
+  media?: {
+    type: 'image' | 'video';
+    url: string;
+    thumbnail?: string;
+  };
+  tags: string[];
+  commentCount: number;
+  createdAt: string;
+  likes: number;
+}
 
 // Mock data with rich media
-const mockPosts = [
+const mockPosts: MockPost[] = [
   {
     id: '1',
     authorId: 'author-1-uuid',
@@ -21,7 +43,7 @@ const mockPosts = [
     },
     content: 'Remember: taking a break is not giving up. Your mental health matters more than any deadline.',
     media: {
-      type: 'image' as const,
+      type: 'image',
       url: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&h=1000&fit=crop',
     },
     tags: ['selfcare', 'mindfulness', 'wellness'],
@@ -54,7 +76,7 @@ const mockPosts = [
     },
     content: "Today marks 1 year since I started my recovery journey. It hasn't been easy, but I'm grateful for this community. 💙",
     media: {
-      type: 'image' as const,
+      type: 'image',
       url: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=800&h=1000&fit=crop',
     },
     tags: ['recovery', 'mentalhealth', 'milestone'],
@@ -73,7 +95,7 @@ const mockPosts = [
     },
     content: "Morning meditation complete ✨ 10 minutes of stillness can change your entire day.",
     media: {
-      type: 'image' as const,
+      type: 'image',
       url: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=800&h=1000&fit=crop',
     },
     tags: ['meditation', 'mindfulness', 'morningroutine'],
@@ -109,6 +131,10 @@ export default function Feed() {
   const [loading, setLoading] = useState(false);
   const [creatorOpen, setCreatorOpen] = useState(false);
   const [creatorMode, setCreatorMode] = useState<CreatorMode>(null);
+  
+  // Modal state
+  const [selectedPost, setSelectedPost] = useState<MockPost | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleOpenComposer = (mode?: 'text' | 'video' | 'image' | 'reel') => {
     const modeMap: Record<string, CreatorMode> = {
@@ -124,6 +150,27 @@ export default function Feed() {
   const handleCreatePost = () => {
     setCreatorMode(null);
     setCreatorOpen(true);
+  };
+
+  const handlePostClick = (post: MockPost) => {
+    setSelectedPost(post);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedPost(null);
+  };
+
+  const handleNavigateProfile = (authorId: string) => {
+    setIsModalOpen(false);
+    navigate(`/profile/${authorId}`);
+  };
+
+  const getContentType = (post: MockPost) => {
+    if (!post.media) return 'text' as const;
+    if (post.media.type === 'video') return 'video' as const;
+    return 'image' as const;
   };
 
   return (
@@ -162,13 +209,27 @@ export default function Feed() {
                   exit={{ opacity: 0, scale: 0.95 }}
                   className={post.media ? '' : 'px-0'}
                 >
-                  <PostCard {...post} />
+                  <PostCard 
+                    {...post} 
+                    onPostClick={() => handlePostClick(post)}
+                  />
                 </motion.div>
               ))
             )}
           </AnimatePresence>
         </motion.div>
       </div>
+
+      {/* Post Viewer Modal */}
+      {selectedPost && (
+        <PostViewerModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          post={selectedPost}
+          contentType={getContentType(selectedPost)}
+          onNavigateProfile={handleNavigateProfile}
+        />
+      )}
 
       <CreatorStudio
         open={creatorOpen}

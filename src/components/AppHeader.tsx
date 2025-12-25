@@ -1,8 +1,6 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Settings, LogOut } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,8 +9,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
 import { BrandMark } from '@/components/BrandMark';
+import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
+import { motion } from 'framer-motion';
 
 interface AppHeaderProps {
   title?: string;
@@ -28,63 +27,70 @@ export function AppHeader({ title }: AppHeaderProps) {
     navigate('/');
   };
 
-  const userInitial = user?.email?.charAt(0).toUpperCase() || 'U';
+  const displayName = user?.email?.split('@')[0] || 'User';
+  const userInitial = displayName.charAt(0).toUpperCase();
+  const profilePhotoUrl = user?.user_metadata?.avatar_url || '';
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+    <header className="sticky top-0 z-40 border-b border-border/50 bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80">
       <div className="flex items-center justify-between h-14 px-4 max-w-lg mx-auto">
-        {/* Logo */}
-        <Link to="/feed" className="flex items-center">
-          {title ? (
-            <>
-              <BrandMark />
-              <span className="font-logo font-semibold text-foreground tracking-widest ml-2">
-                {title}
-              </span>
-            </>
-          ) : (
+        {/* Logo + Title */}
+        <Link to="/feed" className="flex items-center gap-3">
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <BrandMark />
+          </motion.div>
+          {title && (
+            <motion.span
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="font-semibold text-foreground text-lg tracking-tight"
+            >
+              {title}
+            </motion.span>
           )}
         </Link>
 
-        {/* Right Actions */}
-        <div className="flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src="" alt="User" />
-                  <AvatarFallback className="bg-primary text-primary-foreground text-sm">
-                    {userInitial}
-                  </AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem asChild>
-                <Link to="/profile">{t('nav.profile')}</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/directory">{t('nav.directory')}</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/crisis">{t('nav.crisisSupport')}</Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link to="/settings" className="flex items-center gap-2">
-                  <Settings className="h-4 w-4" />
-                  {t('nav.settings')}
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
-                <LogOut className="h-4 w-4 mr-2" />
-                {t('auth.logout')}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        {/* Right: Avatar Menu */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="rounded-full focus:outline-none focus:ring-2 focus:ring-primary/50"
+            >
+              <CinematicAvatar
+                src={profilePhotoUrl}
+                alt={displayName}
+                fallback={userInitial}
+                size="sm"
+                ring="primary"
+              />
+            </motion.button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56 glass-card">
+            <DropdownMenuItem asChild>
+              <Link to="/profile">{t('nav.profile')}</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/directory">{t('nav.directory')}</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/crisis">{t('nav.crisisSupport')}</Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link to="/settings" className="flex items-center gap-2">
+                <Settings className="h-4 w-4" />
+                {t('nav.settings')}
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
+              <LogOut className="h-4 w-4 mr-2" />
+              {t('auth.logout')}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );
