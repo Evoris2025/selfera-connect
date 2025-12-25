@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useCrossroadScroll, ContentType } from '@/hooks/useCrossroadScroll';
 import { HorizontalLane } from './HorizontalLane';
 import { PostCard } from '@/components/PostCard';
@@ -31,39 +31,17 @@ export interface FeedPost {
 interface CrossroadFeedProps {
   posts: FeedPost[];
   loading?: boolean;
+  refreshing?: boolean;
   loadingMore?: boolean;
   hasMore?: boolean;
   onPostClick: (post: FeedPost) => void;
   onLoadMore?: () => void;
 }
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.08,
-      delayChildren: 0.05,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
-    y: 0,
-    transition: {
-      type: 'spring' as const,
-      stiffness: 300,
-      damping: 30,
-    },
-  },
-};
-
 export function CrossroadFeed({ 
   posts, 
   loading,
+  refreshing,
   loadingMore,
   hasMore,
   onPostClick,
@@ -72,12 +50,11 @@ export function CrossroadFeed({
   const [laneIndices, setLaneIndices] = useState<Record<string, number>>({});
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
+  const isLoadingMoreRef = useRef(false);
 
   const { 
     activeIndex, 
-    activeContentType, 
     registerPost,
-    getSameTypePosts,
     getLaneIndex,
   } = useCrossroadScroll({ 
     posts: posts.map(p => ({ id: p.id, contentType: p.contentType })),
@@ -94,18 +71,34 @@ export function CrossroadFeed({
     return laneIndices[postId] ?? getLaneIndex(postId, type);
   }, [laneIndices, getLaneIndex]);
 
-  // Infinite scroll observer
+  // Group posts by type for horizontal lanes
+  const getHorizontalLanePosts = useCallback((currentPost: FeedPost) => {
+    return posts.filter(p => p.contentType === currentPost.contentType);
+  }, [posts]);
+
+  // Infinite scroll observer with guards
   useEffect(() => {
     if (!onLoadMore) return;
 
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          onLoadMore();
-        }
-      },
-      { threshold: 0.1 }
-    );
+    const handleIntersect = (entries: IntersectionObserverEntry[]) => {
+      const [entry] = entries;
+      
+      // Guard: only trigger if intersecting and not already loading
+      if (entry.isIntersecting && !isLoadingMoreRef.current && !loadingMore && hasMore) {
+        isLoadingMoreRef.current = true;
+        onLoadMore();
+        
+        // Reset after a small delay to allow state to update
+        setTimeout(() => {
+          isLoadingMoreRef.current = false;
+        }, 500);
+      }
+    };
+
+    observerRef.current = new IntersectionObserver(handleIntersect, { 
+      threshold: 0.1,
+      rootMargin: '100px',
+    });
 
     if (loadMoreRef.current) {
       observerRef.current.observe(loadMoreRef.current);
@@ -114,14 +107,17 @@ export function CrossroadFeed({
     return () => {
       observerRef.current?.disconnect();
     };
-  }, [onLoadMore]);
+  }, [onLoadMore, loadingMore, hasMore]);
 
-  // Group posts by type for horizontal lanes
-  const getHorizontalLanePosts = useCallback((currentPost: FeedPost) => {
-    return posts.filter(p => p.contentType === currentPost.contentType);
-  }, [posts]);
+  // Reset loading ref when loadingMore changes
+  useEffect(() => {
+    if (!loadingMore) {
+      isLoadingMoreRef.current = false;
+    }
+  }, [loadingMore]);
 
-  if (loading) {
+  // Show skeletons only on initial load (not refresh)
+  if (loading && posts.length === 0) {
     return (
       <div className="space-y-4 px-4">
         <PostCardSkeleton />
@@ -131,7 +127,7 @@ export function CrossroadFeed({
     );
   }
 
-  if (posts.length === 0) {
+  if (posts.length === 0 && !loading) {
     return (
       <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
         <p className="text-lg font-medium text-foreground mb-2">No posts yet</p>
@@ -141,67 +137,61 @@ export function CrossroadFeed({
   }
 
   return (
-    <motion.div 
-      className="flex flex-col"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
-      <AnimatePresence mode="popLayout">
-        {posts.map((post, index) => {
-          const sameTypePosts = getHorizontalLanePosts(post);
-          const isActiveCard = index === activeIndex;
-          const showHorizontalLane = sameTypePosts.length > 1;
+    <div className="flex flex-col">
+      {/* Refresh indicator overlay */}
+      {refreshing && (
+        <div className="flex items-center justify-center py-2">
+          <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
+      )}
+      
+      {posts.map((post, index) => {
+        const sameTypePosts = getHorizontalLanePosts(post);
+        const isActiveCard = index === activeIndex;
+        const showHorizontalLane = sameTypePosts.length > 1;
 
-          return (
-            <motion.div
-              key={post.id}
-              ref={(el) => registerPost(post.id, el)}
-              variants={itemVariants}
-              layout
-              exit={{ opacity: 0, scale: 0.95 }}
-              className={cn(
-                'relative',
-                post.media ? '' : 'px-0',
-                isActiveCard && 'z-10'
-              )}
-            >
-              {/* Horizontal lane for same-type content when active */}
-              {isActiveCard && showHorizontalLane ? (
-                <HorizontalLane
-                  items={sameTypePosts}
-                  activeIndex={getCurrentLaneIndex(post.id, post.contentType)}
-                  onIndexChange={(idx) => handleLaneIndexChange(post.id, idx)}
-                  renderItem={(lanePost) => (
-                    <PostCard
-                      key={lanePost.id}
-                      {...lanePost}
-                      onPostClick={() => onPostClick(lanePost)}
-                    />
-                  )}
-                />
-              ) : (
-                <PostCard
-                  {...post}
-                  onPostClick={() => onPostClick(post)}
-                />
-              )}
-            </motion.div>
-          );
-        })}
-      </AnimatePresence>
+        return (
+          <div
+            key={post.id}
+            ref={(el) => registerPost(post.id, el)}
+            className={cn(
+              'relative',
+              post.media ? '' : 'px-0',
+              isActiveCard && 'z-10'
+            )}
+          >
+            {/* Horizontal lane for same-type content when active */}
+            {isActiveCard && showHorizontalLane ? (
+              <HorizontalLane
+                items={sameTypePosts}
+                activeIndex={getCurrentLaneIndex(post.id, post.contentType)}
+                onIndexChange={(idx) => handleLaneIndexChange(post.id, idx)}
+                renderItem={(lanePost) => (
+                  <PostCard
+                    key={lanePost.id}
+                    {...lanePost}
+                    onPostClick={() => onPostClick(lanePost)}
+                  />
+                )}
+              />
+            ) : (
+              <PostCard
+                {...post}
+                onPostClick={() => onPostClick(post)}
+              />
+            )}
+          </div>
+        );
+      })}
 
       {/* Infinite scroll trigger */}
       {onLoadMore && hasMore && (
         <div ref={loadMoreRef} className="h-20 flex items-center justify-center">
           {loadingMore ? (
-            <motion.div
-              animate={{ opacity: [0.3, 0.6, 0.3] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-              className="text-sm text-muted-foreground"
-            >
-              Loading more...
-            </motion.div>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              <span>Loading more...</span>
+            </div>
           ) : (
             <div className="h-1" /> 
           )}
@@ -209,11 +199,11 @@ export function CrossroadFeed({
       )}
       
       {/* End of feed message */}
-      {!hasMore && posts.length > 0 && (
+      {!hasMore && posts.length > 0 && !loading && (
         <div className="py-8 text-center text-sm text-muted-foreground">
           You've reached the end
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }

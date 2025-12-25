@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { ChevronRight, ChevronDown, Check } from 'lucide-react';
 import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
 import { GlassCard } from '@/components/ui/GlassCard';
@@ -17,9 +17,9 @@ import { Button } from '@/components/ui/button';
 const VISIBLE_COUNT = 8;
 const FETCH_COUNT = 20;
 const HIDDEN_PROFILES_KEY = 'selfera_hidden_discover_profiles';
-const CHECKMARK_DELAY = 600; // ms to show checkmark before dismissing
+const CHECKMARK_DELAY = 600;
 
-// Fallback mock profiles when no real users exist - always have enough to show
+// Fallback mock profiles
 const mockProfiles: SuggestedProfile[] = [
   { id: 'mock-1', display_name: 'Sarah Chen', handle: 'sarahc', avatar_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop', bio: 'Mental health advocate', isFollowing: false },
   { id: 'mock-2', display_name: 'Mind Matters', handle: 'mindmatters', avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop', bio: 'Daily wellness tips', isFollowing: false },
@@ -44,7 +44,6 @@ interface SuggestedProfile {
   isFollowing: boolean;
 }
 
-// Load hidden profiles from localStorage
 const loadHiddenProfiles = (): Set<string> => {
   try {
     const stored = localStorage.getItem(HIDDEN_PROFILES_KEY);
@@ -54,7 +53,6 @@ const loadHiddenProfiles = (): Set<string> => {
   }
 };
 
-// Save hidden profiles to localStorage
 const saveHiddenProfiles = (ids: Set<string>) => {
   try {
     localStorage.setItem(HIDDEN_PROFILES_KEY, JSON.stringify([...ids]));
@@ -67,33 +65,45 @@ export function DiscoverRow() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [profiles, setProfiles] = useState<SuggestedProfile[]>([]);
-  const [reserveProfiles, setReserveProfiles] = useState<SuggestedProfile[]>([]);
   const [hiddenProfiles, setHiddenProfiles] = useState<Set<string>>(loadHiddenProfiles);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [offset, setOffset] = useState(0);
   const [followingIds, setFollowingIds] = useState<Set<string>>(new Set());
   const [isOpen, setIsOpen] = useState(true);
   const [pendingFollows, setPendingFollows] = useState<Set<string>>(new Set());
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetchProfiles();
+    fetchProfiles(true);
   }, [user]);
 
-  const fetchProfiles = async () => {
+  const fetchProfiles = async (isInitial = false) => {
+    if (loadingMore && !isInitial) return;
+    
     try {
-      const hidden = loadHiddenProfiles();
+      if (isInitial) {
+        setLoading(true);
+        setOffset(0);
+      } else {
+        setLoadingMore(true);
+      }
       
-      // Fetch more profiles than we display
+      const hidden = loadHiddenProfiles();
+      const currentOffset = isInitial ? 0 : offset;
+      
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
         .select('id, display_name, handle, avatar_url, bio')
         .neq('id', user?.id || '')
-        .limit(FETCH_COUNT);
+        .range(currentOffset, currentOffset + FETCH_COUNT - 1);
 
       if (profilesError) throw profilesError;
 
       // Fetch current user's follows
-      let followingSet = new Set<string>();
-      if (user) {
+      let followingSet = followingIds;
+      if (user && isInitial) {
         const { data: followsData, error: followsError } = await supabase
           .from('follows')
           .select('following_id')
@@ -102,92 +112,96 @@ export function DiscoverRow() {
 
         if (!followsError && followsData) {
           followingSet = new Set(followsData.map(f => f.following_id));
+          setFollowingIds(followingSet);
         }
       }
-
-      setFollowingIds(followingSet);
       
       // Filter out hidden and already-followed profiles
-      const availableProfiles = (profilesData || [])
+      const newProfiles = (profilesData || [])
         .filter(p => !hidden.has(p.id) && !followingSet.has(p.id))
         .map(p => ({
           ...p,
           isFollowing: false,
         }));
       
-      // Split into visible and reserve
-      if (availableProfiles.length > 0) {
-        setProfiles(availableProfiles.slice(0, VISIBLE_COUNT));
-        setReserveProfiles(availableProfiles.slice(VISIBLE_COUNT));
+      if (newProfiles.length < FETCH_COUNT) {
+        setHasMore(false);
+      }
+
+      if (isInitial) {
+        if (newProfiles.length > 0) {
+          setProfiles(newProfiles.slice(0, VISIBLE_COUNT));
+          setOffset(VISIBLE_COUNT);
+        } else {
+          // Use mock profiles as fallback
+          let availableMocks = mockProfiles.filter(p => !hidden.has(p.id));
+          if (availableMocks.length === 0) {
+            localStorage.removeItem(HIDDEN_PROFILES_KEY);
+            setHiddenProfiles(new Set());
+            availableMocks = [...mockProfiles];
+          }
+          setProfiles(availableMocks.slice(0, VISIBLE_COUNT));
+          setHasMore(availableMocks.length > VISIBLE_COUNT);
+        }
       } else {
-        // Use mock profiles as fallback, also filtered
+        setProfiles(prev => {
+          const existingIds = new Set(prev.map(p => p.id));
+          const uniqueNew = newProfiles.filter(p => !existingIds.has(p.id));
+          return [...prev, ...uniqueNew];
+        });
+        setOffset(prev => prev + newProfiles.length);
+      }
+    } catch (error) {
+      console.error('Error fetching profiles:', error);
+      if (isInitial) {
+        const hidden = loadHiddenProfiles();
         let availableMocks = mockProfiles.filter(p => !hidden.has(p.id));
-        
-        // If all mocks are hidden, reset hidden profiles and show all mocks
         if (availableMocks.length === 0) {
           localStorage.removeItem(HIDDEN_PROFILES_KEY);
           setHiddenProfiles(new Set());
           availableMocks = [...mockProfiles];
         }
-        
         setProfiles(availableMocks.slice(0, VISIBLE_COUNT));
-        setReserveProfiles(availableMocks.slice(VISIBLE_COUNT));
       }
-    } catch (error) {
-      console.error('Error fetching profiles:', error);
-      // On error, show mock profiles as fallback
-      const hidden = loadHiddenProfiles();
-      let availableMocks = mockProfiles.filter(p => !hidden.has(p.id));
-      
-      // If all mocks are hidden, reset and show all
-      if (availableMocks.length === 0) {
-        localStorage.removeItem(HIDDEN_PROFILES_KEY);
-        setHiddenProfiles(new Set());
-        availableMocks = [...mockProfiles];
-      }
-      
-      setProfiles(availableMocks.slice(0, VISIBLE_COUNT));
-      setReserveProfiles(availableMocks.slice(VISIBLE_COUNT));
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
 
+  // Handle scroll to load more
+  const handleScroll = useCallback(() => {
+    if (!scrollRef.current || loadingMore || !hasMore) return;
+    
+    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+    const scrollEnd = scrollWidth - clientWidth;
+    
+    // Load more when within 100px of the end
+    if (scrollEnd - scrollLeft < 100) {
+      fetchProfiles(false);
+    }
+  }, [loadingMore, hasMore]);
+
   const dismissProfile = useCallback((profileId: string) => {
-    // Add to hidden profiles
     const newHidden = new Set(hiddenProfiles).add(profileId);
     setHiddenProfiles(newHidden);
     saveHiddenProfiles(newHidden);
     
-    // Remove from visible and add from reserve
-    setProfiles(prev => {
-      const filtered = prev.filter(p => p.id !== profileId);
-      if (reserveProfiles.length > 0) {
-        const [nextProfile, ...remaining] = reserveProfiles;
-        setReserveProfiles(remaining);
-        return [...filtered, nextProfile];
-      }
-      return filtered;
-    });
+    setProfiles(prev => prev.filter(p => p.id !== profileId));
     
-    // Clear pending state
     setPendingFollows(prev => {
       const newSet = new Set(prev);
       newSet.delete(profileId);
       return newSet;
     });
-  }, [hiddenProfiles, reserveProfiles]);
+  }, [hiddenProfiles]);
 
   const handleFollowToggle = useCallback(async (profileId: string, isCurrentlyFollowing: boolean) => {
-    // Only handle follow action for dismiss behavior (not unfollow)
     if (isCurrentlyFollowing || pendingFollows.has(profileId)) return;
 
-    // Mark as pending (shows checkmark)
     setPendingFollows(prev => new Set(prev).add(profileId));
 
-    // Handle mock profiles
     if (profileId.startsWith('mock-')) {
-      // Wait for checkmark animation, then dismiss
       setTimeout(() => {
         dismissProfile(profileId);
       }, CHECKMARK_DELAY);
@@ -209,7 +223,6 @@ export function DiscoverRow() {
     }
 
     try {
-      // Follow the user
       const { error } = await supabase.from('follows').insert({
         follower_id: user.id,
         following_id: profileId,
@@ -218,10 +231,8 @@ export function DiscoverRow() {
 
       if (error) throw error;
 
-      // Update following set
       setFollowingIds(prev => new Set(prev).add(profileId));
 
-      // Wait for checkmark animation, then dismiss
       setTimeout(() => {
         dismissProfile(profileId);
       }, CHECKMARK_DELAY);
@@ -256,11 +267,9 @@ export function DiscoverRow() {
     );
   }
 
-  // Always show the row - we reset hidden profiles if all are hidden
-
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="py-5">
-      {/* Section Header - Collapsible Trigger */}
+      {/* Section Header */}
       <div className="flex items-center justify-between px-5 mb-4">
         <CollapsibleTrigger className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <h3 className="text-base font-semibold text-foreground">Discover People</h3>
@@ -279,46 +288,29 @@ export function DiscoverRow() {
         </button>
       </div>
 
-      {/* Collapsible Content - Infinite Marquee Scroll */}
+      {/* Manual Horizontal Scroll */}
       <CollapsibleContent>
-        <div className="overflow-hidden relative">
-          {/* Gradient masks for smooth edges */}
+        <div className="relative">
+          {/* Gradient masks */}
           <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
           <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
           
-          <motion.div
-            className="flex gap-3 px-5"
-            animate={{
-              x: [0, -((profiles.length * 172) / 2)],
-            }}
-            transition={{
-              x: {
-                repeat: Infinity,
-                repeatType: "loop",
-                duration: profiles.length * 4,
-                ease: "linear",
-              },
-            }}
-            whileHover={{ animationPlayState: "paused" }}
-            style={{ animationPlayState: "running" }}
-            onHoverStart={(e) => {
-              const target = e.target as HTMLElement;
-              target.style.animationPlayState = "paused";
-            }}
-            onHoverEnd={(e) => {
-              const target = e.target as HTMLElement;
-              target.style.animationPlayState = "running";
-            }}
+          <div
+            ref={scrollRef}
+            onScroll={handleScroll}
+            className="flex gap-3 px-5 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            {/* Duplicate profiles for seamless loop */}
-            {[...profiles, ...profiles].map((profile, index) => {
+            {profiles.map((profile) => {
               const isPending = pendingFollows.has(profile.id);
-              const uniqueKey = `${profile.id}-${index}`;
               
               return (
                 <motion.div
-                  key={uniqueKey}
-                  className="flex-shrink-0"
+                  key={profile.id}
+                  className="flex-shrink-0 snap-start"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
                   whileHover={{ scale: 1.02 }}
                   transition={{ duration: 0.2 }}
                 >
@@ -327,7 +319,6 @@ export function DiscoverRow() {
                     hover
                     className="w-40 p-4 flex flex-col items-center text-center"
                   >
-                    {/* Premium Avatar with Gradient Ring */}
                     <div 
                       className="mb-3 cursor-pointer"
                       onClick={() => navigate(`/profile/${profile.handle || profile.id}`)}
@@ -342,17 +333,14 @@ export function DiscoverRow() {
                       />
                     </div>
 
-                    {/* Name */}
                     <p className="text-sm font-semibold text-foreground truncate w-full mb-0.5">
                       {profile.display_name || 'User'}
                     </p>
                     
-                    {/* Handle */}
                     <p className="text-xs text-muted-foreground truncate w-full mb-3">
                       @{profile.handle || 'user'}
                     </p>
 
-                    {/* Follow Button with Checkmark Animation */}
                     <motion.div
                       animate={isPending ? {
                         scale: [1, 1.08, 1],
@@ -412,7 +400,14 @@ export function DiscoverRow() {
                 </motion.div>
               );
             })}
-          </motion.div>
+            
+            {/* Loading indicator */}
+            {loadingMore && (
+              <div className="flex-shrink-0 w-40 h-44 flex items-center justify-center">
+                <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
+          </div>
         </div>
       </CollapsibleContent>
     </Collapsible>
