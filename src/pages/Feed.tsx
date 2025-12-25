@@ -16,10 +16,11 @@ function getContentType(media?: { type: 'image' | 'video' }): ContentType {
 }
 
 // Mock data with rich media and content types including videos
+// Using undefined authorId for mock posts to prevent invalid UUID queries
 const mockPosts: FeedPost[] = [
   {
     id: '1',
-    authorId: 'author-1-uuid',
+    authorId: undefined,
     author: {
       name: 'Wellness Center',
       handle: 'wellnesscenter',
@@ -39,7 +40,7 @@ const mockPosts: FeedPost[] = [
   },
   {
     id: '2',
-    authorId: 'author-2-uuid',
+    authorId: undefined,
     author: {
       name: 'Dr. Sarah Mitchell',
       handle: 'drsarahmitchell',
@@ -55,7 +56,7 @@ const mockPosts: FeedPost[] = [
   },
   {
     id: '3',
-    authorId: 'author-3-uuid',
+    authorId: undefined,
     author: {
       name: 'Mindful Movement',
       handle: 'mindfulmovement',
@@ -76,7 +77,7 @@ const mockPosts: FeedPost[] = [
   },
   {
     id: '4',
-    authorId: 'author-4-uuid',
+    authorId: undefined,
     author: {
       name: 'Jamie',
       handle: 'jamie_journey',
@@ -95,7 +96,7 @@ const mockPosts: FeedPost[] = [
   },
   {
     id: '5',
-    authorId: 'author-5-uuid',
+    authorId: undefined,
     author: {
       name: 'Breathe Easy',
       handle: 'breatheeasy',
@@ -116,7 +117,7 @@ const mockPosts: FeedPost[] = [
   },
   {
     id: '6',
-    authorId: 'author-6-uuid',
+    authorId: undefined,
     author: {
       name: 'MindfulMoments',
       handle: 'mindfulmoments',
@@ -136,7 +137,7 @@ const mockPosts: FeedPost[] = [
   },
   {
     id: '7',
-    authorId: 'author-7-uuid',
+    authorId: undefined,
     author: {
       name: 'TherapyTalks',
       handle: 'therapytalks',
@@ -152,7 +153,7 @@ const mockPosts: FeedPost[] = [
   },
   {
     id: '8',
-    authorId: 'author-8-uuid',
+    authorId: undefined,
     author: {
       name: 'Nature Heals',
       handle: 'natureheals',

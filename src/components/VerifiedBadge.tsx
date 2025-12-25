@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { BadgeCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -12,10 +13,15 @@ const sizeClasses = {
   lg: 'h-5 w-5',
 };
 
-export function VerifiedBadge({ className, size = 'md' }: VerifiedBadgeProps) {
-  return (
-    <BadgeCheck 
-      className={cn(sizeClasses[size], 'text-verified fill-verified/20', className)} 
-    />
-  );
-}
+export const VerifiedBadge = forwardRef<SVGSVGElement, VerifiedBadgeProps>(
+  ({ className, size = 'md' }, ref) => {
+    return (
+      <BadgeCheck 
+        ref={ref}
+        className={cn(sizeClasses[size], 'text-verified fill-verified/20', className)} 
+      />
+    );
+  }
+);
+
+VerifiedBadge.displayName = 'VerifiedBadge';

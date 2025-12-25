@@ -2,6 +2,12 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
+// UUID validation helper
+function isValidUUID(str: string): boolean {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(str);
+}
+
 export function usePersonalCommunity(memberUserId?: string) {
   const { user } = useAuth();
   const [isInCommunity, setIsInCommunity] = useState(false);
@@ -10,7 +16,7 @@ export function usePersonalCommunity(memberUserId?: string) {
 
   // Check if a specific user is in the current user's community
   useEffect(() => {
-    if (!user || !memberUserId) return;
+    if (!user || !memberUserId || !isValidUUID(memberUserId)) return;
 
     const checkMembership = async () => {
       const { data, error } = await supabase
@@ -49,7 +55,7 @@ export function usePersonalCommunity(memberUserId?: string) {
   }, [user]);
 
   const toggleCommunityMember = async (targetUserId: string): Promise<boolean> => {
-    if (!user) return false;
+    if (!user || !isValidUUID(targetUserId)) return false;
     
     setIsLoading(true);
 
