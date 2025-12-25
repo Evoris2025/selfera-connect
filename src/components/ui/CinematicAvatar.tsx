@@ -58,8 +58,21 @@ const CinematicAvatar = forwardRef<HTMLDivElement, CinematicAvatarProps>(
 
     const content = (
       <Avatar className={cn(sizeClasses[size], 'ring-2 ring-background', className)}>
-        <AvatarImage src={src} alt={alt} className="object-cover" />
-        <AvatarFallback className={cn('bg-secondary text-secondary-foreground font-medium', fallbackTextSize[size])}>
+        {src && (
+          <AvatarImage 
+            src={src} 
+            alt={alt} 
+            className="object-cover"
+            loading="eager"
+          />
+        )}
+        <AvatarFallback 
+          className={cn(
+            'bg-gradient-to-br from-primary/80 to-secondary text-primary-foreground font-medium',
+            fallbackTextSize[size]
+          )}
+          delayMs={src ? 600 : 0}
+        >
           {fallback || alt?.charAt(0)?.toUpperCase() || '?'}
         </AvatarFallback>
       </Avatar>

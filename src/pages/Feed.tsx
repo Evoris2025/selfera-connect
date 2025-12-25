@@ -15,7 +15,7 @@ function getContentType(media?: { type: 'image' | 'video' }): ContentType {
   return 'image';
 }
 
-// Mock data with rich media and content types
+// Mock data with rich media and content types including videos
 const mockPosts: FeedPost[] = [
   {
     id: '1',
@@ -57,6 +57,27 @@ const mockPosts: FeedPost[] = [
     id: '3',
     authorId: 'author-3-uuid',
     author: {
+      name: 'Mindful Movement',
+      handle: 'mindfulmovement',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop',
+      isVerified: true,
+    },
+    content: 'Morning yoga flow to start your day with intention 🧘‍♀️ Save this for your next practice!',
+    media: {
+      type: 'video',
+      url: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+      thumbnail: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&h=1000&fit=crop',
+    },
+    tags: ['yoga', 'mindfulness', 'morningroutine'],
+    commentCount: 89,
+    createdAt: '3h',
+    likes: 2341,
+    contentType: 'video',
+  },
+  {
+    id: '4',
+    authorId: 'author-4-uuid',
+    author: {
       name: 'Jamie',
       handle: 'jamie_journey',
       avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop',
@@ -73,8 +94,29 @@ const mockPosts: FeedPost[] = [
     contentType: 'image',
   },
   {
-    id: '4',
-    authorId: 'author-4-uuid',
+    id: '5',
+    authorId: 'author-5-uuid',
+    author: {
+      name: 'Breathe Easy',
+      handle: 'breatheeasy',
+      avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop',
+      isVerified: true,
+    },
+    content: 'Try this 4-7-8 breathing technique when anxiety hits. Breathe in for 4, hold for 7, out for 8. 💨',
+    media: {
+      type: 'video',
+      url: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+      thumbnail: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&h=1000&fit=crop',
+    },
+    tags: ['breathing', 'anxiety', 'calmdown'],
+    commentCount: 67,
+    createdAt: '5h',
+    likes: 1893,
+    contentType: 'video',
+  },
+  {
+    id: '6',
+    authorId: 'author-6-uuid',
     author: {
       name: 'MindfulMoments',
       handle: 'mindfulmoments',
@@ -93,8 +135,8 @@ const mockPosts: FeedPost[] = [
     contentType: 'image',
   },
   {
-    id: '5',
-    authorId: 'author-5-uuid',
+    id: '7',
+    authorId: 'author-7-uuid',
     author: {
       name: 'TherapyTalks',
       handle: 'therapytalks',
@@ -107,6 +149,26 @@ const mockPosts: FeedPost[] = [
     createdAt: '10h',
     likes: 5672,
     contentType: 'text',
+  },
+  {
+    id: '8',
+    authorId: 'author-8-uuid',
+    author: {
+      name: 'Nature Heals',
+      handle: 'natureheals',
+      avatar: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=200&h=200&fit=crop',
+    },
+    content: 'Forest bathing session today. Science shows spending just 20 minutes in nature reduces cortisol levels 🌲',
+    media: {
+      type: 'video',
+      url: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+      thumbnail: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&h=1000&fit=crop',
+    },
+    tags: ['nature', 'forestbathing', 'stress'],
+    commentCount: 43,
+    createdAt: '12h',
+    likes: 1567,
+    contentType: 'video',
   },
 ];
 

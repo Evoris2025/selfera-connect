@@ -1,7 +1,7 @@
-import { forwardRef, useState, ReactNode } from 'react';
+import { forwardRef, useState, useRef, useEffect, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Play } from 'lucide-react';
+import { Heart, Play, Pause, Volume2, VolumeX } from 'lucide-react';
 
 export interface ImmersiveMediaProps {
   src: string;
@@ -15,6 +15,7 @@ export interface ImmersiveMediaProps {
   onDoubleTap?: () => void;
   onClick?: () => void;
   showHeartOnDoubleTap?: boolean;
+  autoPlay?: boolean;
 }
 
 const aspectClasses = {
@@ -44,14 +45,43 @@ const ImmersiveMedia = forwardRef<HTMLDivElement, ImmersiveMediaProps>(
     onDoubleTap,
     onClick,
     showHeartOnDoubleTap = true,
+    autoPlay = true,
   }, ref) => {
     const [showHeart, setShowHeart] = useState(false);
     const [lastTap, setLastTap] = useState(0);
+    const [isPlaying, setIsPlaying] = useState(autoPlay);
+    const [isMuted, setIsMuted] = useState(true);
+    const [showControls, setShowControls] = useState(false);
+    const videoRef = useRef<HTMLVideoElement>(null);
 
-    const handleTap = () => {
+    // Auto-play video when in viewport
+    useEffect(() => {
+      if (type !== 'video' || !videoRef.current) return;
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting && autoPlay) {
+              videoRef.current?.play().catch(() => {});
+              setIsPlaying(true);
+            } else {
+              videoRef.current?.pause();
+              setIsPlaying(false);
+            }
+          });
+        },
+        { threshold: 0.5 }
+      );
+
+      observer.observe(videoRef.current);
+      return () => observer.disconnect();
+    }, [type, autoPlay]);
+
+    const handleTap = (e: React.MouseEvent) => {
       const now = Date.now();
       if (now - lastTap < 300) {
         // Double tap
+        e.stopPropagation();
         if (showHeartOnDoubleTap) {
           setShowHeart(true);
           setTimeout(() => setShowHeart(false), 1000);
@@ -61,10 +91,35 @@ const ImmersiveMedia = forwardRef<HTMLDivElement, ImmersiveMediaProps>(
           navigator.vibrate([10, 50, 10]);
         }
       } else {
-        // Single tap - call onClick
-        onClick?.();
+        // Single tap - show controls for video, or call onClick
+        if (type === 'video') {
+          setShowControls(true);
+          setTimeout(() => setShowControls(false), 3000);
+        } else {
+          onClick?.();
+        }
       }
       setLastTap(now);
+    };
+
+    const togglePlay = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (videoRef.current) {
+        if (isPlaying) {
+          videoRef.current.pause();
+        } else {
+          videoRef.current.play().catch(() => {});
+        }
+        setIsPlaying(!isPlaying);
+      }
+    };
+
+    const toggleMute = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (videoRef.current) {
+        videoRef.current.muted = !isMuted;
+        setIsMuted(!isMuted);
+      }
     };
 
     return (
@@ -88,24 +143,56 @@ const ImmersiveMedia = forwardRef<HTMLDivElement, ImmersiveMediaProps>(
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           />
         ) : (
-          <div className="relative w-full h-full">
+          <div className="relative w-full h-full group">
             <video
+              ref={videoRef}
               src={src}
               poster={poster}
               className="w-full h-full object-cover"
               playsInline
-              muted
+              muted={isMuted}
               loop
+              preload="metadata"
             />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="absolute inset-0 flex items-center justify-center"
+            
+            {/* Video controls overlay */}
+            <AnimatePresence>
+              {(showControls || !isPlaying) && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute inset-0 flex items-center justify-center bg-black/20 z-20"
+                >
+                  <motion.button
+                    onClick={togglePlay}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    className="w-16 h-16 rounded-full bg-background/30 backdrop-blur-md flex items-center justify-center"
+                  >
+                    {isPlaying ? (
+                      <Pause className="w-7 h-7 text-foreground fill-current" />
+                    ) : (
+                      <Play className="w-7 h-7 text-foreground fill-current ml-1" />
+                    )}
+                  </motion.button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Mute button - always visible on hover */}
+            <motion.button
+              onClick={toggleMute}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="absolute bottom-4 right-4 w-9 h-9 rounded-full bg-background/40 backdrop-blur-sm flex items-center justify-center z-30 opacity-0 group-hover:opacity-100 transition-opacity"
             >
-              <div className="w-16 h-16 rounded-full bg-background/30 backdrop-blur-md flex items-center justify-center">
-                <Play className="w-7 h-7 text-foreground fill-current ml-1" />
-              </div>
-            </motion.div>
+              {isMuted ? (
+                <VolumeX className="w-4 h-4 text-foreground" />
+              ) : (
+                <Volume2 className="w-4 h-4 text-foreground" />
+              )}
+            </motion.button>
           </div>
         )}
 
