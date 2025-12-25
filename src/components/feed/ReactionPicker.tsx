@@ -75,7 +75,7 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
                 whileTap={{ scale: 0.85 }}
                 onMouseEnter={() => setHoveredReaction(reaction.type)}
                 onMouseLeave={() => setHoveredReaction(null)}
-                onClick={() => handleSelect(reaction.type)}
+                onClick={(e) => { e.stopPropagation(); handleSelect(reaction.type); }}
                 className={cn(
                   'relative p-2 rounded-full transition-colors',
                   currentReaction === reaction.type && 'bg-primary/20'
@@ -262,6 +262,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact }: Reac
       className="relative"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onClick={(e) => e.stopPropagation()}
     >
       <ReactionPicker
         isOpen={isPickerOpen}
