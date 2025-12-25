@@ -150,13 +150,14 @@ export function PostCard({
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         className="px-4 py-5 border-b border-border/50"
       >
-        <div className="flex gap-3">
+        {/* Header: Avatar + Name/Handle */}
+        <div className="flex items-start gap-3 mb-3">
           {/* Clickable Avatar */}
           <motion.button
             onClick={handleCreatorClick}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="cursor-pointer"
+            className="cursor-pointer flex-shrink-0"
           >
             <CinematicAvatar
               src={author.avatar}
@@ -168,78 +169,79 @@ export function PostCard({
           </motion.button>
           
           <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-1">
-              <button onClick={handleCreatorClick} className="flex items-center gap-1.5 hover:underline">
+            <button onClick={handleCreatorClick} className="text-left hover:underline">
+              <div className="flex items-center gap-1.5">
                 <span className="font-semibold text-foreground text-[15px]">{author.name}</span>
                 {author.isVerified && <VerifiedBadge size="sm" />}
-                <span className="text-muted-foreground text-sm">· {createdAt}</span>
-              </button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="glass-card">
-                  <DropdownMenuItem className="gap-2">
-                    <Flag className="h-4 w-4" />
-                    {t('safety.report')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="gap-2">
-                    <VolumeX className="h-4 w-4" />
-                    {t('safety.mute')}
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem className="gap-2 text-destructive">
-                    <Ban className="h-4 w-4" />
-                    {t('safety.block')}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-            
-            {/* Clickable content area */}
-            <button 
-              onClick={handlePostContentClick}
-              className="text-left w-full"
-            >
-              <p className="text-[15px] text-foreground leading-relaxed mb-3">
-                {renderContent()}
-              </p>
-            </button>
-
-            {tags.length > 0 && !content.includes('#') && (
-              <div className="flex flex-wrap gap-1.5 mb-3">
-                {tags.map((tag) => (
-                  <Hashtag key={tag} tag={tag} size="sm" />
-                ))}
               </div>
-            )}
-
-            <div className="flex items-center gap-5 pt-1">
-              <ReactionButton 
-                postId={id}
-                currentReaction={currentReaction}
-                count={heartCount}
-                onReact={handleReaction}
-              />
-              <CommentButton 
-                count={commentCount}
-                onClick={() => setShowCommentSheet(true)}
-              />
-              <ShareButton postId={id} />
-              <motion.button 
-                whileTap={{ scale: 0.9 }}
-                onClick={handleLibraryToggle}
-                className={cn(
-                  'transition-colors ml-auto',
-                  inLibrary ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
-                )}
-              >
-                <BookOpen className={cn('h-5 w-5', inLibrary && 'fill-current')} />
-              </motion.button>
-            </div>
+              <p className="text-muted-foreground text-sm">@{author.handle} · {createdAt}</p>
+            </button>
           </div>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground flex-shrink-0">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="glass-card">
+              <DropdownMenuItem className="gap-2">
+                <Flag className="h-4 w-4" />
+                {t('safety.report')}
+              </DropdownMenuItem>
+              <DropdownMenuItem className="gap-2">
+                <VolumeX className="h-4 w-4" />
+                {t('safety.mute')}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="gap-2 text-destructive">
+                <Ban className="h-4 w-4" />
+                {t('safety.block')}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        
+        {/* Post Content */}
+        <button 
+          onClick={handlePostContentClick}
+          className="text-left w-full"
+        >
+          <p className="text-[15px] text-foreground leading-relaxed mb-3">
+            {renderContent()}
+          </p>
+        </button>
+
+        {tags.length > 0 && !content.includes('#') && (
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            {tags.map((tag) => (
+              <Hashtag key={tag} tag={tag} size="sm" />
+            ))}
+          </div>
+        )}
+
+        <div className="flex items-center gap-5 pt-1">
+          <ReactionButton 
+            postId={id}
+            currentReaction={currentReaction}
+            count={heartCount}
+            onReact={handleReaction}
+          />
+          <CommentButton 
+            count={commentCount}
+            onClick={() => setShowCommentSheet(true)}
+          />
+          <ShareButton postId={id} />
+          <motion.button 
+            whileTap={{ scale: 0.9 }}
+            onClick={handleLibraryToggle}
+            className={cn(
+              'transition-colors ml-auto',
+              inLibrary ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+            )}
+          >
+            <BookOpen className={cn('h-5 w-5', inLibrary && 'fill-current')} />
+          </motion.button>
         </div>
 
         <CommentSheet
