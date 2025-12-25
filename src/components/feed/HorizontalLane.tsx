@@ -1,7 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 interface HorizontalLaneProps<T> {
@@ -117,61 +115,6 @@ export function HorizontalLane<T>({
           </motion.div>
         ))}
       </div>
-
-      {/* Navigation arrows - desktop buttons, mobile floating indicators */}
-      {showNavigation && (
-        <>
-          <AnimatePresence>
-            {canScrollLeft && (
-              <motion.div
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 10 }}
-                className="absolute left-3 top-1/2 -translate-y-1/2 z-30"
-              >
-                {/* Desktop: clickable button */}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={scrollPrev}
-                  className="hidden md:flex h-10 w-10 rounded-full bg-primary/10 backdrop-blur-md border border-primary/20 shadow-lg hover:bg-primary/20 hover:border-primary/30 transition-all duration-300"
-                >
-                  <ChevronLeft className="h-5 w-5 text-primary" />
-                </Button>
-                {/* Mobile: floating indicator */}
-                <div className="md:hidden w-8 h-8 rounded-full bg-primary/15 backdrop-blur-md border border-primary/25 flex items-center justify-center shadow-lg">
-                  <ChevronLeft className="h-4 w-4 text-primary" />
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <AnimatePresence>
-            {canScrollRight && (
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 z-30"
-              >
-                {/* Desktop: clickable button */}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={scrollNext}
-                  className="hidden md:flex h-10 w-10 rounded-full bg-primary/10 backdrop-blur-md border border-primary/20 shadow-lg hover:bg-primary/20 hover:border-primary/30 transition-all duration-300"
-                >
-                  <ChevronRight className="h-5 w-5 text-primary" />
-                </Button>
-                {/* Mobile: floating indicator */}
-                <div className="md:hidden w-8 h-8 rounded-full bg-primary/15 backdrop-blur-md border border-primary/25 flex items-center justify-center shadow-lg">
-                  <ChevronRight className="h-4 w-4 text-primary" />
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </>
-      )}
 
       {/* Dot indicators */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-30">
