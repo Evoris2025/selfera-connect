@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AppLayout } from '@/components/AppLayout';
 import { ComposerBar } from '@/components/ComposerBar';
@@ -7,10 +7,6 @@ import { ExpressionsRow } from '@/components/ExpressionsRow';
 import { PostCard } from '@/components/PostCard';
 import { PostCardSkeleton } from '@/components/SkeletonLoader';
 import { CreatorStudio } from '@/components/creator';
-import { Hashtag } from '@/components/Hashtag';
-
-// Trending hashtags
-const trendingHashtags = ['mentalhealth', 'selfcare', 'anxiety', 'recovery', 'mindfulness'];
 
 // Mock data with rich media
 const mockPosts = [
@@ -109,7 +105,7 @@ const itemVariants = {
 };
 
 export default function Feed() {
-  const { t } = useTranslation();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [creatorOpen, setCreatorOpen] = useState(false);
   const [creatorMode, setCreatorMode] = useState<CreatorMode>(null);
@@ -131,26 +127,10 @@ export default function Feed() {
   };
 
   return (
-    <AppLayout onCreatePost={handleCreatePost}>
+    <AppLayout onCreatePost={handleCreatePost} title="The Feed">
       <div className="flex flex-col bg-cinematic min-h-screen">
-        {/* Trending Hashtags - Horizontal scroll */}
-        <div className="px-4 pt-3 pb-2">
-          <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-            {trendingHashtags.map((tag, index) => (
-              <motion.div
-                key={tag}
-                initial={{ opacity: 0, x: -15 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.06, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <Hashtag tag={tag} size="md" animated />
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
         {/* Composer Bar */}
-        <div className="px-4 pb-3">
+        <div className="px-4 pt-3 pb-3">
           <ComposerBar onOpenComposer={handleOpenComposer} />
         </div>
 
@@ -174,7 +154,7 @@ export default function Feed() {
                 <PostCardSkeleton />
               </div>
             ) : (
-              mockPosts.map((post, index) => (
+              mockPosts.map((post) => (
                 <motion.div
                   key={post.id}
                   variants={itemVariants}

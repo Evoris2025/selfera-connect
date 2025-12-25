@@ -77,16 +77,18 @@ export function ExpressionsRow() {
             className="flex-shrink-0 flex flex-col items-center gap-2"
           >
             <div className="relative">
-              <div className="w-[72px] h-[72px] rounded-full bg-gradient-to-br from-secondary to-card flex items-center justify-center ring-2 ring-border/50">
-                <span className="text-2xl font-semibold text-muted-foreground">
-                  {userInitial}
-                </span>
-              </div>
+              <CinematicAvatar
+                src=""
+                alt={displayName}
+                fallback={userInitial}
+                size="xl"
+                ring="muted"
+              />
               <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full gradient-brand flex items-center justify-center ring-3 ring-background shadow-glow">
                 <Plus className="h-4 w-4 text-primary-foreground" />
               </div>
             </div>
-            <span className="text-xs text-muted-foreground font-medium">Your story</span>
+            <span className="text-xs text-muted-foreground font-medium">Create Expression</span>
           </motion.button>
 
           {/* Expression Cards */}
