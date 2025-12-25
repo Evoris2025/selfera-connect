@@ -153,8 +153,8 @@ export function CrossroadFeed({
                 isActiveCard && 'z-10'
               )}
             >
-              {/* Horizontal lane for same-type content - always enabled */}
-              {showHorizontalLane ? (
+              {/* Horizontal lane for same-type content when active */}
+              {isActiveCard && showHorizontalLane ? (
                 <HorizontalLane
                   items={sameTypePosts}
                   activeIndex={getCurrentLaneIndex(post.id, post.contentType)}
