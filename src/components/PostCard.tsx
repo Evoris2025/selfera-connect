@@ -232,6 +232,12 @@ export function PostCard({
             onClick={() => setShowCommentSheet(true)}
           />
           <ShareButton postId={id} />
+          {authorId && (
+            <CommunityButton 
+              authorId={authorId}
+              authorName={author.name}
+            />
+          )}
           <motion.button 
             whileTap={{ scale: 0.9 }}
             onClick={handleLibraryToggle}
