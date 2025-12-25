@@ -1,8 +1,8 @@
 import { Plus, ChevronRight } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { motion } from 'framer-motion';
 import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
+import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
 
 interface Expression {
   id: string;
@@ -59,9 +59,7 @@ const mockExpressions: Expression[] = [
 ];
 
 export function ExpressionsRow() {
-  const { user } = useAuth();
-  const displayName = user?.email?.split('@')[0] || 'You';
-  const userInitial = displayName.charAt(0).toUpperCase();
+  const { avatarUrl, displayName } = useCurrentUserAvatar();
 
   return (
     <div className="relative">
@@ -78,9 +76,8 @@ export function ExpressionsRow() {
           >
             <div className="relative">
               <CinematicAvatar
-                src=""
+                src={avatarUrl}
                 alt={displayName}
-                fallback={userInitial}
                 size="xl"
                 ring="muted"
               />

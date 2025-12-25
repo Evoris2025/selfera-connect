@@ -1,24 +1,19 @@
 import { Video, Image, Film } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
 import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
+import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
 
 interface ComposerBarProps {
   onOpenComposer: (mode?: 'text' | 'video' | 'image' | 'reel') => void;
 }
 
 export function ComposerBar({ onOpenComposer }: ComposerBarProps) {
-  const { user } = useAuth();
-  const displayName = user?.email?.split('@')[0] || 'there';
-  const userInitial = displayName.charAt(0).toUpperCase();
-  // TODO: Replace with actual profile photo from user metadata
-  const profilePhotoUrl = user?.user_metadata?.avatar_url || '';
+  const { avatarUrl, displayName } = useCurrentUserAvatar();
 
   return (
     <div className="flex items-center gap-3 p-3 bg-card rounded-xl">
       <CinematicAvatar
-        src={profilePhotoUrl}
+        src={avatarUrl}
         alt={displayName}
-        fallback={userInitial}
         size="md"
         ring="muted"
       />
