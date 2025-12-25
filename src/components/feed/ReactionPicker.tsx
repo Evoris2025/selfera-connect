@@ -47,11 +47,9 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
     if (reaction) {
       triggerBurst(type, reaction.color);
     }
-    // Small delay so burst animation starts before closing
-    setTimeout(() => {
-      onSelect(type);
-      onClose();
-    }, 100);
+    // Close immediately and notify parent
+    onSelect(type);
+    onClose();
   };
 
   return (
@@ -202,7 +200,8 @@ export function ReactionButton({ postId, currentReaction, count, onReact }: Reac
     }, 200);
   };
 
-  const handleTouchStart = () => {
+  const handleTouchStart = (e: React.TouchEvent) => {
+    e.preventDefault(); // Prevent browser context menu
     longPressTimer.current = setTimeout(() => {
       setIsLongPressing(true);
       setIsPickerOpen(true);
@@ -210,7 +209,8 @@ export function ReactionButton({ postId, currentReaction, count, onReact }: Reac
     }, 400);
   };
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    e.preventDefault();
     if (longPressTimer.current) clearTimeout(longPressTimer.current);
     if (!isLongPressing) {
       handleQuickTap();
@@ -237,12 +237,16 @@ export function ReactionButton({ postId, currentReaction, count, onReact }: Reac
   };
 
   const handleSelect = (type: ReactionType) => {
+    // Clear timers to prevent interference
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    
     const reaction = reactions.find(r => r.type === type);
     if (reaction && type !== currentReaction) {
       triggerLocalBurst(reaction.color);
     }
     onReact(currentReaction === type ? null : type);
     setIsPickerOpen(false);
+    setIsLongPressing(false);
   };
 
   const currentEmoji = currentReaction 
@@ -273,6 +277,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact }: Reac
         transition={buttonPressTransition}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
+        onContextMenu={(e) => e.preventDefault()}
         onClick={handleClick}
         className={cn(
           'flex items-center gap-1.5 transition-colors group relative',
@@ -285,7 +290,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact }: Reac
             initial={{ scale: 0.5, rotate: -15 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={springTransitions.elastic}
-            className="text-xl block"
+            className="text-2xl block w-6 h-6 flex items-center justify-center"
           >
             {currentEmoji || (
               <svg
