@@ -70,7 +70,7 @@ export function CommentSheet({ open, onOpenChange, postId, commentCount }: Comme
           transition={springConfig}
           className="flex flex-col h-full"
         >
-          <DrawerHeader className="text-center border-b border-border">
+          <DrawerHeader className="text-center border-b border-border/50">
             <DrawerTitle>{t('comments.title')} ({commentCount})</DrawerTitle>
           </DrawerHeader>
           
@@ -108,7 +108,7 @@ export function CommentSheet({ open, onOpenChange, postId, commentCount }: Comme
           </div>
           
           {/* Comment input */}
-          <div className="p-4 border-t border-border bg-background">
+          <div className="p-4 border-t border-border/50 bg-background">
             <div className="flex items-center gap-3">
               <Avatar className="h-8 w-8 flex-shrink-0">
                 <AvatarFallback className="bg-secondary text-secondary-foreground text-xs">
