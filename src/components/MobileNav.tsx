@@ -77,7 +77,7 @@ export function MobileNav({ onCreateClick, notificationCount = 0, messageCount =
         className="fixed bottom-0 left-0 right-0 z-50 pb-safe"
       >
         {/* Glass background with gradient fade */}
-        <div className="absolute inset-0 glass-heavy rounded-t-3xl" />
+        <div className="absolute inset-0 glass-heavy rounded-t-3xl border-t border-border/50" />
         <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent rounded-t-3xl pointer-events-none" />
         
         <div className="relative flex items-center justify-around h-18 max-w-lg mx-auto px-6">

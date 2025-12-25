@@ -22,7 +22,7 @@ const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(
         ref={ref}
         className={cn(
           variantClasses[variant],
-          'rounded-2xl',
+          'rounded-2xl border border-border/30',
           hover && 'hover-lift',
           press && 'press-effect',
           className

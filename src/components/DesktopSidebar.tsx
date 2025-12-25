@@ -31,7 +31,7 @@ export function DesktopSidebar() {
   const location = useLocation();
 
   return (
-    <aside className="hidden md:flex flex-col w-64 h-screen sticky top-0 border-r border-border bg-sidebar p-4">
+    <aside className="hidden md:flex flex-col w-64 h-screen sticky top-0 border-r border-border/60 bg-sidebar p-4">
       <div className="flex-1">
         {/* Logo */}
         <Link to="/" className="flex items-center mb-6 px-3">
