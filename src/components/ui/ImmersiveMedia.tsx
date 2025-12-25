@@ -134,13 +134,10 @@ const ImmersiveMedia = forwardRef<HTMLDivElement, ImmersiveMediaProps>(
         onClick={handleTap}
       >
         {type === 'image' ? (
-          <motion.img
+          <img
             src={src}
             alt={alt || ''}
             className="w-full h-full object-cover img-cinematic"
-            initial={{ scale: 1.02 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           />
         ) : (
           <div className="relative w-full h-full group">

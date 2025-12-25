@@ -1,5 +1,4 @@
 import { useRef, useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 interface HorizontalLaneProps<T> {
@@ -97,22 +96,13 @@ export function HorizontalLane<T>({
         style={{ scrollSnapType: 'x mandatory' }}
       >
         {items.map((item, index) => (
-          <motion.div
+          <div
             key={index}
-            className="flex-none w-full snap-center origin-center"
+            className="flex-none w-full snap-center"
             style={{ scrollSnapAlign: 'center' }}
-            animate={{
-              scale: index === activeIndex ? 1 : 0.95,
-              opacity: index === activeIndex ? 1 : 0.7,
-            }}
-            transition={{
-              type: 'spring',
-              stiffness: 300,
-              damping: 30,
-            }}
           >
             {renderItem(item, index)}
-          </motion.div>
+          </div>
         ))}
       </div>
     </div>
