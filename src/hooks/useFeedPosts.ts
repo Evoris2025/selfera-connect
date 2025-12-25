@@ -5,6 +5,118 @@ import { ContentType } from '@/hooks/useCrossroadScroll';
 
 const PAGE_SIZE = 10;
 
+// Mock posts fallback when no real posts exist
+const mockPosts: FeedPost[] = [
+  {
+    id: 'mock-1',
+    authorId: 'mock-author-1',
+    author: {
+      name: 'Sarah Chen',
+      handle: 'sarahc',
+      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop',
+      isVerified: true,
+    },
+    content: 'Taking time for self-care today. Remember: you can\'t pour from an empty cup. 🌸',
+    tags: ['selfcare', 'mentalhealth'],
+    commentCount: 12,
+    createdAt: '2h',
+    likes: 47,
+    contentType: 'text',
+  },
+  {
+    id: 'mock-2',
+    authorId: 'mock-author-2',
+    author: {
+      name: 'Mind Matters',
+      handle: 'mindmatters',
+      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop',
+      isVerified: true,
+    },
+    content: 'Morning meditation complete. Starting the day with intention and gratitude.',
+    media: {
+      type: 'image',
+      url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
+    },
+    tags: ['meditation', 'morning'],
+    commentCount: 8,
+    createdAt: '4h',
+    likes: 89,
+    contentType: 'image',
+  },
+  {
+    id: 'mock-3',
+    authorId: 'mock-author-3',
+    author: {
+      name: 'James Wilson',
+      handle: 'jwilson',
+      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop',
+      isVerified: false,
+    },
+    content: 'Therapy session today was a breakthrough. It\'s okay to ask for help. 💪',
+    tags: ['therapy', 'growth'],
+    commentCount: 23,
+    createdAt: '6h',
+    likes: 156,
+    contentType: 'text',
+  },
+  {
+    id: 'mock-4',
+    authorId: 'mock-author-4',
+    author: {
+      name: 'Wellness Hub',
+      handle: 'wellnesshub',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop',
+      isVerified: true,
+    },
+    content: 'Nature walk therapy 🌿 Sometimes the best medicine is fresh air and green spaces.',
+    media: {
+      type: 'image',
+      url: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=600&fit=crop',
+    },
+    tags: ['nature', 'wellness'],
+    commentCount: 15,
+    createdAt: '8h',
+    likes: 234,
+    contentType: 'image',
+  },
+  {
+    id: 'mock-5',
+    authorId: 'mock-author-5',
+    author: {
+      name: 'Emma Roberts',
+      handle: 'emmar',
+      avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop',
+      isVerified: false,
+    },
+    content: 'Journaling prompt: What are three things you\'re grateful for today? Share below! ✨',
+    tags: ['journaling', 'gratitude'],
+    commentCount: 45,
+    createdAt: '12h',
+    likes: 312,
+    contentType: 'text',
+  },
+  {
+    id: 'mock-6',
+    authorId: 'mock-author-6',
+    author: {
+      name: 'Alex Turner',
+      handle: 'alext',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop',
+      isVerified: false,
+    },
+    content: 'Breathwork session done. 5 minutes of deep breathing can change your entire day.',
+    media: {
+      type: 'image',
+      url: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&h=600&fit=crop',
+    },
+    tags: ['breathwork', 'mindfulness'],
+    commentCount: 7,
+    createdAt: '1d',
+    likes: 78,
+    contentType: 'image',
+  },
+];
+
 interface UseFeedPostsResult {
   posts: FeedPost[];
   loading: boolean;
@@ -178,7 +290,13 @@ export function useFeedPosts(): UseFeedPostsResult {
       setLoading(true);
       setError(null);
       const initialPosts = await fetchPosts(null);
-      setPosts(initialPosts);
+      // Use mock posts if no real posts exist
+      if (initialPosts.length === 0) {
+        setPosts(mockPosts);
+        setHasMore(false);
+      } else {
+        setPosts(initialPosts);
+      }
       setLoading(false);
     };
 
