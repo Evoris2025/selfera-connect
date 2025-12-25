@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { MoreHorizontal, Flag, Ban, VolumeX, BookOpen, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -12,10 +13,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { VerifiedBadge } from './VerifiedBadge';
 import { Hashtag } from './Hashtag';
-import { HeartButton, CommentButton, ShareButton, CommentSheet, CommunityButton } from './interactions';
+import { CommentButton, ShareButton, CommentSheet, CommunityButton } from './interactions';
 import { CinematicAvatar } from './ui/CinematicAvatar';
 import { ImmersiveMedia } from './ui/ImmersiveMedia';
-import { FloatingActionBar } from './ui/FloatingActionBar';
+import { ReactionButton, ReactionType } from './feed/ReactionPicker';
 import { useReactions } from '@/hooks/useReactions';
 import { useLibrary } from '@/hooks/useLibrary';
 import { useAuth } from '@/contexts/AuthContext';
@@ -43,6 +44,7 @@ interface PostCardProps {
   likes?: number;
   hasContentWarning?: boolean;
   contentWarningType?: string;
+  onPostClick?: () => void;
 }
 
 function formatCount(count: number): string {
@@ -63,14 +65,32 @@ export function PostCard({
   likes = 0,
   hasContentWarning,
   contentWarningType,
+  onPostClick,
 }: PostCardProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [showContent, setShowContent] = useState(!hasContentWarning);
   const [showHeartOverlay, setShowHeartOverlay] = useState(false);
   const [showCommentSheet, setShowCommentSheet] = useState(false);
+  const [currentReaction, setCurrentReaction] = useState<ReactionType | null>(null);
   const { heartCount, hasReacted, toggleReaction } = useReactions(id, likes);
   const { inLibrary, toggleLibrary } = useLibrary(id);
+
+  // Navigate to creator profile
+  const handleCreatorClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (authorId) {
+      navigate(`/profile/${authorId}`);
+    }
+  };
+
+  // Handle post content click - open modal
+  const handlePostContentClick = () => {
+    if (onPostClick) {
+      onPostClick();
+    }
+  };
 
   const handleDoubleTap = async () => {
     if (!user) {
@@ -91,10 +111,11 @@ export function PostCard({
     
     if (!hasReacted) {
       await toggleReaction();
+      setCurrentReaction('like');
     }
   };
 
-  const handleReaction = async () => {
+  const handleReaction = async (type: ReactionType | null) => {
     if (!user) {
       toast({
         title: t('auth.required'),
@@ -104,7 +125,13 @@ export function PostCard({
       return;
     }
     
-    await toggleReaction();
+    setCurrentReaction(type);
+    // If toggling off or changing reaction
+    if (type === null && hasReacted) {
+      await toggleReaction();
+    } else if (type !== null && !hasReacted) {
+      await toggleReaction();
+    }
   };
 
   const handleLibraryToggle = async () => {
@@ -143,21 +170,29 @@ export function PostCard({
         className="px-4 py-5 border-b border-border/40"
       >
         <div className="flex gap-3">
-          <CinematicAvatar
-            src={author.avatar}
-            alt={author.name}
-            fallback={author.name.charAt(0)}
-            size="md"
-            ring="muted"
-            interactive
-          />
+          {/* Clickable Avatar */}
+          <motion.button
+            onClick={handleCreatorClick}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="cursor-pointer"
+          >
+            <CinematicAvatar
+              src={author.avatar}
+              alt={author.name}
+              fallback={author.name.charAt(0)}
+              size="md"
+              ring="muted"
+            />
+          </motion.button>
+          
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-1">
-              <div className="flex items-center gap-1.5">
+              <button onClick={handleCreatorClick} className="flex items-center gap-1.5 hover:underline">
                 <span className="font-semibold text-foreground text-[15px]">{author.name}</span>
                 {author.isVerified && <VerifiedBadge size="sm" />}
                 <span className="text-muted-foreground text-sm">· {createdAt}</span>
-              </div>
+              </button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
@@ -182,9 +217,15 @@ export function PostCard({
               </DropdownMenu>
             </div>
             
-            <p className="text-[15px] text-foreground leading-relaxed mb-3">
-              {renderContent()}
-            </p>
+            {/* Clickable content area */}
+            <button 
+              onClick={handlePostContentClick}
+              className="text-left w-full"
+            >
+              <p className="text-[15px] text-foreground leading-relaxed mb-3">
+                {renderContent()}
+              </p>
+            </button>
 
             {tags.length > 0 && !content.includes('#') && (
               <div className="flex flex-wrap gap-1.5 mb-3">
@@ -195,10 +236,11 @@ export function PostCard({
             )}
 
             <div className="flex items-center gap-5 pt-1">
-              <HeartButton 
+              <ReactionButton 
+                postId={id}
+                currentReaction={currentReaction}
                 count={heartCount}
-                active={hasReacted}
-                onClick={handleReaction}
+                onReact={handleReaction}
               />
               <CommentButton 
                 count={commentCount}
@@ -260,6 +302,7 @@ export function PostCard({
           overlay="full"
           onDoubleTap={handleDoubleTap}
           showHeartOnDoubleTap={true}
+          onClick={handlePostContentClick}
         >
           {/* Floating Header - Author Info */}
           <motion.div 
@@ -268,7 +311,13 @@ export function PostCard({
             transition={{ delay: 0.2, duration: 0.5 }}
             className="absolute top-4 left-4 right-4 flex items-center justify-between z-20"
           >
-            <div className="flex items-center gap-3">
+            {/* Clickable creator info */}
+            <motion.button 
+              onClick={handleCreatorClick}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="flex items-center gap-3"
+            >
               <CinematicAvatar
                 src={author.avatar}
                 alt={author.name}
@@ -276,14 +325,14 @@ export function PostCard({
                 size="md"
                 ring="gradient"
               />
-              <div>
+              <div className="text-left">
                 <div className="flex items-center gap-1.5">
                   <span className="font-semibold text-foreground text-[15px] drop-shadow-md">{author.name}</span>
                   {author.isVerified && <VerifiedBadge size="sm" />}
                 </div>
                 <p className="text-sm text-foreground/70 drop-shadow-sm">@{author.handle}</p>
               </div>
-            </div>
+            </motion.button>
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -329,13 +378,14 @@ export function PostCard({
                 </div>
               )}
 
-              {/* Actions Bar */}
+              {/* Actions Bar with ReactionButton */}
               <div className="flex items-center justify-between pt-2">
                 <div className="flex items-center gap-5">
-                  <HeartButton 
+                  <ReactionButton 
+                    postId={id}
+                    currentReaction={currentReaction}
                     count={heartCount}
-                    active={hasReacted}
-                    onClick={handleReaction}
+                    onReact={handleReaction}
                   />
                   <CommentButton 
                     count={commentCount}

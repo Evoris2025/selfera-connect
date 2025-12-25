@@ -1,6 +1,6 @@
 import { Video, Image, Film } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
+import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
 
 interface ComposerBarProps {
   onOpenComposer: (mode?: 'text' | 'video' | 'image' | 'reel') => void;
@@ -10,15 +10,18 @@ export function ComposerBar({ onOpenComposer }: ComposerBarProps) {
   const { user } = useAuth();
   const displayName = user?.email?.split('@')[0] || 'there';
   const userInitial = displayName.charAt(0).toUpperCase();
+  // TODO: Replace with actual profile photo from user metadata
+  const profilePhotoUrl = user?.user_metadata?.avatar_url || '';
 
   return (
     <div className="flex items-center gap-3 p-3 bg-card rounded-xl">
-      <Avatar className="h-10 w-10 flex-shrink-0">
-        <AvatarImage src="" alt={displayName} />
-        <AvatarFallback className="bg-secondary text-secondary-foreground text-sm">
-          {userInitial}
-        </AvatarFallback>
-      </Avatar>
+      <CinematicAvatar
+        src={profilePhotoUrl}
+        alt={displayName}
+        fallback={userInitial}
+        size="md"
+        ring="muted"
+      />
 
       <button
         onClick={() => onOpenComposer('text')}
