@@ -5,13 +5,14 @@ import { ComposerBar } from '@/components/ComposerBar';
 import { ExpressionsRow } from '@/components/ExpressionsRow';
 import { CreatorStudio } from '@/components/creator';
 import { PostViewerModal, CrossroadFeed, FeedPost } from '@/components/feed';
+import { PullToRefresh } from '@/components/ui/PullToRefresh';
 import { useFeedPosts } from '@/hooks/useFeedPosts';
 
 type CreatorMode = 'expression' | 'post' | 'image' | 'video' | null;
 
 export default function Feed() {
   const navigate = useNavigate();
-  const { posts, loading, loadingMore, hasMore, loadMore } = useFeedPosts();
+  const { posts, loading, loadingMore, hasMore, loadMore, refresh } = useFeedPosts();
   const [creatorOpen, setCreatorOpen] = useState(false);
   const [creatorMode, setCreatorMode] = useState<CreatorMode>(null);
   
@@ -52,7 +53,11 @@ export default function Feed() {
 
   return (
     <AppLayout onCreatePost={handleCreatePost} title="The Feed">
-      <div className="flex flex-col bg-cinematic min-h-screen">
+      <PullToRefresh 
+        onRefresh={refresh} 
+        className="flex flex-col bg-cinematic min-h-screen"
+        disabled={loading}
+      >
         {/* Composer Bar */}
         <div className="px-4 pt-3 pb-3">
           <ComposerBar onOpenComposer={handleOpenComposer} />
@@ -72,7 +77,7 @@ export default function Feed() {
           onPostClick={handlePostClick}
           onLoadMore={loadMore}
         />
-      </div>
+      </PullToRefresh>
 
       {/* Post Viewer Modal */}
       {selectedPost && (
