@@ -279,100 +279,122 @@ export function DiscoverRow() {
         </button>
       </div>
 
-      {/* Collapsible Content - Manual Scroll with Animated Cards */}
+      {/* Collapsible Content - Infinite Marquee Scroll */}
       <CollapsibleContent>
-        <div className="overflow-x-auto scrollbar-hide">
-          <div className="flex gap-3 px-5">
-            <AnimatePresence mode="popLayout">
-              {profiles.map(profile => {
-                const isPending = pendingFollows.has(profile.id);
-                
-                return (
-                  <motion.div
-                    key={profile.id}
-                    layout
-                    initial={{ opacity: 0, scale: 0.8, x: 20 }}
-                    animate={{ opacity: 1, scale: 1, x: 0 }}
-                    exit={{ opacity: 0, scale: 0.8, x: -20 }}
-                    transition={{ 
-                      duration: 0.3,
-                      layout: { duration: 0.3 }
-                    }}
-                    className="flex-shrink-0"
+        <div className="overflow-hidden relative">
+          {/* Gradient masks for smooth edges */}
+          <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
+          
+          <motion.div
+            className="flex gap-3 px-5"
+            animate={{
+              x: [0, -((profiles.length * 172) / 2)],
+            }}
+            transition={{
+              x: {
+                repeat: Infinity,
+                repeatType: "loop",
+                duration: profiles.length * 4,
+                ease: "linear",
+              },
+            }}
+            whileHover={{ animationPlayState: "paused" }}
+            style={{ animationPlayState: "running" }}
+            onHoverStart={(e) => {
+              const target = e.target as HTMLElement;
+              target.style.animationPlayState = "paused";
+            }}
+            onHoverEnd={(e) => {
+              const target = e.target as HTMLElement;
+              target.style.animationPlayState = "running";
+            }}
+          >
+            {/* Duplicate profiles for seamless loop */}
+            {[...profiles, ...profiles].map((profile, index) => {
+              const isPending = pendingFollows.has(profile.id);
+              const uniqueKey = `${profile.id}-${index}`;
+              
+              return (
+                <motion.div
+                  key={uniqueKey}
+                  className="flex-shrink-0"
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <GlassCard
+                    variant="card"
+                    hover
+                    className="w-40 p-4 flex flex-col items-center text-center"
                   >
-                    <GlassCard
-                      variant="card"
-                      hover
-                      className="w-40 p-4 flex flex-col items-center text-center"
+                    {/* Premium Avatar with Gradient Ring */}
+                    <div 
+                      className="mb-3 cursor-pointer"
+                      onClick={() => navigate(`/profile/${profile.handle || profile.id}`)}
                     >
-                      {/* Premium Avatar with Gradient Ring */}
-                      <div 
-                        className="mb-3 cursor-pointer"
-                        onClick={() => navigate(`/profile/${profile.handle || profile.id}`)}
-                      >
-                        <CinematicAvatar
-                          src={profile.avatar_url || ''}
-                          alt={profile.display_name || ''}
-                          fallback={(profile.display_name || 'U').charAt(0)}
-                          size="lg"
-                          ring="gradient"
-                          interactive
-                        />
-                      </div>
+                      <CinematicAvatar
+                        src={profile.avatar_url || ''}
+                        alt={profile.display_name || ''}
+                        fallback={(profile.display_name || 'U').charAt(0)}
+                        size="lg"
+                        ring="gradient"
+                        interactive
+                      />
+                    </div>
 
-                      {/* Name */}
-                      <p className="text-sm font-semibold text-foreground truncate w-full mb-0.5">
-                        {profile.display_name || 'User'}
-                      </p>
-                      
-                      {/* Handle */}
-                      <p className="text-xs text-muted-foreground truncate w-full mb-3">
-                        @{profile.handle || 'user'}
-                      </p>
+                    {/* Name */}
+                    <p className="text-sm font-semibold text-foreground truncate w-full mb-0.5">
+                      {profile.display_name || 'User'}
+                    </p>
+                    
+                    {/* Handle */}
+                    <p className="text-xs text-muted-foreground truncate w-full mb-3">
+                      @{profile.handle || 'user'}
+                    </p>
 
-                      {/* Follow Button with Checkmark Animation */}
-                      <motion.div
-                        animate={isPending ? {
-                          scale: [1, 1.08, 1],
-                          transition: {
-                            duration: 1.6,
-                            repeat: Infinity,
-                            repeatDelay: 0.4,
-                            ease: "easeInOut"
-                          }
-                        } : {}}
-                        className="w-full"
+                    {/* Follow Button with Checkmark Animation */}
+                    <motion.div
+                      animate={isPending ? {
+                        scale: [1, 1.08, 1],
+                        transition: {
+                          duration: 1.6,
+                          repeat: Infinity,
+                          repeatDelay: 0.4,
+                          ease: "easeInOut"
+                        }
+                      } : {}}
+                      className="w-full"
+                    >
+                      <Button
+                        size="sm"
+                        onClick={() => handleFollowToggle(profile.id, profile.isFollowing)}
+                        disabled={isPending}
+                        className={`w-full h-8 text-xs font-semibold rounded-lg transition-all duration-300 overflow-hidden ${
+                          isPending 
+                            ? 'bg-blue-500 hover:bg-blue-500 text-white shadow-[0_0_12px_rgba(59,130,246,0.5)]' 
+                            : 'bg-gradient-to-r from-primary via-pink-500 to-orange-400 hover:opacity-90 text-white'
+                        }`}
                       >
-                        <Button
-                          size="sm"
-                          onClick={() => handleFollowToggle(profile.id, profile.isFollowing)}
-                          disabled={isPending}
-                          className={`w-full h-8 text-xs font-semibold rounded-lg transition-all duration-300 overflow-hidden ${
-                            isPending 
-                              ? 'bg-blue-500 hover:bg-blue-500 text-white shadow-[0_0_12px_rgba(59,130,246,0.5)]' 
-                              : 'bg-gradient-to-r from-primary via-pink-500 to-orange-400 hover:opacity-90 text-white'
-                          }`}
-                        >
-                          <AnimatePresence mode="wait">
-                            {isPending ? (
-                              <motion.div
-                                key="check"
-                                initial={{ scale: 0, opacity: 0 }}
-                                animate={{ 
-                                  scale: [0, 1.4, 1],
-                                  opacity: 1,
-                                }}
-                                exit={{ scale: 0, opacity: 0 }}
-                                transition={{ 
-                                  duration: 0.5,
-                                  ease: [0.34, 1.56, 0.64, 1],
-                                  times: [0, 0.6, 1]
-                                }}
-                                className="flex items-center justify-center"
-                              >
-                                <Check className="h-5 w-5" strokeWidth={3.5} />
-                              </motion.div>
-                            ) : (
+                        <AnimatePresence mode="wait">
+                          {isPending ? (
+                            <motion.div
+                              key="check"
+                              initial={{ scale: 0, opacity: 0 }}
+                              animate={{ 
+                                scale: [0, 1.4, 1],
+                                opacity: 1,
+                              }}
+                              exit={{ scale: 0, opacity: 0 }}
+                              transition={{ 
+                                duration: 0.5,
+                                ease: [0.34, 1.56, 0.64, 1],
+                                times: [0, 0.6, 1]
+                              }}
+                              className="flex items-center justify-center"
+                            >
+                              <Check className="h-5 w-5" strokeWidth={3.5} />
+                            </motion.div>
+                          ) : (
                             <motion.span
                               key="follow"
                               initial={{ opacity: 0, y: 10 }}
@@ -386,12 +408,11 @@ export function DiscoverRow() {
                         </AnimatePresence>
                       </Button>
                     </motion.div>
-                    </GlassCard>
-                  </motion.div>
-                );
-              })}
-            </AnimatePresence>
-          </div>
+                  </GlassCard>
+                </motion.div>
+              );
+            })}
+          </motion.div>
         </div>
       </CollapsibleContent>
     </Collapsible>
