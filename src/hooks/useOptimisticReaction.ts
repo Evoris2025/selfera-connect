@@ -1,5 +1,4 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { toast } from '@/hooks/use-toast';
 
 interface OptimisticState {
   isActive: boolean;
@@ -91,12 +90,6 @@ export function useOptimisticReaction({
           count: Math.max(0, prev.count + (prev.isActive ? -1 : 1)),
         }));
         latestStateRef.current = !stateToSync;
-        
-        toast({
-          title: "Couldn't save",
-          description: "Please try again",
-          variant: "destructive",
-        });
       } finally {
         setIsPending(false);
       }
@@ -165,11 +158,6 @@ export function useOptimisticToggle({
       } catch (error) {
         setIsActive(!latestStateRef.current);
         latestStateRef.current = !latestStateRef.current;
-        toast({
-          title: "Couldn't save",
-          description: "Please try again",
-          variant: "destructive",
-        });
       } finally {
         setIsPending(false);
       }

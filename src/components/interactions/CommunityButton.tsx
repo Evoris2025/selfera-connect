@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { usePersonalCommunity } from '@/hooks/usePersonalCommunity';
 import { useAuth } from '@/contexts/AuthContext';
-import { toast } from '@/hooks/use-toast';
 import { instagramAnimations, useReducedMotion, triggerHaptic } from '@/hooks/useInstagramAnimation';
 
 interface CommunityButtonProps {
@@ -46,11 +45,9 @@ export function CommunityButton({ authorId, authorName, size = 'md' }: Community
   const handlePointerDown = async (e: React.PointerEvent) => {
     e.preventDefault();
     if (!user) {
-      toast({ title: t('auth.required'), description: t('community.loginToAdd'), variant: 'destructive' });
       return;
     }
     if (user.id === authorId) {
-      toast({ title: t('community.cannotAddSelf'), description: t('community.cannotAddSelfDesc'), variant: 'destructive' });
       return;
     }
     triggerHaptic('light');
