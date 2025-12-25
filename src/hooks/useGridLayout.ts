@@ -4,6 +4,15 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export type GridLayoutStyle = 'uniform' | 'mosaic4' | 'mosaic5' | 'mosaic6' | 'mosaic7' | 'mosaic8';
 
+const VALID_GRID_LAYOUT_STYLES: GridLayoutStyle[] = [
+  'uniform',
+  'mosaic4',
+  'mosaic5',
+  'mosaic6',
+  'mosaic7',
+  'mosaic8',
+];
+
 interface UseGridLayoutResult {
   layoutStyle: GridLayoutStyle;
   loading: boolean;
@@ -34,8 +43,11 @@ export function useGridLayout(profileUserId?: string): UseGridLayoutResult {
 
         if (error) throw error;
         
-        if (data?.layout_style) {
-          setLayoutStyleState(data.layout_style as GridLayoutStyle);
+        const style = data?.layout_style;
+        if (style && VALID_GRID_LAYOUT_STYLES.includes(style as GridLayoutStyle)) {
+          setLayoutStyleState(style as GridLayoutStyle);
+        } else if (style) {
+          console.warn('Unknown grid layout style from backend:', style);
         }
       } catch (err) {
         console.error('Error fetching grid layout:', err);
