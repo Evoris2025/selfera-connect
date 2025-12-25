@@ -103,6 +103,78 @@
     --input: 230 15% 92%;
     --ring: 12 76% 55%;
   }
+
+  /* ========== COLOR THEMES ========== */
+  
+  /* Coral (Default) - Warm coral/salmon for wellbeing */
+  .theme-coral {
+    --primary: 12 76% 61%;
+    --primary-muted: 12 60% 50%;
+    --accent: 270 50% 60%;
+    --ring: 12 76% 61%;
+    --gradient-start: 12 76% 61%;
+    --gradient-mid: 340 65% 55%;
+    --gradient-end: 270 50% 60%;
+    --ambient-primary: 12 76% 61%;
+    --sidebar-primary: 12 76% 61%;
+    --sidebar-ring: 12 76% 61%;
+  }
+
+  /* Ocean - Calm, trustworthy blue */
+  .theme-ocean {
+    --primary: 200 80% 55%;
+    --primary-muted: 200 65% 45%;
+    --accent: 180 60% 50%;
+    --ring: 200 80% 55%;
+    --gradient-start: 200 80% 55%;
+    --gradient-mid: 220 70% 55%;
+    --gradient-end: 180 60% 50%;
+    --ambient-primary: 200 80% 55%;
+    --sidebar-primary: 200 80% 55%;
+    --sidebar-ring: 200 80% 55%;
+  }
+
+  /* Rose - Gentle, creative pink */
+  .theme-rose {
+    --primary: 340 65% 60%;
+    --primary-muted: 340 50% 50%;
+    --accent: 320 60% 55%;
+    --ring: 340 65% 60%;
+    --gradient-start: 340 65% 60%;
+    --gradient-mid: 355 70% 60%;
+    --gradient-end: 320 60% 55%;
+    --ambient-primary: 340 65% 60%;
+    --sidebar-primary: 340 65% 60%;
+    --sidebar-ring: 340 65% 60%;
+  }
+
+  /* Forest - Natural, balanced green */
+  .theme-forest {
+    --primary: 155 55% 50%;
+    --primary-muted: 155 45% 40%;
+    --accent: 140 50% 45%;
+    --ring: 155 55% 50%;
+    --gradient-start: 155 55% 50%;
+    --gradient-mid: 170 50% 45%;
+    --gradient-end: 140 50% 45%;
+    --ambient-primary: 155 55% 50%;
+    --sidebar-primary: 155 55% 50%;
+    --sidebar-ring: 155 55% 50%;
+  }
+
+  /* Violet - Creative, premium purple */
+  .theme-violet {
+    --primary: 270 60% 60%;
+    --primary-muted: 270 50% 50%;
+    --accent: 290 55% 55%;
+    --ring: 270 60% 60%;
+    --gradient-start: 270 60% 60%;
+    --gradient-mid: 285 55% 55%;
+    --gradient-end: 290 55% 55%;
+    --ambient-primary: 270 60% 60%;
+    --sidebar-primary: 270 60% 60%;
+    --sidebar-ring: 270 60% 60%;
+  }
 }
 
 @layer base {

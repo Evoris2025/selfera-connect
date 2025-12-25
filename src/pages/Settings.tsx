@@ -1,11 +1,11 @@
 import { useTranslation } from 'react-i18next';
-import { Moon, Globe, Eye, Bell, Lock, User, HelpCircle } from 'lucide-react';
+import { Palette, Globe, Eye, Bell, Lock, User, HelpCircle } from 'lucide-react';
 import { AppLayout } from '@/components/AppLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { languages, changeLanguage, getCurrentLanguage, type LanguageCode } from '@/i18n';
+import { ThemeSelector } from '@/components/settings/ThemeSelector';
 import {
   Select,
   SelectContent,
@@ -47,6 +47,24 @@ export default function Settings() {
         <h1 className="text-2xl font-bold text-foreground mb-6">{t('settings.title')}</h1>
 
         <div className="space-y-4">
+          {/* Theme */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <Palette className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <CardTitle className="text-base">{t('settings.theme', 'Theme')}</CardTitle>
+                  <CardDescription>Choose your color theme</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <ThemeSelector />
+            </CardContent>
+          </Card>
+
           {/* Language */}
           <Card>
             <CardHeader>
