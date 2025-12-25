@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { MoreVertical, Lock, MapPin, MessageCircle, Pencil, Share2, Settings, Play } from 'lucide-react';
+import { MoreVertical, Lock, MapPin, MessageCircle, Camera, Share2, Settings } from 'lucide-react';
 import { DiscoverRow } from '@/components/DiscoverRow';
 import { RearrangeableGrid } from '@/components/profile/RearrangeableGrid';
 import { RearrangeableTabBar } from '@/components/profile/RearrangeableTabBar';
@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils';
 import { GridLayoutStyle } from '@/hooks/useGridLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
+import { useProfilePhotoUpload } from '@/hooks/useProfilePhotoUpload';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -116,7 +117,9 @@ export default function Profile() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user } = useAuth();
-  const { avatarUrl } = useCurrentUserAvatar();
+  const { avatarUrl, refreshAvatar } = useCurrentUserAvatar();
+  const { uploadProfilePhoto, isUploading } = useProfilePhotoUpload();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [activeTab, setActiveTab] = useState('posts');
   const [followerCount, setFollowerCount] = useState(mockUser.stats.followers);
@@ -125,6 +128,27 @@ export default function Profile() {
   const [gridLayout, setGridLayout] = useState<GridLayoutStyle>('uniform');
   const isOwnProfile = !handle || handle === mockUser.handle;
   const profileUserId = (isOwnProfile ? user?.id : undefined) ?? mockUser.id;
+
+  const handleAvatarClick = () => {
+    if (isOwnProfile && fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    const newUrl = await uploadProfilePhoto(file);
+    if (newUrl) {
+      refreshAvatar();
+    }
+    
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
   const openListModal = (type: ListType) => {
     setListModalType(type);
@@ -226,18 +250,50 @@ export default function Profile() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             >
-              {/* Avatar with gradient ring */}
+              {/* Avatar with gradient ring and upload overlay */}
               <motion.div
-                className="relative flex-shrink-0"
+                className="relative flex-shrink-0 group"
                 style={{ y: avatarY }}
               >
-                <div className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full p-[3px] gradient-brand shadow-glow">
-                  <div className="w-full h-full rounded-full overflow-hidden border-[3px] border-background">
+                {/* Hidden file input */}
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept="image/*"
+                  className="hidden"
+                />
+                
+                <div 
+                  className={cn(
+                    "w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full p-[3px] gradient-brand shadow-glow",
+                    isOwnProfile && "cursor-pointer"
+                  )}
+                  onClick={handleAvatarClick}
+                >
+                  <div className="w-full h-full rounded-full overflow-hidden border-[3px] border-background relative">
                     <img
                       src={isOwnProfile ? avatarUrl : mockUser.avatar}
                       alt={mockUser.name}
-                      className="w-full h-full object-cover img-cinematic"
+                      className={cn(
+                        "w-full h-full object-cover img-cinematic transition-opacity",
+                        isUploading && "opacity-50"
+                      )}
                     />
+                    
+                    {/* Upload overlay - only on own profile */}
+                    {isOwnProfile && (
+                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Camera className="w-6 h-6 text-white" />
+                      </div>
+                    )}
+                    
+                    {/* Loading spinner */}
+                    {isUploading && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      </div>
+                    )}
                   </div>
                 </div>
               </motion.div>
