@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, type TouchEvent } from 'react';
 import { motion, AnimatePresence, useAnimationControls } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { 
@@ -60,9 +60,11 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 8, scale: 0.9 }}
           transition={springTransitions.bouncy}
+          onContextMenu={(e) => e.preventDefault()}
+          onClick={(e) => e.stopPropagation()}
           className="absolute bottom-full left-0 mb-2 z-50"
         >
-          <div className="flex items-center gap-1.5 px-3 py-2.5 bg-card/95 backdrop-blur-xl rounded-full shadow-elevated border border-border/30">
+          <div className="flex items-center gap-1.5 px-3 py-2.5 bg-card/95 backdrop-blur-xl rounded-full shadow-elevated border border-border/30 select-none touch-manipulation">
             {reactions.map((reaction, index) => (
               <motion.button
                 key={reaction.type}
@@ -73,9 +75,17 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
                   ...springTransitions.elastic
                 }}
                 whileTap={{ scale: 0.85 }}
+                onPointerDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+                onPointerUp={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleSelect(reaction.type);
+                }}
                 onMouseEnter={() => setHoveredReaction(reaction.type)}
                 onMouseLeave={() => setHoveredReaction(null)}
-                onClick={(e) => { e.stopPropagation(); handleSelect(reaction.type); }}
                 className={cn(
                   'relative p-2 rounded-full transition-colors',
                   currentReaction === reaction.type && 'bg-primary/20'
@@ -175,6 +185,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact }: Reac
   const [localBurst, setLocalBurst] = useState<BurstParticle[] | null>(null);
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
   const hoverTimer = useRef<NodeJS.Timeout | null>(null);
+  const suppressClickRef = useRef(false);
   const buttonControls = useAnimationControls();
 
   const triggerLocalBurst = useCallback((color?: string) => {
@@ -186,12 +197,17 @@ export function ReactionButton({ postId, currentReaction, count, onReact }: Reac
   }, []);
 
   const handleMouseEnter = () => {
+    // On touch devices, some browsers emit synthetic mouse events after touch.
+    // Ignore hover-open logic so the picker doesn't re-open after a tap.
+    if (typeof navigator !== 'undefined' && (navigator.maxTouchPoints ?? 0) > 0) return;
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
     hoverTimer.current = setTimeout(() => {
       setIsPickerOpen(true);
     }, 300);
   };
 
   const handleMouseLeave = () => {
+    if (typeof navigator !== 'undefined' && (navigator.maxTouchPoints ?? 0) > 0) return;
     if (hoverTimer.current) clearTimeout(hoverTimer.current);
     setTimeout(() => {
       if (!isLongPressing) {
@@ -200,8 +216,10 @@ export function ReactionButton({ postId, currentReaction, count, onReact }: Reac
     }, 200);
   };
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    e.preventDefault(); // Prevent browser context menu
+  const handleTouchStart = (e: TouchEvent<HTMLButtonElement>) => {
+    suppressClickRef.current = true;
+    e.preventDefault();
+    e.stopPropagation();
     longPressTimer.current = setTimeout(() => {
       setIsLongPressing(true);
       setIsPickerOpen(true);
@@ -209,13 +227,31 @@ export function ReactionButton({ postId, currentReaction, count, onReact }: Reac
     }, 400);
   };
 
-  const handleTouchEnd = (e: React.TouchEvent) => {
+  const endTouchInteraction = () => {
+    // Ignore the synthetic click that fires after touch
+    setTimeout(() => {
+      suppressClickRef.current = false;
+    }, 0);
+  };
+
+  const handleTouchEnd = (e: TouchEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    e.stopPropagation();
     if (longPressTimer.current) clearTimeout(longPressTimer.current);
     if (!isLongPressing) {
       handleQuickTap();
     }
     setIsLongPressing(false);
+    endTouchInteraction();
+  };
+
+  const handleTouchCancel = (e: TouchEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (longPressTimer.current) clearTimeout(longPressTimer.current);
+    setIsLongPressing(false);
+    setIsPickerOpen(false);
+    endTouchInteraction();
   };
 
   const handleQuickTap = async () => {
@@ -231,6 +267,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact }: Reac
   };
 
   const handleClick = () => {
+    if (suppressClickRef.current) return;
     if (!isPickerOpen) {
       handleQuickTap();
     }
@@ -278,10 +315,11 @@ export function ReactionButton({ postId, currentReaction, count, onReact }: Reac
         transition={buttonPressTransition}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchCancel}
         onContextMenu={(e) => e.preventDefault()}
         onClick={handleClick}
         className={cn(
-          'flex items-center gap-1.5 transition-colors group relative',
+          'flex items-center gap-1.5 transition-colors group relative select-none touch-manipulation [-webkit-touch-callout:none]',
           currentReaction ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
         )}
       >
