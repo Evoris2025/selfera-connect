@@ -6,6 +6,13 @@ import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
 import { ReactionButton, ReactionType } from './ReactionPicker';
 import { cn } from '@/lib/utils';
+import { 
+  modalBackdropVariants, 
+  modalContentVariants, 
+  modalTransition,
+  springTransitions,
+  buttonPressTransition
+} from '@/hooks/useMicroAnimations';
 
 export type PostContentType = 'image' | 'video' | 'text' | 'reel' | 'live';
 
@@ -37,25 +44,6 @@ interface PostViewerModalProps {
   contentType: PostContentType;
   onNavigateProfile?: (authorId: string) => void;
 }
-
-const backdropVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1 },
-};
-
-const modalVariants = {
-  hidden: { opacity: 0, scale: 0.95, y: 20 },
-  visible: { 
-    opacity: 1, 
-    scale: 1, 
-    y: 0,
-  },
-  exit: { 
-    opacity: 0, 
-    scale: 0.95, 
-    y: 20,
-  },
-};
 
 export function PostViewerModal({ 
   isOpen, 
@@ -110,29 +98,39 @@ export function PostViewerModal({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          variants={backdropVariants}
+          variants={modalBackdropVariants}
           initial="hidden"
           animate="visible"
-          exit="hidden"
+          exit="exit"
+          transition={{ duration: 0.2 }}
           onClick={handleBackdropClick}
           className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-md"
         >
           <motion.div
-            variants={modalVariants}
+            variants={modalContentVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
+            transition={modalTransition}
             className="relative w-full max-w-5xl max-h-[90vh] mx-4"
           >
-            {/* Close Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onClose}
-              className="absolute -top-12 right-0 text-foreground/80 hover:text-foreground z-10"
+            {/* Close Button with press animation */}
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1, ...springTransitions.snappy }}
+              className="absolute -top-12 right-0 z-10"
             >
-              <X className="h-6 w-6" />
-            </Button>
+              <motion.button
+                whileHover={{ scale: 1.1, rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
+                transition={buttonPressTransition}
+                onClick={onClose}
+                className="p-2 rounded-full text-foreground/80 hover:text-foreground hover:bg-foreground/10 transition-colors"
+              >
+                <X className="h-6 w-6" />
+              </motion.button>
+            </motion.div>
 
             {renderViewer()}
           </motion.div>
@@ -338,7 +336,11 @@ function TextPostViewer({ post, onProfileClick }: { post: PostViewerModalProps['
 // Reel Viewer (Instagram Reels-style)
 function ReelViewer({ post, onProfileClick }: { post: PostViewerModalProps['post']; onProfileClick: () => void }) {
   return (
-    <div className="relative h-[85vh] w-full max-w-md mx-auto bg-black rounded-xl overflow-hidden">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="relative h-[85vh] w-full max-w-md mx-auto bg-black rounded-xl overflow-hidden"
+    >
       {/* Video */}
       <video
         src={post.media?.url}
@@ -353,46 +355,42 @@ function ReelViewer({ post, onProfileClick }: { post: PostViewerModalProps['post
       {/* Overlay gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80 pointer-events-none" />
 
-      {/* Right actions */}
-      <div className="absolute right-4 bottom-32 flex flex-col items-center gap-6">
-        <motion.button 
-          whileTap={{ scale: 0.9 }}
-          className="flex flex-col items-center gap-1"
-        >
-          <div className="w-12 h-12 rounded-full bg-background/20 backdrop-blur flex items-center justify-center">
-            <Heart className="h-6 w-6 text-foreground" />
-          </div>
-          <span className="text-xs font-medium text-foreground">{post.likes}</span>
-        </motion.button>
-
-        <motion.button 
-          whileTap={{ scale: 0.9 }}
-          className="flex flex-col items-center gap-1"
-        >
-          <div className="w-12 h-12 rounded-full bg-background/20 backdrop-blur flex items-center justify-center">
-            <MessageCircle className="h-6 w-6 text-foreground" />
-          </div>
-          <span className="text-xs font-medium text-foreground">{post.commentCount}</span>
-        </motion.button>
-
-        <motion.button 
-          whileTap={{ scale: 0.9 }}
-          className="flex flex-col items-center gap-1"
-        >
-          <div className="w-12 h-12 rounded-full bg-background/20 backdrop-blur flex items-center justify-center">
-            <Send className="h-6 w-6 text-foreground" />
-          </div>
-        </motion.button>
-
-        <motion.button 
-          whileTap={{ scale: 0.9 }}
-          className="flex flex-col items-center gap-1"
-        >
-          <div className="w-12 h-12 rounded-full bg-background/20 backdrop-blur flex items-center justify-center">
-            <Bookmark className="h-6 w-6 text-foreground" />
-          </div>
-        </motion.button>
-      </div>
+      {/* Right actions with stagger */}
+      <motion.div 
+        initial="hidden"
+        animate="visible"
+        variants={{
+          hidden: { opacity: 0 },
+          visible: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.2 } }
+        }}
+        className="absolute right-4 bottom-32 flex flex-col items-center gap-6"
+      >
+        {[
+          { icon: Heart, count: post.likes, label: 'Like' },
+          { icon: MessageCircle, count: post.commentCount, label: 'Comment' },
+          { icon: Send, label: 'Share' },
+          { icon: Bookmark, label: 'Save' },
+        ].map(({ icon: Icon, count, label }) => (
+          <motion.button
+            key={label}
+            variants={{
+              hidden: { opacity: 0, x: 20, scale: 0.8 },
+              visible: { opacity: 1, x: 0, scale: 1 }
+            }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.85 }}
+            transition={buttonPressTransition}
+            className="flex flex-col items-center gap-1"
+          >
+            <div className="w-12 h-12 rounded-full bg-background/20 backdrop-blur flex items-center justify-center transition-colors hover:bg-background/30">
+              <Icon className="h-6 w-6 text-foreground" />
+            </div>
+            {count !== undefined && (
+              <span className="text-xs font-medium text-foreground">{count}</span>
+            )}
+          </motion.button>
+        ))}
+      </motion.div>
 
       {/* Bottom info */}
       <div className="absolute bottom-0 left-0 right-16 p-4">
@@ -419,7 +417,7 @@ function ReelViewer({ post, onProfileClick }: { post: PostViewerModalProps['post
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
