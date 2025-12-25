@@ -90,9 +90,21 @@ export function useFeedPosts(): UseFeedPostsResult {
         .in('post_id', postIds)
         .eq('is_removed', false);
 
+      // Fetch tags for posts
+      const { data: postTags } = await supabase
+        .from('post_tag_map')
+        .select(`
+          post_id,
+          topic_tags (
+            name
+          )
+        `)
+        .in('post_id', postIds);
+
       // Count reactions and comments per post
       const reactionsMap = new Map<string, number>();
       const commentsMap = new Map<string, number>();
+      const tagsMap = new Map<string, string[]>();
 
       reactionCounts?.forEach(r => {
         reactionsMap.set(r.post_id, (reactionsMap.get(r.post_id) || 0) + 1);
@@ -100,6 +112,14 @@ export function useFeedPosts(): UseFeedPostsResult {
 
       commentCounts?.forEach(c => {
         commentsMap.set(c.post_id, (commentsMap.get(c.post_id) || 0) + 1);
+      });
+
+      postTags?.forEach(pt => {
+        const tagName = (pt.topic_tags as any)?.name;
+        if (tagName) {
+          const existing = tagsMap.get(pt.post_id) || [];
+          tagsMap.set(pt.post_id, [...existing, tagName]);
+        }
       });
 
       // Transform to FeedPost format
@@ -136,7 +156,7 @@ export function useFeedPosts(): UseFeedPostsResult {
             url: post.media_url,
             thumbnail: post.thumbnail_url || undefined,
           } : undefined,
-          tags: [], // TODO: Fetch tags from post_tag_map
+          tags: tagsMap.get(post.id) || [],
           commentCount: commentsMap.get(post.id) || 0,
           createdAt: timeAgo,
           likes: reactionsMap.get(post.id) || 0,
