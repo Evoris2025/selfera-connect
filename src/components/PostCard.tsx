@@ -297,21 +297,19 @@ export function PostCard({
               onClick={handleCreatorClick}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="flex items-center gap-3"
+              className="flex items-center gap-2"
             >
               <CinematicAvatar
                 src={author.avatar}
                 alt={author.name}
                 fallback={author.name.charAt(0)}
-                size="md"
+                size="sm"
                 ring="gradient"
               />
-              <div className="text-left">
-                <div className="flex items-center gap-1.5">
-                  <span className="font-semibold text-foreground text-[15px] drop-shadow-md">{author.name}</span>
-                  {author.isVerified && <VerifiedBadge size="sm" />}
-                </div>
-                <p className="text-sm text-foreground/70 drop-shadow-sm">@{author.handle}</p>
+              <div className="flex items-center gap-1.5">
+                <span className="font-semibold text-foreground text-[15px] drop-shadow-md">{author.name}</span>
+                {author.isVerified && <VerifiedBadge size="sm" />}
+                <span className="text-foreground/70 text-sm drop-shadow-sm">@{author.handle}</span>
               </div>
             </motion.button>
             
