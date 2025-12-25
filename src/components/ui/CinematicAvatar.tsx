@@ -1,7 +1,8 @@
-import { forwardRef } from 'react';
+import { forwardRef, useState } from 'react';
 import { Avatar, AvatarImage, AvatarFallback } from './avatar';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import { User } from 'lucide-react';
 
 export interface CinematicAvatarProps {
   src?: string;
@@ -34,19 +35,21 @@ const ringPadding = {
   '3xl': 'p-[5px]',
 };
 
-const fallbackTextSize = {
-  xs: 'text-xs',
-  sm: 'text-sm',
-  md: 'text-base',
-  lg: 'text-lg',
-  xl: 'text-2xl',
-  '2xl': 'text-3xl',
-  '3xl': 'text-4xl',
+const iconSize = {
+  xs: 'h-3 w-3',
+  sm: 'h-4 w-4',
+  md: 'h-5 w-5',
+  lg: 'h-6 w-6',
+  xl: 'h-9 w-9',
+  '2xl': 'h-11 w-11',
+  '3xl': 'h-14 w-14',
 };
 
 const CinematicAvatar = forwardRef<HTMLDivElement, CinematicAvatarProps>(
   ({ src, alt, fallback, size = 'md', ring = 'none', className, interactive = false, onClick }, ref) => {
+    const [imageError, setImageError] = useState(false);
     const hasRing = ring !== 'none';
+    const showImage = src && !imageError;
     
     const ringClasses = {
       none: '',
@@ -58,22 +61,20 @@ const CinematicAvatar = forwardRef<HTMLDivElement, CinematicAvatarProps>(
 
     const content = (
       <Avatar className={cn(sizeClasses[size], 'ring-2 ring-background', className)}>
-        {src && (
+        {showImage && (
           <AvatarImage 
             src={src} 
             alt={alt} 
             className="object-cover"
             loading="eager"
+            onError={() => setImageError(true)}
           />
         )}
         <AvatarFallback 
-          className={cn(
-            'bg-gradient-to-br from-primary/80 to-secondary text-primary-foreground font-medium',
-            fallbackTextSize[size]
-          )}
-          delayMs={src ? 600 : 0}
+          className="bg-gradient-to-br from-primary/60 to-secondary/80 text-primary-foreground flex items-center justify-center"
+          delayMs={showImage ? 600 : 0}
         >
-          {fallback || alt?.charAt(0)?.toUpperCase() || '?'}
+          <User className={cn(iconSize[size], 'opacity-70')} />
         </AvatarFallback>
       </Avatar>
     );

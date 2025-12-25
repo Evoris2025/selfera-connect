@@ -12,6 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { BrandMark } from '@/components/BrandMark';
 import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
 import { motion } from 'framer-motion';
+import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
 
 interface AppHeaderProps {
   title?: string;
@@ -19,17 +20,14 @@ interface AppHeaderProps {
 
 export function AppHeader({ title }: AppHeaderProps) {
   const { t } = useTranslation();
-  const { user, signOut } = useAuth();
+  const { signOut } = useAuth();
   const navigate = useNavigate();
+  const { avatarUrl, displayName } = useCurrentUserAvatar();
 
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
   };
-
-  const displayName = user?.email?.split('@')[0] || 'User';
-  const userInitial = displayName.charAt(0).toUpperCase();
-  const profilePhotoUrl = user?.user_metadata?.avatar_url || '';
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/50 bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80">
@@ -59,9 +57,8 @@ export function AppHeader({ title }: AppHeaderProps) {
               className="rounded-full focus:outline-none focus:ring-2 focus:ring-primary/50"
             >
               <CinematicAvatar
-                src={profilePhotoUrl}
+                src={avatarUrl}
                 alt={displayName}
-                fallback={userInitial}
                 size="sm"
                 ring="primary"
               />

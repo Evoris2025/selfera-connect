@@ -15,6 +15,7 @@ import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { GridLayoutStyle } from '@/hooks/useGridLayout';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -115,6 +116,7 @@ export default function Profile() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { avatarUrl } = useCurrentUserAvatar();
   const [isFollowing, setIsFollowing] = useState(false);
   const [activeTab, setActiveTab] = useState('posts');
   const [followerCount, setFollowerCount] = useState(mockUser.stats.followers);
@@ -232,7 +234,7 @@ export default function Profile() {
                 <div className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full p-[3px] gradient-brand shadow-glow">
                   <div className="w-full h-full rounded-full overflow-hidden border-[3px] border-background">
                     <img
-                      src={mockUser.avatar}
+                      src={isOwnProfile ? avatarUrl : mockUser.avatar}
                       alt={mockUser.name}
                       className="w-full h-full object-cover img-cinematic"
                     />

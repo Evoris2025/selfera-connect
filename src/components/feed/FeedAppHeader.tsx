@@ -1,7 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Settings, LogOut, User, Compass, ShieldAlert } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { BrandMark } from '@/components/BrandMark';
 import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
 import { motion } from 'framer-motion';
+import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
 
 interface FeedAppHeaderProps {
   title?: string;
@@ -20,19 +20,14 @@ interface FeedAppHeaderProps {
 
 export function FeedAppHeader({ title }: FeedAppHeaderProps) {
   const { t } = useTranslation();
-  const { user, signOut } = useAuth();
+  const { signOut } = useAuth();
   const navigate = useNavigate();
+  const { avatarUrl, displayName } = useCurrentUserAvatar();
 
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
   };
-
-  // Get user display info
-  const displayName = user?.email?.split('@')[0] || 'User';
-  const userInitial = displayName.charAt(0).toUpperCase();
-  // TODO: Replace with actual profile photo URL from user metadata
-  const profilePhotoUrl = user?.user_metadata?.avatar_url || '';
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/50 bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80">
@@ -65,10 +60,9 @@ export function FeedAppHeader({ title }: FeedAppHeaderProps) {
                 whileTap={{ scale: 0.95 }}
                 className="rounded-full focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-background"
               >
-                <CinematicAvatar
-                  src={profilePhotoUrl}
+              <CinematicAvatar
+                  src={avatarUrl}
                   alt={displayName}
-                  fallback={userInitial}
                   size="sm"
                   ring="primary"
                   interactive
