@@ -120,9 +120,9 @@ export function ExpressionsRow() {
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.5 }}
-        className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full glass-floating flex items-center justify-center shadow-elevated hover:scale-105 transition-transform"
+        className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-primary/15 backdrop-blur-md border border-primary/25 flex items-center justify-center shadow-lg hover:bg-primary/20 hover:border-primary/30 transition-all duration-300"
       >
-        <ChevronRight className="h-4 w-4 text-foreground" />
+        <ChevronRight className="h-4 w-4 text-primary" />
       </motion.button>
     </div>
   );
