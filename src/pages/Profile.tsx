@@ -16,7 +16,9 @@ import { cn } from '@/lib/utils';
 import { GridLayoutStyle } from '@/hooks/useGridLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
+import { useCurrentUserCover } from '@/hooks/useCurrentUserCover';
 import { useProfilePhotoUpload } from '@/hooks/useProfilePhotoUpload';
+import { useCoverPhotoUpload } from '@/hooks/useCoverPhotoUpload';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -118,8 +120,11 @@ export default function Profile() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { avatarUrl, refreshAvatar } = useCurrentUserAvatar();
+  const { coverUrl, refreshCover } = useCurrentUserCover();
   const { uploadProfilePhoto, isUploading } = useProfilePhotoUpload();
+  const { uploadCoverPhoto, isUploading: isCoverUploading } = useCoverPhotoUpload();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [activeTab, setActiveTab] = useState('posts');
   const [followerCount, setFollowerCount] = useState(mockUser.stats.followers);
@@ -147,6 +152,27 @@ export default function Profile() {
     // Reset input
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
+    }
+  };
+
+  const handleCoverClick = () => {
+    if (isOwnProfile && coverInputRef.current) {
+      coverInputRef.current.click();
+    }
+  };
+
+  const handleCoverFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    const newUrl = await uploadCoverPhoto(file);
+    if (newUrl) {
+      refreshCover();
+    }
+    
+    // Reset input
+    if (coverInputRef.current) {
+      coverInputRef.current.value = '';
     }
   };
 
@@ -192,20 +218,54 @@ export default function Profile() {
         >
           {/* Full-Width Cover Image Banner */}
           <motion.div
-            className="relative h-48 sm:h-56 md:h-64 overflow-hidden"
+            className={cn(
+              "relative h-48 sm:h-56 md:h-64 overflow-hidden group",
+              isOwnProfile && "cursor-pointer"
+            )}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
+            onClick={handleCoverClick}
           >
+            {/* Hidden file input for cover */}
+            <input
+              type="file"
+              ref={coverInputRef}
+              onChange={handleCoverFileChange}
+              accept="image/*"
+              className="hidden"
+            />
+            
             <motion.img
-              src={mockUser.coverImage}
+              src={isOwnProfile ? coverUrl : mockUser.coverImage}
               alt=""
-              className="w-full h-full object-cover img-cinematic"
+              className={cn(
+                "w-full h-full object-cover img-cinematic transition-opacity",
+                isCoverUploading && "opacity-50"
+              )}
               style={{ scale: avatarScale }}
             />
+            
             {/* Premium gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-b from-background/30 to-transparent h-24" />
+            
+            {/* Cover upload overlay - only on own profile */}
+            {isOwnProfile && (
+              <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                <div className="flex items-center gap-2 text-white bg-black/50 px-4 py-2 rounded-full backdrop-blur-sm">
+                  <Camera className="w-5 h-5" />
+                  <span className="text-sm font-medium">Change cover</span>
+                </div>
+              </div>
+            )}
+            
+            {/* Loading spinner for cover */}
+            {isCoverUploading && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="w-10 h-10 border-3 border-white border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
             
             {/* Top Right Menu Button */}
             {isOwnProfile && (
