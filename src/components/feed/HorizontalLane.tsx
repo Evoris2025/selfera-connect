@@ -115,24 +115,6 @@ export function HorizontalLane<T>({
           </motion.div>
         ))}
       </div>
-
-      {/* Dot indicators */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-30">
-        {items.map((_, index) => (
-          <motion.button
-            key={index}
-            onClick={() => onIndexChange(index)}
-            className={cn(
-              'h-1.5 rounded-full transition-all duration-300',
-              index === activeIndex
-                ? 'w-6 bg-primary'
-                : 'w-1.5 bg-foreground/40 hover:bg-foreground/60'
-            )}
-            whileHover={{ scale: 1.2 }}
-            whileTap={{ scale: 0.9 }}
-          />
-        ))}
-      </div>
     </div>
   );
 }
