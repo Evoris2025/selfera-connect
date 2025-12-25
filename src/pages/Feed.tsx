@@ -12,7 +12,7 @@ type CreatorMode = 'expression' | 'post' | 'image' | 'video' | null;
 
 export default function Feed() {
   const navigate = useNavigate();
-  const { posts, loading, loadingMore, hasMore, loadMore, refresh } = useFeedPosts();
+  const { posts, loading, refreshing, loadingMore, hasMore, loadMore, refresh } = useFeedPosts();
   const [creatorOpen, setCreatorOpen] = useState(false);
   const [creatorMode, setCreatorMode] = useState<CreatorMode>(null);
   
@@ -56,7 +56,7 @@ export default function Feed() {
       <PullToRefresh 
         onRefresh={refresh} 
         className="flex flex-col bg-cinematic min-h-screen"
-        disabled={loading}
+        disabled={loading || refreshing}
       >
         {/* Composer Bar */}
         <div className="px-4 pt-3 pb-3">
@@ -72,6 +72,7 @@ export default function Feed() {
         <CrossroadFeed
           posts={posts}
           loading={loading}
+          refreshing={refreshing}
           loadingMore={loadingMore}
           hasMore={hasMore}
           onPostClick={handlePostClick}

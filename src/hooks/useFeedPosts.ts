@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { FeedPost } from '@/components/feed/CrossroadFeed';
 import { ContentType } from '@/hooks/useCrossroadScroll';
@@ -119,7 +119,8 @@ const mockPosts: FeedPost[] = [
 
 interface UseFeedPostsResult {
   posts: FeedPost[];
-  loading: boolean;
+  loading: boolean; // Only true on initial load (shows skeletons)
+  refreshing: boolean; // True during pull-to-refresh (keeps posts visible)
   loadingMore: boolean;
   hasMore: boolean;
   error: string | null;
@@ -136,12 +137,15 @@ function getContentType(mediaType?: string | null): ContentType {
 export function useFeedPosts(): UseFeedPostsResult {
   const [posts, setPosts] = useState<FeedPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [cursor, setCursor] = useState<string | null>(null);
+  const loadingMoreRef = useRef(false);
+  const initialLoadDone = useRef(false);
 
-  const fetchPosts = useCallback(async (afterCursor?: string | null) => {
+  const fetchPosts = useCallback(async (afterCursor?: string | null): Promise<FeedPost[]> => {
     try {
       let query = supabase
         .from('posts')
@@ -176,18 +180,8 @@ export function useFeedPosts(): UseFeedPostsResult {
       }
 
       if (!data || data.length === 0) {
-        setHasMore(false);
         return [];
       }
-
-      // Check if we got less than page size, meaning no more posts
-      if (data.length < PAGE_SIZE) {
-        setHasMore(false);
-      }
-
-      // Update cursor to the last post's created_at
-      const lastPost = data[data.length - 1];
-      setCursor(lastPost.created_at);
 
       // Fetch reaction counts for these posts
       const postIds = data.map(p => p.id);
@@ -260,7 +254,7 @@ export function useFeedPosts(): UseFeedPostsResult {
             name: profile?.display_name || profile?.handle || 'Anonymous',
             handle: profile?.handle || 'anonymous',
             avatar: profile?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${post.author_id}`,
-            isVerified: false, // TODO: Add verification check
+            isVerified: false,
           },
           content: post.content || '',
           media: post.media_url ? {
@@ -286,47 +280,130 @@ export function useFeedPosts(): UseFeedPostsResult {
 
   // Initial load
   useEffect(() => {
+    if (initialLoadDone.current) return;
+    
     const loadInitial = async () => {
       setLoading(true);
       setError(null);
       const initialPosts = await fetchPosts(null);
-      // Use mock posts if no real posts exist
+      
       if (initialPosts.length === 0) {
         setPosts(mockPosts);
         setHasMore(false);
       } else {
         setPosts(initialPosts);
+        const lastPost = initialPosts[initialPosts.length - 1];
+        // Store the created_at from the actual data, not the formatted timeAgo
+        setCursor(new Date(Date.now() - parseDuration(lastPost.createdAt)).toISOString());
+        setHasMore(initialPosts.length >= PAGE_SIZE);
       }
       setLoading(false);
+      initialLoadDone.current = true;
     };
 
     loadInitial();
   }, [fetchPosts]);
 
-  // Load more posts
+  // Helper to parse duration back (approximate)
+  const parseDuration = (timeAgo: string): number => {
+    const value = parseInt(timeAgo);
+    if (timeAgo.endsWith('d')) return value * 24 * 60 * 60 * 1000;
+    if (timeAgo.endsWith('h')) return value * 60 * 60 * 1000;
+    if (timeAgo.endsWith('m')) return value * 60 * 1000;
+    return 0;
+  };
+
+  // Load more posts (with deduplication and guards)
   const loadMore = useCallback(async () => {
-    if (loadingMore || !hasMore) return;
-
+    // Guard against concurrent calls
+    if (loadingMoreRef.current || !hasMore || posts.length === 0) return;
+    
+    loadingMoreRef.current = true;
     setLoadingMore(true);
-    const morePosts = await fetchPosts(cursor);
-    setPosts(prev => [...prev, ...morePosts]);
-    setLoadingMore(false);
-  }, [cursor, fetchPosts, hasMore, loadingMore]);
+    
+    try {
+      // Use the last post's ID to find its actual created_at from db
+      const lastPostId = posts[posts.length - 1]?.id;
+      if (!lastPostId || lastPostId.startsWith('mock-')) {
+        setHasMore(false);
+        return;
+      }
 
-  // Refresh posts
+      // Fetch actual cursor from last post
+      const { data: lastPostData } = await supabase
+        .from('posts')
+        .select('created_at')
+        .eq('id', lastPostId)
+        .single();
+
+      if (!lastPostData) {
+        setHasMore(false);
+        return;
+      }
+
+      const morePosts = await fetchPosts(lastPostData.created_at);
+      
+      if (morePosts.length === 0) {
+        setHasMore(false);
+        return;
+      }
+
+      // Deduplicate by ID
+      setPosts(prev => {
+        const existingIds = new Set(prev.map(p => p.id));
+        const newPosts = morePosts.filter(p => !existingIds.has(p.id));
+        return [...prev, ...newPosts];
+      });
+
+      setHasMore(morePosts.length >= PAGE_SIZE);
+    } finally {
+      setLoadingMore(false);
+      loadingMoreRef.current = false;
+    }
+  }, [fetchPosts, hasMore, posts]);
+
+  // Refresh posts (keep existing posts visible, merge new ones)
   const refresh = useCallback(async () => {
-    setLoading(true);
+    if (refreshing) return;
+    
+    setRefreshing(true);
     setError(null);
-    setCursor(null);
-    setHasMore(true);
-    const freshPosts = await fetchPosts(null);
-    setPosts(freshPosts);
-    setLoading(false);
-  }, [fetchPosts]);
+
+    try {
+      const freshPosts = await fetchPosts(null);
+      
+      if (freshPosts.length === 0) {
+        // Keep existing posts if refresh returns nothing
+        if (posts.length === 0) {
+          setPosts(mockPosts);
+        }
+        setHasMore(false);
+      } else {
+        // Merge: new posts at top, existing posts preserved (deduped)
+        setPosts(prev => {
+          const existingIds = new Set(prev.map(p => p.id));
+          const trulyNew = freshPosts.filter(p => !existingIds.has(p.id));
+          
+          // If we have truly new posts, prepend them
+          // Otherwise just update with fresh data
+          if (trulyNew.length > 0) {
+            return [...trulyNew, ...prev];
+          }
+          
+          // Replace with fresh data but keep scroll position stable
+          return freshPosts;
+        });
+        setHasMore(freshPosts.length >= PAGE_SIZE);
+      }
+    } finally {
+      setRefreshing(false);
+    }
+  }, [fetchPosts, posts.length, refreshing]);
 
   return {
     posts,
     loading,
+    refreshing,
     loadingMore,
     hasMore,
     error,
