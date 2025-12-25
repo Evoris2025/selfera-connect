@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronRight } from 'lucide-react';
 import { useCrossroadScroll, ContentType } from '@/hooks/useCrossroadScroll';
 import { HorizontalLane } from './HorizontalLane';
 import { PostCard } from '@/components/PostCard';
@@ -153,33 +154,31 @@ export function CrossroadFeed({
                 isActiveCard && 'z-10'
               )}
             >
-              {/* Active indicator badge */}
-              {isActiveCard && showHorizontalLane && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="absolute -top-2 left-1/2 -translate-x-1/2 z-40 pointer-events-none"
-                >
-                  <div className="px-3 py-1 rounded-full bg-primary/90 backdrop-blur-sm text-primary-foreground text-xs font-medium shadow-lg">
-                    Swipe for more {post.contentType}s
-                  </div>
-                </motion.div>
-              )}
-
               {/* Horizontal lane for same-type content when active */}
               {isActiveCard && showHorizontalLane ? (
-                <HorizontalLane
-                  items={sameTypePosts}
-                  activeIndex={getCurrentLaneIndex(post.id, post.contentType)}
-                  onIndexChange={(idx) => handleLaneIndexChange(post.id, idx)}
-                  renderItem={(lanePost) => (
-                    <PostCard
-                      key={lanePost.id}
-                      {...lanePost}
-                      onPostClick={() => onPostClick(lanePost)}
-                    />
-                  )}
-                />
+                <div className="relative">
+                  <HorizontalLane
+                    items={sameTypePosts}
+                    activeIndex={getCurrentLaneIndex(post.id, post.contentType)}
+                    onIndexChange={(idx) => handleLaneIndexChange(post.id, idx)}
+                    renderItem={(lanePost) => (
+                      <PostCard
+                        key={lanePost.id}
+                        {...lanePost}
+                        onPostClick={() => onPostClick(lanePost)}
+                      />
+                    )}
+                  />
+                  {/* Right scroll indicator */}
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full glass-floating flex items-center justify-center shadow-elevated pointer-events-none z-30"
+                  >
+                    <ChevronRight className="h-4 w-4 text-foreground" />
+                  </motion.div>
+                </div>
               ) : (
                 <PostCard
                   {...post}
