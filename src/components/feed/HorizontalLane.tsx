@@ -134,13 +134,13 @@ export function HorizontalLane<T>({
                   variant="ghost"
                   size="icon"
                   onClick={scrollPrev}
-                  className="hidden md:flex h-10 w-10 rounded-full bg-background/80 backdrop-blur-sm shadow-lg hover:bg-background/90"
+                  className="hidden md:flex h-10 w-10 rounded-full bg-primary/10 backdrop-blur-md border border-primary/20 shadow-lg hover:bg-primary/20 hover:border-primary/30 transition-all duration-300"
                 >
-                  <ChevronLeft className="h-5 w-5" />
+                  <ChevronLeft className="h-5 w-5 text-primary" />
                 </Button>
                 {/* Mobile: floating indicator */}
-                <div className="md:hidden w-9 h-9 rounded-full glass-floating flex items-center justify-center shadow-elevated pointer-events-none">
-                  <ChevronLeft className="h-4 w-4 text-foreground" />
+                <div className="md:hidden w-8 h-8 rounded-full bg-primary/15 backdrop-blur-md border border-primary/25 flex items-center justify-center shadow-lg">
+                  <ChevronLeft className="h-4 w-4 text-primary" />
                 </div>
               </motion.div>
             )}
@@ -159,13 +159,13 @@ export function HorizontalLane<T>({
                   variant="ghost"
                   size="icon"
                   onClick={scrollNext}
-                  className="hidden md:flex h-10 w-10 rounded-full bg-background/80 backdrop-blur-sm shadow-lg hover:bg-background/90"
+                  className="hidden md:flex h-10 w-10 rounded-full bg-primary/10 backdrop-blur-md border border-primary/20 shadow-lg hover:bg-primary/20 hover:border-primary/30 transition-all duration-300"
                 >
-                  <ChevronRight className="h-5 w-5" />
+                  <ChevronRight className="h-5 w-5 text-primary" />
                 </Button>
                 {/* Mobile: floating indicator */}
-                <div className="md:hidden w-9 h-9 rounded-full glass-floating flex items-center justify-center shadow-elevated pointer-events-none">
-                  <ChevronRight className="h-4 w-4 text-foreground" />
+                <div className="md:hidden w-8 h-8 rounded-full bg-primary/15 backdrop-blur-md border border-primary/25 flex items-center justify-center shadow-lg">
+                  <ChevronRight className="h-4 w-4 text-primary" />
                 </div>
               </motion.div>
             )}
