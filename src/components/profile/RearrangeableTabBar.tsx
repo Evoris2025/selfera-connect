@@ -204,6 +204,10 @@ export const RearrangeableTabBar = memo(function RearrangeableTabBar({
 
   const { layoutStyle, saving: savingLayout, setLayoutStyle } = useGridLayout(profileUserId);
 
+  useEffect(() => {
+    onLayoutChange?.(layoutStyle);
+  }, [layoutStyle, onLayoutChange]);
+
   const [isRearrangeMode, setIsRearrangeMode] = useState(false);
   const [isLayoutPickerOpen, setIsLayoutPickerOpen] = useState(false);
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);

@@ -14,6 +14,7 @@ import { FollowButton } from '@/components/interactions';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { GridLayoutStyle } from '@/hooks/useGridLayout';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,7 +24,8 @@ import {
 
 // Mock user data with full social metrics
 const mockUser = {
-  id: 'mock-user-id',
+  // Keep mock data for now, but ensure the id is a valid UUID so backend queries don't 400.
+  id: '11111111-1111-1111-1111-111111111111',
   name: 'Alex Johnson',
   handle: 'alexj',
   avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop',
@@ -112,6 +114,7 @@ export default function Profile() {
   const { handle } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [isFollowing, setIsFollowing] = useState(false);
   const [activeTab, setActiveTab] = useState('posts');
   const [followerCount, setFollowerCount] = useState(mockUser.stats.followers);
@@ -119,6 +122,7 @@ export default function Profile() {
   const [listModalType, setListModalType] = useState<ListType>('followers');
   const [gridLayout, setGridLayout] = useState<GridLayoutStyle>('uniform');
   const isOwnProfile = !handle || handle === mockUser.handle;
+  const profileUserId = (isOwnProfile ? user?.id : undefined) ?? mockUser.id;
 
   const openListModal = (type: ListType) => {
     setListModalType(type);
@@ -339,7 +343,7 @@ export default function Profile() {
             activeTab={activeTab}
             onTabChange={setActiveTab}
             isOwnProfile={isOwnProfile}
-            profileUserId={mockUser.id}
+            profileUserId={profileUserId}
             onLayoutChange={setGridLayout}
           />
         </div>
@@ -415,7 +419,7 @@ export default function Profile() {
         isOpen={listModalOpen}
         onClose={() => setListModalOpen(false)}
         type={listModalType}
-        userId={mockUser.id}
+        userId={profileUserId}
         userName={mockUser.name}
       />
     </AppLayout>
