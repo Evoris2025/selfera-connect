@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 
 export interface FeedPost {
   id: string;
-  authorId: string;
+  authorId?: string;
   author: {
     name: string;
     handle: string;

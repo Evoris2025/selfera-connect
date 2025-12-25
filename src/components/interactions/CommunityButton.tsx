@@ -7,13 +7,23 @@ import { usePersonalCommunity } from '@/hooks/usePersonalCommunity';
 import { useAuth } from '@/contexts/AuthContext';
 import { instagramAnimations, useReducedMotion, triggerHaptic } from '@/hooks/useInstagramAnimation';
 
+// UUID validation helper
+function isValidUUID(str: string): boolean {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(str);
+}
+
 interface CommunityButtonProps {
-  authorId: string;
+  authorId?: string;
   authorName: string;
   size?: 'sm' | 'md' | 'lg';
 }
 
 export function CommunityButton({ authorId, authorName, size = 'md' }: CommunityButtonProps) {
+  // Don't render if authorId is invalid
+  if (!authorId || !isValidUUID(authorId)) {
+    return null;
+  }
   const { t } = useTranslation();
   const { user } = useAuth();
   const controls = useAnimationControls();
