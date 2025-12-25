@@ -99,13 +99,22 @@ export function HorizontalLane<T>({
         style={{ scrollSnapType: 'x mandatory' }}
       >
         {items.map((item, index) => (
-          <div
+          <motion.div
             key={index}
-            className="flex-none w-full snap-center"
+            className="flex-none w-full snap-center origin-center"
             style={{ scrollSnapAlign: 'center' }}
+            animate={{
+              scale: index === activeIndex ? 1 : 0.95,
+              opacity: index === activeIndex ? 1 : 0.7,
+            }}
+            transition={{
+              type: 'spring',
+              stiffness: 300,
+              damping: 30,
+            }}
           >
             {renderItem(item, index)}
-          </div>
+          </motion.div>
         ))}
       </div>
 
