@@ -109,7 +109,7 @@ export function HorizontalLane<T>({
         ))}
       </div>
 
-      {/* Navigation arrows - desktop only */}
+      {/* Navigation arrows - desktop buttons, mobile floating indicators */}
       {showNavigation && (
         <>
           <AnimatePresence>
@@ -118,16 +118,21 @@ export function HorizontalLane<T>({
                 initial={{ opacity: 0, x: 10 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 10 }}
-                className="absolute left-2 top-1/2 -translate-y-1/2 z-30 hidden md:block"
+                className="absolute left-3 top-1/2 -translate-y-1/2 z-30"
               >
+                {/* Desktop: clickable button */}
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={scrollPrev}
-                  className="h-10 w-10 rounded-full bg-background/80 backdrop-blur-sm shadow-lg hover:bg-background/90"
+                  className="hidden md:flex h-10 w-10 rounded-full bg-background/80 backdrop-blur-sm shadow-lg hover:bg-background/90"
                 >
                   <ChevronLeft className="h-5 w-5" />
                 </Button>
+                {/* Mobile: floating indicator */}
+                <div className="md:hidden w-9 h-9 rounded-full glass-floating flex items-center justify-center shadow-elevated pointer-events-none">
+                  <ChevronLeft className="h-4 w-4 text-foreground" />
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -138,16 +143,21 @@ export function HorizontalLane<T>({
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -10 }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 z-30 hidden md:block"
+                className="absolute right-3 top-1/2 -translate-y-1/2 z-30"
               >
+                {/* Desktop: clickable button */}
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={scrollNext}
-                  className="h-10 w-10 rounded-full bg-background/80 backdrop-blur-sm shadow-lg hover:bg-background/90"
+                  className="hidden md:flex h-10 w-10 rounded-full bg-background/80 backdrop-blur-sm shadow-lg hover:bg-background/90"
                 >
                   <ChevronRight className="h-5 w-5" />
                 </Button>
+                {/* Mobile: floating indicator */}
+                <div className="md:hidden w-9 h-9 rounded-full glass-floating flex items-center justify-center shadow-elevated pointer-events-none">
+                  <ChevronRight className="h-4 w-4 text-foreground" />
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
