@@ -3,181 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/AppLayout';
 import { ComposerBar } from '@/components/ComposerBar';
 import { ExpressionsRow } from '@/components/ExpressionsRow';
-import { PostCardSkeleton } from '@/components/SkeletonLoader';
 import { CreatorStudio } from '@/components/creator';
 import { PostViewerModal, CrossroadFeed, FeedPost } from '@/components/feed';
-import { ContentType } from '@/hooks/useCrossroadScroll';
-
-// Helper to determine content type
-function getContentType(media?: { type: 'image' | 'video' }): ContentType {
-  if (!media) return 'text';
-  if (media.type === 'video') return 'video';
-  return 'image';
-}
-
-// Mock data with rich media and content types including videos
-// Using undefined authorId for mock posts to prevent invalid UUID queries
-const mockPosts: FeedPost[] = [
-  {
-    id: '1',
-    authorId: undefined,
-    author: {
-      name: 'Wellness Center',
-      handle: 'wellnesscenter',
-      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop',
-      isVerified: true,
-    },
-    content: 'Remember: taking a break is not giving up. Your mental health matters more than any deadline.',
-    media: {
-      type: 'image',
-      url: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&h=1000&fit=crop',
-    },
-    tags: ['selfcare', 'mindfulness', 'wellness'],
-    commentCount: 32,
-    createdAt: '2h',
-    likes: 1247,
-    contentType: 'image',
-  },
-  {
-    id: '2',
-    authorId: undefined,
-    author: {
-      name: 'Dr. Sarah Mitchell',
-      handle: 'drsarahmitchell',
-      avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=200&h=200&fit=crop',
-      isVerified: true,
-    },
-    content: 'Anxiety tip: Try the 5-4-3-2-1 grounding technique. Name 5 things you can see, 4 you can touch, 3 you can hear, 2 you can smell, and 1 you can taste. #anxiety #mentalhealth',
-    tags: ['anxiety', 'mentalhealth', 'copingskills'],
-    commentCount: 78,
-    createdAt: '4h',
-    likes: 3891,
-    contentType: 'text',
-  },
-  {
-    id: '3',
-    authorId: undefined,
-    author: {
-      name: 'Mindful Movement',
-      handle: 'mindfulmovement',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop',
-      isVerified: true,
-    },
-    content: 'Morning yoga flow to start your day with intention 🧘‍♀️ Save this for your next practice!',
-    media: {
-      type: 'video',
-      url: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
-      thumbnail: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&h=1000&fit=crop',
-    },
-    tags: ['yoga', 'mindfulness', 'morningroutine'],
-    commentCount: 89,
-    createdAt: '3h',
-    likes: 2341,
-    contentType: 'video',
-  },
-  {
-    id: '4',
-    authorId: undefined,
-    author: {
-      name: 'Jamie',
-      handle: 'jamie_journey',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop',
-    },
-    content: "Today marks 1 year since I started my recovery journey. It hasn't been easy, but I'm grateful for this community. 💙",
-    media: {
-      type: 'image',
-      url: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=800&h=1000&fit=crop',
-    },
-    tags: ['recovery', 'mentalhealth', 'milestone'],
-    commentCount: 156,
-    createdAt: '6h',
-    likes: 8234,
-    contentType: 'image',
-  },
-  {
-    id: '5',
-    authorId: undefined,
-    author: {
-      name: 'Breathe Easy',
-      handle: 'breatheeasy',
-      avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop',
-      isVerified: true,
-    },
-    content: 'Try this 4-7-8 breathing technique when anxiety hits. Breathe in for 4, hold for 7, out for 8. 💨',
-    media: {
-      type: 'video',
-      url: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
-      thumbnail: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&h=1000&fit=crop',
-    },
-    tags: ['breathing', 'anxiety', 'calmdown'],
-    commentCount: 67,
-    createdAt: '5h',
-    likes: 1893,
-    contentType: 'video',
-  },
-  {
-    id: '6',
-    authorId: undefined,
-    author: {
-      name: 'MindfulMoments',
-      handle: 'mindfulmoments',
-      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop',
-      isVerified: true,
-    },
-    content: "Morning meditation complete ✨ 10 minutes of stillness can change your entire day.",
-    media: {
-      type: 'image',
-      url: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=800&h=1000&fit=crop',
-    },
-    tags: ['meditation', 'mindfulness', 'morningroutine'],
-    commentCount: 45,
-    createdAt: '8h',
-    likes: 2156,
-    contentType: 'image',
-  },
-  {
-    id: '7',
-    authorId: undefined,
-    author: {
-      name: 'TherapyTalks',
-      handle: 'therapytalks',
-      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop',
-      isVerified: true,
-    },
-    content: "Your feelings are valid. Even when they're confusing, even when they feel too big, even when others don't understand. They are yours, and they matter.",
-    tags: ['mentalhealth', 'validation', 'therapy'],
-    commentCount: 234,
-    createdAt: '10h',
-    likes: 5672,
-    contentType: 'text',
-  },
-  {
-    id: '8',
-    authorId: undefined,
-    author: {
-      name: 'Nature Heals',
-      handle: 'natureheals',
-      avatar: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=200&h=200&fit=crop',
-    },
-    content: 'Forest bathing session today. Science shows spending just 20 minutes in nature reduces cortisol levels 🌲',
-    media: {
-      type: 'video',
-      url: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-      thumbnail: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&h=1000&fit=crop',
-    },
-    tags: ['nature', 'forestbathing', 'stress'],
-    commentCount: 43,
-    createdAt: '12h',
-    likes: 1567,
-    contentType: 'video',
-  },
-];
+import { useFeedPosts } from '@/hooks/useFeedPosts';
 
 type CreatorMode = 'expression' | 'post' | 'image' | 'video' | null;
 
 export default function Feed() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const { posts, loading, loadingMore, hasMore, loadMore } = useFeedPosts();
   const [creatorOpen, setCreatorOpen] = useState(false);
   const [creatorMode, setCreatorMode] = useState<CreatorMode>(null);
   
@@ -216,11 +50,6 @@ export default function Feed() {
     navigate(`/profile/${authorId}`);
   };
 
-  const handleLoadMore = () => {
-    // Future: fetch more posts with cursor pagination
-    console.log('Load more triggered');
-  };
-
   return (
     <AppLayout onCreatePost={handleCreatePost} title="The Feed">
       <div className="flex flex-col bg-cinematic min-h-screen">
@@ -236,10 +65,12 @@ export default function Feed() {
         
         {/* Crossroad Feed with dual-axis scrolling */}
         <CrossroadFeed
-          posts={mockPosts}
+          posts={posts}
           loading={loading}
+          loadingMore={loadingMore}
+          hasMore={hasMore}
           onPostClick={handlePostClick}
-          onLoadMore={handleLoadMore}
+          onLoadMore={loadMore}
         />
       </div>
 

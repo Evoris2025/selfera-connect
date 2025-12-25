@@ -31,6 +31,8 @@ export interface FeedPost {
 interface CrossroadFeedProps {
   posts: FeedPost[];
   loading?: boolean;
+  loadingMore?: boolean;
+  hasMore?: boolean;
   onPostClick: (post: FeedPost) => void;
   onLoadMore?: () => void;
 }
@@ -61,7 +63,9 @@ const itemVariants = {
 
 export function CrossroadFeed({ 
   posts, 
-  loading, 
+  loading,
+  loadingMore,
+  hasMore,
   onPostClick,
   onLoadMore,
 }: CrossroadFeedProps) {
@@ -127,6 +131,15 @@ export function CrossroadFeed({
     );
   }
 
+  if (posts.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+        <p className="text-lg font-medium text-foreground mb-2">No posts yet</p>
+        <p className="text-sm text-muted-foreground">Be the first to share something!</p>
+      </div>
+    );
+  }
+
   return (
     <motion.div 
       className="flex flex-col"
@@ -179,15 +192,26 @@ export function CrossroadFeed({
       </AnimatePresence>
 
       {/* Infinite scroll trigger */}
-      {onLoadMore && (
+      {onLoadMore && hasMore && (
         <div ref={loadMoreRef} className="h-20 flex items-center justify-center">
-          <motion.div
-            animate={{ opacity: [0.3, 0.6, 0.3] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="text-sm text-muted-foreground"
-          >
-            Loading more...
-          </motion.div>
+          {loadingMore ? (
+            <motion.div
+              animate={{ opacity: [0.3, 0.6, 0.3] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+              className="text-sm text-muted-foreground"
+            >
+              Loading more...
+            </motion.div>
+          ) : (
+            <div className="h-1" /> 
+          )}
+        </div>
+      )}
+      
+      {/* End of feed message */}
+      {!hasMore && posts.length > 0 && (
+        <div className="py-8 text-center text-sm text-muted-foreground">
+          You've reached the end
         </div>
       )}
     </motion.div>
