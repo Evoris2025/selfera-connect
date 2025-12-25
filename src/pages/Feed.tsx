@@ -1,37 +1,22 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import { AppLayout } from '@/components/AppLayout';
 import { ComposerBar } from '@/components/ComposerBar';
 import { ExpressionsRow } from '@/components/ExpressionsRow';
-import { PostCard } from '@/components/PostCard';
 import { PostCardSkeleton } from '@/components/SkeletonLoader';
 import { CreatorStudio } from '@/components/creator';
-import { PostViewerModal } from '@/components/feed/PostViewerModal';
+import { PostViewerModal, CrossroadFeed, FeedPost } from '@/components/feed';
+import { ContentType } from '@/hooks/useCrossroadScroll';
 
-interface MockPost {
-  id: string;
-  authorId: string;
-  author: {
-    name: string;
-    handle: string;
-    avatar: string;
-    isVerified?: boolean;
-  };
-  content: string;
-  media?: {
-    type: 'image' | 'video';
-    url: string;
-    thumbnail?: string;
-  };
-  tags: string[];
-  commentCount: number;
-  createdAt: string;
-  likes: number;
+// Helper to determine content type
+function getContentType(media?: { type: 'image' | 'video' }): ContentType {
+  if (!media) return 'text';
+  if (media.type === 'video') return 'video';
+  return 'image';
 }
 
-// Mock data with rich media
-const mockPosts: MockPost[] = [
+// Mock data with rich media and content types
+const mockPosts: FeedPost[] = [
   {
     id: '1',
     authorId: 'author-1-uuid',
@@ -50,6 +35,7 @@ const mockPosts: MockPost[] = [
     commentCount: 32,
     createdAt: '2h',
     likes: 1247,
+    contentType: 'image',
   },
   {
     id: '2',
@@ -65,6 +51,7 @@ const mockPosts: MockPost[] = [
     commentCount: 78,
     createdAt: '4h',
     likes: 3891,
+    contentType: 'text',
   },
   {
     id: '3',
@@ -83,6 +70,7 @@ const mockPosts: MockPost[] = [
     commentCount: 156,
     createdAt: '6h',
     likes: 8234,
+    contentType: 'image',
   },
   {
     id: '4',
@@ -102,29 +90,27 @@ const mockPosts: MockPost[] = [
     commentCount: 45,
     createdAt: '8h',
     likes: 2156,
+    contentType: 'image',
+  },
+  {
+    id: '5',
+    authorId: 'author-5-uuid',
+    author: {
+      name: 'TherapyTalks',
+      handle: 'therapytalks',
+      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop',
+      isVerified: true,
+    },
+    content: "Your feelings are valid. Even when they're confusing, even when they feel too big, even when others don't understand. They are yours, and they matter.",
+    tags: ['mentalhealth', 'validation', 'therapy'],
+    commentCount: 234,
+    createdAt: '10h',
+    likes: 5672,
+    contentType: 'text',
   },
 ];
 
 type CreatorMode = 'expression' | 'post' | 'image' | 'video' | null;
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.12,
-      delayChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { 
-    opacity: 1, 
-    y: 0,
-  },
-};
 
 export default function Feed() {
   const navigate = useNavigate();
@@ -133,7 +119,7 @@ export default function Feed() {
   const [creatorMode, setCreatorMode] = useState<CreatorMode>(null);
   
   // Modal state
-  const [selectedPost, setSelectedPost] = useState<MockPost | null>(null);
+  const [selectedPost, setSelectedPost] = useState<FeedPost | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleOpenComposer = (mode?: 'text' | 'video' | 'image' | 'reel') => {
@@ -152,7 +138,7 @@ export default function Feed() {
     setCreatorOpen(true);
   };
 
-  const handlePostClick = (post: MockPost) => {
+  const handlePostClick = (post: FeedPost) => {
     setSelectedPost(post);
     setIsModalOpen(true);
   };
@@ -167,10 +153,9 @@ export default function Feed() {
     navigate(`/profile/${authorId}`);
   };
 
-  const getContentType = (post: MockPost) => {
-    if (!post.media) return 'text' as const;
-    if (post.media.type === 'video') return 'video' as const;
-    return 'image' as const;
+  const handleLoadMore = () => {
+    // Future: fetch more posts with cursor pagination
+    console.log('Load more triggered');
   };
 
   return (
@@ -186,38 +171,13 @@ export default function Feed() {
           <ExpressionsRow />
         </div>
         
-        {/* Posts Feed - Edge to edge for media posts */}
-        <motion.div 
-          className="flex flex-col"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          <AnimatePresence mode="popLayout">
-            {loading ? (
-              <div className="px-4 space-y-4">
-                <PostCardSkeleton />
-                <PostCardSkeleton />
-                <PostCardSkeleton />
-              </div>
-            ) : (
-              mockPosts.map((post) => (
-                <motion.div
-                  key={post.id}
-                  variants={itemVariants}
-                  layout
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  className={post.media ? '' : 'px-0'}
-                >
-                  <PostCard 
-                    {...post} 
-                    onPostClick={() => handlePostClick(post)}
-                  />
-                </motion.div>
-              ))
-            )}
-          </AnimatePresence>
-        </motion.div>
+        {/* Crossroad Feed with dual-axis scrolling */}
+        <CrossroadFeed
+          posts={mockPosts}
+          loading={loading}
+          onPostClick={handlePostClick}
+          onLoadMore={handleLoadMore}
+        />
       </div>
 
       {/* Post Viewer Modal */}
@@ -226,7 +186,7 @@ export default function Feed() {
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           post={selectedPost}
-          contentType={getContentType(selectedPost)}
+          contentType={selectedPost.contentType}
           onNavigateProfile={handleNavigateProfile}
         />
       )}
