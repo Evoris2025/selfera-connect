@@ -21,7 +21,7 @@ import { useReactions } from '@/hooks/useReactions';
 import { useLibrary } from '@/hooks/useLibrary';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
-import { toast } from '@/hooks/use-toast';
+
 
 interface PostCardProps {
   id: string;
@@ -94,11 +94,6 @@ export function PostCard({
 
   const handleDoubleTap = async () => {
     if (!user) {
-      toast({
-        title: t('auth.required'),
-        description: t('auth.loginToReact'),
-        variant: 'destructive',
-      });
       return;
     }
     
@@ -117,11 +112,6 @@ export function PostCard({
 
   const handleReaction = async (type: ReactionType | null) => {
     if (!user) {
-      toast({
-        title: t('auth.required'),
-        description: t('auth.loginToReact'),
-        variant: 'destructive',
-      });
       return;
     }
     
@@ -136,18 +126,9 @@ export function PostCard({
 
   const handleLibraryToggle = async () => {
     if (!user) {
-      toast({
-        title: t('auth.required'),
-        description: t('auth.loginToSave'),
-        variant: 'destructive',
-      });
       return;
     }
     await toggleLibrary();
-    toast({
-      title: inLibrary ? t('library.removed') : t('library.added'),
-      description: inLibrary ? t('library.removedDesc') : t('library.addedDesc'),
-    });
   };
 
   const renderContent = () => {
