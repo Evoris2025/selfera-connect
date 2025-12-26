@@ -1,4 +1,4 @@
-import { memo, useState } from 'react';
+import { memo, useState, useRef, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { PostCard } from '@/components/PostCard';
 import type { FeedPost } from './CrossroadFeed';
@@ -21,6 +21,11 @@ function PostCardWithNavigationBase({
   // Local state to track current position within sameTypePosts for this row
   const [localIndex, setLocalIndex] = useState(currentIndexInType);
   
+  // Swipe gesture tracking
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
+  const minSwipeDistance = 50;
+  
   // The post to display is based on localIndex
   const displayedPost = sameTypePosts[localIndex] || post;
   
@@ -28,24 +33,57 @@ function PostCardWithNavigationBase({
   const hasNext = localIndex < sameTypePosts.length - 1;
   const showArrows = sameTypePosts.length > 1;
 
-  const handlePrev = (e: React.MouseEvent | React.PointerEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
+  const handlePrev = useCallback((e?: React.MouseEvent | React.PointerEvent) => {
+    e?.stopPropagation();
+    e?.preventDefault();
     if (hasPrev) {
-      setLocalIndex(localIndex - 1);
+      setLocalIndex(prev => prev - 1);
     }
-  };
+  }, [hasPrev]);
 
-  const handleNext = (e: React.MouseEvent | React.PointerEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
+  const handleNext = useCallback((e?: React.MouseEvent | React.PointerEvent) => {
+    e?.stopPropagation();
+    e?.preventDefault();
     if (hasNext) {
-      setLocalIndex(localIndex + 1);
+      setLocalIndex(prev => prev + 1);
     }
-  };
+  }, [hasNext]);
+
+  // Touch handlers for swipe gestures
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    touchEndX.current = null;
+    touchStartX.current = e.targetTouches[0].clientX;
+  }, []);
+
+  const onTouchMove = useCallback((e: React.TouchEvent) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  }, []);
+
+  const onTouchEnd = useCallback(() => {
+    if (!touchStartX.current || !touchEndX.current) return;
+    
+    const distance = touchStartX.current - touchEndX.current;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    
+    if (isLeftSwipe && hasNext) {
+      handleNext();
+    } else if (isRightSwipe && hasPrev) {
+      handlePrev();
+    }
+    
+    // Reset
+    touchStartX.current = null;
+    touchEndX.current = null;
+  }, [hasNext, hasPrev, handleNext, handlePrev]);
 
   return (
-    <div className="relative group">
+    <div 
+      className="relative group"
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+    >
       <PostCard
         {...displayedPost}
         onPostClick={onPostClick}
