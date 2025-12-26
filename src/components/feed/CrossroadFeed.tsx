@@ -1,7 +1,8 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback, useState, useMemo } from 'react';
 import { PostCard } from '@/components/PostCard';
 import { PostCardSkeleton } from '@/components/SkeletonLoader';
-import { ContentType } from '@/hooks/useCrossroadScroll';
+import { HorizontalLane } from './HorizontalLane';
+import { useCrossroadScroll, ContentType } from '@/hooks/useCrossroadScroll';
 
 export interface FeedPost {
   id: string;
@@ -46,7 +47,34 @@ export function CrossroadFeed({
 }: CrossroadFeedProps) {
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
-  // Infinite scroll: observe sentinel, but never while a request is in-flight.
+  // Scroll detection for horizontal lane activation
+  const { activePostId, registerPost, getLaneIndex } = useCrossroadScroll({
+    posts,
+  });
+
+  // Memoize same-type posts lookup by contentType -> FeedPost[]
+  const postsByType = useMemo(() => {
+    const map = new Map<ContentType, FeedPost[]>();
+    posts.forEach((p) => {
+      const arr = map.get(p.contentType) || [];
+      arr.push(p);
+      map.set(p.contentType, arr);
+    });
+    return map;
+  }, [posts]);
+
+  // Track lane indices per content type for horizontal scrolling
+  const [laneIndices, setLaneIndices] = useState<Map<ContentType, number>>(new Map());
+
+  const handleLaneIndexChange = useCallback((type: ContentType, index: number) => {
+    setLaneIndices((prev) => {
+      const next = new Map(prev);
+      next.set(type, index);
+      return next;
+    });
+  }, []);
+
+  // Infinite scroll: observe sentinel, but never while a request is in-flight
   useEffect(() => {
     if (!onLoadMore || !hasMore) return;
     if (loadingMore) return;
@@ -58,17 +86,14 @@ export function CrossroadFeed({
       ([entry]) => {
         if (entry?.isIntersecting) onLoadMore();
       },
-      {
-        threshold: 0.1,
-        rootMargin: '200px',
-      }
+      { threshold: 0.1, rootMargin: '200px' }
     );
 
     observer.observe(sentinel);
     return () => observer.disconnect();
   }, [onLoadMore, hasMore, loadingMore]);
 
-  // Show skeletons only on initial load (not refresh)
+  // Skeletons only on initial load
   if (loading && posts.length === 0) {
     return (
       <div className="space-y-4 px-4">
@@ -96,12 +121,35 @@ export function CrossroadFeed({
         </div>
       )}
 
-      {/* Critical: stable list (no scroll-driven subtree swap) + stable key (post.id) */}
-      {posts.map((post) => (
-        <div key={post.id} className="relative">
-          <PostCard {...post} onPostClick={onPostClick} />
-        </div>
-      ))}
+      {posts.map((post) => {
+        const isActive = post.id === activePostId;
+        const sameTypePosts = postsByType.get(post.contentType) || [];
+        const showLane = isActive && sameTypePosts.length > 1;
+        const laneIndex = laneIndices.get(post.contentType) ?? getLaneIndex(post.id, post.contentType);
+
+        return (
+          <div
+            key={post.id}
+            ref={(el) => registerPost(post.id, el)}
+            className="relative"
+          >
+            {/* PostCard: always mounted; hidden via CSS when lane is shown */}
+            <div className={showLane ? 'invisible h-0 overflow-hidden pointer-events-none' : ''}>
+              <PostCard {...post} onPostClick={onPostClick} />
+            </div>
+
+            {/* HorizontalLane: only rendered for active post with multiple same-type */}
+            {showLane && (
+              <HorizontalLane
+                items={sameTypePosts}
+                activeIndex={laneIndex}
+                onIndexChange={(idx) => handleLaneIndexChange(post.contentType, idx)}
+                renderItem={(item) => <PostCard {...item} onPostClick={onPostClick} />}
+              />
+            )}
+          </div>
+        );
+      })}
 
       {/* Infinite scroll trigger */}
       {onLoadMore && hasMore && (

@@ -1,35 +1,32 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, memo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
-interface HorizontalLaneProps<T> {
+interface HorizontalLaneProps<T extends { id: string }> {
   items: T[];
   activeIndex: number;
   onIndexChange: (index: number) => void;
   renderItem: (item: T, index: number) => React.ReactNode;
   className?: string;
-  showNavigation?: boolean;
 }
 
-export function HorizontalLane<T>({
+function HorizontalLaneBase<T extends { id: string }>({
   items,
   activeIndex,
   onIndexChange,
   renderItem,
   className,
-  showNavigation = true,
 }: HorizontalLaneProps<T>) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
-  // Check scroll state
-  const updateScrollState = () => {
+  const updateScrollState = useCallback(() => {
     if (!scrollRef.current) return;
     const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
     setCanScrollLeft(scrollLeft > 10);
     setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
-  };
+  }, []);
 
   // Scroll to active item with smooth animation
   useEffect(() => {
@@ -70,19 +67,7 @@ export function HorizontalLane<T>({
       container.removeEventListener('scroll', handleScroll);
       clearTimeout(scrollTimeout);
     };
-  }, [activeIndex, items.length, onIndexChange]);
-
-  const scrollPrev = () => {
-    if (activeIndex > 0) {
-      onIndexChange(activeIndex - 1);
-    }
-  };
-
-  const scrollNext = () => {
-    if (activeIndex < items.length - 1) {
-      onIndexChange(activeIndex + 1);
-    }
-  };
+  }, [activeIndex, items.length, onIndexChange, updateScrollState]);
 
   if (items.length <= 1) {
     return items.length === 1 ? <>{renderItem(items[0], 0)}</> : null;
@@ -90,7 +75,6 @@ export function HorizontalLane<T>({
 
   return (
     <div className={cn('relative group', className)}>
-      {/* Scroll container with snap */}
       <div
         ref={scrollRef}
         className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
@@ -98,7 +82,7 @@ export function HorizontalLane<T>({
       >
         {items.map((item, index) => (
           <motion.div
-            key={index}
+            key={item.id}
             className="flex-none w-full snap-center origin-center"
             style={{ scrollSnapAlign: 'center' }}
             animate={{
@@ -118,3 +102,6 @@ export function HorizontalLane<T>({
     </div>
   );
 }
+
+// Memoize to prevent unnecessary re-renders
+export const HorizontalLane = memo(HorizontalLaneBase) as typeof HorizontalLaneBase;
