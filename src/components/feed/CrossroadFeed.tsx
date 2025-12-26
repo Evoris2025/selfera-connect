@@ -137,17 +137,6 @@ export function CrossroadFeed({
         const laneIndex =
           laneIndices.get(post.contentType) ?? Math.max(0, currentIndexInType);
 
-        // Handle arrow navigation - scroll to target post or swap inline
-        const handleNavigate = (newIndex: number) => {
-          const targetPost = sameTypePosts[newIndex];
-          if (!targetPost) return;
-          // Scroll to the target post in the vertical feed
-          const targetElement = document.getElementById(`post-${targetPost.id}`);
-          if (targetElement) {
-            targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
-        };
-
         return (
           <div key={post.id} id={`post-${post.id}`} className="relative">
             <div className={isLaneOpen ? 'opacity-0 pointer-events-none' : ''}>
@@ -156,7 +145,6 @@ export function CrossroadFeed({
                 sameTypePosts={sameTypePosts}
                 currentIndexInType={currentIndexInType}
                 onPostClick={onPostClick}
-                onNavigate={handleNavigate}
                 onRequestHorizontalLane={() => handleOpenLane(post.id)}
               />
             </div>
