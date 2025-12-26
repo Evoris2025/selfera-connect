@@ -38,7 +38,7 @@ export function FeedAppHeader({ title }: FeedAppHeaderProps) {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            <BrandMark imgClassName="-translate-x-2" />
+            <BrandMark imgClassName="-translate-x-3" />
           </motion.div>
           {title && (
             <motion.span
