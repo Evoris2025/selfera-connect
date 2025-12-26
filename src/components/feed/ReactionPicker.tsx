@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, type TouchEvent } from 'react';
+import { useState, useRef, useCallback, type TouchEvent, type ReactNode } from 'react';
 import { motion, AnimatePresence, useAnimationControls } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { 
@@ -7,22 +7,22 @@ import {
   BurstParticle,
   buttonPressTransition 
 } from '@/hooks/useMicroAnimations';
+import { FluentEmoji } from '@/components/icons/FluentEmoji';
 
 export type ReactionType = 'like' | 'relatable' | 'inspiring' | 'support' | 'curious';
 
 interface Reaction {
   type: ReactionType;
-  emoji: string;
   label: string;
   color: string;
 }
 
 const reactions: Reaction[] = [
-  { type: 'like', emoji: '❤️', label: 'Like', color: 'hsl(0, 75%, 60%)' },
-  { type: 'relatable', emoji: '🤝', label: 'Relatable', color: 'hsl(200, 80%, 55%)' },
-  { type: 'inspiring', emoji: '✨', label: 'Inspiring', color: 'hsl(45, 90%, 55%)' },
-  { type: 'support', emoji: '🫂', label: 'Support', color: 'hsl(155, 55%, 50%)' },
-  { type: 'curious', emoji: '🤔', label: 'Curious', color: 'hsl(270, 60%, 60%)' },
+  { type: 'like', label: 'Like', color: 'hsl(0, 75%, 60%)' },
+  { type: 'relatable', label: 'Relatable', color: 'hsl(200, 80%, 55%)' },
+  { type: 'inspiring', label: 'Inspiring', color: 'hsl(45, 90%, 55%)' },
+  { type: 'support', label: 'Support', color: 'hsl(155, 55%, 50%)' },
+  { type: 'curious', label: 'Curious', color: 'hsl(270, 60%, 60%)' },
 ];
 
 interface ReactionPickerProps {
@@ -91,17 +91,17 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
                   currentReaction === reaction.type && 'bg-primary/20'
                 )}
               >
-                <motion.span
+                <motion.div
                   animate={{
                     scale: hoveredReaction === reaction.type ? 1.5 : 1,
                     y: hoveredReaction === reaction.type ? -10 : 0,
                     rotate: hoveredReaction === reaction.type ? [0, -10, 10, -5, 5, 0] : 0,
                   }}
                   transition={springTransitions.bouncy}
-                  className="text-2xl block"
+                  className="block"
                 >
-                  {reaction.emoji}
-                </motion.span>
+                  <FluentEmoji type={reaction.type} size={28} />
+                </motion.div>
 
                 {/* Tooltip */}
                 <AnimatePresence>
@@ -286,8 +286,8 @@ export function ReactionButton({ postId, currentReaction, count, onReact }: Reac
     setIsLongPressing(false);
   };
 
-  const currentEmoji = currentReaction 
-    ? reactions.find(r => r.type === currentReaction)?.emoji 
+  const hasReaction = currentReaction 
+    ? reactions.find(r => r.type === currentReaction) 
     : null;
 
   const currentColor = currentReaction
@@ -324,14 +324,16 @@ export function ReactionButton({ postId, currentReaction, count, onReact }: Reac
         )}
       >
         <div className="relative">
-          <motion.span
+          <motion.div
             key={currentReaction || 'default'}
             initial={{ scale: 0.5, rotate: -15 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={springTransitions.elastic}
-            className="text-2xl block w-6 h-6 flex items-center justify-center"
+            className="w-6 h-6 flex items-center justify-center"
           >
-            {currentEmoji || (
+            {hasReaction ? (
+              <FluentEmoji type={currentReaction!} size={24} />
+            ) : (
               <svg
                 className={cn(
                   'h-6 w-6 transition-colors',
@@ -347,7 +349,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact }: Reac
                 />
               </svg>
             )}
-          </motion.span>
+          </motion.div>
 
           {/* Burst particles */}
           <AnimatePresence>
