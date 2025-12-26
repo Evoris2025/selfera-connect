@@ -97,21 +97,6 @@ function PostCardWithNavigationBase({
         </div>
       )}
 
-      {/* Position indicator */}
-      {showArrows && (
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-30 opacity-0 group-hover:opacity-100 transition-opacity">
-          {sameTypePosts.map((_, idx) => (
-            <div
-              key={idx}
-              className={`w-1.5 h-1.5 rounded-full transition-all ${
-                idx === localIndex
-                  ? 'bg-primary w-3'
-                  : 'bg-foreground/40'
-              }`}
-            />
-          ))}
-        </div>
-      )}
     </div>
   );
 }
