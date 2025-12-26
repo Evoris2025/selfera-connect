@@ -37,7 +37,7 @@ export function PullToRefresh({
     if (!container) return;
     
     // Only activate if scrolled to top
-    if (container.scrollTop > 0) return;
+    if (container.scrollTop > 0 || window.scrollY > 0) return;
     
     startYRef.current = e.touches[0].clientY;
     setIsPulling(true);
@@ -47,7 +47,7 @@ export function PullToRefresh({
     if (!isPulling || disabled || isRefreshing) return;
     
     const container = containerRef.current;
-    if (!container || container.scrollTop > 0) {
+    if (!container || container.scrollTop > 0 || window.scrollY > 0) {
       setIsPulling(false);
       pullDistance.set(0);
       return;

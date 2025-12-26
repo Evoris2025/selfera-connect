@@ -141,8 +141,8 @@ export function useFeedPosts(): UseFeedPostsResult {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [cursor, setCursor] = useState<string | null>(null);
   const loadingMoreRef = useRef(false);
+  const refreshingRef = useRef(false);
   const initialLoadDone = useRef(false);
 
   const fetchPosts = useCallback(async (afterCursor?: string | null): Promise<FeedPost[]> => {
@@ -292,9 +292,6 @@ export function useFeedPosts(): UseFeedPostsResult {
         setHasMore(false);
       } else {
         setPosts(initialPosts);
-        const lastPost = initialPosts[initialPosts.length - 1];
-        // Store the created_at from the actual data, not the formatted timeAgo
-        setCursor(new Date(Date.now() - parseDuration(lastPost.createdAt)).toISOString());
         setHasMore(initialPosts.length >= PAGE_SIZE);
       }
       setLoading(false);
@@ -304,14 +301,6 @@ export function useFeedPosts(): UseFeedPostsResult {
     loadInitial();
   }, [fetchPosts]);
 
-  // Helper to parse duration back (approximate)
-  const parseDuration = (timeAgo: string): number => {
-    const value = parseInt(timeAgo);
-    if (timeAgo.endsWith('d')) return value * 24 * 60 * 60 * 1000;
-    if (timeAgo.endsWith('h')) return value * 60 * 60 * 1000;
-    if (timeAgo.endsWith('m')) return value * 60 * 1000;
-    return 0;
-  };
 
   // Load more posts (with deduplication and guards)
   const loadMore = useCallback(async () => {
@@ -362,43 +351,34 @@ export function useFeedPosts(): UseFeedPostsResult {
     }
   }, [fetchPosts, hasMore, posts]);
 
-  // Refresh posts (keep existing posts visible, merge new ones)
+  // Refresh posts (keep existing posts visible; only prepend truly-new IDs)
   const refresh = useCallback(async () => {
-    if (refreshing) return;
-    
+    if (refreshingRef.current) return;
+
+    refreshingRef.current = true;
     setRefreshing(true);
     setError(null);
 
     try {
       const freshPosts = await fetchPosts(null);
-      
-      if (freshPosts.length === 0) {
-        // Keep existing posts if refresh returns nothing
-        if (posts.length === 0) {
-          setPosts(mockPosts);
-        }
-        setHasMore(false);
-      } else {
-        // Merge: new posts at top, existing posts preserved (deduped)
-        setPosts(prev => {
-          const existingIds = new Set(prev.map(p => p.id));
-          const trulyNew = freshPosts.filter(p => !existingIds.has(p.id));
-          
-          // If we have truly new posts, prepend them
-          // Otherwise just update with fresh data
-          if (trulyNew.length > 0) {
-            return [...trulyNew, ...prev];
-          }
-          
-          // Replace with fresh data but keep scroll position stable
-          return freshPosts;
-        });
-        setHasMore(freshPosts.length >= PAGE_SIZE);
-      }
+      if (freshPosts.length === 0) return;
+
+      setPosts((prev) => {
+        if (prev.length === 0) return freshPosts;
+
+        const existingIds = new Set(prev.map((p) => p.id));
+        const trulyNew = freshPosts.filter((p) => !existingIds.has(p.id));
+
+        // Critical: if nothing new, do NOT replace the array (prevents needless rerenders).
+        if (trulyNew.length === 0) return prev;
+
+        return [...trulyNew, ...prev];
+      });
     } finally {
       setRefreshing(false);
+      refreshingRef.current = false;
     }
-  }, [fetchPosts, posts.length, refreshing]);
+  }, [fetchPosts]);
 
   return {
     posts,
