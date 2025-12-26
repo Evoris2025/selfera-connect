@@ -111,8 +111,6 @@ function PostCardWithNavigationBase({
         key={displayedPost.id}
         style={{ x, scale: currentScale }}
         drag="x"
-        dragConstraints={{ left: 0, right: 0 }}
-        dragElastic={0.2}
         onDragEnd={handleDragEnd}
         className="relative z-10 cursor-grab active:cursor-grabbing"
       >
