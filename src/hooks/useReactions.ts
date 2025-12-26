@@ -2,27 +2,40 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
+import type { ReactionType } from '@/components/feed/ReactionPicker';
 
 interface UseReactionsResult {
-  heartCount: number;
-  hasReacted: boolean;
-  toggleReaction: () => Promise<void>;
+  reactionCount: number;
+  currentReaction: ReactionType | null;
+  setReaction: (type: ReactionType | null) => Promise<void>;
   isLoading: boolean;
 }
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const isUuid = (value: string) => UUID_RE.test(value);
 
+// Map frontend reaction types to database enum values
+const reactionTypeToDb = (type: ReactionType): 'heart' | 'hug' => {
+  // The database only supports 'heart' and 'hug', map all others to 'heart' for now
+  if (type === 'support') return 'hug';
+  return 'heart';
+};
+
+const dbToReactionType = (dbType: 'heart' | 'hug'): ReactionType => {
+  if (dbType === 'hug') return 'support';
+  return 'like';
+};
+
 export function useReactions(postId: string, initialCount = 0): UseReactionsResult {
   const { user } = useAuth();
-  const [heartCount, setHeartCount] = useState(() => initialCount);
-  const [hasReacted, setHasReacted] = useState(false);
+  const [reactionCount, setReactionCount] = useState(() => initialCount);
+  const [currentReaction, setCurrentReaction] = useState<ReactionType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const isUuidPostId = isUuid(postId);
 
-  // UI should stay deterministic under rapid taps; only the last state is persisted.
-  const desiredReactedRef = useRef(false);
+  // Track desired state for debouncing
+  const desiredReactionRef = useRef<ReactionType | null>(null);
   const commitTimerRef = useRef<number | null>(null);
   const reconcileTimerRef = useRef<number | null>(null);
 
@@ -33,33 +46,36 @@ export function useReactions(postId: string, initialCount = 0): UseReactionsResu
     }
 
     try {
-      // Get total heart count for this post
+      // Get total reaction count for this post
       const { count, error: countError } = await supabase
         .from('reactions')
         .select('*', { count: 'exact', head: true })
-        .eq('post_id', postId)
-        .eq('type', 'heart');
+        .eq('post_id', postId);
 
       if (countError) throw countError;
-      setHeartCount(count || 0);
+      setReactionCount(count || 0);
 
       // Check if current user has reacted
       if (user?.id) {
         const { data, error: userError } = await supabase
           .from('reactions')
-          .select('id')
+          .select('id, type')
           .eq('post_id', postId)
           .eq('user_id', user.id)
-          .eq('type', 'heart')
           .maybeSingle();
 
         if (userError) throw userError;
-        const reacted = !!data;
-        desiredReactedRef.current = reacted;
-        setHasReacted(reacted);
+        if (data) {
+          const reactionType = dbToReactionType(data.type as 'heart' | 'hug');
+          desiredReactionRef.current = reactionType;
+          setCurrentReaction(reactionType);
+        } else {
+          desiredReactionRef.current = null;
+          setCurrentReaction(null);
+        }
       } else {
-        desiredReactedRef.current = false;
-        setHasReacted(false);
+        desiredReactionRef.current = null;
+        setCurrentReaction(null);
       }
     } catch (error) {
       console.error('Error fetching reactions:', error);
@@ -70,9 +86,9 @@ export function useReactions(postId: string, initialCount = 0): UseReactionsResu
 
   useEffect(() => {
     // Reset per-post UI state
-    setHeartCount(initialCount);
-    setHasReacted(false);
-    desiredReactedRef.current = false;
+    setReactionCount(initialCount);
+    setCurrentReaction(null);
+    desiredReactionRef.current = null;
     setIsLoading(true);
 
     if (!isUuidPostId) {
@@ -83,7 +99,7 @@ export function useReactions(postId: string, initialCount = 0): UseReactionsResu
 
     fetchReactions();
 
-    // Subscribe to updates for this post's reactions; reconcile by refetching (prevents double-count drift).
+    // Subscribe to updates for this post's reactions
     const channel = supabase
       .channel(`reactions-${postId}`)
       .on(
@@ -113,29 +129,29 @@ export function useReactions(postId: string, initialCount = 0): UseReactionsResu
   const commitDesired = useCallback(async () => {
     if (!user?.id || !isUuidPostId) return;
 
-    const desired = desiredReactedRef.current;
+    const desired = desiredReactionRef.current;
 
     try {
+      // First, remove any existing reaction
+      await supabase
+        .from('reactions')
+        .delete()
+        .eq('post_id', postId)
+        .eq('user_id', user.id);
+
+      // Then insert the new reaction if there is one
       if (desired) {
         const { error } = await supabase.from('reactions').insert({
           post_id: postId,
           user_id: user.id,
-          type: 'heart',
+          type: reactionTypeToDb(desired),
         });
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from('reactions')
-          .delete()
-          .eq('post_id', postId)
-          .eq('user_id', user.id)
-          .eq('type', 'heart');
         if (error) throw error;
       }
     } catch (error) {
       console.error('Error toggling reaction:', error);
       toast({
-        title: "Couldn't save like",
+        title: "Couldn't save reaction",
         description: 'Please try again.',
         variant: 'destructive',
       });
@@ -143,15 +159,22 @@ export function useReactions(postId: string, initialCount = 0): UseReactionsResu
     }
   }, [user?.id, isUuidPostId, postId, fetchReactions]);
 
-  const toggleReaction = async () => {
+  const setReaction = async (type: ReactionType | null) => {
     if (!user?.id) return;
 
-    const next = !desiredReactedRef.current;
-    desiredReactedRef.current = next;
+    const previousReaction = desiredReactionRef.current;
+    desiredReactionRef.current = type;
 
     // Optimistic UI (instant)
-    setHasReacted(next);
-    setHeartCount((prev) => Math.max(0, prev + (next ? 1 : -1)));
+    setCurrentReaction(type);
+    
+    // Update count optimistically
+    if (previousReaction === null && type !== null) {
+      setReactionCount((prev) => prev + 1);
+    } else if (previousReaction !== null && type === null) {
+      setReactionCount((prev) => Math.max(0, prev - 1));
+    }
+    // If changing from one reaction to another, count stays the same
 
     // Demo/mock posts: stop here.
     if (!isUuidPostId) return;
@@ -163,5 +186,5 @@ export function useReactions(postId: string, initialCount = 0): UseReactionsResu
     }, 300);
   };
 
-  return { heartCount, hasReacted, toggleReaction, isLoading };
+  return { reactionCount, currentReaction, setReaction, isLoading };
 }

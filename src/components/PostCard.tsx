@@ -73,8 +73,7 @@ function PostCardBase({
   const [showContent, setShowContent] = useState(!hasContentWarning);
   const [showHeartOverlay, setShowHeartOverlay] = useState(false);
   const [showCommentSheet, setShowCommentSheet] = useState(false);
-  const [currentReaction, setCurrentReaction] = useState<ReactionType | null>(null);
-  const { heartCount, hasReacted, toggleReaction } = useReactions(id, likes);
+  const { reactionCount, currentReaction, setReaction } = useReactions(id, likes);
   const { inLibrary, toggleLibrary } = useLibrary(id);
 
   // Navigate to creator profile
@@ -102,9 +101,8 @@ function PostCardBase({
       navigator.vibrate([10, 50, 10]);
     }
     
-    if (!hasReacted) {
-      await toggleReaction();
-      setCurrentReaction('like');
+    if (!currentReaction) {
+      await setReaction('like');
     }
   };
 
@@ -112,14 +110,7 @@ function PostCardBase({
     if (!user) {
       return;
     }
-    
-    setCurrentReaction(type);
-    // If toggling off or changing reaction
-    if (type === null && hasReacted) {
-      await toggleReaction();
-    } else if (type !== null && !hasReacted) {
-      await toggleReaction();
-    }
+    await setReaction(type);
   };
 
   const handleLibraryToggle = async () => {
@@ -222,7 +213,7 @@ function PostCardBase({
           <ReactionButton 
             postId={id}
             currentReaction={currentReaction}
-            count={heartCount}
+            count={reactionCount}
             onReact={handleReaction}
           />
           <CommentButton 
@@ -369,7 +360,7 @@ function PostCardBase({
                   <ReactionButton 
                     postId={id}
                     currentReaction={currentReaction}
-                    count={heartCount}
+                    count={reactionCount}
                     onReact={handleReaction}
                   />
                   <CommentButton 
