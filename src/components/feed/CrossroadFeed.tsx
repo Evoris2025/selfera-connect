@@ -4,6 +4,7 @@ import { PostCard } from '@/components/PostCard';
 import { PostCardSkeleton } from '@/components/SkeletonLoader';
 import { Button } from '@/components/ui/button';
 import { HorizontalLane } from './HorizontalLane';
+import { PostCardWithNavigation } from './PostCardWithNavigation';
 import type { ContentType } from '@/hooks/useCrossroadScroll';
 
 export interface FeedPost {
@@ -131,17 +132,31 @@ export function CrossroadFeed({
 
       {posts.map((post) => {
         const sameTypePosts = postsByType.get(post.contentType) || [];
+        const currentIndexInType = sameTypePosts.findIndex((p) => p.id === post.id);
         const isLaneOpen = openLanePostId === post.id && sameTypePosts.length > 1;
         const laneIndex =
-          laneIndices.get(post.contentType) ??
-          Math.max(0, sameTypePosts.findIndex((p) => p.id === post.id));
+          laneIndices.get(post.contentType) ?? Math.max(0, currentIndexInType);
+
+        // Handle arrow navigation - scroll to target post or swap inline
+        const handleNavigate = (newIndex: number) => {
+          const targetPost = sameTypePosts[newIndex];
+          if (!targetPost) return;
+          // Scroll to the target post in the vertical feed
+          const targetElement = document.getElementById(`post-${targetPost.id}`);
+          if (targetElement) {
+            targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        };
 
         return (
-          <div key={post.id} className="relative">
+          <div key={post.id} id={`post-${post.id}`} className="relative">
             <div className={isLaneOpen ? 'opacity-0 pointer-events-none' : ''}>
-              <PostCard
-                {...post}
+              <PostCardWithNavigation
+                post={post}
+                sameTypePosts={sameTypePosts}
+                currentIndexInType={currentIndexInType}
                 onPostClick={onPostClick}
+                onNavigate={handleNavigate}
                 onRequestHorizontalLane={() => handleOpenLane(post.id)}
               />
             </div>
