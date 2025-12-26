@@ -137,6 +137,8 @@ const ImmersiveMedia = forwardRef<HTMLDivElement, ImmersiveMediaProps>(
           <motion.img
             src={src}
             alt={alt || ''}
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover img-cinematic"
             initial={{ scale: 1.02 }}
             animate={{ scale: 1 }}
