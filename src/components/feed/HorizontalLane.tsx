@@ -22,61 +22,99 @@ function HorizontalLaneBase<T extends { id: string }>({
   renderWindow = 1,
 }: HorizontalLaneProps<T>) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
-
-  const updateScrollState = useCallback(() => {
-    if (!scrollRef.current) return;
-    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-    setCanScrollLeft(scrollLeft > 10);
-    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
-  }, []);
-
-  // Scroll to active item with smooth animation
-  useEffect(() => {
-    if (!scrollRef.current) return;
-    const container = scrollRef.current;
-    const itemWidth = container.clientWidth;
-    
-    container.scrollTo({
-      left: activeIndex * itemWidth,
-      behavior: 'smooth',
-    });
-  }, [activeIndex]);
-
-  // Handle scroll end detection for snap
-  useEffect(() => {
-    const container = scrollRef.current;
-    if (!container) return;
-
-    let scrollTimeout: NodeJS.Timeout;
-
-    const handleScroll = () => {
-      updateScrollState();
-      clearTimeout(scrollTimeout);
-      
-      scrollTimeout = setTimeout(() => {
-        const itemWidth = container.clientWidth;
-        const newIndex = Math.round(container.scrollLeft / itemWidth);
-        if (newIndex !== activeIndex && newIndex >= 0 && newIndex < items.length) {
-          onIndexChange(newIndex);
-        }
-      }, 100);
-    };
-
-    container.addEventListener('scroll', handleScroll, { passive: true });
-    updateScrollState();
-
-    return () => {
-      container.removeEventListener('scroll', handleScroll);
-      clearTimeout(scrollTimeout);
-    };
-  }, [activeIndex, items.length, onIndexChange, updateScrollState]);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Check if an item is within the render window
   const isInRenderWindow = useCallback((index: number) => {
     return Math.abs(index - activeIndex) <= renderWindow;
   }, [activeIndex, renderWindow]);
+
+  // Scroll to activeIndex when it changes (from parent or arrows)
+  useEffect(() => {
+    if (!scrollRef.current || isScrolling) return;
+    const itemWidth = scrollRef.current.clientWidth;
+    const targetScroll = activeIndex * itemWidth;
+    
+    // Only scroll if we're not already at the target
+    if (Math.abs(scrollRef.current.scrollLeft - targetScroll) > 2) {
+      scrollRef.current.scrollTo({
+        left: targetScroll,
+        behavior: 'smooth',
+      });
+    }
+  }, [activeIndex, isScrolling]);
+
+  // Handle scroll end to sync index with scroll position
+  const handleScroll = useCallback(() => {
+    if (!scrollRef.current) return;
+    
+    setIsScrolling(true);
+    
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+    }
+
+    scrollTimeoutRef.current = setTimeout(() => {
+      if (!scrollRef.current) return;
+      
+      const itemWidth = scrollRef.current.clientWidth;
+      const scrollLeft = scrollRef.current.scrollLeft;
+      const newIndex = Math.round(scrollLeft / itemWidth);
+      const snappedPosition = newIndex * itemWidth;
+      
+      // Only update if we're snapped (within 4px tolerance)
+      if (Math.abs(scrollLeft - snappedPosition) < 4) {
+        const clampedIndex = Math.max(0, Math.min(newIndex, items.length - 1));
+        if (clampedIndex !== activeIndex) {
+          onIndexChange(clampedIndex);
+        }
+      }
+      
+      setIsScrolling(false);
+    }, 150);
+  }, [activeIndex, items.length, onIndexChange]);
+
+  // Arrow navigation - imperatively scroll then update state
+  const navigateTo = useCallback((targetIndex: number) => {
+    if (!scrollRef.current) return;
+    
+    const clampedIndex = Math.max(0, Math.min(targetIndex, items.length - 1));
+    const itemWidth = scrollRef.current.clientWidth;
+    
+    // Imperatively scroll first
+    scrollRef.current.scrollTo({
+      left: clampedIndex * itemWidth,
+      behavior: 'smooth',
+    });
+    
+    // Update parent state
+    onIndexChange(clampedIndex);
+  }, [items.length, onIndexChange]);
+
+  const handlePrevious = useCallback((e: React.MouseEvent | React.PointerEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (activeIndex > 0) {
+      navigateTo(activeIndex - 1);
+    }
+  }, [activeIndex, navigateTo]);
+
+  const handleNext = useCallback((e: React.MouseEvent | React.PointerEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (activeIndex < items.length - 1) {
+      navigateTo(activeIndex + 1);
+    }
+  }, [activeIndex, items.length, navigateTo]);
+
+  useEffect(() => {
+    return () => {
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, []);
 
   if (items.length <= 1) {
     return items.length === 1 ? <>{renderItem(items[0], 0)}</> : null;
@@ -86,10 +124,12 @@ function HorizontalLaneBase<T extends { id: string }>({
   const canGoRight = activeIndex < items.length - 1;
 
   return (
-    <div className={cn('relative group', className)}>
+    <div className={cn('relative w-full h-full group', className)}>
+      {/* Scrollable lane */}
       <div
         ref={scrollRef}
-        className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+        onScroll={handleScroll}
+        className="flex w-full h-full overflow-x-auto snap-x snap-mandatory scrollbar-hide"
         style={{ scrollSnapType: 'x mandatory' }}
       >
         {items.map((item, index) => {
@@ -98,8 +138,9 @@ function HorizontalLaneBase<T extends { id: string }>({
           return (
             <motion.div
               key={item.id}
-              className="flex-none w-full snap-center origin-center"
+              className="flex-none w-full h-full snap-center origin-center"
               style={{ scrollSnapAlign: 'center' }}
+              initial={false}
               animate={{
                 scale: index === activeIndex ? 1 : 0.95,
                 opacity: index === activeIndex ? 1 : 0.7,
@@ -114,40 +155,43 @@ function HorizontalLaneBase<T extends { id: string }>({
                 renderItem(item, index)
               ) : (
                 // Placeholder: maintains scroll width without loading content
-                <div className="aspect-[4/5] bg-transparent" />
+                <div className="w-full h-full bg-transparent" />
               )}
             </motion.div>
           );
         })}
       </div>
 
-      {/* Left arrow - visible on hover */}
-      {canGoLeft && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onIndexChange(activeIndex - 1);
-          }}
-          className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-background/80 backdrop-blur-sm text-foreground/80 hover:bg-background hover:text-foreground transition-all shadow-md opacity-0 group-hover:opacity-100 focus:opacity-100"
-          aria-label="Previous post"
-        >
-          <ChevronLeft className="w-6 h-6" />
-        </button>
-      )}
+      {/* Arrow overlay - sits above content, only buttons receive clicks */}
+      <div className="absolute inset-0 flex items-center justify-between px-2 pointer-events-none z-40">
+        {/* Left arrow */}
+        {canGoLeft ? (
+          <button
+            onClick={handlePrevious}
+            onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
+            className="pointer-events-auto p-2 rounded-full bg-background/80 backdrop-blur-sm text-foreground/80 hover:bg-background hover:text-foreground transition-all shadow-md opacity-0 group-hover:opacity-100 focus:opacity-100 z-50"
+            aria-label="Previous post"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+        ) : (
+          <div />
+        )}
 
-      {/* Right arrow - visible on hover */}
-      {canGoRight && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onIndexChange(activeIndex + 1);
-          }}
-          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-background/80 backdrop-blur-sm text-foreground/80 hover:bg-background hover:text-foreground transition-all shadow-md opacity-0 group-hover:opacity-100 focus:opacity-100"
-          aria-label="Next post"
-        >
-          <ChevronRight className="w-6 h-6" />
-        </button>
-      )}
+        {/* Right arrow */}
+        {canGoRight ? (
+          <button
+            onClick={handleNext}
+            onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
+            className="pointer-events-auto p-2 rounded-full bg-background/80 backdrop-blur-sm text-foreground/80 hover:bg-background hover:text-foreground transition-all shadow-md opacity-0 group-hover:opacity-100 focus:opacity-100 z-50"
+            aria-label="Next post"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
+        ) : (
+          <div />
+        )}
+      </div>
     </div>
   );
 }
