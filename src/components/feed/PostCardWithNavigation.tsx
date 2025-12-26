@@ -1,5 +1,6 @@
 import { memo, useState, useRef, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { PostCard } from '@/components/PostCard';
 import type { FeedPost } from './CrossroadFeed';
 
@@ -20,6 +21,7 @@ function PostCardWithNavigationBase({
 }: PostCardWithNavigationProps) {
   // Local state to track current position within sameTypePosts for this row
   const [localIndex, setLocalIndex] = useState(currentIndexInType);
+  const [direction, setDirection] = useState(0); // -1 for left, 1 for right
   
   // Swipe gesture tracking
   const touchStartX = useRef<number | null>(null);
@@ -37,6 +39,7 @@ function PostCardWithNavigationBase({
     e?.stopPropagation();
     e?.preventDefault();
     if (hasPrev) {
+      setDirection(-1);
       setLocalIndex(prev => prev - 1);
     }
   }, [hasPrev]);
@@ -45,6 +48,7 @@ function PostCardWithNavigationBase({
     e?.stopPropagation();
     e?.preventDefault();
     if (hasNext) {
+      setDirection(1);
       setLocalIndex(prev => prev + 1);
     }
   }, [hasNext]);
@@ -77,18 +81,49 @@ function PostCardWithNavigationBase({
     touchEndX.current = null;
   }, [hasNext, hasPrev, handleNext, handlePrev]);
 
+  // Animation variants for slide effect
+  const slideVariants = {
+    enter: (dir: number) => ({
+      x: dir > 0 ? 300 : -300,
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: (dir: number) => ({
+      x: dir > 0 ? -300 : 300,
+      opacity: 0,
+    }),
+  };
+
   return (
     <div 
-      className="relative group"
+      className="relative group overflow-hidden"
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
     >
-      <PostCard
-        {...displayedPost}
-        onPostClick={onPostClick}
-        onRequestHorizontalLane={onRequestHorizontalLane}
-      />
+      <AnimatePresence mode="popLayout" initial={false} custom={direction}>
+        <motion.div
+          key={displayedPost.id}
+          custom={direction}
+          variants={slideVariants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={{
+            x: { type: 'spring', stiffness: 300, damping: 30 },
+            opacity: { duration: 0.2 },
+          }}
+        >
+          <PostCard
+            {...displayedPost}
+            onPostClick={onPostClick}
+            onRequestHorizontalLane={onRequestHorizontalLane}
+          />
+        </motion.div>
+      </AnimatePresence>
 
       {/* Navigation Arrows Overlay */}
       {showArrows && (
