@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 
 export type ContentType = 'image' | 'video' | 'text' | 'reel' | 'live';
 
@@ -9,14 +9,18 @@ interface Post {
 
 interface UseCrossroadScrollOptions {
   posts: Post[];
-  threshold?: number; // How close to center to be "active"
+  threshold?: number;
+  debounceMs?: number;
 }
 
-export function useCrossroadScroll({ posts, threshold = 0.4 }: UseCrossroadScrollOptions) {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [activeContentType, setActiveContentType] = useState<ContentType>('image');
-  const containerRef = useRef<HTMLDivElement>(null);
+export function useCrossroadScroll({ 
+  posts, 
+  threshold = 0.4,
+  debounceMs = 100,
+}: UseCrossroadScrollOptions) {
+  const [activePostId, setActivePostId] = useState<string | null>(posts[0]?.id ?? null);
   const postRefs = useRef<Map<string, HTMLElement>>(new Map());
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   // Register a post element
   const registerPost = useCallback((id: string, element: HTMLElement | null) => {
@@ -27,35 +31,38 @@ export function useCrossroadScroll({ posts, threshold = 0.4 }: UseCrossroadScrol
     }
   }, []);
 
-  // Determine which post is most central in viewport
+  // Determine which post is most central in viewport (debounced)
   const updateActivePost = useCallback(() => {
-    const viewportHeight = window.innerHeight;
-    const viewportCenter = viewportHeight * threshold;
+    if (debounceRef.current) clearTimeout(debounceRef.current);
 
-    let closestDistance = Infinity;
-    let closestIndex = 0;
+    debounceRef.current = setTimeout(() => {
+      const viewportHeight = window.innerHeight;
+      const viewportCenter = viewportHeight * threshold;
 
-    posts.forEach((post, index) => {
-      const element = postRefs.current.get(post.id);
-      if (!element) return;
+      let closestDistance = Infinity;
+      let closestId: string | null = null;
 
-      const rect = element.getBoundingClientRect();
-      const elementCenter = rect.top + rect.height / 2;
-      const distance = Math.abs(elementCenter - viewportCenter);
+      posts.forEach((post) => {
+        const element = postRefs.current.get(post.id);
+        if (!element) return;
 
-      if (distance < closestDistance) {
-        closestDistance = distance;
-        closestIndex = index;
+        const rect = element.getBoundingClientRect();
+        const elementCenter = rect.top + rect.height / 2;
+        const distance = Math.abs(elementCenter - viewportCenter);
+
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestId = post.id;
+        }
+      });
+
+      if (closestId && closestId !== activePostId) {
+        setActivePostId(closestId);
       }
-    });
+    }, debounceMs);
+  }, [posts, activePostId, threshold, debounceMs]);
 
-    if (closestIndex !== activeIndex) {
-      setActiveIndex(closestIndex);
-      setActiveContentType(posts[closestIndex]?.contentType || 'image');
-    }
-  }, [posts, activeIndex, threshold]);
-
-  // Scroll listener with throttle
+  // Scroll listener with RAF throttle
   useEffect(() => {
     let ticking = false;
 
@@ -70,24 +77,41 @@ export function useCrossroadScroll({ posts, threshold = 0.4 }: UseCrossroadScrol
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
   }, [updateActivePost]);
 
-  // Get posts filtered by type for horizontal lane
-  const getSameTypePosts = useCallback((type: ContentType) => {
-    return posts.filter(p => p.contentType === type);
+  // Memoized map of contentType -> posts of that type
+  const postsByType = useMemo(() => {
+    const map = new Map<ContentType, Post[]>();
+    posts.forEach((p) => {
+      const arr = map.get(p.contentType) || [];
+      arr.push(p);
+      map.set(p.contentType, arr);
+    });
+    return map;
   }, [posts]);
 
+  // Get posts filtered by type for horizontal lane (stable reference)
+  const getSameTypePosts = useCallback((type: ContentType): Post[] => {
+    return postsByType.get(type) || [];
+  }, [postsByType]);
+
   // Get index within same-type lane
-  const getLaneIndex = useCallback((postId: string, type: ContentType) => {
+  const getLaneIndex = useCallback((postId: string, type: ContentType): number => {
     const lane = getSameTypePosts(type);
     return lane.findIndex(p => p.id === postId);
   }, [getSameTypePosts]);
 
+  // Derive active post info
+  const activePost = useMemo(() => posts.find(p => p.id === activePostId), [posts, activePostId]);
+  const activeContentType = activePost?.contentType ?? 'image';
+
   return {
-    activeIndex,
+    activePostId,
     activeContentType,
-    containerRef,
     registerPost,
     getSameTypePosts,
     getLaneIndex,

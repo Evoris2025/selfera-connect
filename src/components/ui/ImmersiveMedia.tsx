@@ -1,4 +1,4 @@
-import { forwardRef, useState, useRef, useEffect, ReactNode } from 'react';
+import { forwardRef, useState, useRef, useEffect, ReactNode, memo } from 'react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Play, Pause, Volume2, VolumeX } from 'lucide-react';
@@ -228,4 +228,7 @@ const ImmersiveMedia = forwardRef<HTMLDivElement, ImmersiveMediaProps>(
 
 ImmersiveMedia.displayName = 'ImmersiveMedia';
 
-export { ImmersiveMedia };
+// Memoize to prevent re-renders from parent updates (preserves video playback)
+const MemoizedImmersiveMedia = memo(ImmersiveMedia);
+
+export { ImmersiveMedia, MemoizedImmersiveMedia };
