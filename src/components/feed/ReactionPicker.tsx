@@ -34,6 +34,7 @@ interface ReactionPickerProps {
 
 export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: ReactionPickerProps) {
   const [hoveredReaction, setHoveredReaction] = useState<ReactionType | null>(null);
+  const [selectedReaction, setSelectedReaction] = useState<ReactionType | null>(null);
   const [burstParticles, setBurstParticles] = useState<{ reactionType: ReactionType; particles: BurstParticle[] } | null>(null);
 
   const triggerBurst = useCallback((type: ReactionType, color: string) => {
@@ -46,6 +47,9 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
     const reaction = reactions.find(r => r.type === type);
     if (reaction) {
       triggerBurst(type, reaction.color);
+      setSelectedReaction(type);
+      // Reset selection animation after it plays
+      setTimeout(() => setSelectedReaction(null), 400);
     }
     // Close immediately and notify parent
     onSelect(type);
@@ -64,7 +68,7 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
           onClick={(e) => e.stopPropagation()}
           className="absolute bottom-full left-0 mb-2 z-50"
         >
-          <div className="flex items-center gap-1.5 px-3 py-2.5 bg-card/95 backdrop-blur-xl rounded-full shadow-elevated border border-border/30 select-none touch-manipulation">
+          <div className="flex items-center gap-2 px-3 py-2.5 bg-card/95 backdrop-blur-xl rounded-full shadow-elevated border border-border/30 select-none touch-manipulation">
             {reactions.map((reaction, index) => (
               <motion.button
                 key={reaction.type}
@@ -93,14 +97,21 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
               >
                 <motion.div
                   animate={{
-                    scale: hoveredReaction === reaction.type ? 1.5 : 1,
-                    y: hoveredReaction === reaction.type ? -10 : 0,
-                    rotate: hoveredReaction === reaction.type ? [0, -10, 10, -5, 5, 0] : 0,
+                    scale: selectedReaction === reaction.type 
+                      ? [1, 1.6, 0.9, 1.3, 1]
+                      : hoveredReaction === reaction.type ? 1.4 : 1,
+                    y: hoveredReaction === reaction.type ? -8 : 0,
+                    rotate: selectedReaction === reaction.type 
+                      ? [0, -15, 15, -10, 10, -5, 5, 0]
+                      : hoveredReaction === reaction.type ? [0, -8, 8, -4, 4, 0] : 0,
                   }}
-                  transition={springTransitions.bouncy}
+                  transition={selectedReaction === reaction.type 
+                    ? { duration: 0.4, times: [0, 0.2, 0.4, 0.6, 1] }
+                    : springTransitions.bouncy
+                  }
                   className="block"
                 >
-                  <FluentEmoji type={reaction.type} size={28} />
+                  <FluentEmoji type={reaction.type} size={36} />
                 </motion.div>
 
                 {/* Tooltip */}
@@ -323,13 +334,13 @@ export function ReactionButton({ postId, currentReaction, count, onReact }: Reac
           currentReaction ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
         )}
       >
-        <div className="relative">
+        <div className="relative w-6 h-6 flex items-center justify-center">
           <motion.div
             key={currentReaction || 'default'}
             initial={{ scale: 0.5, rotate: -15 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={springTransitions.elastic}
-            className="w-6 h-6 flex items-center justify-center"
+            className="flex items-center justify-center"
           >
             {hasReaction ? (
               <FluentEmoji type={currentReaction!} size={24} />
