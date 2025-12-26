@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/AppLayout';
 import { ComposerBar } from '@/components/ComposerBar';
@@ -17,8 +17,13 @@ export default function Feed() {
   const [creatorMode, setCreatorMode] = useState<CreatorMode>(null);
   
   // Modal state
-  const [selectedPost, setSelectedPost] = useState<FeedPost | null>(null);
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const selectedPost = useMemo(() => {
+    if (!selectedPostId) return null;
+    return posts.find((p) => p.id === selectedPostId) ?? null;
+  }, [posts, selectedPostId]);
 
   const handleOpenComposer = (mode?: 'text' | 'video' | 'image' | 'reel') => {
     const modeMap: Record<string, CreatorMode> = {
@@ -36,14 +41,14 @@ export default function Feed() {
     setCreatorOpen(true);
   };
 
-  const handlePostClick = (post: FeedPost) => {
-    setSelectedPost(post);
+  const handlePostClick = useCallback((postId: string) => {
+    setSelectedPostId(postId);
     setIsModalOpen(true);
-  };
+  }, []);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setSelectedPost(null);
+    setSelectedPostId(null);
   };
 
   const handleNavigateProfile = (authorId: string) => {

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { memo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { MoreHorizontal, Flag, Ban, VolumeX, BookOpen, Heart } from 'lucide-react';
@@ -44,7 +44,7 @@ interface PostCardProps {
   likes?: number;
   hasContentWarning?: boolean;
   contentWarningType?: string;
-  onPostClick?: () => void;
+  onPostClick?: (postId: string) => void;
 }
 
 function formatCount(count: number): string {
@@ -53,7 +53,7 @@ function formatCount(count: number): string {
   return count.toString();
 }
 
-export function PostCard({
+function PostCardBase({
   id,
   authorId,
   author,
@@ -87,9 +87,7 @@ export function PostCard({
 
   // Handle post content click - open modal
   const handlePostContentClick = () => {
-    if (onPostClick) {
-      onPostClick();
-    }
+    onPostClick?.(id);
   };
 
   const handleDoubleTap = async () => {
@@ -420,3 +418,6 @@ export function PostCard({
     </motion.article>
   );
 }
+
+export const PostCard = memo(PostCardBase);
+PostCard.displayName = 'PostCard';
