@@ -49,19 +49,22 @@ const ImmersiveMedia = forwardRef<HTMLDivElement, ImmersiveMediaProps>(
   }, ref) => {
     const [showHeart, setShowHeart] = useState(false);
     const [lastTap, setLastTap] = useState(0);
-    const [isPlaying, setIsPlaying] = useState(autoPlay);
+    // Only videos should autoplay - images never autoplay
+    const shouldAutoPlay = type === 'video' && autoPlay;
+    const [isPlaying, setIsPlaying] = useState(shouldAutoPlay);
     const [isMuted, setIsMuted] = useState(true);
     const [showControls, setShowControls] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);
 
-    // Auto-play video when in viewport
+    // Auto-play ONLY for videos when in viewport
     useEffect(() => {
+      // Only apply autoplay logic for videos
       if (type !== 'video' || !videoRef.current) return;
 
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
-            if (entry.isIntersecting && autoPlay) {
+            if (entry.isIntersecting && shouldAutoPlay) {
               videoRef.current?.play().catch(() => {});
               setIsPlaying(true);
             } else {
@@ -75,7 +78,7 @@ const ImmersiveMedia = forwardRef<HTMLDivElement, ImmersiveMediaProps>(
 
       observer.observe(videoRef.current);
       return () => observer.disconnect();
-    }, [type, autoPlay]);
+    }, [type, shouldAutoPlay]);
 
     const handleTap = (e: React.MouseEvent) => {
       const now = Date.now();

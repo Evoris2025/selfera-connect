@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { PostCard } from '@/components/PostCard';
 import type { FeedPost } from './CrossroadFeed';
@@ -8,7 +8,6 @@ interface PostCardWithNavigationProps {
   sameTypePosts: FeedPost[];
   currentIndexInType: number;
   onPostClick: (postId: string) => void;
-  onNavigate: (newIndex: number) => void;
   onRequestHorizontalLane?: () => void;
 }
 
@@ -17,18 +16,23 @@ function PostCardWithNavigationBase({
   sameTypePosts,
   currentIndexInType,
   onPostClick,
-  onNavigate,
   onRequestHorizontalLane,
 }: PostCardWithNavigationProps) {
-  const hasPrev = currentIndexInType > 0;
-  const hasNext = currentIndexInType < sameTypePosts.length - 1;
+  // Local state to track current position within sameTypePosts for this row
+  const [localIndex, setLocalIndex] = useState(currentIndexInType);
+  
+  // The post to display is based on localIndex
+  const displayedPost = sameTypePosts[localIndex] || post;
+  
+  const hasPrev = localIndex > 0;
+  const hasNext = localIndex < sameTypePosts.length - 1;
   const showArrows = sameTypePosts.length > 1;
 
   const handlePrev = (e: React.MouseEvent | React.PointerEvent) => {
     e.stopPropagation();
     e.preventDefault();
     if (hasPrev) {
-      onNavigate(currentIndexInType - 1);
+      setLocalIndex(localIndex - 1);
     }
   };
 
@@ -36,14 +40,14 @@ function PostCardWithNavigationBase({
     e.stopPropagation();
     e.preventDefault();
     if (hasNext) {
-      onNavigate(currentIndexInType + 1);
+      setLocalIndex(localIndex + 1);
     }
   };
 
   return (
     <div className="relative group">
       <PostCard
-        {...post}
+        {...displayedPost}
         onPostClick={onPostClick}
         onRequestHorizontalLane={onRequestHorizontalLane}
       />
@@ -90,6 +94,22 @@ function PostCardWithNavigationBase({
           >
             <ChevronRight className="h-5 w-5" />
           </button>
+        </div>
+      )}
+
+      {/* Position indicator */}
+      {showArrows && (
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-30 opacity-0 group-hover:opacity-100 transition-opacity">
+          {sameTypePosts.map((_, idx) => (
+            <div
+              key={idx}
+              className={`w-1.5 h-1.5 rounded-full transition-all ${
+                idx === localIndex
+                  ? 'bg-primary w-3'
+                  : 'bg-foreground/40'
+              }`}
+            />
+          ))}
         </div>
       )}
     </div>

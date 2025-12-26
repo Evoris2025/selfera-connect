@@ -44,6 +44,27 @@ const mockPosts: FeedPost[] = [
     contentType: 'image',
   },
   {
+    id: 'mock-video-1',
+    authorId: 'mock-author-video-1',
+    author: {
+      name: 'Calm Studios',
+      handle: 'calmstudios',
+      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop',
+      isVerified: true,
+    },
+    content: 'Find your peace. 🧘‍♀️ A 1-minute breathing exercise to center yourself.',
+    media: {
+      type: 'video',
+      url: 'https://videos.pexels.com/video-files/3571264/3571264-sd_640_360_30fps.mp4',
+      thumbnail: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&h=600&fit=crop',
+    },
+    tags: ['breathing', 'calm'],
+    commentCount: 34,
+    createdAt: '3h',
+    likes: 245,
+    contentType: 'video',
+  },
+  {
     id: 'mock-3',
     authorId: 'mock-author-3',
     author: {
@@ -78,6 +99,27 @@ const mockPosts: FeedPost[] = [
     createdAt: '8h',
     likes: 234,
     contentType: 'image',
+  },
+  {
+    id: 'mock-video-2',
+    authorId: 'mock-author-video-2',
+    author: {
+      name: 'Nature Sounds',
+      handle: 'naturesounds',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop',
+      isVerified: false,
+    },
+    content: 'Let the ocean waves wash away your stress 🌊',
+    media: {
+      type: 'video',
+      url: 'https://videos.pexels.com/video-files/1093662/1093662-sd_640_360_30fps.mp4',
+      thumbnail: 'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=800&h=600&fit=crop',
+    },
+    tags: ['ocean', 'relaxation'],
+    commentCount: 19,
+    createdAt: '5h',
+    likes: 178,
+    contentType: 'video',
   },
   {
     id: 'mock-5',
