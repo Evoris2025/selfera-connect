@@ -1,8 +1,10 @@
 import { useEffect, useRef, useCallback, useState, useMemo } from 'react';
+import { X } from 'lucide-react';
 import { PostCard } from '@/components/PostCard';
 import { PostCardSkeleton } from '@/components/SkeletonLoader';
+import { Button } from '@/components/ui/button';
 import { HorizontalLane } from './HorizontalLane';
-import { useCrossroadScroll, ContentType } from '@/hooks/useCrossroadScroll';
+import type { ContentType } from '@/hooks/useCrossroadScroll';
 
 export interface FeedPost {
   id: string;
@@ -47,10 +49,16 @@ export function CrossroadFeed({
 }: CrossroadFeedProps) {
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
-  // Scroll detection for horizontal lane activation
-  const { activePostId, registerPost, getLaneIndex } = useCrossroadScroll({
-    posts,
-  });
+  // Horizontal lane opens only on explicit user intent (keeps vertical feed stable)
+  const [openLanePostId, setOpenLanePostId] = useState<string | null>(null);
+
+  const handleOpenLane = useCallback((postId: string) => {
+    setOpenLanePostId(postId);
+  }, []);
+
+  const handleCloseLane = useCallback(() => {
+    setOpenLanePostId(null);
+  }, []);
 
   // Memoize same-type posts lookup by contentType -> FeedPost[]
   const postsByType = useMemo(() => {
@@ -122,30 +130,44 @@ export function CrossroadFeed({
       )}
 
       {posts.map((post) => {
-        const isActive = post.id === activePostId;
         const sameTypePosts = postsByType.get(post.contentType) || [];
-        const showLane = isActive && sameTypePosts.length > 1;
-        const laneIndex = laneIndices.get(post.contentType) ?? getLaneIndex(post.id, post.contentType);
+        const isLaneOpen = openLanePostId === post.id && sameTypePosts.length > 1;
+        const laneIndex =
+          laneIndices.get(post.contentType) ??
+          Math.max(0, sameTypePosts.findIndex((p) => p.id === post.id));
 
         return (
-          <div
-            key={post.id}
-            ref={(el) => registerPost(post.id, el)}
-            className="relative"
-          >
-            {/* PostCard: always mounted; hidden via CSS when lane is shown */}
-            <div className={showLane ? 'invisible h-0 overflow-hidden pointer-events-none' : ''}>
-              <PostCard {...post} onPostClick={onPostClick} />
+          <div key={post.id} className="relative">
+            <div className={isLaneOpen ? 'opacity-0 pointer-events-none' : ''}>
+              <PostCard
+                {...post}
+                onPostClick={onPostClick}
+                onRequestHorizontalLane={() => handleOpenLane(post.id)}
+              />
             </div>
 
-            {/* HorizontalLane: only rendered for active post with multiple same-type */}
-            {showLane && (
-              <HorizontalLane
-                items={sameTypePosts}
-                activeIndex={laneIndex}
-                onIndexChange={(idx) => handleLaneIndexChange(post.contentType, idx)}
-                renderItem={(item) => <PostCard {...item} onPostClick={onPostClick} />}
-              />
+            {isLaneOpen && (
+              <div className="absolute inset-0 z-20">
+                <div className="absolute top-2 right-2 z-30">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleCloseLane}
+                    aria-label="Close horizontal lane"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                <HorizontalLane
+                  items={sameTypePosts}
+                  activeIndex={laneIndex}
+                  onIndexChange={(idx) => handleLaneIndexChange(post.contentType, idx)}
+                  renderItem={(item) => <PostCard {...item} onPostClick={onPostClick} />}
+                  renderWindow={1}
+                />
+              </div>
             )}
           </div>
         );
