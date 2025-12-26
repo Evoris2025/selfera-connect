@@ -47,6 +47,8 @@ interface PostCardProps {
   onPostClick?: (postId: string) => void;
   /** Called when user indicates they want to horizontally browse same-type posts */
   onRequestHorizontalLane?: () => void;
+  /** When true, disables internal swipe detection to allow parent drag handling */
+  disableSwipeDetection?: boolean;
 }
 
 function formatCount(count: number): string {
@@ -69,6 +71,7 @@ function PostCardBase({
   contentWarningType,
   onPostClick,
   onRequestHorizontalLane,
+  disableSwipeDetection = false,
 }: PostCardProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -179,10 +182,12 @@ function PostCardBase({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         className="px-4 py-5 border-b border-border/50"
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
+        {...(!disableSwipeDetection && {
+          onPointerDown: handlePointerDown,
+          onPointerMove: handlePointerMove,
+          onPointerUp: handlePointerUp,
+          onPointerCancel: handlePointerUp,
+        })}
       >
         {/* Header: Avatar + Name/Handle */}
         <div className="flex items-start gap-3 mb-3">
@@ -301,10 +306,12 @@ function PostCardBase({
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       className="relative w-full"
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      onPointerCancel={handlePointerUp}
+      {...(!disableSwipeDetection && {
+        onPointerDown: handlePointerDown,
+        onPointerMove: handlePointerMove,
+        onPointerUp: handlePointerUp,
+        onPointerCancel: handlePointerUp,
+      })}
     >
       {/* Content Warning Overlay */}
       {hasContentWarning && !showContent ? (

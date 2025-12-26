@@ -86,6 +86,7 @@ function PostCardWithNavigationBase({
         >
           <PostCard
             {...prevPost}
+            disableSwipeDetection
             onPostClick={() => {}}
             onRequestHorizontalLane={onRequestHorizontalLane}
           />
@@ -100,6 +101,7 @@ function PostCardWithNavigationBase({
         >
           <PostCard
             {...nextPost}
+            disableSwipeDetection
             onPostClick={() => {}}
             onRequestHorizontalLane={onRequestHorizontalLane}
           />
@@ -116,6 +118,7 @@ function PostCardWithNavigationBase({
       >
         <PostCard
           {...displayedPost}
+          disableSwipeDetection
           onPostClick={onPostClick}
           onRequestHorizontalLane={onRequestHorizontalLane}
         />
