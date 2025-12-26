@@ -1,4 +1,4 @@
-import { memo, useRef, useState } from 'react';
+import { memo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { MoreHorizontal, Flag, Ban, VolumeX, BookOpen, Heart } from 'lucide-react';
@@ -45,10 +45,6 @@ interface PostCardProps {
   hasContentWarning?: boolean;
   contentWarningType?: string;
   onPostClick?: (postId: string) => void;
-  /** Called when user indicates they want to horizontally browse same-type posts */
-  onRequestHorizontalLane?: () => void;
-  /** When true, disables internal swipe detection to allow parent drag handling */
-  disableSwipeDetection?: boolean;
 }
 
 function formatCount(count: number): string {
@@ -70,8 +66,6 @@ function PostCardBase({
   hasContentWarning,
   contentWarningType,
   onPostClick,
-  onRequestHorizontalLane,
-  disableSwipeDetection = false,
 }: PostCardProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -83,31 +77,6 @@ function PostCardBase({
   const { heartCount, hasReacted, toggleReaction } = useReactions(id, likes);
   const { inLibrary, toggleLibrary } = useLibrary(id);
 
-  const swipeRef = useRef<{ startX: number; startY: number; triggered: boolean } | null>(null);
-  const suppressNextClickRef = useRef(false);
-
-  const handlePointerDown = (e: React.PointerEvent) => {
-    swipeRef.current = { startX: e.clientX, startY: e.clientY, triggered: false };
-  };
-
-  const handlePointerMove = (e: React.PointerEvent) => {
-    const s = swipeRef.current;
-    if (!s || s.triggered) return;
-
-    const dx = e.clientX - s.startX;
-    const dy = e.clientY - s.startY;
-
-    if (Math.abs(dx) > 64 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-      s.triggered = true;
-      suppressNextClickRef.current = true;
-      onRequestHorizontalLane?.();
-    }
-  };
-
-  const handlePointerUp = () => {
-    swipeRef.current = null;
-  };
-
   // Navigate to creator profile
   const handleCreatorClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -118,10 +87,6 @@ function PostCardBase({
 
   // Handle post content click - open modal
   const handlePostContentClick = () => {
-    if (suppressNextClickRef.current) {
-      suppressNextClickRef.current = false;
-      return;
-    }
     onPostClick?.(id);
   };
 
@@ -182,12 +147,6 @@ function PostCardBase({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         className="px-4 py-5 border-b border-border/50"
-        {...(!disableSwipeDetection && {
-          onPointerDown: handlePointerDown,
-          onPointerMove: handlePointerMove,
-          onPointerUp: handlePointerUp,
-          onPointerCancel: handlePointerUp,
-        })}
       >
         {/* Header: Avatar + Name/Handle */}
         <div className="flex items-start gap-3 mb-3">
@@ -306,12 +265,6 @@ function PostCardBase({
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       className="relative w-full"
-      {...(!disableSwipeDetection && {
-        onPointerDown: handlePointerDown,
-        onPointerMove: handlePointerMove,
-        onPointerUp: handlePointerUp,
-        onPointerCancel: handlePointerUp,
-      })}
     >
       {/* Content Warning Overlay */}
       {hasContentWarning && !showContent ? (

@@ -1,10 +1,6 @@
-import { useEffect, useRef, useCallback, useState, useMemo } from 'react';
-import { X } from 'lucide-react';
+import { useEffect, useRef } from 'react';
 import { PostCard } from '@/components/PostCard';
 import { PostCardSkeleton } from '@/components/SkeletonLoader';
-import { Button } from '@/components/ui/button';
-import { HorizontalLane } from './HorizontalLane';
-import { PostCardWithNavigation } from './PostCardWithNavigation';
 import type { ContentType } from '@/hooks/useCrossroadScroll';
 
 export interface FeedPost {
@@ -50,40 +46,7 @@ export function CrossroadFeed({
 }: CrossroadFeedProps) {
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
-  // Horizontal lane opens only on explicit user intent (keeps vertical feed stable)
-  const [openLanePostId, setOpenLanePostId] = useState<string | null>(null);
-
-  const handleOpenLane = useCallback((postId: string) => {
-    setOpenLanePostId(postId);
-  }, []);
-
-  const handleCloseLane = useCallback(() => {
-    setOpenLanePostId(null);
-  }, []);
-
-  // Memoize same-type posts lookup by contentType -> FeedPost[]
-  const postsByType = useMemo(() => {
-    const map = new Map<ContentType, FeedPost[]>();
-    posts.forEach((p) => {
-      const arr = map.get(p.contentType) || [];
-      arr.push(p);
-      map.set(p.contentType, arr);
-    });
-    return map;
-  }, [posts]);
-
-  // Track lane indices per content type for horizontal scrolling
-  const [laneIndices, setLaneIndices] = useState<Map<ContentType, number>>(new Map());
-
-  const handleLaneIndexChange = useCallback((type: ContentType, index: number) => {
-    setLaneIndices((prev) => {
-      const next = new Map(prev);
-      next.set(type, index);
-      return next;
-    });
-  }, []);
-
-  // Infinite scroll: observe sentinel, but never while a request is in-flight
+  // Infinite scroll: observe sentinel
   useEffect(() => {
     if (!onLoadMore || !hasMore) return;
     if (loadingMore) return;
@@ -130,51 +93,14 @@ export function CrossroadFeed({
         </div>
       )}
 
-      {posts.map((post) => {
-        const sameTypePosts = postsByType.get(post.contentType) || [];
-        const currentIndexInType = sameTypePosts.findIndex((p) => p.id === post.id);
-        const isLaneOpen = openLanePostId === post.id && sameTypePosts.length > 1;
-        const laneIndex =
-          laneIndices.get(post.contentType) ?? Math.max(0, currentIndexInType);
-
-        return (
-          <div key={post.id} id={`post-${post.id}`} className="relative">
-            <div className={isLaneOpen ? 'opacity-0 pointer-events-none' : ''}>
-              <PostCardWithNavigation
-                post={post}
-                sameTypePosts={sameTypePosts}
-                currentIndexInType={currentIndexInType}
-                onPostClick={onPostClick}
-                onRequestHorizontalLane={() => handleOpenLane(post.id)}
-              />
-            </div>
-
-            {isLaneOpen && (
-              <div className="absolute inset-0 z-20">
-                <div className="absolute top-2 right-2 z-30">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleCloseLane}
-                    aria-label="Close horizontal lane"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-
-                <HorizontalLane
-                  items={sameTypePosts}
-                  activeIndex={laneIndex}
-                  onIndexChange={(idx) => handleLaneIndexChange(post.contentType, idx)}
-                  renderItem={(item) => <PostCard {...item} onPostClick={onPostClick} />}
-                  renderWindow={1}
-                />
-              </div>
-            )}
-          </div>
-        );
-      })}
+      {posts.map((post) => (
+        <div key={post.id} id={`post-${post.id}`}>
+          <PostCard
+            {...post}
+            onPostClick={onPostClick}
+          />
+        </div>
+      ))}
 
       {/* Infinite scroll trigger */}
       {onLoadMore && hasMore && (
