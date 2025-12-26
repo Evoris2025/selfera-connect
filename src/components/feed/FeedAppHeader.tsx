@@ -31,7 +31,7 @@ export function FeedAppHeader({ title }: FeedAppHeaderProps) {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/50 bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80">
-      <div className="flex items-center justify-between h-14 px-4 max-w-lg mx-auto">
+      <div className="flex items-center justify-between h-14 px-4">
         {/* Left: Logo + Title */}
         <Link to="/feed" className="flex items-center gap-3">
           <motion.div
