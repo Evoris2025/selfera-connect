@@ -54,7 +54,7 @@ export function TextPostCard({
 }: TextPostCardProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const { heartCount, hasReacted, toggleReaction } = useReactions(id, 0);
+  const { reactionCount, currentReaction, setReaction } = useReactions(id, 0);
   const { inLibrary, toggleLibrary } = useLibrary(id);
   const [showCommentSheet, setShowCommentSheet] = useState(false);
 
@@ -67,7 +67,8 @@ export function TextPostCard({
       });
       return;
     }
-    await toggleReaction();
+    // Toggle between 'like' and null
+    await setReaction(currentReaction ? null : 'like');
   };
 
   const handleLibraryToggle = async () => {
@@ -154,8 +155,8 @@ export function TextPostCard({
         {/* Actions Row */}
         <div className="flex items-center gap-4 mt-4 text-muted-foreground">
           <HeartButton 
-            count={heartCount}
-            active={hasReacted}
+            count={reactionCount}
+            active={!!currentReaction}
             onClick={handleReaction}
             size="sm"
           />
