@@ -35,7 +35,7 @@ export function AppHeader({ title }: AppHeaderProps) {
         {/* Logo + Title */}
         <Link to="/feed" className="flex items-center gap-3">
         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-            <BrandMark imgClassName="-translate-x-[6px]" />
+            <BrandMark imgClassName="-translate-x-2" />
           </motion.div>
           {title && (
             <motion.span
