@@ -1,6 +1,6 @@
-import { memo, useState, useRef, useCallback } from 'react';
+import { memo, useState, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, useMotionValue, useTransform, animate, PanInfo } from 'framer-motion';
 import { PostCard } from '@/components/PostCard';
 import type { FeedPost } from './CrossroadFeed';
 
@@ -19,27 +19,33 @@ function PostCardWithNavigationBase({
   onPostClick,
   onRequestHorizontalLane,
 }: PostCardWithNavigationProps) {
-  // Local state to track current position within sameTypePosts for this row
   const [localIndex, setLocalIndex] = useState(currentIndexInType);
-  const [direction, setDirection] = useState(0); // -1 for left, 1 for right
   
-  // Swipe gesture tracking
-  const touchStartX = useRef<number | null>(null);
-  const touchEndX = useRef<number | null>(null);
-  const minSwipeDistance = 50;
+  // Motion values for drag
+  const x = useMotionValue(0);
+  const dragThreshold = 100;
   
   // The post to display is based on localIndex
   const displayedPost = sameTypePosts[localIndex] || post;
+  const prevPost = localIndex > 0 ? sameTypePosts[localIndex - 1] : null;
+  const nextPost = localIndex < sameTypePosts.length - 1 ? sameTypePosts[localIndex + 1] : null;
   
   const hasPrev = localIndex > 0;
   const hasNext = localIndex < sameTypePosts.length - 1;
   const showArrows = sameTypePosts.length > 1;
 
+  // Transform for peek posts opacity based on drag
+  const prevOpacity = useTransform(x, [0, 150], [0, 1]);
+  const nextOpacity = useTransform(x, [-150, 0], [1, 0]);
+  
+  // Scale transforms for depth effect
+  const currentScale = useTransform(x, [-150, 0, 150], [0.95, 1, 0.95]);
+  const peekScale = useTransform(x, [-150, 0, 150], [1, 0.9, 1]);
+
   const handlePrev = useCallback((e?: React.MouseEvent | React.PointerEvent) => {
     e?.stopPropagation();
     e?.preventDefault();
     if (hasPrev) {
-      setDirection(-1);
       setLocalIndex(prev => prev - 1);
     }
   }, [hasPrev]);
@@ -48,82 +54,74 @@ function PostCardWithNavigationBase({
     e?.stopPropagation();
     e?.preventDefault();
     if (hasNext) {
-      setDirection(1);
       setLocalIndex(prev => prev + 1);
     }
   }, [hasNext]);
 
-  // Touch handlers for swipe gestures
-  const onTouchStart = useCallback((e: React.TouchEvent) => {
-    touchEndX.current = null;
-    touchStartX.current = e.targetTouches[0].clientX;
-  }, []);
-
-  const onTouchMove = useCallback((e: React.TouchEvent) => {
-    touchEndX.current = e.targetTouches[0].clientX;
-  }, []);
-
-  const onTouchEnd = useCallback(() => {
-    if (!touchStartX.current || !touchEndX.current) return;
+  const handleDragEnd = useCallback((_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    const offset = info.offset.x;
+    const velocity = info.velocity.x;
     
-    const distance = touchStartX.current - touchEndX.current;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
+    // Determine if we should navigate based on offset or velocity
+    const shouldGoNext = (offset < -dragThreshold || velocity < -500) && hasNext;
+    const shouldGoPrev = (offset > dragThreshold || velocity > 500) && hasPrev;
     
-    if (isLeftSwipe && hasNext) {
-      handleNext();
-    } else if (isRightSwipe && hasPrev) {
-      handlePrev();
+    if (shouldGoNext) {
+      setLocalIndex(prev => prev + 1);
+    } else if (shouldGoPrev) {
+      setLocalIndex(prev => prev - 1);
     }
     
-    // Reset
-    touchStartX.current = null;
-    touchEndX.current = null;
-  }, [hasNext, hasPrev, handleNext, handlePrev]);
-
-  // Animation variants for slide effect
-  const slideVariants = {
-    enter: (dir: number) => ({
-      x: dir > 0 ? 300 : -300,
-      opacity: 0,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-    },
-    exit: (dir: number) => ({
-      x: dir > 0 ? -300 : 300,
-      opacity: 0,
-    }),
-  };
+    // Animate back to center
+    animate(x, 0, { type: 'spring', stiffness: 300, damping: 30 });
+  }, [hasNext, hasPrev, x]);
 
   return (
-    <div 
-      className="relative group overflow-hidden"
-      onTouchStart={onTouchStart}
-      onTouchMove={onTouchMove}
-      onTouchEnd={onTouchEnd}
-    >
-      <AnimatePresence mode="popLayout" initial={false} custom={direction}>
-        <motion.div
-          key={displayedPost.id}
-          custom={direction}
-          variants={slideVariants}
-          initial="enter"
-          animate="center"
-          exit="exit"
-          transition={{
-            x: { type: 'spring', stiffness: 300, damping: 30 },
-            opacity: { duration: 0.2 },
-          }}
+    <div className="relative group overflow-hidden">
+      {/* Previous post peek (behind, left side) */}
+      {prevPost && (
+        <motion.div 
+          className="absolute inset-0 z-0"
+          style={{ opacity: prevOpacity, scale: peekScale }}
         >
           <PostCard
-            {...displayedPost}
-            onPostClick={onPostClick}
+            {...prevPost}
+            onPostClick={() => {}}
             onRequestHorizontalLane={onRequestHorizontalLane}
           />
         </motion.div>
-      </AnimatePresence>
+      )}
+      
+      {/* Next post peek (behind, right side) */}
+      {nextPost && (
+        <motion.div 
+          className="absolute inset-0 z-0"
+          style={{ opacity: nextOpacity, scale: peekScale }}
+        >
+          <PostCard
+            {...nextPost}
+            onPostClick={() => {}}
+            onRequestHorizontalLane={onRequestHorizontalLane}
+          />
+        </motion.div>
+      )}
+
+      {/* Current post (draggable) */}
+      <motion.div
+        key={displayedPost.id}
+        style={{ x, scale: currentScale }}
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.2}
+        onDragEnd={handleDragEnd}
+        className="relative z-10 cursor-grab active:cursor-grabbing"
+      >
+        <PostCard
+          {...displayedPost}
+          onPostClick={onPostClick}
+          onRequestHorizontalLane={onRequestHorizontalLane}
+        />
+      </motion.div>
 
       {/* Navigation Arrows Overlay */}
       {showArrows && (
