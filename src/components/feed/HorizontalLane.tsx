@@ -121,25 +121,31 @@ function HorizontalLaneBase<T extends { id: string }>({
         })}
       </div>
 
-      {/* Left arrow */}
+      {/* Left arrow - visible on hover */}
       {canGoLeft && (
         <button
-          onClick={() => onIndexChange(activeIndex - 1)}
-          className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-background/70 backdrop-blur-sm text-foreground/80 hover:bg-background/90 hover:text-foreground transition-all shadow-sm"
+          onClick={(e) => {
+            e.stopPropagation();
+            onIndexChange(activeIndex - 1);
+          }}
+          className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-background/80 backdrop-blur-sm text-foreground/80 hover:bg-background hover:text-foreground transition-all shadow-md opacity-0 group-hover:opacity-100 focus:opacity-100"
           aria-label="Previous post"
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronLeft className="w-6 h-6" />
         </button>
       )}
 
-      {/* Right arrow */}
+      {/* Right arrow - visible on hover */}
       {canGoRight && (
         <button
-          onClick={() => onIndexChange(activeIndex + 1)}
-          className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-background/70 backdrop-blur-sm text-foreground/80 hover:bg-background/90 hover:text-foreground transition-all shadow-sm"
+          onClick={(e) => {
+            e.stopPropagation();
+            onIndexChange(activeIndex + 1);
+          }}
+          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-background/80 backdrop-blur-sm text-foreground/80 hover:bg-background hover:text-foreground transition-all shadow-md opacity-0 group-hover:opacity-100 focus:opacity-100"
           aria-label="Next post"
         >
-          <ChevronRight className="w-5 h-5" />
+          <ChevronRight className="w-6 h-6" />
         </button>
       )}
     </div>
