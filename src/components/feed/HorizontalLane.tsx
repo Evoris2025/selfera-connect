@@ -8,6 +8,8 @@ interface HorizontalLaneProps<T extends { id: string }> {
   onIndexChange: (index: number) => void;
   renderItem: (item: T, index: number) => React.ReactNode;
   className?: string;
+  /** Number of items to render on each side of activeIndex (default: 1) */
+  renderWindow?: number;
 }
 
 function HorizontalLaneBase<T extends { id: string }>({
@@ -16,6 +18,7 @@ function HorizontalLaneBase<T extends { id: string }>({
   onIndexChange,
   renderItem,
   className,
+  renderWindow = 1,
 }: HorizontalLaneProps<T>) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -69,6 +72,11 @@ function HorizontalLaneBase<T extends { id: string }>({
     };
   }, [activeIndex, items.length, onIndexChange, updateScrollState]);
 
+  // Check if an item is within the render window
+  const isInRenderWindow = useCallback((index: number) => {
+    return Math.abs(index - activeIndex) <= renderWindow;
+  }, [activeIndex, renderWindow]);
+
   if (items.length <= 1) {
     return items.length === 1 ? <>{renderItem(items[0], 0)}</> : null;
   }
@@ -80,24 +88,33 @@ function HorizontalLaneBase<T extends { id: string }>({
         className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
         style={{ scrollSnapType: 'x mandatory' }}
       >
-        {items.map((item, index) => (
-          <motion.div
-            key={item.id}
-            className="flex-none w-full snap-center origin-center"
-            style={{ scrollSnapAlign: 'center' }}
-            animate={{
-              scale: index === activeIndex ? 1 : 0.95,
-              opacity: index === activeIndex ? 1 : 0.7,
-            }}
-            transition={{
-              type: 'spring',
-              stiffness: 300,
-              damping: 30,
-            }}
-          >
-            {renderItem(item, index)}
-          </motion.div>
-        ))}
+        {items.map((item, index) => {
+          const inWindow = isInRenderWindow(index);
+          
+          return (
+            <motion.div
+              key={item.id}
+              className="flex-none w-full snap-center origin-center"
+              style={{ scrollSnapAlign: 'center' }}
+              animate={{
+                scale: index === activeIndex ? 1 : 0.95,
+                opacity: index === activeIndex ? 1 : 0.7,
+              }}
+              transition={{
+                type: 'spring',
+                stiffness: 300,
+                damping: 30,
+              }}
+            >
+              {inWindow ? (
+                renderItem(item, index)
+              ) : (
+                // Placeholder: maintains scroll width without loading content
+                <div className="aspect-[4/5] bg-transparent" />
+              )}
+            </motion.div>
+          );
+        })}
       </div>
     </div>
   );
