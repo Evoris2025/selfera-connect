@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState, memo, useCallback } from 'react';
 import { motion } from 'framer-motion';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface HorizontalLaneProps<T extends { id: string }> {
@@ -81,35 +82,8 @@ function HorizontalLaneBase<T extends { id: string }>({
     return items.length === 1 ? <>{renderItem(items[0], 0)}</> : null;
   }
 
-  // Limit dots to show (max 7 with ellipsis for large sets)
-  const maxDots = 7;
-  const showEllipsis = items.length > maxDots;
-  const halfMax = Math.floor(maxDots / 2);
-  
-  const getVisibleDotIndices = () => {
-    if (!showEllipsis) {
-      return items.map((_, i) => i);
-    }
-    
-    // Show dots around activeIndex
-    let start = Math.max(0, activeIndex - halfMax);
-    let end = Math.min(items.length - 1, activeIndex + halfMax);
-    
-    // Adjust if near edges
-    if (start === 0) {
-      end = Math.min(maxDots - 1, items.length - 1);
-    } else if (end === items.length - 1) {
-      start = Math.max(0, items.length - maxDots);
-    }
-    
-    const indices: number[] = [];
-    for (let i = start; i <= end; i++) {
-      indices.push(i);
-    }
-    return indices;
-  };
-
-  const visibleDots = getVisibleDotIndices();
+  const canGoLeft = activeIndex > 0;
+  const canGoRight = activeIndex < items.length - 1;
 
   return (
     <div className={cn('relative group', className)}>
@@ -147,28 +121,27 @@ function HorizontalLaneBase<T extends { id: string }>({
         })}
       </div>
 
-      {/* Dot indicators */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-2 py-1 rounded-full bg-background/60 backdrop-blur-sm">
-        {showEllipsis && visibleDots[0] > 0 && (
-          <span className="text-muted-foreground/60 text-xs px-0.5">…</span>
-        )}
-        {visibleDots.map((dotIndex) => (
-          <button
-            key={dotIndex}
-            onClick={() => onIndexChange(dotIndex)}
-            className={cn(
-              'rounded-full transition-all duration-200',
-              dotIndex === activeIndex
-                ? 'w-2 h-2 bg-primary'
-                : 'w-1.5 h-1.5 bg-muted-foreground/40 hover:bg-muted-foreground/60'
-            )}
-            aria-label={`Go to post ${dotIndex + 1}`}
-          />
-        ))}
-        {showEllipsis && visibleDots[visibleDots.length - 1] < items.length - 1 && (
-          <span className="text-muted-foreground/60 text-xs px-0.5">…</span>
-        )}
-      </div>
+      {/* Left arrow */}
+      {canGoLeft && (
+        <button
+          onClick={() => onIndexChange(activeIndex - 1)}
+          className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-background/70 backdrop-blur-sm text-foreground/80 hover:bg-background/90 hover:text-foreground transition-all shadow-sm"
+          aria-label="Previous post"
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+      )}
+
+      {/* Right arrow */}
+      {canGoRight && (
+        <button
+          onClick={() => onIndexChange(activeIndex + 1)}
+          className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-background/70 backdrop-blur-sm text-foreground/80 hover:bg-background/90 hover:text-foreground transition-all shadow-sm"
+          aria-label="Next post"
+        >
+          <ChevronRight className="w-5 h-5" />
+        </button>
+      )}
     </div>
   );
 }
