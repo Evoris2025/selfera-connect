@@ -651,6 +651,7 @@ export type Database = {
           handle: string | null
           id: string
           is_private: boolean | null
+          is_verified: boolean | null
           language_pref: string | null
           updated_at: string | null
           user_type: Database["public"]["Enums"]["user_type"] | null
@@ -666,6 +667,7 @@ export type Database = {
           handle?: string | null
           id: string
           is_private?: boolean | null
+          is_verified?: boolean | null
           language_pref?: string | null
           updated_at?: string | null
           user_type?: Database["public"]["Enums"]["user_type"] | null
@@ -681,6 +683,7 @@ export type Database = {
           handle?: string | null
           id?: string
           is_private?: boolean | null
+          is_verified?: boolean | null
           language_pref?: string | null
           updated_at?: string | null
           user_type?: Database["public"]["Enums"]["user_type"] | null
@@ -809,6 +812,7 @@ export type Database = {
           languages_supported: string[] | null
           links: Json | null
           name: string
+          owner_profile_id: string | null
           owner_user_id: string
           price_range: string | null
           regions_served: string[] | null
@@ -824,6 +828,7 @@ export type Database = {
           languages_supported?: string[] | null
           links?: Json | null
           name: string
+          owner_profile_id?: string | null
           owner_user_id: string
           price_range?: string | null
           regions_served?: string[] | null
@@ -839,6 +844,7 @@ export type Database = {
           languages_supported?: string[] | null
           links?: Json | null
           name?: string
+          owner_profile_id?: string | null
           owner_user_id?: string
           price_range?: string | null
           regions_served?: string[] | null
@@ -847,6 +853,13 @@ export type Database = {
           verified?: boolean | null
         }
         Relationships: [
+          {
+            foreignKeyName: "service_directory_entries_owner_profile_id_fkey"
+            columns: ["owner_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "service_directory_entries_owner_user_id_fkey"
             columns: ["owner_user_id"]
@@ -1021,6 +1034,8 @@ export type Database = {
       }
       verification_requests: {
         Row: {
+          account_type_requested: string | null
+          admin_notes: string | null
           created_at: string | null
           id: string
           reviewed_at: string | null
@@ -1030,6 +1045,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          account_type_requested?: string | null
+          admin_notes?: string | null
           created_at?: string | null
           id?: string
           reviewed_at?: string | null
@@ -1039,6 +1056,8 @@ export type Database = {
           user_id: string
         }
         Update: {
+          account_type_requested?: string | null
+          admin_notes?: string | null
           created_at?: string | null
           id?: string
           reviewed_at?: string | null

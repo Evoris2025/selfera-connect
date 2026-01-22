@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, MapPin, Globe, DollarSign, BadgeCheck, Filter, ExternalLink } from 'lucide-react';
 import { AppLayout } from '@/components/AppLayout';
@@ -8,8 +8,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
+import { AccountTypeBadge } from '@/components/AccountTypeBadge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { supabase } from '@/integrations/supabase/client';
 import {
   Select,
   SelectContent,
@@ -18,7 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-// Mock directory data
+// Mock directory data as fallback
 const mockServices = [
   {
     id: '1',
@@ -26,6 +28,7 @@ const mockServices = [
     handle: 'openpathcollective',
     avatar: '',
     isVerified: true,
+    userType: 'organization' as const,
     description: 'Affordable online therapy with licensed professionals. Sliding scale fees starting at $30/session.',
     regions: ['Global', 'Online'],
     deliveryType: 'online',
@@ -40,6 +43,7 @@ const mockServices = [
     handle: 'crisistextline',
     avatar: '',
     isVerified: true,
+    userType: 'organization' as const,
     description: 'Free, 24/7 text support for people in crisis. Text HOME to 741741.',
     regions: ['United States', 'Canada', 'UK'],
     deliveryType: 'online',
@@ -48,21 +52,23 @@ const mockServices = [
     tags: ['Crisis Support', 'Text Line', 'Free'],
     website: 'https://crisistextline.org',
   },
-  {
-    id: '3',
-    name: 'The Therapy Centre',
-    handle: 'therapycentre',
-    avatar: '',
-    isVerified: true,
-    description: 'Community-based mental health services with sliding scale options. In-person and virtual appointments available.',
-    regions: ['London', 'UK'],
-    deliveryType: 'hybrid',
-    priceRange: 'affordable',
-    languages: ['English', 'Arabic', 'Bengali'],
-    tags: ['Therapy', 'Community', 'Sliding Scale'],
-    website: 'https://therapycentre.org',
-  },
 ];
+
+interface DirectoryEntry {
+  id: string;
+  name: string;
+  handle: string;
+  avatar: string;
+  isVerified: boolean;
+  userType: 'individual' | 'professional' | 'organization';
+  description: string;
+  regions: string[];
+  deliveryType: string;
+  priceRange: string;
+  languages: string[];
+  tags: string[];
+  website: string;
+}
 
 const regions = ['All Regions', 'Global', 'United States', 'UK', 'Canada', 'Europe', 'Asia', 'Africa', 'Latin America'];
 
@@ -73,8 +79,41 @@ export default function Directory() {
   const [deliveryType, setDeliveryType] = useState('all');
   const [priceRange, setPriceRange] = useState('all');
   const [verifiedOnly, setVerifiedOnly] = useState(false);
+  const [services, setServices] = useState<DirectoryEntry[]>(mockServices);
 
-  const filteredServices = mockServices.filter((service) => {
+  // Fetch verified profiles for directory
+  useEffect(() => {
+    const fetchVerifiedProfiles = async () => {
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, display_name, handle, avatar_url, bio, user_type, is_verified')
+        .eq('is_verified', true)
+        .in('user_type', ['professional', 'organization']);
+
+      if (profiles && profiles.length > 0) {
+        const realEntries: DirectoryEntry[] = profiles.map(p => ({
+          id: p.id,
+          name: p.display_name || 'Unknown',
+          handle: p.handle || '',
+          avatar: p.avatar_url || '',
+          isVerified: true,
+          userType: p.user_type as 'professional' | 'organization',
+          description: p.bio || 'Verified mental health professional on SelfERA.',
+          regions: ['Global'],
+          deliveryType: 'online',
+          priceRange: 'standard',
+          languages: ['English'],
+          tags: [p.user_type === 'organization' ? 'Organisation' : 'Professional'],
+          website: '',
+        }));
+        setServices([...realEntries, ...mockServices]);
+      }
+    };
+
+    fetchVerifiedProfiles();
+  }, []);
+
+  const filteredServices = services.filter((service) => {
     if (verifiedOnly && !service.isVerified) return false;
     if (deliveryType !== 'all' && service.deliveryType !== deliveryType) return false;
     if (priceRange !== 'all' && service.priceRange !== priceRange) return false;
@@ -177,11 +216,12 @@ export default function Directory() {
                     </Avatar>
 
                     <div className="flex-1">
-                      <div className="flex items-start justify-between">
+                        <div className="flex items-start justify-between">
                         <div>
-                          <div className="flex items-center gap-2 mb-1">
+                          <div className="flex items-center gap-2 mb-1 flex-wrap">
                             <h3 className="text-lg font-semibold text-foreground">{service.name}</h3>
                             {service.isVerified && <VerifiedBadge />}
+                            <AccountTypeBadge type={service.userType} size="sm" />
                           </div>
                           <p className="text-sm text-muted-foreground">@{service.handle}</p>
                         </div>
