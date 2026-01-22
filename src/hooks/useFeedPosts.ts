@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { FeedPost } from '@/components/feed/CrossroadFeed';
 import { ContentType } from '@/hooks/useCrossroadScroll';
@@ -188,10 +188,12 @@ export function useFeedPosts(): UseFeedPostsResult {
   const initialLoadDone = useRef(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [followingIds, setFollowingIds] = useState<string[]>([]);
+  const [blockedIds, setBlockedIds] = useState<Set<string>>(new Set());
+  const [mutedIds, setMutedIds] = useState<Set<string>>(new Set());
 
-  // Fetch current user and their following list on mount
+  // Fetch current user, following list, blocks and mutes on mount
   useEffect(() => {
-    const fetchUserAndFollowing = async () => {
+    const fetchUserData = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user?.id) {
         setCurrentUserId(user.id);
@@ -204,9 +206,29 @@ export function useFeedPosts(): UseFeedPostsResult {
           .eq('status', 'approved');
         
         setFollowingIds(follows?.map(f => f.following_id) || []);
+
+        // Fetch blocks (users I blocked + users who blocked me)
+        const [{ data: myBlocks }, { data: blockedBy }] = await Promise.all([
+          supabase.from('blocks').select('target_user_id').eq('user_id', user.id),
+          supabase.from('blocks').select('user_id').eq('target_user_id', user.id),
+        ]);
+        
+        const allBlocked = new Set([
+          ...(myBlocks?.map(b => b.target_user_id) || []),
+          ...(blockedBy?.map(b => b.user_id) || []),
+        ]);
+        setBlockedIds(allBlocked);
+
+        // Fetch mutes
+        const { data: mutes } = await supabase
+          .from('mutes')
+          .select('target_user_id')
+          .eq('user_id', user.id);
+        
+        setMutedIds(new Set(mutes?.map(m => m.target_user_id) || []));
       }
     };
-    fetchUserAndFollowing();
+    fetchUserData();
   }, []);
 
   const fetchPosts = useCallback(async (afterCursor?: string | null): Promise<FeedPost[]> => {
@@ -455,8 +477,17 @@ export function useFeedPosts(): UseFeedPostsResult {
     }
   }, [fetchPosts]);
 
+  // Filter posts based on block/mute status
+  const filteredPosts = useMemo(() => {
+    return posts.filter(post => {
+      if (!post.authorId) return true;
+      // Hide posts from blocked or muted users
+      return !blockedIds.has(post.authorId) && !mutedIds.has(post.authorId);
+    });
+  }, [posts, blockedIds, mutedIds]);
+
   return {
-    posts,
+    posts: filteredPosts,
     loading,
     refreshing,
     loadingMore,
