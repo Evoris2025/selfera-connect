@@ -27,6 +27,8 @@ import Directory from "./pages/Directory";
 import ProviderDashboard from "./pages/ProviderDashboard";
 import CrisisSupport from "./pages/CrisisSupport";
 import Settings from "./pages/Settings";
+import Transparency from "./pages/Transparency";
+import AdminConsole from "./pages/AdminConsole";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -96,9 +98,11 @@ function AppRoutes() {
         <Route path="/profile/:handle?" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
         <Route path="/provider-dashboard" element={<ProtectedRoute><ProviderDashboard /></ProtectedRoute>} />
+        <Route path="/admin" element={<ProtectedRoute><AdminConsole /></ProtectedRoute>} />
         {/* Public routes */}
         <Route path="/directory" element={<Directory />} />
         <Route path="/crisis" element={<CrisisSupport />} />
+        <Route path="/transparency" element={<Transparency />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

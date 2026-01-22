@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_logs: {
+        Row: {
+          action_type: string
+          actor_id: string | null
+          created_at: string
+          id: string
+          new_state: Json | null
+          notes: string | null
+          previous_state: Json | null
+          target_entity_id: string
+          target_entity_type: string
+        }
+        Insert: {
+          action_type: string
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          new_state?: Json | null
+          notes?: string | null
+          previous_state?: Json | null
+          target_entity_id: string
+          target_entity_type: string
+        }
+        Update: {
+          action_type?: string
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          new_state?: Json | null
+          notes?: string | null
+          previous_state?: Json | null
+          target_entity_id?: string
+          target_entity_type?: string
+        }
+        Relationships: []
+      }
       blocks: {
         Row: {
           created_at: string | null
@@ -776,8 +812,11 @@ export type Database = {
           created_at: string | null
           details: string | null
           id: string
+          internal_notes: string | null
           reason: string
           reporter_id: string
+          resolved_at: string | null
+          resolved_by: string | null
           status: Database["public"]["Enums"]["report_status"] | null
           target_id: string
           target_type: string
@@ -786,8 +825,11 @@ export type Database = {
           created_at?: string | null
           details?: string | null
           id?: string
+          internal_notes?: string | null
           reason: string
           reporter_id: string
+          resolved_at?: string | null
+          resolved_by?: string | null
           status?: Database["public"]["Enums"]["report_status"] | null
           target_id: string
           target_type: string
@@ -796,8 +838,11 @@ export type Database = {
           created_at?: string | null
           details?: string | null
           id?: string
+          internal_notes?: string | null
           reason?: string
           reporter_id?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
           status?: Database["public"]["Enums"]["report_status"] | null
           target_id?: string
           target_type?: string
