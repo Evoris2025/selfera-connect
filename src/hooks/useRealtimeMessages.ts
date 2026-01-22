@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSafety } from '@/contexts/SafetyContext';
@@ -30,6 +30,13 @@ interface Conversation {
   isTyping?: boolean;
 }
 
+interface PresenceState {
+  isTyping: boolean;
+  conversationId: string | null;
+  userId: string;
+  displayName?: string;
+}
+
 interface UseRealtimeMessagesResult {
   conversations: Conversation[];
   messages: Message[];
@@ -39,6 +46,9 @@ interface UseRealtimeMessagesResult {
   selectConversation: (conversationId: string | null) => void;
   selectedConversationId: string | null;
   refetch: () => Promise<void>;
+  typingUsers: Map<string, { userId: string; displayName: string }[]>;
+  setTyping: (isTyping: boolean) => void;
+  onlineUsers: Set<string>;
 }
 
 export function useRealtimeMessages(): UseRealtimeMessagesResult {
@@ -48,6 +58,27 @@ export function useRealtimeMessages(): UseRealtimeMessagesResult {
   const [messages, setMessages] = useState<Message[]>([]);
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [typingUsers, setTypingUsers] = useState<Map<string, { userId: string; displayName: string }[]>>(new Map());
+  const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
+  const [userDisplayName, setUserDisplayName] = useState<string>('Anonymous');
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const presenceChannelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
+
+  // Fetch current user's display name
+  useEffect(() => {
+    if (!user?.id) return;
+    
+    supabase
+      .from('profiles')
+      .select('display_name, handle')
+      .eq('id', user.id)
+      .single()
+      .then(({ data }) => {
+        if (data) {
+          setUserDisplayName(data.display_name || data.handle || 'Anonymous');
+        }
+      });
+  }, [user?.id]);
 
   // Filter out conversations with blocked users
   const conversations = useMemo(() => {
@@ -125,6 +156,7 @@ export function useRealtimeMessages(): UseRealtimeMessagesResult {
             name: profile.display_name || profile.handle || 'Anonymous',
             handle: profile.handle || 'anonymous',
             avatarUrl: profile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.id}`,
+            isOnline: onlineUsers.has(profile.id),
           },
           lastMessage: lastMsg?.content || '',
           lastMessageTime: lastMsg ? new Date(lastMsg.created_at) : new Date(),
@@ -140,7 +172,7 @@ export function useRealtimeMessages(): UseRealtimeMessagesResult {
     } finally {
       setIsLoading(false);
     }
-  }, [user?.id]);
+  }, [user?.id, onlineUsers]);
 
   const fetchMessages = useCallback(async (conversationId: string) => {
     if (!user?.id || !conversationId) {
@@ -181,8 +213,42 @@ export function useRealtimeMessages(): UseRealtimeMessagesResult {
     }
   }, [fetchMessages]);
 
+  const setTyping = useCallback((isTyping: boolean) => {
+    if (!presenceChannelRef.current || !user?.id || !selectedConversationId) return;
+
+    // Clear previous timeout
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    // Track presence state
+    presenceChannelRef.current.track({
+      isTyping,
+      conversationId: selectedConversationId,
+      userId: user.id,
+      displayName: userDisplayName,
+    } as PresenceState);
+
+    // Auto-clear typing after 3 seconds
+    if (isTyping) {
+      typingTimeoutRef.current = setTimeout(() => {
+        if (presenceChannelRef.current) {
+          presenceChannelRef.current.track({
+            isTyping: false,
+            conversationId: selectedConversationId,
+            userId: user.id,
+            displayName: userDisplayName,
+          } as PresenceState);
+        }
+      }, 3000);
+    }
+  }, [user?.id, selectedConversationId, userDisplayName]);
+
   const sendMessage = useCallback(async (conversationId: string, content: string, imageUrl?: string): Promise<boolean> => {
     if (!user?.id || !content.trim()) return false;
+
+    // Clear typing indicator when sending
+    setTyping(false);
 
     // Optimistic update
     const tempId = `temp-${Date.now()}`;
@@ -235,7 +301,7 @@ export function useRealtimeMessages(): UseRealtimeMessagesResult {
       setMessages(prev => prev.filter(m => m.id !== tempId));
       return false;
     }
-  }, [user?.id]);
+  }, [user?.id, setTyping]);
 
   const markConversationRead = useCallback(async (conversationId: string) => {
     if (!user?.id) return;
@@ -264,6 +330,82 @@ export function useRealtimeMessages(): UseRealtimeMessagesResult {
     setIsLoading(true);
     fetchConversations();
   }, [fetchConversations]);
+
+  // Presence channel for typing indicators and online status
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const channel = supabase.channel('presence-messages', {
+      config: {
+        presence: {
+          key: user.id,
+        },
+      },
+    });
+
+    channel
+      .on('presence', { event: 'sync' }, () => {
+        const state = channel.presenceState();
+        const newTypingUsers = new Map<string, { userId: string; displayName: string }[]>();
+        const newOnlineUsers = new Set<string>();
+
+        Object.values(state).forEach((presences: any[]) => {
+          presences.forEach((presence: PresenceState) => {
+            if (presence.userId && presence.userId !== user.id) {
+              newOnlineUsers.add(presence.userId);
+              
+              if (presence.isTyping && presence.conversationId) {
+                const existing = newTypingUsers.get(presence.conversationId) || [];
+                if (!existing.some(u => u.userId === presence.userId)) {
+                  existing.push({
+                    userId: presence.userId,
+                    displayName: presence.displayName || 'Someone',
+                  });
+                  newTypingUsers.set(presence.conversationId, existing);
+                }
+              }
+            }
+          });
+        });
+
+        setTypingUsers(newTypingUsers);
+        setOnlineUsers(newOnlineUsers);
+      })
+      .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+        if (key !== user.id) {
+          setOnlineUsers(prev => new Set([...prev, key]));
+        }
+      })
+      .on('presence', { event: 'leave' }, ({ key }) => {
+        if (key !== user.id) {
+          setOnlineUsers(prev => {
+            const next = new Set(prev);
+            next.delete(key);
+            return next;
+          });
+        }
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await channel.track({
+            isTyping: false,
+            conversationId: null,
+            userId: user.id,
+            displayName: userDisplayName,
+          } as PresenceState);
+        }
+      });
+
+    presenceChannelRef.current = channel;
+
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+      supabase.removeChannel(channel);
+      presenceChannelRef.current = null;
+    };
+  }, [user?.id, userDisplayName]);
 
   // Realtime subscription for new messages
   useEffect(() => {
@@ -335,5 +477,8 @@ export function useRealtimeMessages(): UseRealtimeMessagesResult {
     selectConversation,
     selectedConversationId,
     refetch: fetchConversations,
+    typingUsers,
+    setTyping,
+    onlineUsers,
   };
 }
