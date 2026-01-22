@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSafety } from '@/contexts/SafetyContext';
 
 interface NotificationUser {
   name: string;
@@ -23,6 +24,7 @@ interface Notification {
   isHighlight?: boolean;
   count?: number;
   createdAt: Date;
+  actorId?: string;
 }
 
 interface UseNotificationsResult {
@@ -72,14 +74,28 @@ function getActionText(type: string): string {
 
 export function useNotifications(): UseNotificationsResult {
   const { user } = useAuth();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
+  const { shouldHideUser } = useSafety();
+  const [allNotifications, setAllNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Filter out notifications from blocked users
+  const notifications = useMemo(() => {
+    return allNotifications.filter(n => {
+      // Filter out notifications from blocked users
+      if (n.actorId && shouldHideUser(n.actorId)) {
+        return false;
+      }
+      return true;
+    });
+  }, [allNotifications, shouldHideUser]);
+
+  const unreadCount = useMemo(() => {
+    return notifications.filter(n => !n.read).length;
+  }, [notifications]);
 
   const fetchNotifications = useCallback(async () => {
     if (!user?.id) {
-      setNotifications([]);
-      setUnreadCount(0);
+      setAllNotifications([]);
       setIsLoading(false);
       return;
     }
@@ -113,6 +129,7 @@ export function useNotifications(): UseNotificationsResult {
       const formattedNotifications: Notification[] = (data || []).map(n => {
         const actor = n.profiles as any;
         const createdAt = new Date(n.created_at);
+        const actorId = n.actor_id;
         
         return {
           id: n.id,
@@ -132,11 +149,11 @@ export function useNotifications(): UseNotificationsResult {
           showFollowButton: n.type === 'follow',
           isHighlight: !n.read_at && (n.type === 'reaction' || n.type === 'message'),
           createdAt,
+          actorId, // Store actor ID for filtering
         };
       });
 
-      setNotifications(formattedNotifications);
-      setUnreadCount(formattedNotifications.filter(n => !n.read).length);
+      setAllNotifications(formattedNotifications);
     } catch (error) {
       console.error('Error fetching notifications:', error);
     } finally {
@@ -176,10 +193,9 @@ export function useNotifications(): UseNotificationsResult {
     if (!user?.id) return;
 
     // Optimistic update
-    setNotifications(prev =>
+    setAllNotifications(prev =>
       prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
     );
-    setUnreadCount(prev => Math.max(0, prev - 1));
 
     try {
       const { error } = await supabase
@@ -200,8 +216,7 @@ export function useNotifications(): UseNotificationsResult {
     if (!user?.id) return;
 
     // Optimistic update
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-    setUnreadCount(0);
+    setAllNotifications(prev => prev.map(n => ({ ...n, read: true })));
 
     try {
       const { error } = await supabase

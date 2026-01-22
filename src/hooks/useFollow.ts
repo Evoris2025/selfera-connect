@@ -5,6 +5,7 @@ import { toast } from '@/hooks/use-toast';
 
 interface UseFollowResult {
   isFollowing: boolean;
+  isPending: boolean;
   isLoading: boolean;
   toggleFollow: () => Promise<void>;
   followerCount: number;
@@ -18,9 +19,11 @@ const isUuid = (value: string) => UUID_RE.test(value);
 export function useFollow(targetUserId: string): UseFollowResult {
   const { user } = useAuth();
   const [isFollowing, setIsFollowing] = useState(false);
+  const [isPending, setIsPending] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [followerCount, setFollowerCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
+  const [targetIsPrivate, setTargetIsPrivate] = useState(false);
   
   const isValidTarget = isUuid(targetUserId);
   const pendingRef = useRef(false);
@@ -32,6 +35,15 @@ export function useFollow(targetUserId: string): UseFollowResult {
     }
 
     try {
+      // Check if target is private
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('is_private')
+        .eq('id', targetUserId)
+        .single();
+
+      setTargetIsPrivate(profileData?.is_private || false);
+
       // Fetch follower count for target user
       const { count: followers } = await supabase
         .from('follows')
@@ -53,12 +65,18 @@ export function useFollow(targetUserId: string): UseFollowResult {
       if (user?.id && user.id !== targetUserId) {
         const { data } = await supabase
           .from('follows')
-          .select('id')
+          .select('id, status')
           .eq('follower_id', user.id)
           .eq('following_id', targetUserId)
           .maybeSingle();
 
-        setIsFollowing(!!data);
+        if (data) {
+          setIsFollowing(data.status === 'approved');
+          setIsPending(data.status === 'requested');
+        } else {
+          setIsFollowing(false);
+          setIsPending(false);
+        }
       }
     } catch (error) {
       console.error('Error fetching follow state:', error);
@@ -70,6 +88,7 @@ export function useFollow(targetUserId: string): UseFollowResult {
   useEffect(() => {
     setIsLoading(true);
     setIsFollowing(false);
+    setIsPending(false);
     fetchFollowState();
   }, [fetchFollowState]);
 
@@ -80,10 +99,23 @@ export function useFollow(targetUserId: string): UseFollowResult {
 
     pendingRef.current = true;
     const wasFollowing = isFollowing;
+    const wasPending = isPending;
 
     // Optimistic update
-    setIsFollowing(!wasFollowing);
-    setFollowerCount(prev => wasFollowing ? Math.max(0, prev - 1) : prev + 1);
+    if (wasFollowing || wasPending) {
+      // Unfollow or cancel request
+      setIsFollowing(false);
+      setIsPending(false);
+      setFollowerCount(prev => wasFollowing ? Math.max(0, prev - 1) : prev);
+    } else {
+      // Follow - set to pending if private, approved if public
+      if (targetIsPrivate) {
+        setIsPending(true);
+      } else {
+        setIsFollowing(true);
+        setFollowerCount(prev => prev + 1);
+      }
+    }
 
     // Haptic feedback
     if (navigator.vibrate) {
@@ -91,8 +123,8 @@ export function useFollow(targetUserId: string): UseFollowResult {
     }
 
     try {
-      if (wasFollowing) {
-        // Unfollow
+      if (wasFollowing || wasPending) {
+        // Unfollow or cancel pending request
         const { error } = await supabase
           .from('follows')
           .delete()
@@ -110,21 +142,31 @@ export function useFollow(targetUserId: string): UseFollowResult {
           .maybeSingle();
 
         if (!existing) {
+          // Set status based on whether target is private
+          const newStatus = targetIsPrivate ? 'requested' : 'approved';
           const { error } = await supabase
             .from('follows')
             .insert({
               follower_id: user.id,
               following_id: targetUserId,
-              status: 'approved',
+              status: newStatus,
             });
 
           if (error) throw error;
+          
+          if (targetIsPrivate) {
+            toast({
+              title: 'Follow request sent',
+              description: 'Waiting for approval.',
+            });
+          }
         }
       }
     } catch (error) {
       console.error('Error toggling follow:', error);
       // Revert optimistic update
       setIsFollowing(wasFollowing);
+      setIsPending(wasPending);
       setFollowerCount(prev => wasFollowing ? prev + 1 : Math.max(0, prev - 1));
       toast({
         title: "Couldn't update follow",
@@ -134,10 +176,11 @@ export function useFollow(targetUserId: string): UseFollowResult {
     } finally {
       pendingRef.current = false;
     }
-  }, [user?.id, isValidTarget, targetUserId, isFollowing]);
+  }, [user?.id, isValidTarget, targetUserId, isFollowing, isPending, targetIsPrivate]);
 
   return {
     isFollowing,
+    isPending,
     isLoading,
     toggleFollow,
     followerCount,
