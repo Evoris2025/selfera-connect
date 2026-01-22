@@ -6,13 +6,15 @@ import { ExpressionsRow } from '@/components/ExpressionsRow';
 import { CreatorStudio } from '@/components/creator';
 import { PostViewerModal, CrossroadFeed, FeedPost } from '@/components/feed';
 import { PullToRefresh } from '@/components/ui/PullToRefresh';
-import { useFeedPosts } from '@/hooks/useFeedPosts';
+import { useMockSystem } from '@/contexts/MockSystemContext';
+import { useMockFeedPosts } from '@/hooks/useMockFeedPosts';
 
 type CreatorMode = 'expression' | 'post' | 'image' | 'video' | null;
 
 export default function Feed() {
   const navigate = useNavigate();
-  const { posts, loading, refreshing, loadingMore, hasMore, loadMore, refresh } = useFeedPosts();
+  const { state } = useMockSystem();
+  const { posts, loading, refreshing, loadingMore, hasMore, loadMore, refresh } = useMockFeedPosts();
   const [creatorOpen, setCreatorOpen] = useState(false);
   const [creatorMode, setCreatorMode] = useState<CreatorMode>(null);
   
