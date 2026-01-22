@@ -11,7 +11,7 @@ interface NotificationUser {
 
 interface Notification {
   id: string;
-  type: 'reaction' | 'follow' | 'comment' | 'mention' | 'community' | 'message' | 'verification';
+  type: 'reaction' | 'follow' | 'comment' | 'mention' | 'community' | 'message' | 'verification' | 'connection_request';
   users?: NotificationUser[];
   action: string;
   preview?: string;
@@ -67,6 +67,8 @@ function getActionText(type: string): string {
       return 'sent you a message';
     case 'verification':
       return 'Your verification status was updated';
+    case 'connection_request':
+      return 'requested to connect with you';
     default:
       return 'interacted with your content';
   }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
@@ -19,6 +19,7 @@ import {
   DollarSign,
   ExternalLink,
   AlertCircle,
+  Bell,
 } from 'lucide-react';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
@@ -28,6 +29,7 @@ import { GlassCard } from '@/components/ui/GlassCard';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
+import { DirectoryListingForm } from '@/components/directory/DirectoryListingForm';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSupportLinks } from '@/hooks/useSupportLinks';
 import { supabase } from '@/integrations/supabase/client';
@@ -68,6 +70,27 @@ export default function ProviderDashboard() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [directoryEntry, setDirectoryEntry] = useState<DirectoryEntry | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showListingForm, setShowListingForm] = useState(false);
+
+  // Function to refetch directory entry
+  const refetchDirectoryEntry = useCallback(async () => {
+    if (!user) return;
+    const { data: entryData } = await supabase
+      .from('service_directory_entries')
+      .select('*')
+      .eq('owner_user_id', user.id)
+      .maybeSingle();
+
+    if (entryData) {
+      setDirectoryEntry({
+        ...entryData,
+        verified: entryData.verified ?? false,
+        links: entryData.links as { website?: string } | null,
+      });
+    } else {
+      setDirectoryEntry(null);
+    }
+  }, [user]);
 
   // Fetch user profile and directory entry
   useEffect(() => {
@@ -84,20 +107,8 @@ export default function ProviderDashboard() {
 
         if (profileData) setProfile(profileData);
 
-        // Fetch directory entry if exists
-        const { data: entryData } = await supabase
-          .from('service_directory_entries')
-          .select('*')
-          .eq('owner_user_id', user.id)
-          .maybeSingle();
-
-        if (entryData) {
-          setDirectoryEntry({
-            ...entryData,
-            verified: entryData.verified ?? false,
-            links: entryData.links as { website?: string } | null,
-          });
-        }
+        // Fetch directory entry
+        await refetchDirectoryEntry();
       } catch (err) {
         console.error('Error fetching provider data:', err);
       } finally {
@@ -106,7 +117,47 @@ export default function ProviderDashboard() {
     }
 
     fetchData();
-  }, [user]);
+  }, [user, refetchDirectoryEntry]);
+
+  // Real-time subscription for new connection requests
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const channel = supabase
+      .channel(`provider-connections-${user.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'user_support_links',
+          filter: `provider_user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          toast.info('New connection request received!', {
+            icon: <Bell className="w-4 h-4" />,
+          });
+          refreshLinks();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'user_support_links',
+          filter: `provider_user_id=eq.${user.id}`,
+        },
+        () => {
+          refreshLinks();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id, refreshLinks]);
 
   const handleAcceptConnection = async (linkId: string) => {
     const result = await acceptConnection(linkId);
@@ -381,7 +432,11 @@ export default function ProviderDashboard() {
                         {directoryEntry.description}
                       </p>
                     </div>
-                    <Button variant="outline" size="sm">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setShowListingForm(true)}
+                    >
                       <Edit className="w-4 h-4 mr-1" />
                       Edit
                     </Button>
@@ -485,7 +540,7 @@ export default function ProviderDashboard() {
                 <p className="text-sm text-muted-foreground mb-6 max-w-sm mx-auto">
                   Create a listing to appear in the SelfERA Directory and allow users to discover and connect with you.
                 </p>
-                <Button>
+                <Button onClick={() => setShowListingForm(true)}>
                   <Plus className="w-4 h-4 mr-2" />
                   Create Listing
                 </Button>
@@ -507,6 +562,14 @@ export default function ProviderDashboard() {
             through your own systems.
           </p>
         </motion.div>
+
+        {/* Directory Listing Form Modal */}
+        <DirectoryListingForm
+          open={showListingForm}
+          onOpenChange={setShowListingForm}
+          existingEntry={directoryEntry}
+          onSuccess={refetchDirectoryEntry}
+        />
       </div>
     </AppLayout>
   );

@@ -25,6 +25,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
 import { AccountTypeBadge, AccountType } from '@/components/AccountTypeBadge';
+import { MobileNav } from '@/components/MobileNav';
 import { supabase } from '@/integrations/supabase/client';
 
 const springGentle = { type: "spring" as const, stiffness: 200, damping: 25 };
@@ -453,6 +454,9 @@ export default function MyERA() {
           </div>
         </div>
       </motion.footer>
+
+      {/* Bottom Navigation */}
+      <MobileNav />
     </div>
   );
 }
