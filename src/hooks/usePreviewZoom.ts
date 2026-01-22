@@ -48,7 +48,9 @@ export function usePreviewZoom() {
   const [isDesktop, setIsDesktop] = useState(false);
   const [isAutoDetected, setIsAutoDetected] = useState(false);
   const [phoneMetrics, setPhoneMetrics] = useState<PhoneMetrics | null>(null);
-  const [previewWidth, setPreviewWidth] = useState(window.innerWidth);
+  const [previewWidth, setPreviewWidth] = useState(() => 
+    typeof window !== 'undefined' ? window.innerWidth : 430
+  );
 
   // Check if we're on a desktop-like device
   useEffect(() => {
