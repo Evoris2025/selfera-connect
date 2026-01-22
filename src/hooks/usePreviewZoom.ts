@@ -16,24 +16,21 @@ interface PhoneMetrics {
 
 /**
  * Calculate zoom based on preview container width and phone metrics.
- * Scales proportionally so content appears consistent across all preview modes.
+ * Mobile uses phone-calibrated ratio, tablet/desktop use full or near-full zoom.
  */
 function calculateZoomForViewport(previewWidth: number, phoneViewport: number): number {
-  // Mobile preview mode (~430px) - use our perfected ratio
+  // Mobile preview mode (~430px) - use our perfected ratio from phone calibration
   if (previewWidth < 500) {
     return MOBILE_REFERENCE_WIDTH / phoneViewport;
   }
   
-  // Tablet preview mode (~768px) - scale down proportionally
+  // Tablet preview mode (~768px) - nearly full size
   if (previewWidth < 900) {
-    // Keep the same visual density as mobile by scaling based on width ratio
-    const scaleFactor = 430 / previewWidth;
-    return (MOBILE_REFERENCE_WIDTH * scaleFactor) / phoneViewport;
+    return 0.95;
   }
   
-  // Desktop preview mode (~1024px+) - scale down further
-  const scaleFactor = 430 / previewWidth;
-  return (MOBILE_REFERENCE_WIDTH * scaleFactor) / phoneViewport;
+  // Desktop preview mode (~1024px+) - full size, no zoom needed
+  return 1.0;
 }
 
 /**
