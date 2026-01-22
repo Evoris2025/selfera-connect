@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Palette, Globe, Eye, Bell, Lock, User, HelpCircle, BadgeCheck, Shield, ShieldOff, VolumeX, UserPlus } from 'lucide-react';
 import { AppLayout } from '@/components/AppLayout';
@@ -27,15 +28,39 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
+type SettingsView = 'main' | 'verification' | 'blocked' | 'muted' | 'admin-verification' | 'admin-moderation';
+
 export default function Settings() {
   const { t } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { user, signOut } = useAuth();
   const { blockedUserIds, mutedUserIds } = useSafety();
   const { pendingCount } = useFollowRequests();
   const currentLang = getCurrentLanguage();
-  const [view, setView] = useState<'main' | 'verification' | 'blocked' | 'muted' | 'admin-verification' | 'admin-moderation'>('main');
+  
+  // Initialize view from URL query param
+  const initialView = (searchParams.get('view') as SettingsView) || 'main';
+  const [view, setView] = useState<SettingsView>(initialView);
   const [isAdmin, setIsAdmin] = useState(false);
   const [followRequestsOpen, setFollowRequestsOpen] = useState(false);
+
+  // Sync view state with URL
+  useEffect(() => {
+    const urlView = searchParams.get('view') as SettingsView;
+    if (urlView && urlView !== view) {
+      setView(urlView);
+    }
+  }, [searchParams]);
+
+  // Update URL when view changes
+  const handleViewChange = (newView: SettingsView) => {
+    setView(newView);
+    if (newView === 'main') {
+      setSearchParams({});
+    } else {
+      setSearchParams({ view: newView });
+    }
+  };
 
   // Check if current user is admin
   useEffect(() => {
@@ -83,7 +108,7 @@ export default function Settings() {
     return (
       <AppLayout>
         <div className="max-w-2xl mx-auto p-4">
-          <VerificationRequestForm onBack={() => setView('main')} />
+          <VerificationRequestForm onBack={() => handleViewChange('main')} />
         </div>
       </AppLayout>
     );
@@ -94,7 +119,7 @@ export default function Settings() {
     return (
       <AppLayout>
         <div className="max-w-2xl mx-auto p-4">
-          <BlockedUsersList onBack={() => setView('main')} />
+          <BlockedUsersList onBack={() => handleViewChange('main')} />
         </div>
       </AppLayout>
     );
@@ -105,7 +130,7 @@ export default function Settings() {
     return (
       <AppLayout>
         <div className="max-w-2xl mx-auto p-4">
-          <MutedUsersList onBack={() => setView('main')} />
+          <MutedUsersList onBack={() => handleViewChange('main')} />
         </div>
       </AppLayout>
     );
@@ -116,7 +141,7 @@ export default function Settings() {
     return (
       <AppLayout>
         <div className="max-w-2xl mx-auto p-4">
-          <Button variant="ghost" onClick={() => setView('main')} className="gap-2 -ml-2 mb-4">
+          <Button variant="ghost" onClick={() => handleViewChange('main')} className="gap-2 -ml-2 mb-4">
             ← Back to Settings
           </Button>
           <AdminVerificationQueue />
@@ -130,7 +155,7 @@ export default function Settings() {
     return (
       <AppLayout>
         <div className="max-w-2xl mx-auto p-4">
-          <AdminModerationQueue onBack={() => setView('main')} />
+          <AdminModerationQueue onBack={() => handleViewChange('main')} />
         </div>
       </AppLayout>
     );
@@ -256,7 +281,7 @@ export default function Settings() {
           {/* Blocked Accounts */}
           <Card 
             className="cursor-pointer hover:border-destructive/30 transition-colors"
-            onClick={() => setView('blocked')}
+            onClick={() => handleViewChange('blocked')}
           >
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -281,7 +306,7 @@ export default function Settings() {
           {/* Muted Accounts */}
           <Card 
             className="cursor-pointer hover:border-amber-500/30 transition-colors"
-            onClick={() => setView('muted')}
+            onClick={() => handleViewChange('muted')}
           >
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -306,7 +331,7 @@ export default function Settings() {
           {/* Get Verified */}
           <Card 
             className="cursor-pointer hover:border-verified/30 transition-colors"
-            onClick={() => setView('verification')}
+            onClick={() => handleViewChange('verification')}
           >
             <CardHeader>
               <div className="flex items-center gap-3">
@@ -326,7 +351,7 @@ export default function Settings() {
             <>
               <Card 
                 className="cursor-pointer hover:border-primary/30 transition-colors border-dashed"
-                onClick={() => setView('admin-verification')}
+                onClick={() => handleViewChange('admin-verification')}
               >
                 <CardHeader>
                   <div className="flex items-center gap-3">
@@ -343,7 +368,7 @@ export default function Settings() {
               
               <Card 
                 className="cursor-pointer hover:border-primary/30 transition-colors border-dashed"
-                onClick={() => setView('admin-moderation')}
+                onClick={() => handleViewChange('admin-moderation')}
               >
                 <CardHeader>
                   <div className="flex items-center gap-3">
