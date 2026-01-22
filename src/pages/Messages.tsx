@@ -12,7 +12,8 @@ import {
   Camera,
   Phone,
   Video,
-  Check
+  Check,
+  Upload
 } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
@@ -255,7 +256,12 @@ export default function Messages() {
     selectImages, 
     removePendingImage,
     clearPendingImages, 
-    uploadImages 
+    uploadImages,
+    isDragging,
+    handleDragEnter,
+    handleDragLeave,
+    handleDragOver,
+    handleDrop,
   } = useMessageImageUpload();
   const [selectedConversation, setSelectedConversation] = useState<MockConversation | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -430,8 +436,36 @@ export default function Messages() {
         animate={{ x: 0, opacity: 1 }}
         exit={{ x: '100%', opacity: 0 }}
         transition={springSnap}
-        className="flex flex-col h-[100dvh] bg-background"
+        className="flex flex-col h-[100dvh] bg-background relative"
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
       >
+        {/* Drop zone overlay */}
+        <AnimatePresence>
+          {isDragging && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 z-50 bg-background/95 backdrop-blur-sm flex flex-col items-center justify-center gap-4 pointer-events-none"
+            >
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={springPop}
+                className="p-6 rounded-2xl bg-primary/10 border-2 border-dashed border-primary"
+              >
+                <Upload className="h-12 w-12 text-primary" />
+              </motion.div>
+              <div className="text-center">
+                <p className="text-lg font-semibold text-foreground">Drop images here</p>
+                <p className="text-sm text-muted-foreground">Up to 10 images at once</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
         {/* Header */}
         <motion.div 
           initial={{ y: -20, opacity: 0 }}

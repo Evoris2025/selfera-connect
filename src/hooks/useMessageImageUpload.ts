@@ -1,12 +1,15 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { compressImage, formatFileSize } from '@/lib/imageCompression';
 
 interface PendingImage {
   id: string;
   file: File;
   preview: string;
+  originalSize?: number;
+  compressedSize?: number;
 }
 
 interface UseMessageImageUploadResult {
@@ -17,6 +20,11 @@ interface UseMessageImageUploadResult {
   removePendingImage: (id: string) => void;
   clearPendingImages: () => void;
   uploadImages: () => Promise<string[]>;
+  isDragging: boolean;
+  handleDragEnter: (e: React.DragEvent) => void;
+  handleDragLeave: (e: React.DragEvent) => void;
+  handleDragOver: (e: React.DragEvent) => void;
+  handleDrop: (e: React.DragEvent) => void;
 }
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -28,14 +36,16 @@ export function useMessageImageUpload(): UseMessageImageUploadResult {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [pendingImages, setPendingImages] = useState<PendingImage[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragCounterRef = useRef(0);
 
-  const selectImages = useCallback((files: FileList | File[]) => {
-    const fileArray = Array.from(files);
+  const processAndAddImages = useCallback(async (files: File[]) => {
+    const currentCount = pendingImages.length;
     const validFiles: PendingImage[] = [];
     
-    for (const file of fileArray) {
+    for (const file of files) {
       // Check max limit
-      if (pendingImages.length + validFiles.length >= MAX_IMAGES) {
+      if (currentCount + validFiles.length >= MAX_IMAGES) {
         toast.error(`Maximum ${MAX_IMAGES} images allowed`);
         break;
       }
@@ -52,19 +62,49 @@ export function useMessageImageUpload(): UseMessageImageUploadResult {
         continue;
       }
 
+      // Compress the image
+      const originalSize = file.size;
+      const compressedFile = await compressImage(file, {
+        maxWidth: 1920,
+        maxHeight: 1920,
+        quality: 0.85,
+      });
+
+      // Show compression result if significant
+      if (compressedFile.size < originalSize * 0.9) {
+        const saved = originalSize - compressedFile.size;
+        console.log(`Compressed ${file.name}: ${formatFileSize(originalSize)} → ${formatFileSize(compressedFile.size)} (saved ${formatFileSize(saved)})`);
+      }
+
       // Create preview URL
-      const preview = URL.createObjectURL(file);
+      const preview = URL.createObjectURL(compressedFile);
       validFiles.push({
         id: `${Date.now()}-${Math.random().toString(36).substring(7)}`,
-        file,
+        file: compressedFile,
         preview,
+        originalSize,
+        compressedSize: compressedFile.size,
       });
     }
 
     if (validFiles.length > 0) {
       setPendingImages(prev => [...prev, ...validFiles]);
+      
+      // Show compression summary for multiple images
+      if (validFiles.length > 1) {
+        const totalOriginal = validFiles.reduce((acc, f) => acc + (f.originalSize || 0), 0);
+        const totalCompressed = validFiles.reduce((acc, f) => acc + (f.compressedSize || 0), 0);
+        if (totalCompressed < totalOriginal * 0.9) {
+          toast.success(`Compressed ${validFiles.length} images (saved ${formatFileSize(totalOriginal - totalCompressed)})`);
+        }
+      }
     }
   }, [pendingImages.length]);
+
+  const selectImages = useCallback((files: FileList | File[]) => {
+    const fileArray = Array.from(files);
+    processAndAddImages(fileArray);
+  }, [processAndAddImages]);
 
   const removePendingImage = useCallback((id: string) => {
     setPendingImages(prev => {
@@ -146,6 +186,58 @@ export function useMessageImageUpload(): UseMessageImageUploadResult {
     }
   }, [pendingImages, user?.id, clearPendingImages]);
 
+  // Drag and drop handlers
+  const handleDragEnter = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounterRef.current++;
+    
+    if (e.dataTransfer.types.includes('Files')) {
+      setIsDragging(true);
+    }
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounterRef.current--;
+    
+    if (dragCounterRef.current === 0) {
+      setIsDragging(false);
+    }
+  }, []);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounterRef.current = 0;
+    setIsDragging(false);
+
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      // Filter for image files only
+      const imageFiles = Array.from(files).filter(file => 
+        ALLOWED_TYPES.includes(file.type)
+      );
+      
+      if (imageFiles.length === 0) {
+        toast.error('Please drop image files only (JPEG, PNG, GIF, or WebP)');
+        return;
+      }
+      
+      if (imageFiles.length < files.length) {
+        toast.info(`${files.length - imageFiles.length} non-image files were skipped`);
+      }
+      
+      processAndAddImages(imageFiles);
+    }
+  }, [processAndAddImages]);
+
   return {
     isUploading,
     uploadProgress,
@@ -154,5 +246,10 @@ export function useMessageImageUpload(): UseMessageImageUploadResult {
     removePendingImage,
     clearPendingImages,
     uploadImages,
+    isDragging,
+    handleDragEnter,
+    handleDragLeave,
+    handleDragOver,
+    handleDrop,
   };
 }
