@@ -97,12 +97,12 @@ function CardStatItem({
       onClick={onClick}
       disabled={!onClick}
       className={cn(
-        "text-center flex-1 py-3 px-2 rounded-xl transition-all duration-300",
+        "text-center flex-1 py-2 px-1.5 rounded-xl transition-all duration-300",
         onClick && "hover:bg-primary/5 active:scale-[0.97] cursor-pointer"
       )}
     >
-      <p className="text-lg sm:text-xl font-bold text-foreground tracking-tight">{formatCount(count)}</p>
-      <p className="text-xs text-muted-foreground mt-1 font-medium uppercase tracking-wider">{label}</p>
+      <p className="text-base sm:text-lg font-bold text-foreground tracking-tight">{formatCount(count)}</p>
+      <p className="text-[10px] text-muted-foreground mt-0.5 font-medium uppercase tracking-wider">{label}</p>
     </button>
   );
 }
@@ -319,7 +319,7 @@ export default function Profile() {
         >
           {/* Full-Width Cover Image Banner */}
           <motion.div
-            className="relative h-48 sm:h-56 md:h-64 overflow-hidden"
+            className="relative h-36 sm:h-44 md:h-52 overflow-hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
@@ -437,11 +437,11 @@ export default function Profile() {
           </motion.div>
 
           {/* Profile Info Section */}
-          <div className="px-5 sm:px-8 md:px-10 -mt-14 sm:-mt-16 pb-6">
+          <div className="px-4 sm:px-6 md:px-8 -mt-10 sm:-mt-12 pb-4">
             
             {/* Avatar + Name/Handle Row */}
             <motion.div
-              className="flex items-end gap-5 sm:gap-6"
+              className="flex items-end gap-3 sm:gap-4"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
@@ -460,8 +460,8 @@ export default function Profile() {
                   className="hidden"
                 />
                 
-                <div className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full p-[3px] gradient-brand shadow-glow">
-                  <div className="w-full h-full rounded-full overflow-hidden border-[3px] border-background relative">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full p-[2px] gradient-brand shadow-glow">
+                  <div className="w-full h-full rounded-full overflow-hidden border-2 border-background relative">
                     <img
                       src={isOwnProfile ? avatarUrl : mockUser.avatar}
                       alt={mockUser.name}
@@ -485,9 +485,9 @@ export default function Profile() {
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button
-                        className="absolute bottom-0 right-0 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md border-[1.5px] border-background hover:bg-primary/90 active:scale-95 transition-all"
+                        className="absolute bottom-0 right-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md border border-background hover:bg-primary/90 active:scale-95 transition-all"
                       >
-                        <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                        <Plus className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="start" className="w-52">
@@ -518,27 +518,27 @@ export default function Profile() {
               </motion.div>
 
               {/* Name + Handle + Location */}
-              <div className="flex flex-col justify-end min-w-0 pb-1">
+              <div className="flex flex-col justify-end min-w-0 pb-0.5">
                 {/* Name + Verified Badge */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground tracking-tight leading-tight">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground tracking-tight leading-tight">
                     {displayProfile.displayName || mockUser.name}
                   </h1>
-                  {displayProfile.isVerified && <VerifiedBadge size="md" />}
+                  {displayProfile.isVerified && <VerifiedBadge size="sm" />}
                   {displayProfile.userType && displayProfile.userType !== 'individual' && (
-                    <AccountTypeBadge type={displayProfile.userType as AccountType} size="md" />
+                    <AccountTypeBadge type={displayProfile.userType as AccountType} size="sm" />
                   )}
-                  {displayProfile.isPrivate && <Lock className="h-4 w-4 text-muted-foreground" />}
+                  {displayProfile.isPrivate && <Lock className="h-3.5 w-3.5 text-muted-foreground" />}
                 </div>
 
                 {/* Handle + Location */}
-                <p className="text-sm sm:text-base text-muted-foreground mt-1 flex items-center flex-wrap gap-x-2">
+                <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 flex items-center flex-wrap gap-x-1.5">
                   <span className="font-medium">@{displayProfile.handle || mockUser.handle}</span>
                   {(displayProfile.location || mockUser.location) && (
-                    <span className="inline-flex items-center gap-1.5 text-muted-foreground/70">
-                      <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
-                      <MapPin className="w-3.5 h-3.5" />
-                      <span>{displayProfile.location || mockUser.location}</span>
+                    <span className="inline-flex items-center gap-1 text-muted-foreground/70">
+                      <span className="w-0.5 h-0.5 rounded-full bg-muted-foreground/40" />
+                      <MapPin className="w-3 h-3" />
+                      <span className="text-[11px]">{displayProfile.location || mockUser.location}</span>
                     </span>
                   )}
                 </p>
@@ -547,7 +547,7 @@ export default function Profile() {
 
             {/* Bio - Full Width Below */}
             <motion.p
-              className="text-sm sm:text-base text-foreground/85 leading-relaxed mt-5 max-w-2xl"
+              className="text-xs sm:text-sm text-foreground/85 leading-relaxed mt-3 max-w-2xl"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.25 }}
@@ -557,25 +557,25 @@ export default function Profile() {
 
             {/* Stats Row */}
             <motion.div
-              className="flex items-center mt-6 -mx-2"
+              className="flex items-center mt-4 -mx-1"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
               <CardStatItem count={normalizedStats.postCount} label="Posts" />
-              <div className="w-px h-10 bg-border/50" />
+              <div className="w-px h-8 bg-border/50" />
               <CardStatItem 
                 count={followerCount || normalizedStats.followerCount} 
                 label="Followers" 
                 onClick={() => openListModal('followers')}
               />
-              <div className="w-px h-10 bg-border/50" />
+              <div className="w-px h-8 bg-border/50" />
               <CardStatItem 
                 count={normalizedStats.followingCount} 
                 label="Following" 
                 onClick={() => openListModal('following')}
               />
-              <div className="w-px h-10 bg-border/50" />
+              <div className="w-px h-8 bg-border/50" />
               <CardStatItem 
                 count={normalizedStats.communityCount} 
                 label="Community" 
@@ -586,7 +586,7 @@ export default function Profile() {
             {/* CTA Buttons - Below Stats */}
             {!isOwnProfile && (
               <motion.div
-                className="flex items-center gap-3 mt-5 pt-5 border-t border-border/50"
+                className="flex items-center gap-2 mt-4 pt-4 border-t border-border/50"
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.35 }}
@@ -595,16 +595,16 @@ export default function Profile() {
                   isFollowing={isFollowing}
                   isPending={isPending}
                   onToggle={handleFollow}
-                  size="md"
-                  className="px-8 h-10 rounded-full font-semibold text-sm tracking-wide transition-all duration-300 active:scale-[0.97] shadow-soft"
+                  size="sm"
+                  className="px-6 h-8 rounded-full font-semibold text-xs tracking-wide transition-all duration-300 active:scale-[0.97] shadow-soft"
                   variant="gradient"
                 />
                 <Button
                   variant="outline"
                   size="icon"
-                  className="h-10 w-10 rounded-full border-border/60 hover:bg-primary/10 hover:border-primary/30 transition-all duration-300 active:scale-95"
+                  className="h-8 w-8 rounded-full border-border/60 hover:bg-primary/10 hover:border-primary/30 transition-all duration-300 active:scale-95"
                 >
-                  <MessageCircle className="w-4 h-4" />
+                  <MessageCircle className="w-3.5 h-3.5" />
                 </Button>
               </motion.div>
             )}
