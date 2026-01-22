@@ -141,13 +141,32 @@ export default function Directory() {
         >
           <Collapsible open={filtersExpanded} onOpenChange={setFiltersExpanded}>
             <div className="flex items-center justify-between mb-3">
-              <CollapsibleTrigger asChild>
-                <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground">
-                  <Filter className="w-4 h-4" />
-                  Filters
-                  <ChevronDown className={`w-4 h-4 transition-transform ${filtersExpanded ? 'rotate-180' : ''}`} />
-                </Button>
-              </CollapsibleTrigger>
+              <div className="flex items-center gap-2">
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground">
+                    <Filter className="w-4 h-4" />
+                    Filters
+                    {hasActiveFilters && (
+                      <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-[10px]">
+                        Active
+                      </Badge>
+                    )}
+                    <ChevronDown className={`w-4 h-4 transition-transform ${filtersExpanded ? 'rotate-180' : ''}`} />
+                  </Button>
+                </CollapsibleTrigger>
+                
+                {hasActiveFilters && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="gap-1.5 text-muted-foreground hover:text-foreground"
+                    onClick={clearFilters}
+                  >
+                    <X className="w-3.5 h-3.5" />
+                    Clear
+                  </Button>
+                )}
+              </div>
 
               <div className="flex items-center gap-2">
                 <Switch
