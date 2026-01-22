@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 
 interface FollowButtonProps {
   isFollowing: boolean;
+  isPending?: boolean;
   onToggle: () => void;
   size?: 'sm' | 'md' | 'lg';
   variant?: 'default' | 'gradient' | 'glass';
@@ -19,6 +20,7 @@ const sizeClasses = {
 
 export function FollowButton({ 
   isFollowing, 
+  isPending = false,
   onToggle, 
   size = 'md',
   variant = 'default',
@@ -28,6 +30,7 @@ export function FollowButton({
   const controls = useAnimationControls();
   const isFirstRender = useRef(true);
   const wasFollowing = useRef(isFollowing);
+  const wasPending = useRef(isPending);
 
   useEffect(() => {
     if (isFirstRender.current) {
@@ -36,7 +39,7 @@ export function FollowButton({
     }
 
     // Only animate if state actually changed
-    if (wasFollowing.current !== isFollowing) {
+    if (wasFollowing.current !== isFollowing || wasPending.current !== isPending) {
       // Quick scale pop on state change
       controls.start({
         scale: [0.95, 1.05, 1],
@@ -49,7 +52,8 @@ export function FollowButton({
     }
     
     wasFollowing.current = isFollowing;
-  }, [isFollowing, controls]);
+    wasPending.current = isPending;
+  }, [isFollowing, isPending, controls]);
   
   const handleClick = () => {
     // Haptic feedback
@@ -66,6 +70,11 @@ export function FollowButton({
       return 'bg-secondary/80 backdrop-blur-sm border border-border/50 text-foreground hover:bg-secondary';
     }
     
+    if (isPending) {
+      // Pending state - muted with dashed border to indicate waiting
+      return 'bg-muted/50 backdrop-blur-sm border border-dashed border-primary/50 text-muted-foreground hover:bg-muted/70';
+    }
+    
     switch (variant) {
       case 'gradient':
         return 'bg-gradient-to-r from-rose-500 via-pink-500 to-orange-400 text-white font-semibold shadow-lg shadow-pink-500/25 hover:shadow-xl hover:shadow-pink-500/30 hover:scale-[1.02] border-0';
@@ -74,6 +83,12 @@ export function FollowButton({
       default:
         return 'bg-primary text-primary-foreground hover:bg-primary/90';
     }
+  };
+
+  const getButtonText = () => {
+    if (isFollowing) return 'Following';
+    if (isPending) return 'Requested';
+    return 'Follow';
   };
 
   return (
@@ -93,14 +108,14 @@ export function FollowButton({
     >
       <AnimatePresence mode="wait" initial={false}>
         <motion.span
-          key={isFollowing ? 'following' : 'follow'}
+          key={isFollowing ? 'following' : isPending ? 'requested' : 'follow'}
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
           transition={{ duration: 0.15 }}
           className="block"
         >
-          {isFollowing ? 'Following' : 'Follow'}
+          {getButtonText()}
         </motion.span>
       </AnimatePresence>
     </motion.button>

@@ -1,13 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { MoreVertical, Lock, MapPin, MessageCircle, Share2, Settings, Plus, Sparkles, User, ImageIcon } from 'lucide-react';
+import { MoreVertical, Lock, MapPin, MessageCircle, Share2, Settings, Plus, Sparkles, User, ImageIcon, ShieldOff, VolumeX, Flag } from 'lucide-react';
 import { DiscoverRow } from '@/components/DiscoverRow';
 import { RearrangeableGrid } from '@/components/profile/RearrangeableGrid';
 import { RearrangeableTabBar } from '@/components/profile/RearrangeableTabBar';
 import { UserListModal, ListType } from '@/components/profile/UserListModal';
 import { BlockedProfileState } from '@/components/profile/BlockedProfileState';
 import { PrivateProfileState } from '@/components/profile/PrivateProfileState';
+import { ReportModal } from '@/components/moderation/ReportModal';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
@@ -30,6 +31,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
@@ -126,7 +128,7 @@ export default function Profile() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user } = useAuth();
-  const { isBlocked, isBlockedByMe, isBlockingMe } = useSafety();
+  const { isBlocked, isBlockedByMe, isBlockingMe, blockUser, muteUser, isMuted } = useSafety();
   const { avatarUrl, refreshAvatar } = useCurrentUserAvatar();
   const { coverUrl, refreshCover } = useCurrentUserCover();
   const { uploadProfilePhoto, isUploading } = useProfilePhotoUpload();
@@ -139,6 +141,7 @@ export default function Profile() {
   const [gridLayout, setGridLayout] = useState<GridLayoutStyle>('uniform');
   const [profileUserId, setProfileUserId] = useState<string | null>(null);
   const [isOwnProfile, setIsOwnProfile] = useState(true);
+  const [reportModalOpen, setReportModalOpen] = useState(false);
 
   // Resolve profile user ID from handle or current user
   useEffect(() => {
@@ -187,8 +190,11 @@ export default function Profile() {
 
   // Use real profile stats and follow state
   const { profile, stats, isLoading: statsLoading } = useProfileStats(profileUserId || '');
-  const { isFollowing, toggleFollow, followerCount } = useFollow(profileUserId || '');
+  const { isFollowing, isPending, toggleFollow, followerCount } = useFollow(profileUserId || '');
   const { posts: userPosts, isLoading: postsLoading } = useUserPosts(profileUserId || '');
+  
+  // Check if current user has muted this profile
+  const profileIsMuted = profileUserId ? isMuted(profileUserId) : false;
 
   // Fallback to mock data when no real profile
   const displayProfile = profile || {
@@ -277,6 +283,16 @@ export default function Profile() {
     });
   };
 
+  const handleBlockUser = async () => {
+    if (!profileUserId) return;
+    await blockUser(profileUserId);
+  };
+
+  const handleMuteUser = async () => {
+    if (!profileUserId) return;
+    await muteUser(profileUserId);
+  };
+
   // Show blocked state if either party has blocked the other
   if (profileIsBlocked && !isOwnProfile && profileUserId) {
     return (
@@ -340,7 +356,7 @@ export default function Profile() {
             )}
             
             {/* Top Right Menu Button */}
-            {isOwnProfile && (
+            {isOwnProfile ? (
               <motion.div
                 className="absolute top-3 right-3 z-10"
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -365,6 +381,54 @@ export default function Profile() {
                     <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate('/settings')}>
                       <Settings className="h-4 w-4" />
                       Settings
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </motion.div>
+            ) : (
+              <motion.div
+                className="absolute top-3 right-3 z-10"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2 }}
+              >
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/50 transition-all duration-200 active:scale-95"
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem className="gap-2 cursor-pointer">
+                      <Share2 className="h-4 w-4" />
+                      Share profile
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      className="gap-2 cursor-pointer"
+                      onClick={handleMuteUser}
+                    >
+                      <VolumeX className="h-4 w-4" />
+                      {profileIsMuted ? 'Unmute' : 'Mute'} @{displayProfile.handle || mockUser.handle}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      className="gap-2 cursor-pointer text-destructive focus:text-destructive"
+                      onClick={handleBlockUser}
+                    >
+                      <ShieldOff className="h-4 w-4" />
+                      Block @{displayProfile.handle || mockUser.handle}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      className="gap-2 cursor-pointer"
+                      onClick={() => setReportModalOpen(true)}
+                    >
+                      <Flag className="h-4 w-4" />
+                      Report profile
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -529,6 +593,7 @@ export default function Profile() {
               >
                 <FollowButton
                   isFollowing={isFollowing}
+                  isPending={isPending}
                   onToggle={handleFollow}
                   size="md"
                   className="px-8 h-10 rounded-full font-semibold text-sm tracking-wide transition-all duration-300 active:scale-[0.97] shadow-soft"
@@ -647,6 +712,16 @@ export default function Profile() {
         userId={profileUserId}
         userName={mockUser.name}
       />
+
+      {/* Report Modal */}
+      {profileUserId && (
+        <ReportModal
+          open={reportModalOpen}
+          onOpenChange={setReportModalOpen}
+          targetId={profileUserId}
+          targetType="profile"
+        />
+      )}
     </AppLayout>
   );
 }
