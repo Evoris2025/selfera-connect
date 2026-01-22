@@ -1,17 +1,31 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, MapPin, Globe, DollarSign, BadgeCheck, Filter, ExternalLink } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { 
+  Search, 
+  MapPin, 
+  Globe, 
+  DollarSign, 
+  Filter, 
+  ExternalLink,
+  Languages,
+  User,
+  ChevronDown,
+  Sparkles,
+  Info,
+} from 'lucide-react';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { VerifiedBadge } from '@/components/VerifiedBadge';
-import { AccountTypeBadge } from '@/components/AccountTypeBadge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { supabase } from '@/integrations/supabase/client';
+import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
+import { GlassCard } from '@/components/ui/GlassCard';
+import { VerifiedBadge } from '@/components/VerifiedBadge';
+import { ProviderDetailModal } from '@/components/directory/ProviderDetailModal';
+import { useDirectory, DirectoryEntry } from '@/hooks/useDirectory';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Select,
   SelectContent,
@@ -19,252 +33,355 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 
-// Mock directory data as fallback
-const mockServices = [
-  {
-    id: '1',
-    name: 'Open Path Collective',
-    handle: 'openpathcollective',
-    avatar: '',
-    isVerified: true,
-    userType: 'organization' as const,
-    description: 'Affordable online therapy with licensed professionals. Sliding scale fees starting at $30/session.',
-    regions: ['Global', 'Online'],
-    deliveryType: 'online',
-    priceRange: 'affordable',
-    languages: ['English', 'Spanish', 'French'],
-    tags: ['Therapy', 'Counseling', 'Affordable'],
-    website: 'https://openpathcollective.org',
-  },
-  {
-    id: '2',
-    name: 'Crisis Text Line',
-    handle: 'crisistextline',
-    avatar: '',
-    isVerified: true,
-    userType: 'organization' as const,
-    description: 'Free, 24/7 text support for people in crisis. Text HOME to 741741.',
-    regions: ['United States', 'Canada', 'UK'],
-    deliveryType: 'online',
-    priceRange: 'free',
-    languages: ['English'],
-    tags: ['Crisis Support', 'Text Line', 'Free'],
-    website: 'https://crisistextline.org',
-  },
+const springGentle = { type: "spring" as const, stiffness: 200, damping: 25 };
+
+const priceLabels: Record<string, { label: string; color: string }> = {
+  free: { label: 'Free', color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' },
+  'sliding-scale': { label: 'Sliding Scale', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
+  affordable: { label: 'Affordable', color: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30' },
+  standard: { label: 'Standard', color: 'bg-muted text-muted-foreground border-border' },
+};
+
+const roleTypes = [
+  { value: 'all', label: 'All Providers' },
+  { value: 'counsellor', label: 'Counsellor' },
+  { value: 'psychologist', label: 'Psychologist' },
+  { value: 'psychiatrist', label: 'Psychiatrist' },
+  { value: 'social-worker', label: 'Social Worker' },
+  { value: 'occupational-therapist', label: 'OT' },
+  { value: 'coach', label: 'Coach' },
+  { value: 'peer-support', label: 'Peer Support' },
+  { value: 'wellbeing', label: 'Wellbeing Org' },
 ];
-
-interface DirectoryEntry {
-  id: string;
-  name: string;
-  handle: string;
-  avatar: string;
-  isVerified: boolean;
-  userType: 'individual' | 'professional' | 'organization';
-  description: string;
-  regions: string[];
-  deliveryType: string;
-  priceRange: string;
-  languages: string[];
-  tags: string[];
-  website: string;
-}
-
-const regions = ['All Regions', 'Global', 'United States', 'UK', 'Canada', 'Europe', 'Asia', 'Africa', 'Latin America'];
 
 export default function Directory() {
   const { t } = useTranslation();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedRegion, setSelectedRegion] = useState('All Regions');
-  const [deliveryType, setDeliveryType] = useState('all');
-  const [priceRange, setPriceRange] = useState('all');
-  const [verifiedOnly, setVerifiedOnly] = useState(false);
-  const [services, setServices] = useState<DirectoryEntry[]>(mockServices);
+  const {
+    entries,
+    loading,
+    filters,
+    updateFilter,
+    availableRegions,
+    availableLanguages,
+  } = useDirectory();
 
-  // Fetch verified profiles for directory
-  useEffect(() => {
-    const fetchVerifiedProfiles = async () => {
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('id, display_name, handle, avatar_url, bio, user_type, is_verified')
-        .eq('is_verified', true)
-        .in('user_type', ['professional', 'organization']);
+  const [selectedEntry, setSelectedEntry] = useState<DirectoryEntry | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [filtersExpanded, setFiltersExpanded] = useState(false);
 
-      if (profiles && profiles.length > 0) {
-        const realEntries: DirectoryEntry[] = profiles.map(p => ({
-          id: p.id,
-          name: p.display_name || 'Unknown',
-          handle: p.handle || '',
-          avatar: p.avatar_url || '',
-          isVerified: true,
-          userType: p.user_type as 'professional' | 'organization',
-          description: p.bio || 'Verified mental health professional on SelfERA.',
-          regions: ['Global'],
-          deliveryType: 'online',
-          priceRange: 'standard',
-          languages: ['English'],
-          tags: [p.user_type === 'organization' ? 'Organisation' : 'Professional'],
-          website: '',
-        }));
-        setServices([...realEntries, ...mockServices]);
-      }
-    };
-
-    fetchVerifiedProfiles();
-  }, []);
-
-  const filteredServices = services.filter((service) => {
-    if (verifiedOnly && !service.isVerified) return false;
-    if (deliveryType !== 'all' && service.deliveryType !== deliveryType) return false;
-    if (priceRange !== 'all' && service.priceRange !== priceRange) return false;
-    if (searchQuery && !service.name.toLowerCase().includes(searchQuery.toLowerCase()) && 
-        !service.description.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-    return true;
-  });
+  const handleViewDetails = (entry: DirectoryEntry) => {
+    setSelectedEntry(entry);
+    setModalOpen(true);
+  };
 
   return (
     <AppLayout>
-      <div className="max-w-4xl mx-auto p-4">
+      <div className="max-w-4xl mx-auto px-4 py-6">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">{t('directory.title')}</h1>
-          <p className="text-muted-foreground max-w-xl mx-auto">{t('directory.subtitle')}</p>
-        </div>
+        <motion.div 
+          className="text-center mb-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={springGentle}
+        >
+          <h1 className="text-2xl font-bold text-foreground mb-2">
+            {t('directory.title')}
+          </h1>
+          <p className="text-sm text-muted-foreground max-w-md mx-auto">
+            {t('directory.subtitle')}
+          </p>
+        </motion.div>
 
-        {/* Search & Filters */}
-        <div className="space-y-4 mb-8">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input
-              placeholder={t('common.search')}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 h-12 bg-secondary border-none"
-            />
+        {/* Global Access Note */}
+        <motion.div 
+          className="flex items-start gap-3 p-4 rounded-xl glass-subtle mb-4"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...springGentle, delay: 0.05 }}
+        >
+          <Globe className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+          <div className="text-sm">
+            <p className="text-foreground">{t('directory.globalAccess')}</p>
+            <p className="text-muted-foreground mt-1">{t('directory.affordabilityNote')}</p>
           </div>
+        </motion.div>
 
-          <div className="flex flex-wrap items-center gap-4">
-            <Select value={selectedRegion} onValueChange={setSelectedRegion}>
-              <SelectTrigger className="w-48">
-                <MapPin className="h-4 w-4 mr-2" />
-                <SelectValue placeholder={t('directory.filters.region')} />
-              </SelectTrigger>
-              <SelectContent>
-                {regions.map((region) => (
-                  <SelectItem key={region} value={region}>{region}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        {/* Search */}
+        <motion.div 
+          className="relative mb-4"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...springGentle, delay: 0.1 }}
+        >
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <Input
+            placeholder={t('common.search')}
+            value={filters.search}
+            onChange={(e) => updateFilter('search', e.target.value)}
+            className="pl-10 h-12 bg-secondary/50 border-border/50 rounded-xl"
+          />
+        </motion.div>
 
-            <Select value={deliveryType} onValueChange={setDeliveryType}>
-              <SelectTrigger className="w-40">
-                <Globe className="h-4 w-4 mr-2" />
-                <SelectValue placeholder={t('directory.filters.delivery')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="online">{t('directory.filters.online')}</SelectItem>
-                <SelectItem value="inPerson">{t('directory.filters.inPerson')}</SelectItem>
-                <SelectItem value="hybrid">{t('directory.filters.hybrid')}</SelectItem>
-              </SelectContent>
-            </Select>
+        {/* Filters */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...springGentle, delay: 0.15 }}
+        >
+          <Collapsible open={filtersExpanded} onOpenChange={setFiltersExpanded}>
+            <div className="flex items-center justify-between mb-3">
+              <CollapsibleTrigger asChild>
+                <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground">
+                  <Filter className="w-4 h-4" />
+                  Filters
+                  <ChevronDown className={`w-4 h-4 transition-transform ${filtersExpanded ? 'rotate-180' : ''}`} />
+                </Button>
+              </CollapsibleTrigger>
 
-            <Select value={priceRange} onValueChange={setPriceRange}>
-              <SelectTrigger className="w-40">
-                <DollarSign className="h-4 w-4 mr-2" />
-                <SelectValue placeholder={t('directory.filters.priceRange')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Prices</SelectItem>
-                <SelectItem value="free">{t('directory.filters.free')}</SelectItem>
-                <SelectItem value="affordable">{t('directory.filters.affordable')}</SelectItem>
-                <SelectItem value="standard">{t('directory.filters.standard')}</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <div className="flex items-center gap-2">
-              <Switch
-                id="verified"
-                checked={verifiedOnly}
-                onCheckedChange={setVerifiedOnly}
-              />
-              <Label htmlFor="verified" className="text-sm">{t('directory.filters.verifiedOnly')}</Label>
+              <div className="flex items-center gap-2">
+                <Switch
+                  id="verified"
+                  checked={filters.verifiedOnly}
+                  onCheckedChange={(checked) => updateFilter('verifiedOnly', checked)}
+                />
+                <Label htmlFor="verified" className="text-sm text-muted-foreground">
+                  {t('directory.filters.verifiedOnly')}
+                </Label>
+              </div>
             </div>
-          </div>
-        </div>
+
+            <CollapsibleContent className="space-y-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {/* Role Type */}
+                <Select value={filters.roleType} onValueChange={(v) => updateFilter('roleType', v)}>
+                  <SelectTrigger className="rounded-xl">
+                    <User className="h-4 w-4 mr-2 text-muted-foreground" />
+                    <SelectValue placeholder={t('directory.filters.roleType')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {roleTypes.map(role => (
+                      <SelectItem key={role.value} value={role.value}>
+                        {role.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {/* Region */}
+                <Select value={filters.region} onValueChange={(v) => updateFilter('region', v)}>
+                  <SelectTrigger className="rounded-xl">
+                    <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
+                    <SelectValue placeholder={t('directory.filters.region')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t('directory.filters.allRegions')}</SelectItem>
+                    {availableRegions.map(region => (
+                      <SelectItem key={region} value={region}>{region}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {/* Delivery Type */}
+                <Select value={filters.deliveryType} onValueChange={(v) => updateFilter('deliveryType', v)}>
+                  <SelectTrigger className="rounded-xl">
+                    <Globe className="h-4 w-4 mr-2 text-muted-foreground" />
+                    <SelectValue placeholder={t('directory.filters.delivery')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t('directory.filters.allDelivery')}</SelectItem>
+                    <SelectItem value="online">{t('directory.filters.online')}</SelectItem>
+                    <SelectItem value="in-person">{t('directory.filters.inPerson')}</SelectItem>
+                    <SelectItem value="hybrid">{t('directory.filters.hybrid')}</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* Price Range */}
+                <Select value={filters.priceRange} onValueChange={(v) => updateFilter('priceRange', v)}>
+                  <SelectTrigger className="rounded-xl">
+                    <DollarSign className="h-4 w-4 mr-2 text-muted-foreground" />
+                    <SelectValue placeholder={t('directory.filters.priceRange')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t('directory.filters.allPrices')}</SelectItem>
+                    <SelectItem value="free">{t('directory.filters.free')}</SelectItem>
+                    <SelectItem value="sliding-scale">{t('directory.filters.slidingScale')}</SelectItem>
+                    <SelectItem value="affordable">{t('directory.filters.affordable')}</SelectItem>
+                    <SelectItem value="standard">{t('directory.filters.standard')}</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* Language */}
+                <Select value={filters.language} onValueChange={(v) => updateFilter('language', v)}>
+                  <SelectTrigger className="rounded-xl">
+                    <Languages className="h-4 w-4 mr-2 text-muted-foreground" />
+                    <SelectValue placeholder={t('directory.filters.languages')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t('directory.filters.allLanguages')}</SelectItem>
+                    {availableLanguages.map(lang => (
+                      <SelectItem key={lang} value={lang}>{lang}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+        </motion.div>
 
         {/* Disclaimer */}
-        <div className="bg-[hsl(25,95%,53%)]/10 border border-[hsl(25,95%,53%)]/20 rounded-xl p-4 mb-6 text-sm text-muted-foreground">
-          {t('directory.disclaimer')}
-        </div>
+        <motion.div 
+          className="flex items-start gap-3 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 mb-6 mt-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ ...springGentle, delay: 0.2 }}
+        >
+          <Info className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+          <p className="text-sm text-muted-foreground">
+            {t('directory.disclaimer')}
+          </p>
+        </motion.div>
+
+        {/* Results Count */}
+        {!loading && (
+          <motion.p 
+            className="text-sm text-muted-foreground mb-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            {t('directory.resultsCount', { count: entries.length })}
+          </motion.p>
+        )}
 
         {/* Results */}
-        <div className="space-y-4">
-          {filteredServices.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              {t('directory.noResults')}
-            </div>
+        <div className="space-y-3">
+          {loading ? (
+            // Loading skeletons
+            Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="p-4 rounded-2xl border border-border/50 bg-card/50">
+                <div className="flex items-start gap-4">
+                  <Skeleton className="h-14 w-14 rounded-full" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-5 w-48" />
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-16 w-full" />
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : entries.length === 0 ? (
+            <motion.div 
+              className="text-center py-12"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              <Sparkles className="w-12 h-12 mx-auto mb-4 text-muted-foreground/30" />
+              <p className="text-muted-foreground">{t('directory.noResults')}</p>
+            </motion.div>
           ) : (
-            filteredServices.map((service) => (
-              <Card key={service.id} className="hover:border-primary/30 transition-colors">
-                <CardContent className="p-6">
+            entries.map((entry, index) => (
+              <motion.div
+                key={entry.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ ...springGentle, delay: 0.05 * Math.min(index, 10) }}
+              >
+                <GlassCard
+                  variant="card"
+                  hover
+                  className="p-4 cursor-pointer"
+                  onClick={() => handleViewDetails(entry)}
+                >
                   <div className="flex items-start gap-4">
-                    <Avatar className="h-16 w-16">
-                      <AvatarFallback className="bg-primary/10 text-primary text-xl">
-                        {service.name.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
+                    <CinematicAvatar
+                      src={entry.profile?.avatar_url || undefined}
+                      alt={entry.name}
+                      fallback={entry.name.charAt(0)}
+                      size="lg"
+                      ring={entry.verified ? 'gradient' : 'muted'}
+                    />
 
-                    <div className="flex-1">
-                        <div className="flex items-start justify-between">
-                        <div>
-                          <div className="flex items-center gap-2 mb-1 flex-wrap">
-                            <h3 className="text-lg font-semibold text-foreground">{service.name}</h3>
-                            {service.isVerified && <VerifiedBadge />}
-                            <AccountTypeBadge type={service.userType} size="sm" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h3 className="text-base font-semibold text-foreground truncate">
+                              {entry.name}
+                            </h3>
+                            {entry.verified && <VerifiedBadge size="sm" />}
                           </div>
-                          <p className="text-sm text-muted-foreground">@{service.handle}</p>
+                          {entry.profile?.handle && (
+                            <p className="text-sm text-muted-foreground">
+                              @{entry.profile.handle}
+                            </p>
+                          )}
                         </div>
-                        <Button variant="outline" size="sm" asChild>
-                          <a href={service.website} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="h-4 w-4 mr-2" />
-                            Visit
-                          </a>
-                        </Button>
+                        
+                        {entry.price_range && priceLabels[entry.price_range] && (
+                          <Badge className={`shrink-0 text-xs ${priceLabels[entry.price_range].color}`}>
+                            {priceLabels[entry.price_range].label}
+                          </Badge>
+                        )}
                       </div>
 
-                      <p className="text-foreground mt-3 mb-4">{service.description}</p>
+                      <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                        {entry.description}
+                      </p>
 
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {service.tags.map((tag) => (
-                          <Badge key={tag} variant="secondary" className="rounded-full">
+                      <div className="flex flex-wrap gap-1.5 mt-3">
+                        {entry.tags?.slice(0, 4).map(tag => (
+                          <Badge 
+                            key={tag} 
+                            variant="secondary" 
+                            className="text-xs rounded-full"
+                          >
                             {tag}
                           </Badge>
                         ))}
+                        {entry.tags && entry.tags.length > 4 && (
+                          <Badge variant="secondary" className="text-xs rounded-full">
+                            +{entry.tags.length - 4}
+                          </Badge>
+                        )}
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <MapPin className="h-4 w-4" />
-                          {service.regions.join(', ')}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Globe className="h-4 w-4" />
-                          {service.languages.join(', ')}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <DollarSign className="h-4 w-4" />
-                          {service.priceRange.charAt(0).toUpperCase() + service.priceRange.slice(1)}
-                        </div>
+                      <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
+                        {entry.regions_served && entry.regions_served.length > 0 && (
+                          <div className="flex items-center gap-1">
+                            <MapPin className="h-3.5 w-3.5" />
+                            <span>
+                              {entry.regions_served.slice(0, 2).join(', ')}
+                              {entry.regions_served.length > 2 && ` +${entry.regions_served.length - 2}`}
+                            </span>
+                          </div>
+                        )}
+                        {entry.delivery_type && (
+                          <div className="flex items-center gap-1">
+                            <Globe className="h-3.5 w-3.5" />
+                            <span className="capitalize">{entry.delivery_type}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </GlassCard>
+              </motion.div>
             ))
           )}
         </div>
       </div>
+
+      {/* Provider Detail Modal */}
+      <ProviderDetailModal
+        entry={selectedEntry}
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+      />
     </AppLayout>
   );
 }
