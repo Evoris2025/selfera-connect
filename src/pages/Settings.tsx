@@ -1,16 +1,22 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Palette, Globe, Eye, Bell, Lock, User, HelpCircle, BadgeCheck, Shield } from 'lucide-react';
+import { Palette, Globe, Eye, Bell, Lock, User, HelpCircle, BadgeCheck, Shield, ShieldOff, VolumeX, UserPlus } from 'lucide-react';
 import { AppLayout } from '@/components/AppLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { languages, changeLanguage, getCurrentLanguage, type LanguageCode } from '@/i18n';
 import { ThemeSelector } from '@/components/settings/ThemeSelector';
 import { VerificationRequestForm } from '@/components/settings/VerificationRequestForm';
+import { BlockedUsersList } from '@/components/settings/BlockedUsersList';
+import { MutedUsersList } from '@/components/settings/MutedUsersList';
+import { FollowRequestsModal } from '@/components/settings/FollowRequestsModal';
 import { AdminVerificationQueue } from '@/components/admin/AdminVerificationQueue';
 import { AdminModerationQueue } from '@/components/admin/AdminModerationQueue';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSafety } from '@/contexts/SafetyContext';
+import { useFollowRequests } from '@/hooks/useFollowRequests';
 import { supabase } from '@/integrations/supabase/client';
 import {
   Select,
@@ -23,9 +29,12 @@ import {
 export default function Settings() {
   const { t } = useTranslation();
   const { user, signOut } = useAuth();
+  const { blockedUserIds, mutedUserIds } = useSafety();
+  const { pendingCount } = useFollowRequests();
   const currentLang = getCurrentLanguage();
-  const [view, setView] = useState<'main' | 'verification' | 'admin-verification' | 'admin-moderation'>('main');
+  const [view, setView] = useState<'main' | 'verification' | 'blocked' | 'muted' | 'admin-verification' | 'admin-moderation'>('main');
   const [isAdmin, setIsAdmin] = useState(false);
+  const [followRequestsOpen, setFollowRequestsOpen] = useState(false);
 
   // Check if current user is admin
   useEffect(() => {
@@ -74,6 +83,28 @@ export default function Settings() {
       <AppLayout>
         <div className="max-w-2xl mx-auto p-4">
           <VerificationRequestForm onBack={() => setView('main')} />
+        </div>
+      </AppLayout>
+    );
+  }
+
+  // Blocked users list view
+  if (view === 'blocked') {
+    return (
+      <AppLayout>
+        <div className="max-w-2xl mx-auto p-4">
+          <BlockedUsersList onBack={() => setView('main')} />
+        </div>
+      </AppLayout>
+    );
+  }
+
+  // Muted users list view
+  if (view === 'muted') {
+    return (
+      <AppLayout>
+        <div className="max-w-2xl mx-auto p-4">
+          <MutedUsersList onBack={() => setView('main')} />
         </div>
       </AppLayout>
     );
@@ -193,6 +224,81 @@ export default function Settings() {
             </CardHeader>
           </Card>
 
+          {/* Follow Requests */}
+          <Card 
+            className="cursor-pointer hover:border-primary/30 transition-colors"
+            onClick={() => setFollowRequestsOpen(true)}
+          >
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <UserPlus className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-base">Follow Requests</CardTitle>
+                    <CardDescription>Review pending follow requests</CardDescription>
+                  </div>
+                </div>
+                {pendingCount > 0 && (
+                  <Badge variant="default" className="rounded-full">
+                    {pendingCount}
+                  </Badge>
+                )}
+              </div>
+            </CardHeader>
+          </Card>
+
+          {/* Blocked Accounts */}
+          <Card 
+            className="cursor-pointer hover:border-destructive/30 transition-colors"
+            onClick={() => setView('blocked')}
+          >
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-destructive/10">
+                    <ShieldOff className="h-5 w-5 text-destructive" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-base">Blocked Accounts</CardTitle>
+                    <CardDescription>Manage accounts you've blocked</CardDescription>
+                  </div>
+                </div>
+                {blockedUserIds.size > 0 && (
+                  <Badge variant="secondary" className="rounded-full">
+                    {blockedUserIds.size}
+                  </Badge>
+                )}
+              </div>
+            </CardHeader>
+          </Card>
+
+          {/* Muted Accounts */}
+          <Card 
+            className="cursor-pointer hover:border-amber-500/30 transition-colors"
+            onClick={() => setView('muted')}
+          >
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-amber-500/10">
+                    <VolumeX className="h-5 w-5 text-amber-500" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-base">Muted Accounts</CardTitle>
+                    <CardDescription>Manage accounts you've muted</CardDescription>
+                  </div>
+                </div>
+                {mutedUserIds.size > 0 && (
+                  <Badge variant="secondary" className="rounded-full">
+                    {mutedUserIds.size}
+                  </Badge>
+                )}
+              </div>
+            </CardHeader>
+          </Card>
+
           {/* Get Verified */}
           <Card 
             className="cursor-pointer hover:border-verified/30 transition-colors"
@@ -274,6 +380,12 @@ export default function Settings() {
             </Button>
           </div>
         </div>
+
+        {/* Follow Requests Modal */}
+        <FollowRequestsModal 
+          open={followRequestsOpen} 
+          onOpenChange={setFollowRequestsOpen} 
+        />
       </div>
     </AppLayout>
   );
