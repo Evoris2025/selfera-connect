@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   Heart, 
@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useNavigate } from 'react-router-dom';
 import { MobileNav } from '@/components/MobileNav';
+import { useNotifications } from '@/hooks/useNotifications';
 
 // Ultra-calm motion - simple fades and slides only
 const calmFade: Transition = { duration: 0.25, ease: 'easeOut' as const };
@@ -336,12 +337,17 @@ function EmptyState() {
 export default function Notifications() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [isLoading] = useState(false);
   const [highlightsExpanded, setHighlightsExpanded] = useState(true);
-  const grouped = groupNotificationsByTime(mockNotifications);
+  
+  // Use real notifications, fallback to mock when empty
+  const { notifications: realNotifications, isLoading, unreadCount, markAsRead, markAllAsRead } = useNotifications();
+  
+  // Merge real and mock notifications, preferring real when available
+  const notifications = realNotifications.length > 0 ? realNotifications : mockNotifications;
+  const grouped = useMemo(() => groupNotificationsByTime(notifications), [notifications]);
 
-  const hasNotifications = mockNotifications.length > 0;
-  const allRead = mockNotifications.every(n => n.read);
+  const hasNotifications = notifications.length > 0;
+  const allRead = notifications.every(n => n.read);
 
   return (
     <div className="flex flex-col h-[100dvh] bg-background">

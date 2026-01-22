@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { MoreVertical, Lock, MapPin, MessageCircle, Share2, Settings, Plus, Sparkles, User, ImageIcon } from 'lucide-react';
@@ -19,6 +19,9 @@ import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
 import { useCurrentUserCover } from '@/hooks/useCurrentUserCover';
 import { useProfilePhotoUpload } from '@/hooks/useProfilePhotoUpload';
 import { useCoverPhotoUpload } from '@/hooks/useCoverPhotoUpload';
+import { useProfileStats, useUserPosts } from '@/hooks/useProfileStats';
+import { useFollow } from '@/hooks/useFollow';
+import { supabase } from '@/integrations/supabase/client';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -125,14 +128,87 @@ export default function Profile() {
   const { uploadCoverPhoto, isUploading: isCoverUploading } = useCoverPhotoUpload();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
-  const [isFollowing, setIsFollowing] = useState(false);
   const [activeTab, setActiveTab] = useState('posts');
-  const [followerCount, setFollowerCount] = useState(mockUser.stats.followers);
   const [listModalOpen, setListModalOpen] = useState(false);
   const [listModalType, setListModalType] = useState<ListType>('followers');
   const [gridLayout, setGridLayout] = useState<GridLayoutStyle>('uniform');
-  const isOwnProfile = !handle || handle === mockUser.handle;
-  const profileUserId = (isOwnProfile ? user?.id : undefined) ?? mockUser.id;
+  const [profileUserId, setProfileUserId] = useState<string | null>(null);
+  const [isOwnProfile, setIsOwnProfile] = useState(true);
+
+  // Resolve profile user ID from handle or current user
+  useEffect(() => {
+    const resolveProfileUser = async () => {
+      if (!handle) {
+        // Own profile
+        setProfileUserId(user?.id || null);
+        setIsOwnProfile(true);
+        return;
+      }
+
+      // Check if handle matches current user
+      if (user?.id) {
+        const { data: currentProfile } = await supabase
+          .from('profiles')
+          .select('handle')
+          .eq('id', user.id)
+          .single();
+
+        if (currentProfile?.handle === handle) {
+          setProfileUserId(user.id);
+          setIsOwnProfile(true);
+          return;
+        }
+      }
+
+      // Lookup profile by handle
+      const { data: targetProfile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('handle', handle)
+        .single();
+
+      if (targetProfile) {
+        setProfileUserId(targetProfile.id);
+        setIsOwnProfile(false);
+      } else {
+        // Fallback to mock
+        setProfileUserId(mockUser.id);
+        setIsOwnProfile(false);
+      }
+    };
+
+    resolveProfileUser();
+  }, [handle, user?.id]);
+
+  // Use real profile stats and follow state
+  const { profile, stats, isLoading: statsLoading } = useProfileStats(profileUserId || '');
+  const { isFollowing, toggleFollow, followerCount } = useFollow(profileUserId || '');
+  const { posts: userPosts, isLoading: postsLoading } = useUserPosts(profileUserId || '');
+
+  // Fallback to mock data when no real profile
+  const displayProfile = profile || {
+    id: mockUser.id,
+    displayName: mockUser.name,
+    handle: mockUser.handle,
+    avatarUrl: mockUser.avatar,
+    coverUrl: mockUser.coverImage,
+    bio: mockUser.bio,
+    location: mockUser.location,
+    isVerified: mockUser.isVerified,
+    isPrivate: mockUser.isPrivate,
+    userType: mockUser.userType,
+  };
+
+  // Normalize stats to a consistent shape
+  const hasRealStats = stats.postCount > 0 || stats.followerCount > 0 || stats.followingCount > 0;
+  const normalizedStats = {
+    postCount: hasRealStats ? stats.postCount : mockUser.stats.posts,
+    followerCount: hasRealStats ? stats.followerCount : mockUser.stats.followers,
+    followingCount: hasRealStats ? stats.followingCount : mockUser.stats.following,
+    communityCount: hasRealStats ? stats.communityCount : (mockUser.stats.community || 0),
+  };
+
+  const displayPosts = userPosts.length > 0 ? userPosts : mockPosts;
 
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -179,12 +255,7 @@ export default function Profile() {
   const avatarY = useTransform(scrollY, [0, 300], [0, 15]);
 
   const handleFollow = () => {
-    setIsFollowing(!isFollowing);
-    setFollowerCount(prev => isFollowing ? prev - 1 : prev + 1);
-    
-    if (navigator.vibrate) {
-      navigator.vibrate(10);
-    }
+    toggleFollow();
   };
 
   const handleCreatePost = () => {
@@ -400,22 +471,22 @@ export default function Profile() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <CardStatItem count={mockUser.stats.posts} label="Posts" />
+              <CardStatItem count={normalizedStats.postCount} label="Posts" />
               <div className="w-px h-10 bg-border/50" />
               <CardStatItem 
-                count={followerCount} 
+                count={followerCount || normalizedStats.followerCount} 
                 label="Followers" 
                 onClick={() => openListModal('followers')}
               />
               <div className="w-px h-10 bg-border/50" />
               <CardStatItem 
-                count={mockUser.stats.following} 
+                count={normalizedStats.followingCount} 
                 label="Following" 
                 onClick={() => openListModal('following')}
               />
               <div className="w-px h-10 bg-border/50" />
               <CardStatItem 
-                count={mockUser.stats.community || 0} 
+                count={normalizedStats.communityCount} 
                 label="Community" 
                 onClick={() => openListModal('community')}
               />
