@@ -600,6 +600,7 @@ export type Database = {
       posts: {
         Row: {
           author_id: string
+          community_id: string | null
           content: string | null
           content_warning_enabled: boolean | null
           content_warning_type:
@@ -621,6 +622,7 @@ export type Database = {
         }
         Insert: {
           author_id: string
+          community_id?: string | null
           content?: string | null
           content_warning_enabled?: boolean | null
           content_warning_type?:
@@ -642,6 +644,7 @@ export type Database = {
         }
         Update: {
           author_id?: string
+          community_id?: string | null
           content?: string | null
           content_warning_enabled?: boolean | null
           content_warning_type?:
@@ -667,6 +670,13 @@ export type Database = {
             columns: ["author_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_community_id_fkey"
+            columns: ["community_id"]
+            isOneToOne: false
+            referencedRelation: "communities"
             referencedColumns: ["id"]
           },
         ]
@@ -1012,6 +1022,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_pathways: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          metadata: Json | null
+          pathway_type: string
+          started_at: string | null
+          status: Database["public"]["Enums"]["pathway_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          pathway_type: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["pathway_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          pathway_type?: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["pathway_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_profile_grid_order: {
         Row: {
           id: string
@@ -1091,6 +1137,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_support_links: {
+        Row: {
+          created_at: string
+          id: string
+          organization_name: string | null
+          provider_role: string
+          provider_user_id: string
+          status: Database["public"]["Enums"]["support_link_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          organization_name?: string | null
+          provider_role: string
+          provider_user_id: string
+          status?: Database["public"]["Enums"]["support_link_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          organization_name?: string | null
+          provider_role?: string
+          provider_user_id?: string
+          status?: Database["public"]["Enums"]["support_link_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       verification_requests: {
         Row: {
           account_type_requested: string | null
@@ -1161,8 +1240,10 @@ export type Database = {
       emotional_tone: "support" | "steady" | "inspiration" | "progress"
       follow_status: "requested" | "approved"
       moderation_status: "published" | "limited" | "removed"
+      pathway_status: "available" | "in_progress" | "completed"
       reaction_type: "heart" | "hug"
       report_status: "new" | "reviewing" | "actioned" | "dismissed"
+      support_link_status: "pending" | "active" | "inactive" | "ended"
       user_type: "individual" | "organization" | "professional"
       verification_status: "pending" | "approved" | "rejected"
     }
@@ -1297,8 +1378,10 @@ export const Constants = {
       emotional_tone: ["support", "steady", "inspiration", "progress"],
       follow_status: ["requested", "approved"],
       moderation_status: ["published", "limited", "removed"],
+      pathway_status: ["available", "in_progress", "completed"],
       reaction_type: ["heart", "hug"],
       report_status: ["new", "reviewing", "actioned", "dismissed"],
+      support_link_status: ["pending", "active", "inactive", "ended"],
       user_type: ["individual", "organization", "professional"],
       verification_status: ["pending", "approved", "rejected"],
     },

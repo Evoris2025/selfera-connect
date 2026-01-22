@@ -1,37 +1,34 @@
 import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Users, Plus, Search } from 'lucide-react';
+import { Users, Plus, Search, Lock, UserMinus, UserPlus } from 'lucide-react';
 import { AppLayout } from '@/components/AppLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/hooks/use-toast';
+import { useCommunityMembership, CommunityRole } from '@/hooks/useCommunityMembership';
+import { CommunityFeedView } from '@/components/community/CommunityFeedView';
 import { cn } from '@/lib/utils';
 
-interface Community {
+interface CommunityWithStatus {
   id: string;
   name: string;
   handle: string;
   description: string | null;
   avatar_url: string | null;
+  cover_url: string | null;
   member_count: number;
   follower_count: number;
-  isJoined?: boolean;
-  isFollowing?: boolean;
+  is_private: boolean;
+  created_by: string | null;
+  created_at: string;
+  isJoined: boolean;
+  isFollowing: boolean;
+  userRole?: CommunityRole;
 }
-
-// Mock communities for demo
-const mockCommunities: Community[] = [
-  { id: 'c1', name: 'Mental Health Support', handle: 'mh_support', description: 'A safe space for mental health discussions', avatar_url: null, member_count: 12500, follower_count: 45000, isJoined: true },
-  { id: 'c2', name: 'Anxiety Warriors', handle: 'anxiety_warriors', description: 'Supporting each other through anxiety', avatar_url: null, member_count: 8200, follower_count: 23000, isJoined: true },
-  { id: 'c3', name: 'Mindfulness Daily', handle: 'mindfulness_daily', description: 'Daily mindfulness practices and tips', avatar_url: null, member_count: 15600, follower_count: 67000, isFollowing: true },
-  { id: 'c4', name: 'Depression Support', handle: 'depression_support', description: 'You are not alone', avatar_url: null, member_count: 9800, follower_count: 34000, isFollowing: true },
-  { id: 'c5', name: 'Self-Care Club', handle: 'selfcare_club', description: 'Tips and motivation for self-care', avatar_url: null, member_count: 20100, follower_count: 89000 },
-  { id: 'c6', name: 'Therapy Talk', handle: 'therapy_talk', description: 'Discussions about therapy experiences', avatar_url: null, member_count: 5400, follower_count: 18000 },
-];
 
 function formatCount(count: number): string {
   if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`;
@@ -39,16 +36,27 @@ function formatCount(count: number): string {
   return count.toString();
 }
 
-function CommunityCard({ community, onJoin, onFollow }: { 
-  community: Community; 
+function CommunityCard({ 
+  community, 
+  onJoin, 
+  onLeave,
+  onFollow,
+  onUnfollow,
+  onOpen,
+}: { 
+  community: CommunityWithStatus; 
   onJoin: (id: string) => void;
+  onLeave: (id: string) => void;
   onFollow: (id: string) => void;
+  onUnfollow: (id: string) => void;
+  onOpen: (community: CommunityWithStatus) => void;
 }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex items-center gap-3 p-4 bg-card border border-border rounded-xl"
+      className="flex items-center gap-3 p-4 bg-card border border-border rounded-xl cursor-pointer hover:bg-accent/50 transition-colors"
+      onClick={() => community.isJoined && onOpen(community)}
     >
       <Avatar className="h-14 w-14">
         <AvatarImage src={community.avatar_url || ''} />
@@ -58,22 +66,47 @@ function CommunityCard({ community, onJoin, onFollow }: {
       </Avatar>
       
       <div className="flex-1 min-w-0">
-        <h3 className="font-semibold text-foreground truncate">{community.name}</h3>
+        <div className="flex items-center gap-1.5">
+          <h3 className="font-semibold text-foreground truncate">{community.name}</h3>
+          {community.is_private && <Lock className="h-3.5 w-3.5 text-muted-foreground" />}
+        </div>
         <p className="text-sm text-muted-foreground truncate">@{community.handle}</p>
         <p className="text-xs text-muted-foreground mt-0.5">
           {formatCount(community.member_count)} members · {formatCount(community.follower_count)} followers
         </p>
       </div>
       
-      <div className="flex gap-2">
+      <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
         {community.isJoined ? (
-          <Button variant="outline" size="sm" className="text-xs">
-            Joined
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="text-xs gap-1"
+            onClick={() => onLeave(community.id)}
+          >
+            <UserMinus className="h-3.5 w-3.5" />
+            Leave
           </Button>
         ) : community.isFollowing ? (
-          <Button variant="outline" size="sm" className="text-xs">
-            Following
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="text-xs"
+              onClick={() => onUnfollow(community.id)}
+            >
+              Unfollow
+            </Button>
+            <Button 
+              variant="default" 
+              size="sm" 
+              className="text-xs gap-1"
+              onClick={() => onJoin(community.id)}
+            >
+              <UserPlus className="h-3.5 w-3.5" />
+              Join
+            </Button>
+          </div>
         ) : (
           <>
             <Button 
@@ -87,9 +120,10 @@ function CommunityCard({ community, onJoin, onFollow }: {
             <Button 
               variant="default" 
               size="sm" 
-              className="text-xs"
+              className="text-xs gap-1"
               onClick={() => onJoin(community.id)}
             >
+              <UserPlus className="h-3.5 w-3.5" />
               Join
             </Button>
           </>
@@ -99,32 +133,63 @@ function CommunityCard({ community, onJoin, onFollow }: {
   );
 }
 
+// Mock communities for demo when no real data exists
+const mockCommunities: CommunityWithStatus[] = [
+  { id: 'c1', name: 'Mental Health Support', handle: 'mh_support', description: 'A safe space for mental health discussions', avatar_url: null, cover_url: null, member_count: 12500, follower_count: 45000, is_private: false, created_by: null, created_at: new Date().toISOString(), isJoined: false, isFollowing: false },
+  { id: 'c2', name: 'Anxiety Warriors', handle: 'anxiety_warriors', description: 'Supporting each other through anxiety', avatar_url: null, cover_url: null, member_count: 8200, follower_count: 23000, is_private: false, created_by: null, created_at: new Date().toISOString(), isJoined: false, isFollowing: false },
+  { id: 'c3', name: 'Mindfulness Daily', handle: 'mindfulness_daily', description: 'Daily mindfulness practices and tips', avatar_url: null, cover_url: null, member_count: 15600, follower_count: 67000, is_private: false, created_by: null, created_at: new Date().toISOString(), isJoined: false, isFollowing: false },
+  { id: 'c4', name: 'Depression Support', handle: 'depression_support', description: 'You are not alone', avatar_url: null, cover_url: null, member_count: 9800, follower_count: 34000, is_private: false, created_by: null, created_at: new Date().toISOString(), isJoined: false, isFollowing: false },
+  { id: 'c5', name: 'Self-Care Club', handle: 'selfcare_club', description: 'Tips and motivation for self-care', avatar_url: null, cover_url: null, member_count: 20100, follower_count: 89000, is_private: false, created_by: null, created_at: new Date().toISOString(), isJoined: false, isFollowing: false },
+  { id: 'c6', name: 'Therapy Talk', handle: 'therapy_talk', description: 'Discussions about therapy experiences', avatar_url: null, cover_url: null, member_count: 5400, follower_count: 18000, is_private: true, created_by: null, created_at: new Date().toISOString(), isJoined: false, isFollowing: false },
+];
+
 export default function Community() {
+  const { communityId } = useParams();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('joined');
-  const [communities, setCommunities] = useState<Community[]>(mockCommunities);
   const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [selectedCommunity, setSelectedCommunity] = useState<CommunityWithStatus | null>(null);
+  
+  const {
+    communities: dbCommunities,
+    loading,
+    joinCommunity,
+    leaveCommunity,
+    followCommunity,
+    unfollowCommunity,
+    joinedCommunities: dbJoined,
+    followingCommunities: dbFollowing,
+    suggestedCommunities: dbSuggested,
+  } = useCommunityMembership();
 
-  const joinedCommunities = communities.filter(c => c.isJoined);
-  const followingCommunities = communities.filter(c => c.isFollowing && !c.isJoined);
-  const suggestedCommunities = communities.filter(c => !c.isJoined && !c.isFollowing);
+  // Use DB communities if available, otherwise use mock
+  const allCommunities = dbCommunities.length > 0 ? dbCommunities : mockCommunities;
+  const joinedCommunities = dbCommunities.length > 0 ? dbJoined : [];
+  const followingCommunities = dbCommunities.length > 0 ? dbFollowing : [];
+  const suggestedCommunities = dbCommunities.length > 0 ? dbSuggested : mockCommunities;
 
-  const handleJoin = (communityId: string) => {
-    setCommunities(prev => 
-      prev.map(c => c.id === communityId ? { ...c, isJoined: true, member_count: c.member_count + 1 } : c)
-    );
-    toast({ title: 'Joined community!' });
+  // Handle community selection from URL
+  useEffect(() => {
+    if (communityId && allCommunities.length > 0) {
+      const community = allCommunities.find(c => c.id === communityId);
+      if (community && community.isJoined) {
+        setSelectedCommunity(community);
+      }
+    }
+  }, [communityId, allCommunities]);
+
+  const handleOpenCommunity = (community: CommunityWithStatus) => {
+    setSelectedCommunity(community);
+    navigate(`/community/${community.id}`);
   };
 
-  const handleFollow = (communityId: string) => {
-    setCommunities(prev => 
-      prev.map(c => c.id === communityId ? { ...c, isFollowing: true, follower_count: c.follower_count + 1 } : c)
-    );
-    toast({ title: 'Following community!' });
+  const handleBackFromFeed = () => {
+    setSelectedCommunity(null);
+    navigate('/community');
   };
 
-  const filteredCommunities = (list: Community[]) => {
+  const filteredCommunities = (list: CommunityWithStatus[]) => {
     if (!searchQuery) return list;
     const query = searchQuery.toLowerCase();
     return list.filter(c => 
@@ -133,14 +198,26 @@ export default function Community() {
     );
   };
 
+  // Show community feed if selected
+  if (selectedCommunity) {
+    return (
+      <AppLayout showHeader={false}>
+        <CommunityFeedView 
+          community={selectedCommunity} 
+          onBack={handleBackFromFeed} 
+        />
+      </AppLayout>
+    );
+  }
+
   return (
     <AppLayout>
       <div className="flex flex-col min-h-full">
         {/* Header */}
         <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border px-4 py-3">
           <div className="flex items-center justify-between mb-3">
-            <h1 className="text-xl font-bold text-foreground">Community</h1>
-            <Button size="sm" className="gap-1">
+            <h1 className="text-xl font-bold text-foreground">Communities</h1>
+            <Button size="sm" className="gap-1" disabled>
               <Plus className="h-4 w-4" />
               Create
             </Button>
@@ -182,7 +259,11 @@ export default function Community() {
           </TabsList>
 
           <TabsContent value="joined" className="mt-0 p-4 space-y-3">
-            {filteredCommunities(joinedCommunities).length === 0 ? (
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="h-6 w-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : filteredCommunities(joinedCommunities).length === 0 ? (
               <div className="text-center py-12 text-muted-foreground">
                 <Users className="h-12 w-12 mx-auto mb-3 opacity-50" />
                 <p>No communities joined yet</p>
@@ -198,8 +279,11 @@ export default function Community() {
                 >
                   <CommunityCard 
                     community={community} 
-                    onJoin={handleJoin}
-                    onFollow={handleFollow}
+                    onJoin={joinCommunity}
+                    onLeave={leaveCommunity}
+                    onFollow={followCommunity}
+                    onUnfollow={unfollowCommunity}
+                    onOpen={handleOpenCommunity}
                   />
                 </motion.div>
               ))
@@ -207,7 +291,11 @@ export default function Community() {
           </TabsContent>
 
           <TabsContent value="following" className="mt-0 p-4 space-y-3">
-            {filteredCommunities(followingCommunities).length === 0 ? (
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="h-6 w-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : filteredCommunities(followingCommunities).length === 0 ? (
               <div className="text-center py-12 text-muted-foreground">
                 <Users className="h-12 w-12 mx-auto mb-3 opacity-50" />
                 <p>Not following any communities</p>
@@ -222,8 +310,11 @@ export default function Community() {
                 >
                   <CommunityCard 
                     community={community} 
-                    onJoin={handleJoin}
-                    onFollow={handleFollow}
+                    onJoin={joinCommunity}
+                    onLeave={leaveCommunity}
+                    onFollow={followCommunity}
+                    onUnfollow={unfollowCommunity}
+                    onOpen={handleOpenCommunity}
                   />
                 </motion.div>
               ))
@@ -231,20 +322,29 @@ export default function Community() {
           </TabsContent>
 
           <TabsContent value="suggested" className="mt-0 p-4 space-y-3">
-            {filteredCommunities(suggestedCommunities).map((community, i) => (
-              <motion.div
-                key={community.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
-              >
-                <CommunityCard 
-                  community={community} 
-                  onJoin={handleJoin}
-                  onFollow={handleFollow}
-                />
-              </motion.div>
-            ))}
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="h-6 w-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : (
+              filteredCommunities(suggestedCommunities).map((community, i) => (
+                <motion.div
+                  key={community.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                >
+                  <CommunityCard 
+                    community={community} 
+                    onJoin={joinCommunity}
+                    onLeave={leaveCommunity}
+                    onFollow={followCommunity}
+                    onUnfollow={unfollowCommunity}
+                    onOpen={handleOpenCommunity}
+                  />
+                </motion.div>
+              ))
+            )}
           </TabsContent>
         </Tabs>
       </div>
