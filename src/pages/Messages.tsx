@@ -675,7 +675,7 @@ export default function Messages() {
       </motion.div>
 
       {/* Conversations */}
-      <div className="flex-1 overflow-y-auto pb-24">
+      <div className="flex-1 overflow-y-auto pb-nav-safe">
         {isLoading ? (
           Array.from({ length: 5 }).map((_, i) => <ConversationSkeleton key={`skeleton-${i}`} />)
         ) : filteredConversations.length === 0 ? (

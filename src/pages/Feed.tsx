@@ -62,7 +62,7 @@ export default function Feed() {
     <AppLayout onCreatePost={handleCreatePost} title="The Feed">
       <PullToRefresh 
         onRefresh={refresh} 
-        className="flex flex-col bg-cinematic min-h-screen"
+        className="flex flex-col bg-cinematic min-h-dvh"
         disabled={loading || refreshing}
       >
         {/* Composer Bar */}

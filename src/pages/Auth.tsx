@@ -125,7 +125,7 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-dvh bg-background flex">
       {/* Left Panel - Form */}
       <div className="flex-1 flex flex-col p-6 md:p-12">
         <div className="flex items-center justify-between mb-12">

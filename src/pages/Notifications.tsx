@@ -378,7 +378,7 @@ export default function Notifications() {
       </motion.div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto pb-nav-safe">
         {isLoading ? (
           <div>{Array.from({ length: 6 }).map((_, i) => <NotificationSkeleton key={`skeleton-${i}`} />)}</div>
         ) : !hasNotifications || allRead ? (

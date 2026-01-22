@@ -307,7 +307,7 @@ export default function Profile() {
 
   return (
     <AppLayout showHeader={false} onCreatePost={handleCreatePost}>
-      <div className="flex flex-col min-h-screen relative">
+      <div className="flex flex-col min-h-dvh relative">
         
         {/* ========== FULL-WIDTH PROFILE HERO ========== */}
         <motion.section

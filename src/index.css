@@ -188,12 +188,17 @@
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Support for dynamic viewport height */
+    height: 100%;
   }
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'DM Sans', 'Instrument Sans', 'Inter', system-ui, sans-serif;
     letter-spacing: -0.01em;
+    /* Use dynamic viewport height for mobile browsers */
+    min-height: 100dvh;
+    min-height: -webkit-fill-available;
   }
 
   /* RTL Support */
@@ -205,13 +210,92 @@
     transform: scaleX(-1);
   }
 
-  /* Safe area padding for iOS */
+  /* Safe area padding for iOS - Enhanced */
   .pb-safe {
     padding-bottom: max(env(safe-area-inset-bottom), 0px);
   }
 
   .pt-safe {
     padding-top: max(env(safe-area-inset-top), 0px);
+  }
+
+  .pl-safe {
+    padding-left: max(env(safe-area-inset-left), 0px);
+  }
+
+  .pr-safe {
+    padding-right: max(env(safe-area-inset-right), 0px);
+  }
+
+  .px-safe {
+    padding-left: max(env(safe-area-inset-left), 0px);
+    padding-right: max(env(safe-area-inset-right), 0px);
+  }
+
+  .py-safe {
+    padding-top: max(env(safe-area-inset-top), 0px);
+    padding-bottom: max(env(safe-area-inset-bottom), 0px);
+  }
+
+  /* Margin safe area utilities */
+  .mb-safe {
+    margin-bottom: max(env(safe-area-inset-bottom), 0px);
+  }
+
+  .mt-safe {
+    margin-top: max(env(safe-area-inset-top), 0px);
+  }
+
+  /* Dynamic viewport height utilities */
+  .h-dvh {
+    height: 100dvh;
+    height: -webkit-fill-available;
+  }
+
+  .min-h-dvh {
+    min-height: 100dvh;
+    min-height: -webkit-fill-available;
+  }
+
+  .max-h-dvh {
+    max-height: 100dvh;
+    max-height: -webkit-fill-available;
+  }
+
+  /* Small viewport height (always full, ignoring browser UI) */
+  .h-svh {
+    height: 100svh;
+  }
+
+  .min-h-svh {
+    min-height: 100svh;
+  }
+
+  /* Large viewport height (never changes with browser UI) */
+  .h-lvh {
+    height: 100lvh;
+  }
+
+  .min-h-lvh {
+    min-height: 100lvh;
+  }
+
+  /* Safe content area - accounts for both top and bottom safe areas */
+  .h-safe-content {
+    height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  }
+
+  .min-h-safe-content {
+    min-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  }
+
+  /* Bottom nav safe spacing - for content above bottom nav */
+  .pb-nav-safe {
+    padding-bottom: calc(4.5rem + max(env(safe-area-inset-bottom), 0px));
+  }
+
+  .mb-nav-safe {
+    margin-bottom: calc(4.5rem + max(env(safe-area-inset-bottom), 0px));
   }
 }
 
