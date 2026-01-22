@@ -79,7 +79,7 @@ export default function CrisisSupport() {
   const countryData = crisisResources[selectedCountry as keyof typeof crisisResources];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
         <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
