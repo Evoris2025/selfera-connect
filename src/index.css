@@ -188,8 +188,13 @@
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Prevent browser text size inflation */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
     /* Support for dynamic viewport height */
     height: 100%;
+    /* App frame max width - matches Android common viewport */
+    --app-max-width: 360px;
   }
 
   body {
