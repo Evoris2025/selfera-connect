@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCommunityMembership, CommunityRole } from '@/hooks/useCommunityMembership';
 import { CommunityFeedView } from '@/components/community/CommunityFeedView';
+import { CreateCommunityModal } from '@/components/community/CreateCommunityModal';
 import { cn } from '@/lib/utils';
 
 interface CommunityWithStatus {
@@ -150,6 +151,7 @@ export default function Community() {
   const [activeTab, setActiveTab] = useState('joined');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCommunity, setSelectedCommunity] = useState<CommunityWithStatus | null>(null);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
   
   const {
     communities: dbCommunities,
@@ -161,6 +163,7 @@ export default function Community() {
     joinedCommunities: dbJoined,
     followingCommunities: dbFollowing,
     suggestedCommunities: dbSuggested,
+    refresh,
   } = useCommunityMembership();
 
   // Use DB communities if available, otherwise use mock
@@ -217,7 +220,7 @@ export default function Community() {
         <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border px-4 py-3">
           <div className="flex items-center justify-between mb-3">
             <h1 className="text-xl font-bold text-foreground">Communities</h1>
-            <Button size="sm" className="gap-1" disabled>
+            <Button size="sm" className="gap-1" onClick={() => setCreateModalOpen(true)}>
               <Plus className="h-4 w-4" />
               Create
             </Button>
@@ -347,6 +350,13 @@ export default function Community() {
             )}
           </TabsContent>
         </Tabs>
+
+        {/* Create Community Modal */}
+        <CreateCommunityModal 
+          open={createModalOpen} 
+          onOpenChange={setCreateModalOpen}
+          onSuccess={refresh}
+        />
       </div>
     </AppLayout>
   );
