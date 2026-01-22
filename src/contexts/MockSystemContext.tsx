@@ -437,7 +437,7 @@ interface MockSystemContextType {
   getUnreadNotificationCount: () => number;
   
   // Message actions
-  sendMessage: (conversationId: string, content: string) => void;
+  sendMessage: (conversationId: string, content: string, imageUrl?: string) => void;
   getConversation: (conversationId: string) => MockConversation | undefined;
   getUnreadMessageCount: () => number;
   markConversationRead: (conversationId: string) => void;
@@ -787,7 +787,7 @@ export function MockSystemProvider({ children }: { children: ReactNode }) {
   // MESSAGE ACTIONS
   // -------------------------------------------------------------------------
 
-  const sendMessage = useCallback((conversationId: string, content: string) => {
+  const sendMessage = useCallback((conversationId: string, content: string, imageUrl?: string) => {
     const newMessage: MockMessage = {
       id: `msg-${Date.now()}`,
       conversationId,
@@ -795,7 +795,8 @@ export function MockSystemProvider({ children }: { children: ReactNode }) {
       senderId: 'me',
       timestamp: 'Just now',
       read: false,
-      type: 'text',
+      type: imageUrl ? 'image' : 'text',
+      imageUrl,
       createdAt: new Date(),
     };
 
@@ -806,7 +807,7 @@ export function MockSystemProvider({ children }: { children: ReactNode }) {
           ? {
               ...conv,
               messages: [...conv.messages, newMessage],
-              lastMessage: content,
+              lastMessage: imageUrl ? '📷 Photo' : content,
               lastMessageTime: 'Just now',
             }
           : conv

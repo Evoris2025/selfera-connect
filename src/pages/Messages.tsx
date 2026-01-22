@@ -1,11 +1,11 @@
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   Search, 
   Edit, 
   ArrowLeft, 
   Send, 
-  Image, 
+  Image as ImageIcon, 
   CheckCheck, 
   ChevronDown,
   Plus,
@@ -27,9 +27,12 @@ import { useSafety } from '@/contexts/SafetyContext';
 import { useRealtimeMessages } from '@/hooks/useRealtimeMessages';
 import { useMessageReactions } from '@/hooks/useMessageReactions';
 import { useNewConversation } from '@/hooks/useNewConversation';
+import { useMessageImageUpload } from '@/hooks/useMessageImageUpload';
 import { NewConversationModal } from '@/components/messages/NewConversationModal';
 import { ReactionPicker, MessageReactions } from '@/components/messages/MessageReactions';
 import { ReadReceipt } from '@/components/messages/ReadReceipt';
+import { ImagePreviewBar } from '@/components/messages/ImagePreviewBar';
+import { ImageMessage } from '@/components/messages/ImageMessage';
 
 // Dopamine-driven spring configs
 const springSnap = { type: 'spring' as const, stiffness: 700, damping: 30, mass: 0.8 };
@@ -115,7 +118,7 @@ function MessageBubble({
   isLastMessage,
   isRead,
 }: {
-  message: MockMessage;
+  message: MockMessage & { imageUrl?: string };
   isOwnMessage: boolean;
   reactions: { emoji: string; count: number; userReacted: boolean }[];
   onReact: (emoji: string) => void;
@@ -141,30 +144,59 @@ function MessageBubble({
     onReact('❤️');
   };
 
+  // Check if this is an image message
+  const hasImage = !!message.imageUrl;
+  const hasText = !!message.content?.trim();
+
   return (
     <div className={cn('relative', isOwnMessage ? 'flex flex-col items-end' : 'flex flex-col items-start')}>
-      <motion.div
-        onDoubleClick={handleDoubleClick}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-        onTouchCancel={handleTouchEnd}
-        whileTap={{ scale: 0.98 }}
-        className={cn(
-          'max-w-[78%] px-4 py-3 shadow-sm relative',
-          isOwnMessage
-            ? 'bg-primary text-primary-foreground rounded-[22px] rounded-br-md'
-            : 'bg-secondary/80 text-foreground rounded-[22px] rounded-bl-md'
-        )}
-      >
-        <p className="text-[15px] leading-relaxed">{message.content}</p>
-        
-        <ReactionPicker
-          isOpen={showPicker}
-          onSelect={onReact}
-          onClose={() => setShowPicker(false)}
-          position={isOwnMessage ? 'right' : 'left'}
-        />
-      </motion.div>
+      {/* Image message */}
+      {hasImage && (
+        <motion.div
+          onDoubleClick={handleDoubleClick}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          onTouchCancel={handleTouchEnd}
+        >
+          <ImageMessage 
+            imageUrl={message.imageUrl!} 
+            isOwnMessage={isOwnMessage}
+            caption={hasText ? message.content : undefined}
+          />
+          <ReactionPicker
+            isOpen={showPicker}
+            onSelect={onReact}
+            onClose={() => setShowPicker(false)}
+            position={isOwnMessage ? 'right' : 'left'}
+          />
+        </motion.div>
+      )}
+
+      {/* Text-only message */}
+      {!hasImage && hasText && (
+        <motion.div
+          onDoubleClick={handleDoubleClick}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          onTouchCancel={handleTouchEnd}
+          whileTap={{ scale: 0.98 }}
+          className={cn(
+            'max-w-[78%] px-4 py-3 shadow-sm relative',
+            isOwnMessage
+              ? 'bg-primary text-primary-foreground rounded-[22px] rounded-br-md'
+              : 'bg-secondary/80 text-foreground rounded-[22px] rounded-bl-md'
+          )}
+        >
+          <p className="text-[15px] leading-relaxed">{message.content}</p>
+          
+          <ReactionPicker
+            isOpen={showPicker}
+            onSelect={onReact}
+            onClose={() => setShowPicker(false)}
+            position={isOwnMessage ? 'right' : 'left'}
+          />
+        </motion.div>
+      )}
       
       {/* Reactions display */}
       {reactions.length > 0 && (
@@ -216,6 +248,14 @@ export default function Messages() {
   const { shouldHideUser } = useSafety();
   const { typingUsers, setTyping, onlineUsers } = useRealtimeMessages();
   const { startConversation } = useNewConversation();
+  const { 
+    isUploading, 
+    uploadProgress, 
+    pendingImage, 
+    selectImage, 
+    clearPendingImage, 
+    uploadImage 
+  } = useMessageImageUpload();
   const [selectedConversation, setSelectedConversation] = useState<MockConversation | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [newMessage, setNewMessage] = useState('');
@@ -226,6 +266,7 @@ export default function Messages() {
   const [readMessages, setReadMessages] = useState<Set<string>>(new Set());
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const requestCount = 2;
   
@@ -266,12 +307,27 @@ export default function Messages() {
       conv.participant.handle.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleSendMessage = () => {
-    if (!newMessage.trim() || !selectedConversation) return;
+  const handleSendMessage = async () => {
+    if ((!newMessage.trim() && !pendingImage) || !selectedConversation) return;
     
     setIsSending(true);
     setTyping(false); // Clear typing indicator
-    sendMockMessage(selectedConversation.id, newMessage);
+
+    let imageUrl: string | undefined;
+
+    // Upload image if pending
+    if (pendingImage) {
+      const uploadedUrl = await uploadImage();
+      if (uploadedUrl) {
+        imageUrl = uploadedUrl;
+      }
+    }
+
+    // Send message (with optional image URL)
+    // For now, using mock system - will add imageUrl to real implementation
+    if (newMessage.trim() || imageUrl) {
+      sendMockMessage(selectedConversation.id, newMessage || '📷 Photo', imageUrl);
+    }
     setNewMessage('');
     
     // Simulate read receipt after sending
@@ -287,6 +343,21 @@ export default function Messages() {
       }, 2000);
     }, 100);
   };
+
+  const handleImageSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      selectImage(file);
+    }
+    // Reset input so same file can be selected again
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  }, [selectImage]);
+
+  const triggerImagePicker = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
 
   const handleSelectConversation = (conv: MockConversation) => {
     setSelectedConversation(conv);
@@ -470,6 +541,27 @@ export default function Messages() {
           <div ref={messagesEndRef} />
         </div>
 
+        {/* Hidden file input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/gif,image/webp"
+          onChange={handleImageSelect}
+          className="hidden"
+        />
+
+        {/* Image Preview */}
+        <AnimatePresence>
+          {pendingImage && (
+            <ImagePreviewBar
+              preview={pendingImage.preview}
+              isUploading={isUploading}
+              uploadProgress={uploadProgress}
+              onRemove={clearPendingImage}
+            />
+          )}
+        </AnimatePresence>
+
         {/* Input */}
         <motion.div 
           initial={{ y: 20, opacity: 0 }}
@@ -479,7 +571,13 @@ export default function Messages() {
         >
           <div className="flex items-center gap-2 bg-secondary/60 rounded-full px-2 py-1.5 ring-1 ring-border/30">
             <motion.div whileTap={{ scale: 0.8 }} transition={springSnap}>
-              <Button variant="ghost" size="icon" className="shrink-0 h-9 w-9 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="shrink-0 h-9 w-9 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary"
+                onClick={triggerImagePicker}
+                disabled={isUploading}
+              >
                 <Camera className="h-5 w-5" />
               </Button>
             </motion.div>
@@ -491,7 +589,7 @@ export default function Messages() {
               onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
             />
             <AnimatePresence mode="popLayout">
-              {newMessage.trim() ? (
+              {(newMessage.trim() || pendingImage) ? (
                 <motion.div
                   key="send"
                   initial={{ opacity: 0, scale: 0, rotate: -180 }}
@@ -504,6 +602,7 @@ export default function Messages() {
                       size="icon"
                       className="shrink-0 h-9 w-9 rounded-full"
                       onClick={handleSendMessage}
+                      disabled={isSending || isUploading}
                     >
                       <Send className="h-4 w-4" />
                     </Button>
@@ -518,8 +617,13 @@ export default function Messages() {
                   transition={springPop}
                 >
                   <motion.div whileTap={{ scale: 0.8 }} transition={springSnap}>
-                    <Button variant="ghost" size="icon" className="shrink-0 h-9 w-9 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary">
-                      <Image className="h-5 w-5" />
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="shrink-0 h-9 w-9 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary"
+                      onClick={triggerImagePicker}
+                    >
+                      <ImageIcon className="h-5 w-5" />
                     </Button>
                   </motion.div>
                 </motion.div>
