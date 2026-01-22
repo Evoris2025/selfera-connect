@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Palette, Globe, Eye, Bell, Lock, User, HelpCircle, BadgeCheck, Shield, ShieldOff, VolumeX, UserPlus } from 'lucide-react';
+import { Palette, Globe, Eye, Bell, Lock, User, HelpCircle, BadgeCheck, Shield, ShieldOff, VolumeX, UserPlus, CreditCard } from 'lucide-react';
 import { AppLayout } from '@/components/AppLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
@@ -16,9 +16,11 @@ import { MutedUsersList } from '@/components/settings/MutedUsersList';
 import { FollowRequestsModal } from '@/components/settings/FollowRequestsModal';
 import { AdminVerificationQueue } from '@/components/admin/AdminVerificationQueue';
 import { AdminModerationQueue } from '@/components/admin/AdminModerationQueue';
+import { PricingSection } from '@/components/pricing';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSafety } from '@/contexts/SafetyContext';
 import { useFollowRequests } from '@/hooks/useFollowRequests';
+import { useSubscription } from '@/hooks/useSubscription';
 import { supabase } from '@/integrations/supabase/client';
 import {
   Select,
@@ -28,7 +30,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-type SettingsView = 'main' | 'verification' | 'blocked' | 'muted' | 'admin-verification' | 'admin-moderation';
+type SettingsView = 'main' | 'verification' | 'blocked' | 'muted' | 'admin-verification' | 'admin-moderation' | 'billing';
 
 export default function Settings() {
   const { t } = useTranslation();
@@ -36,6 +38,7 @@ export default function Settings() {
   const { user, signOut } = useAuth();
   const { blockedUserIds, mutedUserIds } = useSafety();
   const { pendingCount } = useFollowRequests();
+  const { currentPlan } = useSubscription();
   const currentLang = getCurrentLanguage();
   
   // Initialize view from URL query param
@@ -156,6 +159,20 @@ export default function Settings() {
       <AppLayout>
         <div className="max-w-2xl mx-auto p-4">
           <AdminModerationQueue onBack={() => handleViewChange('main')} />
+        </div>
+      </AppLayout>
+    );
+  }
+
+  // Billing & subscription view
+  if (view === 'billing') {
+    return (
+      <AppLayout>
+        <div className="max-w-5xl mx-auto p-4">
+          <Button variant="ghost" onClick={() => handleViewChange('main')} className="gap-2 -ml-2 mb-4">
+            ← Back to Settings
+          </Button>
+          <PricingSection showTransparency={true} />
         </div>
       </AppLayout>
     );
@@ -324,6 +341,29 @@ export default function Settings() {
                     {mutedUserIds.size}
                   </Badge>
                 )}
+              </div>
+            </CardHeader>
+          </Card>
+
+          {/* Plan & Billing */}
+          <Card 
+            className="cursor-pointer hover:border-primary/30 transition-colors"
+            onClick={() => handleViewChange('billing')}
+          >
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <CreditCard className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-base">Plan & Billing</CardTitle>
+                    <CardDescription>Manage your subscription and view plans</CardDescription>
+                  </div>
+                </div>
+                <Badge variant="secondary" className="capitalize">
+                  {currentPlan}
+                </Badge>
               </div>
             </CardHeader>
           </Card>

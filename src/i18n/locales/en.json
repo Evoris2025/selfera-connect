@@ -253,5 +253,45 @@
     "recovery": "Recovery",
     "support": "Support",
     "awareness": "Awareness"
+  },
+  "pricing": {
+    "title": "Choose your path",
+    "subtitle": "Core social features are free forever. Upgrade for professional tools.",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "savePercent": "Save up to 26%",
+    "currentPlan": "Current plan",
+    "comingSoon": "Coming soon",
+    "upgrade": "Upgrade",
+    "viewPlans": "View plans",
+    "manage": "Manage",
+    "freeForever": "Forever free",
+    "renewsOn": "Renews",
+    "plans": {
+      "free": {
+        "name": "Free",
+        "description": "Full social access, forever free"
+      },
+      "creator": {
+        "name": "Creator",
+        "description": "For wellbeing content creators"
+      },
+      "professional": {
+        "name": "Professional",
+        "description": "For individual practitioners"
+      },
+      "organization": {
+        "name": "Organisation",
+        "description": "For clinics & wellbeing services"
+      }
+    },
+    "transparency": {
+      "title": "Our commitment to you",
+      "subtitle": "Transparency in everything we do",
+      "freeForever": "What's free forever",
+      "neverSell": "What SelfERA does NOT sell",
+      "revenueSupport": "How revenue supports SelfERA",
+      "providerEthics": "Provider connection ethics"
+    }
   }
 }

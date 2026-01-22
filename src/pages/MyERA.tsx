@@ -28,6 +28,7 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
 import { AccountTypeBadge, AccountType } from '@/components/AccountTypeBadge';
 import { MobileNav } from '@/components/MobileNav';
+import { CurrentPlanCard } from '@/components/pricing';
 import { supabase } from '@/integrations/supabase/client';
 
 const springGentle = { type: "spring" as const, stiffness: 200, damping: 25 };
@@ -391,53 +392,7 @@ export default function MyERA() {
           <h2 className="text-base font-semibold text-foreground">Plan & Billing</h2>
         </div>
 
-        <motion.div
-          className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-primary/10 via-accent/10 to-secondary/10 backdrop-blur-sm"
-          whileHover={{ scale: 1.01 }}
-          whileTap={{ scale: 0.99 }}
-        >
-          {/* Gradient accent bar */}
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500" />
-          
-          <div className="p-5">
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 border border-white/10">
-                  <Sparkles className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-base font-semibold text-foreground">Free Plan</h3>
-                    <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-[10px] px-1.5">
-                      Active
-                    </Badge>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Basic access to SelfERA features
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-4 pt-4 border-t border-white/5">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">Current period</p>
-                  <p className="text-sm text-foreground">Forever free</p>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="rounded-xl border-white/10 hover:bg-white/5"
-                  onClick={() => navigate('/settings?view=billing')}
-                >
-                  Upgrade
-                  <ChevronRight className="w-4 h-4 ml-1" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </motion.div>
+        <CurrentPlanCard />
       </motion.section>
 
       {/* About Footer */}

@@ -1137,6 +1137,48 @@ export type Database = {
         }
         Relationships: []
       }
+      user_subscriptions: {
+        Row: {
+          billing_period: Database["public"]["Enums"]["billing_period"] | null
+          created_at: string
+          current_period_end: string | null
+          current_period_start: string | null
+          id: string
+          plan: Database["public"]["Enums"]["subscription_plan"]
+          status: Database["public"]["Enums"]["subscription_status"]
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          billing_period?: Database["public"]["Enums"]["billing_period"] | null
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          plan?: Database["public"]["Enums"]["subscription_plan"]
+          status?: Database["public"]["Enums"]["subscription_status"]
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          billing_period?: Database["public"]["Enums"]["billing_period"] | null
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          plan?: Database["public"]["Enums"]["subscription_plan"]
+          status?: Database["public"]["Enums"]["subscription_status"]
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_support_links: {
         Row: {
           created_at: string
@@ -1236,6 +1278,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      billing_period: "monthly" | "yearly"
       content_warning_type: "sensitive" | "triggering" | "graphic" | "other"
       emotional_tone: "support" | "steady" | "inspiration" | "progress"
       follow_status: "requested" | "approved"
@@ -1243,6 +1286,8 @@ export type Database = {
       pathway_status: "available" | "in_progress" | "completed"
       reaction_type: "heart" | "hug"
       report_status: "new" | "reviewing" | "actioned" | "dismissed"
+      subscription_plan: "free" | "creator" | "professional" | "organization"
+      subscription_status: "active" | "canceled" | "past_due" | "trialing"
       support_link_status: "pending" | "active" | "inactive" | "ended"
       user_type: "individual" | "organization" | "professional"
       verification_status: "pending" | "approved" | "rejected"
@@ -1374,6 +1419,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      billing_period: ["monthly", "yearly"],
       content_warning_type: ["sensitive", "triggering", "graphic", "other"],
       emotional_tone: ["support", "steady", "inspiration", "progress"],
       follow_status: ["requested", "approved"],
@@ -1381,6 +1427,8 @@ export const Constants = {
       pathway_status: ["available", "in_progress", "completed"],
       reaction_type: ["heart", "hug"],
       report_status: ["new", "reviewing", "actioned", "dismissed"],
+      subscription_plan: ["free", "creator", "professional", "organization"],
+      subscription_status: ["active", "canceled", "past_due", "trialing"],
       support_link_status: ["pending", "active", "inactive", "ended"],
       user_type: ["individual", "organization", "professional"],
       verification_status: ["pending", "approved", "rejected"],
