@@ -1,4 +1,3 @@
-import { Modern } from 'react-fluentui-emoji';
 import type { ReactionType } from '@/components/feed/ReactionPicker';
 
 interface FluentEmojiProps {
@@ -7,16 +6,17 @@ interface FluentEmojiProps {
   className?: string;
 }
 
-const emojiMap = {
-  like: Modern.IconMRedHeart,
-  relatable: Modern.IconMHandshake,
-  inspiring: Modern.IconMSparkles,
-  support: Modern.IconMPeopleHugging,
-  curious: Modern.IconMThinkingFace,
-} as const;
+// Native emoji map - lightweight, no external dependencies
+const emojiMap: Record<ReactionType, string> = {
+  like: '❤️',
+  relatable: '🤝',
+  inspiring: '✨',
+  support: '🤗',
+  curious: '🤔',
+};
 
 export function FluentEmoji({ type, size = 28, className }: FluentEmojiProps) {
-  const EmojiComponent = emojiMap[type];
+  const emoji = emojiMap[type];
   
   return (
     <span 
@@ -27,9 +27,13 @@ export function FluentEmoji({ type, size = 28, className }: FluentEmojiProps) {
         justifyContent: 'center',
         width: size,
         height: size,
+        fontSize: size * 0.85,
+        lineHeight: 1,
       }}
+      role="img"
+      aria-label={type}
     >
-      <EmojiComponent />
+      {emoji}
     </span>
   );
 }
