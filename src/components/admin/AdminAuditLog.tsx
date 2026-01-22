@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
-import { FileText, Filter, RefreshCw } from 'lucide-react';
+import { FileText, Filter, RefreshCw, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -38,6 +38,7 @@ const entityTypeLabels: Record<string, string> = {
   posts: 'Post',
   comments: 'Comment',
   user_roles: 'Role',
+  topic_tags: 'Topic Tag',
 };
 
 function LogEntrySkeleton() {
@@ -94,15 +95,21 @@ function LogEntryCard({ entry }: { entry: AuditLogEntry }) {
 }
 
 export function AdminAuditLog() {
-  const { logs, isLoading, fetchLogs } = useAuditLogs();
+  const { logs, isLoading, isLoadingMore, hasMore, fetchLogs, loadMore, reset } = useAuditLogs();
   const [actionFilter, setActionFilter] = useState<string>('all');
 
   useEffect(() => {
+    reset();
     fetchLogs(actionFilter === 'all' ? {} : { actionType: actionFilter });
   }, [actionFilter]);
 
   const handleRefresh = () => {
+    reset();
     fetchLogs(actionFilter === 'all' ? {} : { actionType: actionFilter });
+  };
+
+  const handleLoadMore = () => {
+    loadMore(actionFilter === 'all' ? undefined : actionFilter);
   };
 
   return (
@@ -114,8 +121,8 @@ export function AdminAuditLog() {
               <FileText className="h-5 w-5" />
               Audit Log
             </CardTitle>
-            <Button variant="ghost" size="sm" onClick={handleRefresh}>
-              <RefreshCw className="h-4 w-4" />
+            <Button variant="ghost" size="sm" onClick={handleRefresh} disabled={isLoading}>
+              <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
             </Button>
           </div>
         </CardHeader>
@@ -135,6 +142,11 @@ export function AdminAuditLog() {
                 ))}
               </SelectContent>
             </Select>
+            {logs.length > 0 && (
+              <span className="text-sm text-muted-foreground ml-auto">
+                {logs.length} entries loaded
+              </span>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -158,6 +170,33 @@ export function AdminAuditLog() {
           {logs.map((entry) => (
             <LogEntryCard key={entry.id} entry={entry} />
           ))}
+          
+          {/* Load More Button */}
+          {hasMore && (
+            <div className="flex justify-center pt-2">
+              <Button
+                variant="outline"
+                onClick={handleLoadMore}
+                disabled={isLoadingMore}
+                className="w-full sm:w-auto"
+              >
+                {isLoadingMore ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Loading...
+                  </>
+                ) : (
+                  'Load more'
+                )}
+              </Button>
+            </div>
+          )}
+          
+          {!hasMore && logs.length > 0 && (
+            <p className="text-center text-sm text-muted-foreground py-2">
+              All entries loaded
+            </p>
+          )}
         </div>
       )}
     </div>

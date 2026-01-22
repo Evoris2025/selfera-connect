@@ -79,34 +79,47 @@ export function useAuditLog() {
 export function useAuditLogs() {
   const [logs, setLogs] = useState<AuditLogEntry[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const PAGE_SIZE = 20;
 
   const fetchLogs = async (options?: {
     actionType?: string;
     limit?: number;
     offset?: number;
+    append?: boolean;
   }) => {
-    setIsLoading(true);
+    const loading = options?.append ? setIsLoadingMore : setIsLoading;
+    loading(true);
     try {
+      const limit = options?.limit || PAGE_SIZE;
       let query = supabase
         .from('audit_logs')
         .select('*')
         .order('created_at', { ascending: false })
-        .limit(options?.limit || 50);
+        .limit(limit + 1); // Fetch one extra to check if there's more
 
       if (options?.actionType) {
         query = query.eq('action_type', options.actionType);
       }
 
       if (options?.offset) {
-        query = query.range(options.offset, options.offset + (options.limit || 50) - 1);
+        query = query.range(options.offset, options.offset + limit);
       }
 
       const { data, error } = await query;
 
       if (error) throw error;
       
+      // Check if there are more results
+      const hasMoreResults = (data?.length || 0) > limit;
+      setHasMore(hasMoreResults);
+      
+      // Remove the extra item we fetched for pagination check
+      const items = hasMoreResults ? data?.slice(0, limit) : data;
+      
       // Map to AuditLogEntry type
-      const entries: AuditLogEntry[] = (data || []).map(item => ({
+      const entries: AuditLogEntry[] = (items || []).map(item => ({
         id: item.id,
         actor_id: item.actor_id,
         action_type: item.action_type,
@@ -118,15 +131,35 @@ export function useAuditLogs() {
         created_at: item.created_at,
       }));
       
-      setLogs(entries);
-      return { data: entries };
+      if (options?.append) {
+        setLogs(prev => [...prev, ...entries]);
+      } else {
+        setLogs(entries);
+      }
+      
+      return { data: entries, hasMore: hasMoreResults };
     } catch (error) {
       console.error('Failed to fetch audit logs:', error);
       return { error };
     } finally {
-      setIsLoading(false);
+      loading(false);
     }
   };
 
-  return { logs, isLoading, fetchLogs };
+  const loadMore = async (actionType?: string) => {
+    if (!hasMore || isLoadingMore) return;
+    
+    await fetchLogs({
+      actionType,
+      offset: logs.length,
+      append: true,
+    });
+  };
+
+  const reset = () => {
+    setLogs([]);
+    setHasMore(true);
+  };
+
+  return { logs, isLoading, isLoadingMore, hasMore, fetchLogs, loadMore, reset, PAGE_SIZE };
 }
