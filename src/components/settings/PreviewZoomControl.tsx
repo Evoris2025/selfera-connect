@@ -1,29 +1,35 @@
-import { Monitor, RotateCcw, Smartphone, RefreshCw } from 'lucide-react';
+import { Monitor, RotateCcw, Smartphone, Tablet } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { usePreviewZoom } from '@/hooks/usePreviewZoom';
 
+const MODE_LABELS = {
+  mobile: { label: 'Mobile', icon: Smartphone, description: 'Preview ~430px' },
+  tablet: { label: 'Tablet', icon: Tablet, description: 'Preview ~768px' },
+  desktop: { label: 'Desktop', icon: Monitor, description: 'Preview 1024px+' },
+};
+
 /**
  * Settings control for adjusting desktop preview zoom.
- * Only rendered on desktop (fine pointer) devices.
+ * Settings are saved permanently per preview mode.
  */
 export function PreviewZoomControl() {
   const { 
     zoom, 
     setZoom, 
     resetZoom, 
-    recalculateFromPhone,
-    isDesktop, 
-    isAutoDetected, 
-    phoneMetrics 
+    isDesktop,
+    currentMode,
   } = usePreviewZoom();
 
   // Don't render on mobile/touch devices
   if (!isDesktop) return null;
 
   const percentage = Math.round(zoom * 100);
+  const modeConfig = MODE_LABELS[currentMode];
+  const ModeIcon = modeConfig.icon;
 
   return (
     <Card>
@@ -34,19 +40,14 @@ export function PreviewZoomControl() {
           </div>
           <div className="flex-1">
             <CardTitle className="text-base flex items-center gap-2">
-              Preview Scaling (Desktop)
-              {isAutoDetected && (
-                <Badge variant="secondary" className="text-xs font-normal gap-1">
-                  <Smartphone className="h-3 w-3" />
-                  Auto-detected
-                </Badge>
-              )}
+              Preview Scaling
+              <Badge variant="secondary" className="text-xs font-normal gap-1">
+                <ModeIcon className="h-3 w-3" />
+                {modeConfig.label}
+              </Badge>
             </CardTitle>
             <CardDescription>
-              {phoneMetrics 
-                ? `Matched to your phone (${phoneMetrics.viewport_width}px @ ${phoneMetrics.device_pixel_ratio}x DPR)`
-                : 'Open the app on your phone to auto-calibrate'
-              }
+              Adjust zoom for {modeConfig.label.toLowerCase()} preview ({modeConfig.description})
             </CardDescription>
           </div>
         </div>
@@ -69,35 +70,20 @@ export function PreviewZoomControl() {
           <span className="text-sm font-medium">
             Current: <span className="text-primary">{percentage}%</span>
           </span>
-          <div className="flex gap-2">
-            {phoneMetrics && (
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={recalculateFromPhone}
-                className="gap-2"
-              >
-                <RefreshCw className="h-4 w-4" />
-                Re-sync
-              </Button>
-            )}
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={resetZoom}
-              className="gap-2"
-            >
-              <RotateCcw className="h-4 w-4" />
-              Reset
-            </Button>
-          </div>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={resetZoom}
+            className="gap-2"
+          >
+            <RotateCcw className="h-4 w-4" />
+            Reset to Default
+          </Button>
         </div>
-        
-        {!phoneMetrics && (
-          <p className="text-xs text-muted-foreground">
-            📱 Open the app on your Android phone once to automatically sync viewport metrics.
-          </p>
-        )}
+
+        <p className="text-xs text-muted-foreground">
+          Settings are saved permanently for each preview mode.
+        </p>
       </CardContent>
     </Card>
   );

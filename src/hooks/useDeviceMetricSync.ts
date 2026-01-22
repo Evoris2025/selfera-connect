@@ -18,10 +18,17 @@ export function useDeviceMetricSync() {
       const isTouch = window.matchMedia('(pointer: coarse)').matches;
       if (!isTouch) return;
 
+      // Validate viewport width - must be positive
+      const viewportWidth = window.innerWidth;
+      if (viewportWidth <= 0) {
+        console.warn('Invalid viewport width, skipping device metric sync');
+        return;
+      }
+
       const metrics = {
         user_id: user.id,
         device_type: 'phone',
-        viewport_width: window.innerWidth,
+        viewport_width: viewportWidth,
         device_pixel_ratio: window.devicePixelRatio,
         pointer_type: 'coarse',
         updated_at: new Date().toISOString(),
