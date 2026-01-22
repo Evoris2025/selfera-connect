@@ -65,15 +65,25 @@ export function usePreviewZoom() {
   }, []);
 
   // Track preview container width changes (for detecting Lovable preview mode switches)
+  // Debounced to prevent flickering during preview mode transitions
   useEffect(() => {
     if (!isDesktop) return;
 
+    let timeoutId: NodeJS.Timeout;
+    
     const handleResize = () => {
-      setPreviewWidth(window.innerWidth);
+      // Debounce: wait for resize to settle before updating
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        setPreviewWidth(window.innerWidth);
+      }, 150); // Wait 150ms after last resize event
     };
 
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(timeoutId);
+    };
   }, [isDesktop]);
 
   // Recalculate zoom when preview width changes (and we have phone metrics)
