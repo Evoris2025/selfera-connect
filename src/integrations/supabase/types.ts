@@ -961,6 +961,33 @@ export type Database = {
           },
         ]
       }
+      user_device_metrics: {
+        Row: {
+          device_pixel_ratio: number
+          device_type: string
+          pointer_type: string
+          updated_at: string
+          user_id: string
+          viewport_width: number
+        }
+        Insert: {
+          device_pixel_ratio: number
+          device_type?: string
+          pointer_type?: string
+          updated_at?: string
+          user_id: string
+          viewport_width: number
+        }
+        Update: {
+          device_pixel_ratio?: number
+          device_type?: string
+          pointer_type?: string
+          updated_at?: string
+          user_id?: string
+          viewport_width?: number
+        }
+        Relationships: []
+      }
       user_grid_layout_preference: {
         Row: {
           created_at: string
