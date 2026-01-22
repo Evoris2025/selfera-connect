@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 
 // Per-mode storage keys - zoom is PERMANENT for each mode
 const ZOOM_KEY_MOBILE = 'selfera-preview-zoom-mobile';
@@ -29,6 +29,8 @@ function getStorageKey(mode: PreviewMode): string {
 }
 
 function loadZoomForMode(mode: PreviewMode): number {
+  if (typeof window === 'undefined') return DEFAULT_ZOOMS[mode];
+  
   const key = getStorageKey(mode);
   const saved = localStorage.getItem(key);
   
@@ -54,13 +56,15 @@ function saveZoomForMode(mode: PreviewMode, zoom: number): void {
  * Values persist across browser refreshes and never auto-recalculate.
  */
 export function usePreviewZoom() {
+  // All hooks must be called unconditionally at the top
   const [isDesktop, setIsDesktop] = useState(false);
   const [previewWidth, setPreviewWidth] = useState(() => 
     typeof window !== 'undefined' ? window.innerWidth : 430
   );
-  
-  const currentMode = getPreviewMode(previewWidth);
-  const [zoom, setZoomState] = useState(() => loadZoomForMode(currentMode));
+  const [zoom, setZoomState] = useState(1); // Start with default, will be set in useEffect
+
+  // Derive current mode from preview width
+  const currentMode = useMemo(() => getPreviewMode(previewWidth), [previewWidth]);
 
   // Check if we're on a desktop-like device (fine pointer = mouse/trackpad)
   useEffect(() => {
@@ -77,6 +81,12 @@ export function usePreviewZoom() {
     return () => mediaQuery.removeEventListener('change', checkPointer);
   }, []);
 
+  // Load saved zoom on mount and when mode changes
+  useEffect(() => {
+    const savedZoom = loadZoomForMode(currentMode);
+    setZoomState(savedZoom);
+  }, [currentMode]);
+
   // Track preview container width changes (for detecting Lovable preview mode switches)
   useEffect(() => {
     if (!isDesktop) return;
@@ -86,13 +96,7 @@ export function usePreviewZoom() {
     const handleResize = () => {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
-        const newWidth = window.innerWidth;
-        setPreviewWidth(newWidth);
-        
-        // Load the saved zoom for the new mode
-        const newMode = getPreviewMode(newWidth);
-        const savedZoom = loadZoomForMode(newMode);
-        setZoomState(savedZoom);
+        setPreviewWidth(window.innerWidth);
       }, 150);
     };
 
