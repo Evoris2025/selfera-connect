@@ -74,7 +74,7 @@ export function usePreviewZoom() {
         // Calculate recommended zoom based on matching phone viewport in preview container
         // Use the phone viewport width as reference - we want desktop preview to show
         // content at the same CSS pixel density as the phone
-        const MOBILE_PREVIEW_CONTAINER = 430; // Lovable's mobile preview frame width
+        const MOBILE_PREVIEW_CONTAINER = 390; // Slightly smaller to zoom out more
         const desktopDPR = window.devicePixelRatio;
         
         // The phone shows content at viewport_width CSS pixels
@@ -159,7 +159,7 @@ export function usePreviewZoom() {
       .single();
     
     if (data) {
-      const MOBILE_PREVIEW_CONTAINER = 430;
+      const MOBILE_PREVIEW_CONTAINER = 390;
       const phoneViewport = data.viewport_width;
       let recommendedZoom = MOBILE_PREVIEW_CONTAINER / phoneViewport;
       recommendedZoom = Math.max(0.5, Math.min(1, recommendedZoom));
