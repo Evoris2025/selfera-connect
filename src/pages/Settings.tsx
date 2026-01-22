@@ -1,11 +1,16 @@
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Palette, Globe, Eye, Bell, Lock, User, HelpCircle } from 'lucide-react';
+import { Palette, Globe, Eye, Bell, Lock, User, HelpCircle, BadgeCheck, Shield } from 'lucide-react';
 import { AppLayout } from '@/components/AppLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { languages, changeLanguage, getCurrentLanguage, type LanguageCode } from '@/i18n';
 import { ThemeSelector } from '@/components/settings/ThemeSelector';
+import { VerificationRequestForm } from '@/components/settings/VerificationRequestForm';
+import { AdminVerificationQueue } from '@/components/admin/AdminVerificationQueue';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import {
   Select,
   SelectContent,
@@ -16,7 +21,28 @@ import {
 
 export default function Settings() {
   const { t } = useTranslation();
+  const { user, signOut } = useAuth();
   const currentLang = getCurrentLanguage();
+  const [view, setView] = useState<'main' | 'verification' | 'admin-verification'>('main');
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  // Check if current user is admin
+  useEffect(() => {
+    const checkAdmin = async () => {
+      if (!user?.id) return;
+      
+      const { data } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .eq('role', 'admin')
+        .maybeSingle();
+      
+      setIsAdmin(!!data);
+    };
+    
+    checkAdmin();
+  }, [user?.id]);
 
   const settingsSections = [
     {
@@ -40,6 +66,31 @@ export default function Settings() {
       description: 'Get help and support',
     },
   ];
+
+  // Verification request form view
+  if (view === 'verification') {
+    return (
+      <AppLayout>
+        <div className="max-w-2xl mx-auto p-4">
+          <VerificationRequestForm onBack={() => setView('main')} />
+        </div>
+      </AppLayout>
+    );
+  }
+
+  // Admin verification queue view
+  if (view === 'admin-verification') {
+    return (
+      <AppLayout>
+        <div className="max-w-2xl mx-auto p-4">
+          <Button variant="ghost" onClick={() => setView('main')} className="gap-2 -ml-2 mb-4">
+            ← Back to Settings
+          </Button>
+          <AdminVerificationQueue />
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>
@@ -130,6 +181,44 @@ export default function Settings() {
             </CardHeader>
           </Card>
 
+          {/* Get Verified */}
+          <Card 
+            className="cursor-pointer hover:border-verified/30 transition-colors"
+            onClick={() => setView('verification')}
+          >
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-verified/10">
+                  <BadgeCheck className="h-5 w-5 text-verified" />
+                </div>
+                <div>
+                  <CardTitle className="text-base">Get Verified</CardTitle>
+                  <CardDescription>Apply for professional or organisation verification</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+          </Card>
+
+          {/* Admin: Verification Queue */}
+          {isAdmin && (
+            <Card 
+              className="cursor-pointer hover:border-primary/30 transition-colors border-dashed"
+              onClick={() => setView('admin-verification')}
+            >
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-destructive/10">
+                    <Shield className="h-5 w-5 text-destructive" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-base">Admin: Verification Queue</CardTitle>
+                    <CardDescription>Review and process verification requests</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+            </Card>
+          )}
+
           {/* Other Settings */}
           {settingsSections.map((section, index) => (
             <Card key={index} className="cursor-pointer hover:border-primary/30 transition-colors">
@@ -149,7 +238,7 @@ export default function Settings() {
 
           {/* Logout */}
           <div className="pt-4">
-            <Button variant="destructive" className="w-full">
+            <Button variant="destructive" className="w-full" onClick={() => signOut()}>
               {t('auth.logout')}
             </Button>
           </div>

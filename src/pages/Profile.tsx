@@ -10,6 +10,7 @@ import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
+import { AccountTypeBadge, AccountType } from '@/components/AccountTypeBadge';
 import { FollowButton } from '@/components/interactions';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -434,20 +435,23 @@ export default function Profile() {
                 {/* Name + Verified Badge */}
                 <div className="flex items-center gap-2 flex-wrap">
                   <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground tracking-tight leading-tight">
-                    {mockUser.name}
+                    {displayProfile.displayName || mockUser.name}
                   </h1>
-                  {mockUser.isVerified && <VerifiedBadge size="md" />}
-                  {mockUser.isPrivate && <Lock className="h-4 w-4 text-muted-foreground" />}
+                  {displayProfile.isVerified && <VerifiedBadge size="md" />}
+                  {displayProfile.userType && displayProfile.userType !== 'individual' && (
+                    <AccountTypeBadge type={displayProfile.userType as AccountType} size="md" />
+                  )}
+                  {displayProfile.isPrivate && <Lock className="h-4 w-4 text-muted-foreground" />}
                 </div>
 
                 {/* Handle + Location */}
                 <p className="text-sm sm:text-base text-muted-foreground mt-1 flex items-center flex-wrap gap-x-2">
-                  <span className="font-medium">@{mockUser.handle}</span>
-                  {mockUser.location && (
+                  <span className="font-medium">@{displayProfile.handle || mockUser.handle}</span>
+                  {(displayProfile.location || mockUser.location) && (
                     <span className="inline-flex items-center gap-1.5 text-muted-foreground/70">
                       <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
                       <MapPin className="w-3.5 h-3.5" />
-                      <span>{mockUser.location}</span>
+                      <span>{displayProfile.location || mockUser.location}</span>
                     </span>
                   )}
                 </p>
@@ -461,7 +465,7 @@ export default function Profile() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.25 }}
             >
-              {renderBioWithHashtags(mockUser.bio)}
+              {renderBioWithHashtags(displayProfile.bio || mockUser.bio)}
             </motion.p>
 
             {/* Stats Row */}
