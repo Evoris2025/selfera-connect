@@ -9,6 +9,8 @@ import { getCurrentLanguage, getLanguageDirection } from "@/i18n";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { MockSystemProvider } from "@/contexts/MockSystemContext";
 import { SafetyProvider } from "@/contexts/SafetyContext";
+import { ViewportDebugOverlay } from "@/components/dev/ViewportDebugOverlay";
+import { usePreviewZoom } from "@/hooks/usePreviewZoom";
 import logo from '@/assets/selfera-logo.png';
 
 import Landing from "./pages/Landing";
@@ -69,23 +71,29 @@ function HomeRoute() {
 }
 
 function AppRoutes() {
+  // Initialize preview zoom on app mount
+  usePreviewZoom();
+  
   return (
-    <Routes>
-      <Route path="/" element={<HomeRoute />} />
-      <Route path="/auth" element={<Auth />} />
-      <Route path="/feed" element={<ProtectedRoute><Feed /></ProtectedRoute>} />
-      <Route path="/explore" element={<ProtectedRoute><Explore /></ProtectedRoute>} />
-      <Route path="/search" element={<ProtectedRoute><Explore /></ProtectedRoute>} />
-      <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
-      <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
-      <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
-      <Route path="/profile/:handle?" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-      <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-      {/* Public routes */}
-      <Route path="/directory" element={<Directory />} />
-      <Route path="/crisis" element={<CrisisSupport />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <>
+      <ViewportDebugOverlay />
+      <Routes>
+        <Route path="/" element={<HomeRoute />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/feed" element={<ProtectedRoute><Feed /></ProtectedRoute>} />
+        <Route path="/explore" element={<ProtectedRoute><Explore /></ProtectedRoute>} />
+        <Route path="/search" element={<ProtectedRoute><Explore /></ProtectedRoute>} />
+        <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
+        <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+        <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
+        <Route path="/profile/:handle?" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+        {/* Public routes */}
+        <Route path="/directory" element={<Directory />} />
+        <Route path="/crisis" element={<CrisisSupport />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </>
   );
 }
 

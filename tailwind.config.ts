@@ -102,9 +102,6 @@ export default {
         '88': '22rem',
         '128': '32rem',
       },
-      maxWidth: {
-        'app-frame': 'var(--app-max-width)',
-      },
       transitionTimingFunction: {
         'cinematic': 'cubic-bezier(0.22, 1, 0.36, 1)',
         'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',
