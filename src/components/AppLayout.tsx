@@ -17,7 +17,7 @@ export function AppLayout({ children, title, showHeader = true, onCreatePost }: 
     <div className="min-h-dvh bg-background flex flex-col w-full">
       {showHeader && <AppHeader title={title} />}
       
-      <main className="flex-1 pb-nav-safe max-w-app-frame mx-auto w-full">
+      <main className="flex-1 pb-nav-safe max-w-lg mx-auto w-full">
         {children}
       </main>
       
