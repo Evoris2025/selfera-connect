@@ -71,17 +71,23 @@ export function usePreviewZoom() {
           }
         }
 
-        // Calculate recommended zoom based on physical size matching
-        const desktopWidth = window.innerWidth;
+        // Calculate recommended zoom based on matching phone viewport in preview container
+        // Use the phone viewport width as reference - we want desktop preview to show
+        // content at the same CSS pixel density as the phone
+        const MOBILE_PREVIEW_CONTAINER = 430; // Lovable's mobile preview frame width
         const desktopDPR = window.devicePixelRatio;
         
-        const phonePhysicalWidth = data.viewport_width / data.device_pixel_ratio;
-        const desktopPhysicalWidth = desktopWidth / desktopDPR;
+        // The phone shows content at viewport_width CSS pixels
+        // The desktop preview container is ~430px
+        // To match the phone's content size, we scale based on ratio
+        const phoneViewport = data.viewport_width; // e.g., 513px
         
-        // Calculate zoom to match phone's physical size
-        let recommendedZoom = phonePhysicalWidth / desktopPhysicalWidth;
+        // Scale factor: how much smaller/larger is preview vs phone viewport
+        // If phone is 513px and preview is 430px, content appears 430/513 = 0.84 of phone size
+        // So we need to zoom to 430/513 = 0.84 to match
+        let recommendedZoom = MOBILE_PREVIEW_CONTAINER / phoneViewport;
         
-        // Clamp to reasonable range
+        // Clamp to reasonable range (0.5 to 1.0)
         recommendedZoom = Math.max(0.5, Math.min(1, recommendedZoom));
         
         setZoomState(recommendedZoom);
@@ -91,8 +97,7 @@ export function usePreviewZoom() {
         console.log('Auto-calculated zoom:', {
           phoneWidth: data.viewport_width,
           phoneDPR: data.device_pixel_ratio,
-          desktopWidth,
-          desktopDPR,
+          previewContainer: MOBILE_PREVIEW_CONTAINER,
           recommendedZoom: Math.round(recommendedZoom * 100) + '%'
         });
       } catch (err) {
@@ -154,11 +159,9 @@ export function usePreviewZoom() {
       .single();
     
     if (data) {
-      const desktopWidth = window.innerWidth;
-      const desktopDPR = window.devicePixelRatio;
-      const phonePhysicalWidth = data.viewport_width / data.device_pixel_ratio;
-      const desktopPhysicalWidth = desktopWidth / desktopDPR;
-      let recommendedZoom = phonePhysicalWidth / desktopPhysicalWidth;
+      const MOBILE_PREVIEW_CONTAINER = 430;
+      const phoneViewport = data.viewport_width;
+      let recommendedZoom = MOBILE_PREVIEW_CONTAINER / phoneViewport;
       recommendedZoom = Math.max(0.5, Math.min(1, recommendedZoom));
       
       setZoomState(recommendedZoom);
