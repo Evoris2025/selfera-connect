@@ -25,6 +25,7 @@ interface UseMessageImageUploadResult {
   handleDragLeave: (e: React.DragEvent) => void;
   handleDragOver: (e: React.DragEvent) => void;
   handleDrop: (e: React.DragEvent) => void;
+  handlePaste: (e: React.ClipboardEvent) => void;
 }
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -238,6 +239,32 @@ export function useMessageImageUpload(): UseMessageImageUploadResult {
     }
   }, [processAndAddImages]);
 
+  // Paste handler for clipboard images
+  const handlePaste = useCallback((e: React.ClipboardEvent | ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+
+    const imageFiles: File[] = [];
+    
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      
+      // Check if the item is an image
+      if (item.type.startsWith('image/')) {
+        const file = item.getAsFile();
+        if (file && ALLOWED_TYPES.includes(file.type)) {
+          imageFiles.push(file);
+        }
+      }
+    }
+
+    if (imageFiles.length > 0) {
+      e.preventDefault();
+      processAndAddImages(imageFiles);
+      toast.success(`Pasted ${imageFiles.length} image${imageFiles.length > 1 ? 's' : ''}`);
+    }
+  }, [processAndAddImages]);
+
   return {
     isUploading,
     uploadProgress,
@@ -251,5 +278,6 @@ export function useMessageImageUpload(): UseMessageImageUploadResult {
     handleDragLeave,
     handleDragOver,
     handleDrop,
+    handlePaste,
   };
 }

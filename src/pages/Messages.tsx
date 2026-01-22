@@ -262,6 +262,7 @@ export default function Messages() {
     handleDragLeave,
     handleDragOver,
     handleDrop,
+    handlePaste,
   } = useMessageImageUpload();
   const [selectedConversation, setSelectedConversation] = useState<MockConversation | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -621,6 +622,7 @@ export default function Messages() {
             <Input
               value={newMessage}
               onChange={handleInputChange}
+              onPaste={handlePaste}
               placeholder="Message..."
               className="flex-1 border-0 bg-transparent focus-visible:ring-0 px-1 h-10 text-[15px] placeholder:text-muted-foreground/60"
               onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
