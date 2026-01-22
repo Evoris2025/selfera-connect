@@ -35,7 +35,7 @@ const calmStagger: Transition = { duration: 0.2, ease: 'easeOut' as const };
 
 interface Notification {
   id: string;
-  type: 'reaction' | 'follow' | 'comment' | 'mention' | 'community' | 'message' | 'verification' | 'follow_suggestion';
+  type: 'reaction' | 'follow' | 'comment' | 'mention' | 'community' | 'message' | 'verification' | 'follow_suggestion' | 'connection_request';
   users?: { name: string; handle: string; avatarUrl?: string }[];
   action: string;
   preview?: string;
@@ -71,6 +71,7 @@ const getNotificationIcon = (type: string) => {
     case 'community': return <Users className="h-3.5 w-3.5 text-emerald-500" />;
     case 'message': return <MessageCircle className="h-3.5 w-3.5 text-primary" fill="currentColor" />;
     case 'verification': return <CheckCircle className="h-3.5 w-3.5 text-emerald-500" fill="currentColor" />;
+    case 'connection_request': return <UserPlus className="h-3.5 w-3.5 text-cyan-500" />;
     default: return <Bell className="h-3.5 w-3.5" />;
   }
 };
