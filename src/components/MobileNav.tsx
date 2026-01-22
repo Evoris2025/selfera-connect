@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Compass, Plus, Bell, MessageCircle, User } from 'lucide-react';
+import { Home, Compass, Plus, Bell, MessageCircle, User, LayoutDashboard } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -29,9 +29,12 @@ export function MobileNav({ onCreateClick, notificationCount = 0, messageCount =
   // Combine notification count with follow request count for total badge
   const totalNotificationBadge = notificationCount + followRequestCount;
 
+  // 6 nav items: Home, Explore, MyERA, Create (center), Notifications, Messages, Profile
+  // Order: Home, Explore, MyERA, Create, Notifications, Messages, Profile
   const navItems: NavItem[] = [
     { icon: Home, href: '/feed', label: 'Home' },
     { icon: Compass, href: '/explore', label: 'Explore' },
+    { icon: LayoutDashboard, href: '/my-era', label: 'MyERA' },
     { icon: Plus, href: '#create', isCreate: true, label: 'Create' },
     { icon: Bell, href: '/notifications', label: 'Notifications', hasBadge: totalNotificationBadge > 0 },
     { icon: MessageCircle, href: '/messages', label: 'Messages', hasBadge: messageCount > 0 },
@@ -51,6 +54,7 @@ export function MobileNav({ onCreateClick, notificationCount = 0, messageCount =
           const isActive = location.pathname === item.href || 
             (item.href === '/feed' && location.pathname === '/feed') ||
             (item.href === '/explore' && location.pathname.startsWith('/explore')) ||
+            (item.href === '/my-era' && location.pathname === '/my-era') ||
             (item.href === '/profile' && location.pathname.startsWith('/profile')) ||
             (item.href === '/notifications' && location.pathname === '/notifications') ||
             (item.href === '/messages' && location.pathname === '/messages');

@@ -19,6 +19,7 @@ import Auth from "./pages/Auth";
 import Feed from "./pages/Feed";
 import Explore from "./pages/Explore";
 import Community from "./pages/Community";
+import MyERA from "./pages/MyERA";
 import Notifications from "./pages/Notifications";
 import Messages from "./pages/Messages";
 import Profile from "./pages/Profile";
@@ -87,6 +88,8 @@ function AppRoutes() {
         <Route path="/explore" element={<ProtectedRoute><Explore /></ProtectedRoute>} />
         <Route path="/search" element={<ProtectedRoute><Explore /></ProtectedRoute>} />
         <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
+        <Route path="/community/:communityId" element={<ProtectedRoute><Community /></ProtectedRoute>} />
+        <Route path="/my-era" element={<ProtectedRoute><MyERA /></ProtectedRoute>} />
         <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
         <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
         <Route path="/profile/:handle?" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
