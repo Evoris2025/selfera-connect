@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import '@/i18n';
 import { getCurrentLanguage, getLanguageDirection } from "@/i18n";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { MockSystemProvider } from "@/contexts/MockSystemContext";
 import logo from '@/assets/selfera-logo.png';
 
 import Landing from "./pages/Landing";
@@ -97,13 +98,15 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <AppRoutes />
-          </BrowserRouter>
-        </TooltipProvider>
+        <MockSystemProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <AppRoutes />
+            </BrowserRouter>
+          </TooltipProvider>
+        </MockSystemProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

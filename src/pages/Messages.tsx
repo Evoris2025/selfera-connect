@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   Search, 
@@ -21,38 +21,13 @@ import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { MobileNav } from '@/components/MobileNav';
+import { useMockSystem, type MockConversation, type MockMessage } from '@/contexts/MockSystemContext';
 
 // Dopamine-driven spring configs
 const springSnap = { type: 'spring' as const, stiffness: 700, damping: 30, mass: 0.8 };
 const springBounce = { type: 'spring' as const, stiffness: 500, damping: 15, mass: 0.5 };
 const springPop = { type: 'spring' as const, stiffness: 600, damping: 12 };
 const springElastic = { type: 'spring' as const, stiffness: 400, damping: 10, mass: 0.8 };
-
-interface Conversation {
-  id: string;
-  participant: {
-    name: string;
-    handle: string;
-    avatarUrl?: string;
-    isOnline?: boolean;
-  };
-  lastMessage: string;
-  lastMessageTime: string;
-  unread: boolean;
-  isTyping?: boolean;
-  lastMessageType?: 'text' | 'image' | 'reaction';
-  isNew?: boolean;
-}
-
-interface Message {
-  id: string;
-  content: string;
-  senderId: string;
-  timestamp: string;
-  read: boolean;
-  type: 'text' | 'image';
-  imageUrl?: string;
-}
 
 interface QuickAccessUser {
   id: string;
@@ -63,14 +38,6 @@ interface QuickAccessUser {
   note?: string;
 }
 
-const mockConversations: Conversation[] = [
-  { id: '1', participant: { name: 'Mind Matters', handle: 'mindmatters', isOnline: true }, lastMessage: 'Thanks for sharing that resource!', lastMessageTime: '2m', unread: true, lastMessageType: 'text', isNew: true },
-  { id: '2', participant: { name: 'Dr. Sarah', handle: 'drsarah', isOnline: true }, lastMessage: '💪', lastMessageTime: '1h', unread: true, lastMessageType: 'reaction' },
-  { id: '3', participant: { name: 'Jamie', handle: 'jamie_journey', isOnline: false }, lastMessage: 'See you at the community meetup!', lastMessageTime: '3h', unread: false, lastMessageType: 'text' },
-  { id: '4', participant: { name: 'Wellness Hub', handle: 'wellnesshub', isOnline: false }, lastMessage: 'Sent a photo', lastMessageTime: '1d', unread: false, lastMessageType: 'image' },
-  { id: '5', participant: { name: 'Alex Chen', handle: 'alexchen', isOnline: true }, lastMessage: 'That meditation app is really helpful', lastMessageTime: '2d', unread: false, lastMessageType: 'text' },
-];
-
 const mockQuickAccess: QuickAccessUser[] = [
   { id: 'note', name: 'Your note', hasNote: true, note: '✨' },
   { id: 'new', name: 'New', isOnline: false },
@@ -78,14 +45,6 @@ const mockQuickAccess: QuickAccessUser[] = [
   { id: '2', name: 'Sarah', isOnline: true },
   { id: '3', name: 'Jamie', isOnline: false },
   { id: '4', name: 'Alex', isOnline: true },
-];
-
-const mockMessages: Message[] = [
-  { id: '1', content: 'Hey! I saw your post about managing anxiety. Really helpful!', senderId: 'other', timestamp: '10:30 AM', read: true, type: 'text' },
-  { id: '2', content: 'Thank you so much! It means a lot to hear that.', senderId: 'me', timestamp: '10:32 AM', read: true, type: 'text' },
-  { id: '3', content: 'Do you have any other resources you recommend?', senderId: 'other', timestamp: '10:33 AM', read: true, type: 'text' },
-  { id: '4', content: 'Absolutely! I\'ll share some links with you.', senderId: 'me', timestamp: '10:35 AM', read: true, type: 'text' },
-  { id: '5', content: 'Thanks for sharing that resource!', senderId: 'other', timestamp: '10:40 AM', read: true, type: 'text' },
 ];
 
 function ConversationSkeleton() {
@@ -142,37 +101,38 @@ function OnlineIndicator({ size = 'default', pulse = false }: { size?: 'small' |
 
 export default function Messages() {
   const { t } = useTranslation();
-  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
+  const { state, sendMessage: sendMockMessage, markConversationRead } = useMockSystem();
+  const [selectedConversation, setSelectedConversation] = useState<MockConversation | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [newMessage, setNewMessage] = useState('');
   const [isLoading] = useState(false);
-  const [messages, setMessages] = useState<Message[]>(mockMessages);
   const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const requestCount = 2;
+  
+  // Get conversations from mock system
+  const conversations = state.conversations;
+  
+  // Get messages for selected conversation
+  const messages = useMemo(() => {
+    if (!selectedConversation) return [];
+    const conv = state.conversations.find(c => c.id === selectedConversation.id);
+    return conv?.messages || [];
+  }, [state.conversations, selectedConversation]);
 
-  const filteredConversations = mockConversations.filter(
+  const filteredConversations = conversations.filter(
     (conv) =>
       conv.participant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       conv.participant.handle.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleSendMessage = () => {
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() || !selectedConversation) return;
     
     setIsSending(true);
-    const newMsg: Message = {
-      id: Date.now().toString(),
-      content: newMessage,
-      senderId: 'me',
-      timestamp: 'Just now',
-      read: false,
-      type: 'text'
-    };
-    
-    setMessages(prev => [...prev, newMsg]);
+    sendMockMessage(selectedConversation.id, newMessage);
     setNewMessage('');
     
     setTimeout(() => {
@@ -181,13 +141,12 @@ export default function Messages() {
     }, 100);
   };
 
-  const getLastMessagePreview = (conv: Conversation) => {
-    if (conv.lastMessageType === 'image') {
-      return <span className="flex items-center gap-1.5"><Image className="h-3.5 w-3.5" />Photo</span>;
-    }
-    if (conv.lastMessageType === 'reaction') {
-      return <span>Reacted {conv.lastMessage}</span>;
-    }
+  const handleSelectConversation = (conv: MockConversation) => {
+    setSelectedConversation(conv);
+    markConversationRead(conv.id);
+  };
+
+  const getLastMessagePreview = (conv: MockConversation) => {
     return conv.lastMessage;
   };
 

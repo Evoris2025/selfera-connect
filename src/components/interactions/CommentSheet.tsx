@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
+import { useMockComments } from '@/hooks/useMockComments';
 
 interface CommentSheetProps {
   open: boolean;
@@ -22,25 +23,10 @@ interface CommentSheetProps {
 
 const springConfig = { type: "spring" as const, stiffness: 400, damping: 30 };
 
-// Mock comments for now
-const mockComments = [
-  {
-    id: '1',
-    author: { name: 'Sarah Chen', handle: 'sarahc', avatar: '' },
-    content: 'This really resonates with me. Thank you for sharing! 💙',
-    createdAt: '2h',
-  },
-  {
-    id: '2',
-    author: { name: 'Marcus Johnson', handle: 'marcusj', avatar: '' },
-    content: 'Beautifully expressed. We all need reminders like this.',
-    createdAt: '4h',
-  },
-];
-
-export function CommentSheet({ open, onOpenChange, postId, commentCount }: CommentSheetProps) {
+export function CommentSheet({ open, onOpenChange, postId }: CommentSheetProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { comments, commentCount, addComment } = useMockComments(postId);
   const [comment, setComment] = useState('');
   const [isSending, setIsSending] = useState(false);
 
@@ -54,8 +40,7 @@ export function CommentSheet({ open, onOpenChange, postId, commentCount }: Comme
       navigator.vibrate(10);
     }
     
-    // TODO: Implement actual comment posting
-    await new Promise(resolve => setTimeout(resolve, 300));
+    await addComment(comment);
     
     setComment('');
     setIsSending(false);
@@ -76,7 +61,7 @@ export function CommentSheet({ open, onOpenChange, postId, commentCount }: Comme
           
           {/* Comments list */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {mockComments.map((c, index) => (
+            {comments.map((c, index) => (
               <motion.div
                 key={c.id}
                 initial={{ opacity: 0, y: 10 }}
@@ -100,7 +85,7 @@ export function CommentSheet({ open, onOpenChange, postId, commentCount }: Comme
               </motion.div>
             ))}
             
-            {mockComments.length === 0 && (
+            {comments.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
                 <p>{t('comments.empty')}</p>
               </div>
