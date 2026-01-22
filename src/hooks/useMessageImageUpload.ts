@@ -3,111 +3,156 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
+interface PendingImage {
+  id: string;
+  file: File;
+  preview: string;
+}
+
 interface UseMessageImageUploadResult {
   isUploading: boolean;
   uploadProgress: number;
-  pendingImage: { file: File; preview: string } | null;
-  selectImage: (file: File) => void;
-  clearPendingImage: () => void;
-  uploadImage: () => Promise<string | null>;
+  pendingImages: PendingImage[];
+  selectImages: (files: FileList | File[]) => void;
+  removePendingImage: (id: string) => void;
+  clearPendingImages: () => void;
+  uploadImages: () => Promise<string[]>;
 }
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_IMAGES = 10;
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
 export function useMessageImageUpload(): UseMessageImageUploadResult {
   const { user } = useAuth();
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [pendingImage, setPendingImage] = useState<{ file: File; preview: string } | null>(null);
+  const [pendingImages, setPendingImages] = useState<PendingImage[]>([]);
 
-  const selectImage = useCallback((file: File) => {
-    // Validate file type
-    if (!ALLOWED_TYPES.includes(file.type)) {
-      toast.error('Please select a valid image (JPEG, PNG, GIF, or WebP)');
-      return;
+  const selectImages = useCallback((files: FileList | File[]) => {
+    const fileArray = Array.from(files);
+    const validFiles: PendingImage[] = [];
+    
+    for (const file of fileArray) {
+      // Check max limit
+      if (pendingImages.length + validFiles.length >= MAX_IMAGES) {
+        toast.error(`Maximum ${MAX_IMAGES} images allowed`);
+        break;
+      }
+
+      // Validate file type
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        toast.error(`${file.name}: Invalid format. Use JPEG, PNG, GIF, or WebP`);
+        continue;
+      }
+
+      // Validate file size
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error(`${file.name}: Must be less than 10MB`);
+        continue;
+      }
+
+      // Create preview URL
+      const preview = URL.createObjectURL(file);
+      validFiles.push({
+        id: `${Date.now()}-${Math.random().toString(36).substring(7)}`,
+        file,
+        preview,
+      });
     }
 
-    // Validate file size
-    if (file.size > MAX_FILE_SIZE) {
-      toast.error('Image must be less than 10MB');
-      return;
+    if (validFiles.length > 0) {
+      setPendingImages(prev => [...prev, ...validFiles]);
     }
+  }, [pendingImages.length]);
 
-    // Create preview URL
-    const preview = URL.createObjectURL(file);
-    setPendingImage({ file, preview });
+  const removePendingImage = useCallback((id: string) => {
+    setPendingImages(prev => {
+      const image = prev.find(img => img.id === id);
+      if (image?.preview) {
+        URL.revokeObjectURL(image.preview);
+      }
+      return prev.filter(img => img.id !== id);
+    });
   }, []);
 
-  const clearPendingImage = useCallback(() => {
-    if (pendingImage?.preview) {
-      URL.revokeObjectURL(pendingImage.preview);
-    }
-    setPendingImage(null);
+  const clearPendingImages = useCallback(() => {
+    pendingImages.forEach(img => {
+      if (img.preview) {
+        URL.revokeObjectURL(img.preview);
+      }
+    });
+    setPendingImages([]);
     setUploadProgress(0);
-  }, [pendingImage]);
+  }, [pendingImages]);
 
-  const uploadImage = useCallback(async (): Promise<string | null> => {
-    if (!pendingImage || !user?.id) {
-      return null;
+  const uploadImages = useCallback(async (): Promise<string[]> => {
+    if (pendingImages.length === 0 || !user?.id) {
+      return [];
     }
 
     setIsUploading(true);
     setUploadProgress(0);
 
+    const uploadedUrls: string[] = [];
+    const totalImages = pendingImages.length;
+
     try {
-      // Generate unique file path
-      const fileExt = pendingImage.file.name.split('.').pop()?.toLowerCase() || 'jpg';
-      const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-      const filePath = `messages/${fileName}`;
+      for (let i = 0; i < pendingImages.length; i++) {
+        const pending = pendingImages[i];
+        
+        // Update progress
+        setUploadProgress(Math.round((i / totalImages) * 100));
 
-      // Simulate progress (Supabase doesn't provide real progress for small files)
-      const progressInterval = setInterval(() => {
-        setUploadProgress(prev => Math.min(prev + 10, 90));
-      }, 100);
+        // Generate unique file path
+        const fileExt = pending.file.name.split('.').pop()?.toLowerCase() || 'jpg';
+        const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+        const filePath = `messages/${fileName}`;
 
-      // Upload to Supabase Storage
-      const { data, error } = await supabase.storage
-        .from('media')
-        .upload(filePath, pendingImage.file, {
-          cacheControl: '3600',
-          upsert: false,
-        });
+        // Upload to Supabase Storage
+        const { data, error } = await supabase.storage
+          .from('media')
+          .upload(filePath, pending.file, {
+            cacheControl: '3600',
+            upsert: false,
+          });
 
-      clearInterval(progressInterval);
+        if (error) {
+          console.error('Upload error:', error);
+          toast.error(`Failed to upload ${pending.file.name}`);
+          continue;
+        }
 
-      if (error) {
-        console.error('Upload error:', error);
-        toast.error('Failed to upload image');
-        return null;
+        // Get public URL
+        const { data: urlData } = supabase.storage
+          .from('media')
+          .getPublicUrl(data.path);
+
+        uploadedUrls.push(urlData.publicUrl);
       }
 
       setUploadProgress(100);
 
-      // Get public URL
-      const { data: urlData } = supabase.storage
-        .from('media')
-        .getPublicUrl(data.path);
+      // Clear pending images after successful upload
+      clearPendingImages();
 
-      // Clear pending image after successful upload
-      clearPendingImage();
-
-      return urlData.publicUrl;
+      return uploadedUrls;
     } catch (error) {
       console.error('Upload error:', error);
-      toast.error('Failed to upload image');
-      return null;
+      toast.error('Failed to upload images');
+      return uploadedUrls;
     } finally {
       setIsUploading(false);
     }
-  }, [pendingImage, user?.id, clearPendingImage]);
+  }, [pendingImages, user?.id, clearPendingImages]);
 
   return {
     isUploading,
     uploadProgress,
-    pendingImage,
-    selectImage,
-    clearPendingImage,
-    uploadImage,
+    pendingImages,
+    selectImages,
+    removePendingImage,
+    clearPendingImages,
+    uploadImages,
   };
 }

@@ -118,7 +118,7 @@ function MessageBubble({
   isLastMessage,
   isRead,
 }: {
-  message: MockMessage & { imageUrl?: string };
+  message: MockMessage & { imageUrls?: string[] };
   isOwnMessage: boolean;
   reactions: { emoji: string; count: number; userReacted: boolean }[];
   onReact: (emoji: string) => void;
@@ -145,13 +145,13 @@ function MessageBubble({
   };
 
   // Check if this is an image message
-  const hasImage = !!message.imageUrl;
+  const hasImages = message.imageUrls && message.imageUrls.length > 0;
   const hasText = !!message.content?.trim();
 
   return (
     <div className={cn('relative', isOwnMessage ? 'flex flex-col items-end' : 'flex flex-col items-start')}>
       {/* Image message */}
-      {hasImage && (
+      {hasImages && (
         <motion.div
           onDoubleClick={handleDoubleClick}
           onTouchStart={handleTouchStart}
@@ -159,7 +159,7 @@ function MessageBubble({
           onTouchCancel={handleTouchEnd}
         >
           <ImageMessage 
-            imageUrl={message.imageUrl!} 
+            imageUrls={message.imageUrls!} 
             isOwnMessage={isOwnMessage}
             caption={hasText ? message.content : undefined}
           />
@@ -173,7 +173,7 @@ function MessageBubble({
       )}
 
       {/* Text-only message */}
-      {!hasImage && hasText && (
+      {!hasImages && hasText && (
         <motion.div
           onDoubleClick={handleDoubleClick}
           onTouchStart={handleTouchStart}
@@ -251,10 +251,11 @@ export default function Messages() {
   const { 
     isUploading, 
     uploadProgress, 
-    pendingImage, 
-    selectImage, 
-    clearPendingImage, 
-    uploadImage 
+    pendingImages, 
+    selectImages, 
+    removePendingImage,
+    clearPendingImages, 
+    uploadImages 
   } = useMessageImageUpload();
   const [selectedConversation, setSelectedConversation] = useState<MockConversation | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -308,25 +309,25 @@ export default function Messages() {
   );
 
   const handleSendMessage = async () => {
-    if ((!newMessage.trim() && !pendingImage) || !selectedConversation) return;
+    if ((!newMessage.trim() && pendingImages.length === 0) || !selectedConversation) return;
     
     setIsSending(true);
     setTyping(false); // Clear typing indicator
 
-    let imageUrl: string | undefined;
+    let imageUrls: string[] = [];
 
-    // Upload image if pending
-    if (pendingImage) {
-      const uploadedUrl = await uploadImage();
-      if (uploadedUrl) {
-        imageUrl = uploadedUrl;
+    // Upload images if pending
+    if (pendingImages.length > 0) {
+      const uploadedUrls = await uploadImages();
+      if (uploadedUrls.length > 0) {
+        imageUrls = uploadedUrls;
       }
     }
 
-    // Send message (with optional image URL)
-    // For now, using mock system - will add imageUrl to real implementation
-    if (newMessage.trim() || imageUrl) {
-      sendMockMessage(selectedConversation.id, newMessage || '📷 Photo', imageUrl);
+    // Send message (with optional image URLs)
+    // For now, using mock system - will add imageUrls to real implementation
+    if (newMessage.trim() || imageUrls.length > 0) {
+      sendMockMessage(selectedConversation.id, newMessage || '📷 Photo', imageUrls);
     }
     setNewMessage('');
     
@@ -345,15 +346,15 @@ export default function Messages() {
   };
 
   const handleImageSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      selectImage(file);
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      selectImages(files);
     }
-    // Reset input so same file can be selected again
+    // Reset input so same files can be selected again
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
-  }, [selectImage]);
+  }, [selectImages]);
 
   const triggerImagePicker = useCallback(() => {
     fileInputRef.current?.click();
@@ -541,23 +542,25 @@ export default function Messages() {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Hidden file input */}
+        {/* Hidden file input - multiple selection enabled */}
         <input
           ref={fileInputRef}
           type="file"
           accept="image/jpeg,image/png,image/gif,image/webp"
+          multiple
           onChange={handleImageSelect}
           className="hidden"
         />
 
         {/* Image Preview */}
         <AnimatePresence>
-          {pendingImage && (
+          {pendingImages.length > 0 && (
             <ImagePreviewBar
-              preview={pendingImage.preview}
+              images={pendingImages}
               isUploading={isUploading}
               uploadProgress={uploadProgress}
-              onRemove={clearPendingImage}
+              onRemove={removePendingImage}
+              onAddMore={triggerImagePicker}
             />
           )}
         </AnimatePresence>
@@ -589,7 +592,7 @@ export default function Messages() {
               onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
             />
             <AnimatePresence mode="popLayout">
-              {(newMessage.trim() || pendingImage) ? (
+              {(newMessage.trim() || pendingImages.length > 0) ? (
                 <motion.div
                   key="send"
                   initial={{ opacity: 0, scale: 0, rotate: -180 }}
