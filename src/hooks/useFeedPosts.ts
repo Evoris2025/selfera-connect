@@ -186,9 +186,36 @@ export function useFeedPosts(): UseFeedPostsResult {
   const loadingMoreRef = useRef(false);
   const refreshingRef = useRef(false);
   const initialLoadDone = useRef(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [followingIds, setFollowingIds] = useState<string[]>([]);
+
+  // Fetch current user and their following list on mount
+  useEffect(() => {
+    const fetchUserAndFollowing = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user?.id) {
+        setCurrentUserId(user.id);
+        
+        // Fetch who the user follows
+        const { data: follows } = await supabase
+          .from('follows')
+          .select('following_id')
+          .eq('follower_id', user.id)
+          .eq('status', 'approved');
+        
+        setFollowingIds(follows?.map(f => f.following_id) || []);
+      }
+    };
+    fetchUserAndFollowing();
+  }, []);
 
   const fetchPosts = useCallback(async (afterCursor?: string | null): Promise<FeedPost[]> => {
     try {
+      // Build the list of users whose posts we want: self + following
+      const authorIds = currentUserId 
+        ? [currentUserId, ...followingIds] 
+        : followingIds;
+
       let query = supabase
         .from('posts')
         .select(`
@@ -210,6 +237,12 @@ export function useFeedPosts(): UseFeedPostsResult {
         .eq('visibility', 'public')
         .order('created_at', { ascending: false })
         .limit(PAGE_SIZE);
+
+      // If user has following list, filter to those authors
+      // Otherwise show all public posts (discovery mode)
+      if (authorIds.length > 0) {
+        query = query.in('author_id', authorIds);
+      }
 
       if (afterCursor) {
         query = query.lt('created_at', afterCursor);
@@ -318,7 +351,7 @@ export function useFeedPosts(): UseFeedPostsResult {
       setError(err instanceof Error ? err.message : 'Failed to fetch posts');
       return [];
     }
-  }, []);
+  }, [currentUserId, followingIds]);
 
   // Initial load
   useEffect(() => {

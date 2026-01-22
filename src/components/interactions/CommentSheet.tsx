@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
+import { useComments } from '@/hooks/useComments';
 import { useMockComments } from '@/hooks/useMockComments';
 
 interface CommentSheetProps {
@@ -23,10 +24,19 @@ interface CommentSheetProps {
 
 const springConfig = { type: "spring" as const, stiffness: 400, damping: 30 };
 
+// Check if postId is a valid UUID (real post) or mock
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 export function CommentSheet({ open, onOpenChange, postId }: CommentSheetProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const { comments, commentCount, addComment } = useMockComments(postId);
+  const isRealPost = UUID_RE.test(postId);
+  
+  // Use real comments for real posts, mock for mock posts
+  const realComments = useComments(postId);
+  const mockComments = useMockComments(postId);
+  
+  const { comments, commentCount, addComment } = isRealPost ? realComments : mockComments;
   const [comment, setComment] = useState('');
   const [isSending, setIsSending] = useState(false);
 
@@ -40,7 +50,11 @@ export function CommentSheet({ open, onOpenChange, postId }: CommentSheetProps) 
       navigator.vibrate(10);
     }
     
-    await addComment(comment);
+    if (isRealPost) {
+      await addComment(comment);
+    } else {
+      await addComment(comment);
+    }
     
     setComment('');
     setIsSending(false);
