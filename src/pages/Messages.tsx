@@ -417,7 +417,7 @@ export default function Messages() {
                 className="flex flex-col items-center gap-2 min-w-[72px] group"
                 onClick={() => {
                   if (user.id !== 'new' && user.id !== 'note') {
-                    const conv = mockConversations.find(c => c.participant.name.toLowerCase().includes(user.name.toLowerCase()));
+                    const conv = conversations.find(c => c.participant.name.toLowerCase().includes(user.name.toLowerCase()));
                     if (conv) setSelectedConversation(conv);
                   }
                 }}
