@@ -24,6 +24,7 @@ import Notifications from "./pages/Notifications";
 import Messages from "./pages/Messages";
 import Profile from "./pages/Profile";
 import Directory from "./pages/Directory";
+import ProviderDashboard from "./pages/ProviderDashboard";
 import CrisisSupport from "./pages/CrisisSupport";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
@@ -94,6 +95,7 @@ function AppRoutes() {
         <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
         <Route path="/profile/:handle?" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+        <Route path="/provider-dashboard" element={<ProtectedRoute><ProviderDashboard /></ProtectedRoute>} />
         {/* Public routes */}
         <Route path="/directory" element={<Directory />} />
         <Route path="/crisis" element={<CrisisSupport />} />

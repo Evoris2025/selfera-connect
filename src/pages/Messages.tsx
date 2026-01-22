@@ -1,5 +1,6 @@
-import { useState, useRef, useMemo, useCallback } from 'react';
+import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import { 
   Search, 
   Edit, 
@@ -34,6 +35,7 @@ import { ReactionPicker, MessageReactions } from '@/components/messages/MessageR
 import { ReadReceipt } from '@/components/messages/ReadReceipt';
 import { ImagePreviewBar } from '@/components/messages/ImagePreviewBar';
 import { ImageMessage } from '@/components/messages/ImageMessage';
+import { supabase } from '@/integrations/supabase/client';
 
 // Dopamine-driven spring configs
 const springSnap = { type: 'spring' as const, stiffness: 700, damping: 30, mass: 0.8 };
@@ -245,10 +247,11 @@ function MessageBubble({
 
 export default function Messages() {
   const { t } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { state, sendMessage: sendMockMessage, markConversationRead } = useMockSystem();
   const { shouldHideUser } = useSafety();
   const { typingUsers, setTyping, onlineUsers } = useRealtimeMessages();
-  const { startConversation } = useNewConversation();
+  const { startConversation, findExistingConversation } = useNewConversation();
   const { 
     isUploading, 
     uploadProgress, 
@@ -267,16 +270,81 @@ export default function Messages() {
   const [selectedConversation, setSelectedConversation] = useState<MockConversation | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [newMessage, setNewMessage] = useState('');
-  const [isLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [showNewConversation, setShowNewConversation] = useState(false);
   const [messageReactions, setMessageReactions] = useState<Map<string, { emoji: string; count: number; userReacted: boolean }[]>>(new Map());
   const [readMessages, setReadMessages] = useState<Set<string>>(new Set());
+  const [deepLinkUser, setDeepLinkUser] = useState<{ id: string; name: string; handle?: string } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const requestCount = 2;
+
+  // Handle deep-linking: check for ?user=<userId> param
+  useEffect(() => {
+    const targetUserId = searchParams.get('user');
+    if (!targetUserId) return;
+
+    const handleDeepLink = async () => {
+      setIsLoading(true);
+      try {
+        // Fetch the target user's profile
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('id, display_name, handle, avatar_url')
+          .eq('id', targetUserId)
+          .single();
+
+        if (profile) {
+          setDeepLinkUser({
+            id: profile.id,
+            name: profile.display_name || 'User',
+            handle: profile.handle || undefined,
+          });
+
+          // Check for existing conversation or start a new one
+          const conversationId = await startConversation(targetUserId);
+          if (conversationId) {
+            // Look for it in mock conversations or create a temporary one
+            const existingConv = state.conversations.find(c => c.id === conversationId);
+            if (existingConv) {
+              setSelectedConversation(existingConv);
+            } else {
+              // Create a temporary conversation object for the UI
+              const tempConv: MockConversation = {
+                id: conversationId,
+                participant: {
+                  id: profile.id,
+                  name: profile.display_name || 'User',
+                  handle: profile.handle || 'user',
+                  avatarUrl: profile.avatar_url || undefined,
+                  isOnline: false,
+                },
+                lastMessage: '',
+                lastMessageTime: 'now',
+                unread: false,
+                messages: [],
+                isNew: true,
+              };
+              setSelectedConversation(tempConv);
+            }
+          }
+        }
+
+        // Clear the URL param after handling
+        setSearchParams({}, { replace: true });
+      } catch (err) {
+        console.error('Error handling deep link:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    handleDeepLink();
+  }, [searchParams, startConversation, state.conversations, setSearchParams]);
+  
   
   // Get conversations from mock system, filtering out blocked users
   const conversations = useMemo(() => {

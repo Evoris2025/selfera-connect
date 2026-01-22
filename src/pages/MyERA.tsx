@@ -13,7 +13,8 @@ import {
   Heart,
   Check,
   Clock,
-  ExternalLink
+  ExternalLink,
+  LayoutDashboard,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserPathways, PathwayType } from '@/hooks/useUserPathways';
@@ -81,6 +82,10 @@ export default function MyERA() {
   const completedCount = pathways.filter(p => p.status === 'completed').length;
   const inProgressCount = pathways.filter(p => p.status === 'in_progress').length;
   const connectionsCount = activeProviders.length + pendingProviders.length;
+
+  // Check if user is a verified provider (can access provider dashboard)
+  const isVerifiedProvider = profile?.is_verified && 
+    (profile?.user_type === 'professional' || profile?.user_type === 'organization');
 
   const handlePathwayAction = (pathway: typeof pathways[0]) => {
     if (pathway.type === 'professional') {
@@ -174,11 +179,11 @@ export default function MyERA() {
         </div>
 
         {/* Quick Actions */}
-        <div className="flex items-center gap-2 mt-4">
+        <div className="flex items-center gap-2 mt-4 flex-wrap">
           <Button
             variant="outline"
             size="sm"
-            className="flex-1 rounded-xl"
+            className="flex-1 rounded-xl min-w-[80px]"
             onClick={() => navigate('/profile')}
           >
             <User className="w-4 h-4 mr-2" />
@@ -187,21 +192,33 @@ export default function MyERA() {
           <Button
             variant="outline"
             size="sm"
-            className="flex-1 rounded-xl"
+            className="flex-1 rounded-xl min-w-[80px]"
             onClick={() => navigate('/settings')}
           >
             <Settings className="w-4 h-4 mr-2" />
             Settings
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex-1 rounded-xl"
-            onClick={() => navigate('/settings?view=verification')}
-          >
-            <Shield className="w-4 h-4 mr-2" />
-            Verify
-          </Button>
+          {isVerifiedProvider ? (
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1 rounded-xl min-w-[80px]"
+              onClick={() => navigate('/provider-dashboard')}
+            >
+              <LayoutDashboard className="w-4 h-4 mr-2" />
+              Dashboard
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1 rounded-xl min-w-[80px]"
+              onClick={() => navigate('/settings?view=verification')}
+            >
+              <Shield className="w-4 h-4 mr-2" />
+              Verify
+            </Button>
+          )}
         </div>
       </motion.div>
 
