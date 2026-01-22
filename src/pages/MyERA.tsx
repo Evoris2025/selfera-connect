@@ -19,6 +19,8 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserPathways, PathwayType } from '@/hooks/useUserPathways';
 import { useSupportLinks } from '@/hooks/useSupportLinks';
+import { usePendingConnectionCount } from '@/hooks/usePendingConnectionCount';
+import { useNotifications } from '@/hooks/useNotifications';
 import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -64,6 +66,8 @@ export default function MyERA() {
   const { user } = useAuth();
   const { getPathwaysWithInfo, startPathway } = useUserPathways();
   const { activeProviders, pendingProviders } = useSupportLinks();
+  const { count: pendingConnectionCount } = usePendingConnectionCount();
+  const { unreadCount: notificationCount } = useNotifications();
   const [profile, setProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
@@ -456,7 +460,10 @@ export default function MyERA() {
       </motion.footer>
 
       {/* Bottom Navigation */}
-      <MobileNav />
+      <MobileNav 
+        notificationCount={notificationCount}
+        pendingConnectionCount={pendingConnectionCount}
+      />
     </div>
   );
 }

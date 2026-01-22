@@ -191,6 +191,7 @@
       "wellbeing": "Wellbeing Org",
       "verifiedOnly": "Verified only"
     },
+    "searchPlaceholder": "Search providers, services, or topics...",
     "noResults": "No services found matching your criteria",
     "resultsCount": "{{count}} providers found",
     "disclaimer": "This directory provides information only. SelfERA is not a healthcare provider. Services are provided independently by listed providers. If you're in crisis, please seek immediate help.",

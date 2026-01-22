@@ -17,17 +17,24 @@ interface MobileNavProps {
   notificationCount?: number;
   messageCount?: number;
   followRequestCount?: number;
+  pendingConnectionCount?: number;
 }
 
 // Cinematic spring configs - slower, more intentional
 const springSmooth = { type: 'spring' as const, stiffness: 300, damping: 30 };
 const springGentle = { type: 'spring' as const, stiffness: 200, damping: 25 };
 
-export function MobileNav({ onCreateClick, notificationCount = 0, messageCount = 0, followRequestCount = 0 }: MobileNavProps) {
+export function MobileNav({ 
+  onCreateClick, 
+  notificationCount = 0, 
+  messageCount = 0, 
+  followRequestCount = 0,
+  pendingConnectionCount = 0,
+}: MobileNavProps) {
   const location = useLocation();
 
-  // Combine notification count with follow request count for total badge
-  const totalNotificationBadge = notificationCount + followRequestCount;
+  // Combine notification count with follow request count and pending connections for total badge
+  const totalNotificationBadge = notificationCount + followRequestCount + pendingConnectionCount;
 
   // 6 nav items: Home, Explore, MyERA, Create (center), Notifications, Messages, Profile
   // Order: Home, Explore, MyERA, Create, Notifications, Messages, Profile

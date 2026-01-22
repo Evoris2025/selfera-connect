@@ -13,10 +13,10 @@ import {
   ChevronDown,
   Sparkles,
   Info,
+  X,
 } from 'lucide-react';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -24,6 +24,7 @@ import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
 import { ProviderDetailModal } from '@/components/directory/ProviderDetailModal';
+import { DirectorySearchBar } from '@/components/directory/DirectorySearchBar';
 import { useDirectory, DirectoryEntry } from '@/hooks/useDirectory';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -64,9 +65,12 @@ export default function Directory() {
   const { t } = useTranslation();
   const {
     entries,
+    allEntries,
     loading,
     filters,
     updateFilter,
+    clearFilters,
+    hasActiveFilters,
     availableRegions,
     availableLanguages,
   } = useDirectory();
@@ -112,19 +116,20 @@ export default function Directory() {
           </div>
         </motion.div>
 
-        {/* Search */}
+        {/* Search with Real-time Results */}
         <motion.div 
-          className="relative mb-4"
+          className="mb-4"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...springGentle, delay: 0.1 }}
         >
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-          <Input
-            placeholder={t('common.search')}
+          <DirectorySearchBar
             value={filters.search}
-            onChange={(e) => updateFilter('search', e.target.value)}
-            className="pl-10 h-12 bg-secondary/50 border-border/50 rounded-xl"
+            onChange={(value) => updateFilter('search', value)}
+            entries={entries}
+            loading={loading}
+            onSelectEntry={handleViewDetails}
+            placeholder={t('directory.searchPlaceholder') || 'Search providers, services, or topics...'}
           />
         </motion.div>
 
