@@ -22,6 +22,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { MobileNav } from '@/components/MobileNav';
 import { useMockSystem, type MockConversation, type MockMessage } from '@/contexts/MockSystemContext';
+import { useSafety } from '@/contexts/SafetyContext';
 
 // Dopamine-driven spring configs
 const springSnap = { type: 'spring' as const, stiffness: 700, damping: 30, mass: 0.8 };
@@ -102,6 +103,7 @@ function OnlineIndicator({ size = 'default', pulse = false }: { size?: 'small' |
 export default function Messages() {
   const { t } = useTranslation();
   const { state, sendMessage: sendMockMessage, markConversationRead } = useMockSystem();
+  const { shouldHideUser } = useSafety();
   const [selectedConversation, setSelectedConversation] = useState<MockConversation | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [newMessage, setNewMessage] = useState('');
@@ -112,8 +114,10 @@ export default function Messages() {
 
   const requestCount = 2;
   
-  // Get conversations from mock system
-  const conversations = state.conversations;
+  // Get conversations from mock system, filtering out blocked users
+  const conversations = useMemo(() => {
+    return state.conversations.filter(conv => !shouldHideUser(conv.participant.id));
+  }, [state.conversations, shouldHideUser]);
   
   // Get messages for selected conversation
   const messages = useMemo(() => {

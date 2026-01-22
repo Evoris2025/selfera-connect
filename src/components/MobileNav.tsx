@@ -17,23 +17,27 @@ interface MobileNavProps {
   onCreateClick?: () => void;
   notificationCount?: number;
   messageCount?: number;
+  followRequestCount?: number;
 }
 
 // Cinematic spring configs - slower, more intentional
 const springSmooth = { type: 'spring' as const, stiffness: 300, damping: 30 };
 const springGentle = { type: 'spring' as const, stiffness: 200, damping: 25 };
 
-export function MobileNav({ onCreateClick, notificationCount = 0, messageCount = 0 }: MobileNavProps) {
+export function MobileNav({ onCreateClick, notificationCount = 0, messageCount = 0, followRequestCount = 0 }: MobileNavProps) {
   const location = useLocation();
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isInteracting, setIsInteracting] = useState(false);
 
+  // Combine notification count with follow request count for total badge
+  const totalNotificationBadge = notificationCount + followRequestCount;
+
   const navItems: NavItem[] = [
     { icon: Home, href: '/feed', label: 'Home' },
     { icon: Compass, href: '/explore', label: 'Explore' },
     { icon: Plus, href: '#create', isCreate: true, label: 'Create' },
-    { icon: Bell, href: '/notifications', label: 'Notifications', hasBadge: notificationCount > 0 },
+    { icon: Bell, href: '/notifications', label: 'Notifications', hasBadge: totalNotificationBadge > 0 },
     { icon: MessageCircle, href: '/messages', label: 'Messages', hasBadge: messageCount > 0 },
     { icon: User, href: '/profile', label: 'Profile', isProfile: true },
   ];
