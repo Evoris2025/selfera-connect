@@ -18,9 +18,11 @@ import { CommentButton, ShareButton, CommentSheet, CommunityButton } from './int
 import { CinematicAvatar } from './ui/CinematicAvatar';
 import { ImmersiveMedia } from './ui/ImmersiveMedia';
 import { ReactionButton, ReactionType } from './feed/ReactionPicker';
+import { ReportModal } from './moderation/ReportModal';
 import { useReactions } from '@/hooks/useReactions';
 import { useLibrary } from '@/hooks/useLibrary';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSafety } from '@/contexts/SafetyContext';
 import { cn } from '@/lib/utils';
 
 
@@ -72,11 +74,18 @@ function PostCardBase({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { blockUser, muteUser, isBlocked, isMuted } = useSafety();
   const [showContent, setShowContent] = useState(!hasContentWarning);
   const [showHeartOverlay, setShowHeartOverlay] = useState(false);
   const [showCommentSheet, setShowCommentSheet] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
   const { reactionCount, currentReaction, setReaction } = useReactions(id, likes);
   const { inLibrary, toggleLibrary } = useLibrary(id);
+
+  // Don't render if author is blocked
+  if (authorId && isBlocked(authorId)) {
+    return null;
+  }
 
   // Navigate to creator profile
   const handleCreatorClick = (e: React.MouseEvent) => {
@@ -177,19 +186,32 @@ function PostCardBase({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="glass-card">
-              <DropdownMenuItem className="gap-2">
+              <DropdownMenuItem 
+                className="gap-2"
+                onClick={() => setShowReportModal(true)}
+              >
                 <Flag className="h-4 w-4" />
                 {t('safety.report')}
               </DropdownMenuItem>
-              <DropdownMenuItem className="gap-2">
-                <VolumeX className="h-4 w-4" />
-                {t('safety.mute')}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="gap-2 text-destructive">
-                <Ban className="h-4 w-4" />
-                {t('safety.block')}
-              </DropdownMenuItem>
+              {authorId && (
+                <>
+                  <DropdownMenuItem 
+                    className="gap-2"
+                    onClick={() => muteUser(authorId)}
+                  >
+                    <VolumeX className="h-4 w-4" />
+                    {isMuted(authorId) ? 'Unmute' : t('safety.mute')}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    className="gap-2 text-destructive"
+                    onClick={() => blockUser(authorId)}
+                  >
+                    <Ban className="h-4 w-4" />
+                    {t('safety.block')}
+                  </DropdownMenuItem>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -247,6 +269,14 @@ function PostCardBase({
           onOpenChange={setShowCommentSheet}
           postId={id}
           commentCount={commentCount}
+        />
+
+        <ReportModal
+          open={showReportModal}
+          onOpenChange={setShowReportModal}
+          targetType="post"
+          targetId={id}
+          targetLabel={`${author.name}'s post`}
         />
       </motion.article>
     );
@@ -321,19 +351,32 @@ function PostCardBase({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="glass-card">
-                <DropdownMenuItem className="gap-2">
+                <DropdownMenuItem 
+                  className="gap-2"
+                  onClick={() => setShowReportModal(true)}
+                >
                   <Flag className="h-4 w-4" />
                   {t('safety.report')}
                 </DropdownMenuItem>
-                <DropdownMenuItem className="gap-2">
-                  <VolumeX className="h-4 w-4" />
-                  {t('safety.mute')}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="gap-2 text-destructive">
-                  <Ban className="h-4 w-4" />
-                  {t('safety.block')}
-                </DropdownMenuItem>
+                {authorId && (
+                  <>
+                    <DropdownMenuItem 
+                      className="gap-2"
+                      onClick={() => muteUser(authorId)}
+                    >
+                      <VolumeX className="h-4 w-4" />
+                      {isMuted(authorId) ? 'Unmute' : t('safety.mute')}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      className="gap-2 text-destructive"
+                      onClick={() => blockUser(authorId)}
+                    >
+                      <Ban className="h-4 w-4" />
+                      {t('safety.block')}
+                    </DropdownMenuItem>
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </motion.div>
@@ -409,6 +452,14 @@ function PostCardBase({
         onOpenChange={setShowCommentSheet}
         postId={id}
         commentCount={commentCount}
+      />
+
+      <ReportModal
+        open={showReportModal}
+        onOpenChange={setShowReportModal}
+        targetType="post"
+        targetId={id}
+        targetLabel={`${author.name}'s post`}
       />
     </motion.article>
   );

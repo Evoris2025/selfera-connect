@@ -9,6 +9,7 @@ import { languages, changeLanguage, getCurrentLanguage, type LanguageCode } from
 import { ThemeSelector } from '@/components/settings/ThemeSelector';
 import { VerificationRequestForm } from '@/components/settings/VerificationRequestForm';
 import { AdminVerificationQueue } from '@/components/admin/AdminVerificationQueue';
+import { AdminModerationQueue } from '@/components/admin/AdminModerationQueue';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import {
@@ -23,7 +24,7 @@ export default function Settings() {
   const { t } = useTranslation();
   const { user, signOut } = useAuth();
   const currentLang = getCurrentLanguage();
-  const [view, setView] = useState<'main' | 'verification' | 'admin-verification'>('main');
+  const [view, setView] = useState<'main' | 'verification' | 'admin-verification' | 'admin-moderation'>('main');
   const [isAdmin, setIsAdmin] = useState(false);
 
   // Check if current user is admin
@@ -87,6 +88,17 @@ export default function Settings() {
             ← Back to Settings
           </Button>
           <AdminVerificationQueue />
+        </div>
+      </AppLayout>
+    );
+  }
+
+  // Admin moderation queue view
+  if (view === 'admin-moderation') {
+    return (
+      <AppLayout>
+        <div className="max-w-2xl mx-auto p-4">
+          <AdminModerationQueue onBack={() => setView('main')} />
         </div>
       </AppLayout>
     );
@@ -201,22 +213,41 @@ export default function Settings() {
 
           {/* Admin: Verification Queue */}
           {isAdmin && (
-            <Card 
-              className="cursor-pointer hover:border-primary/30 transition-colors border-dashed"
-              onClick={() => setView('admin-verification')}
-            >
-              <CardHeader>
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-destructive/10">
-                    <Shield className="h-5 w-5 text-destructive" />
+            <>
+              <Card 
+                className="cursor-pointer hover:border-primary/30 transition-colors border-dashed"
+                onClick={() => setView('admin-verification')}
+              >
+                <CardHeader>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-destructive/10">
+                      <Shield className="h-5 w-5 text-destructive" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-base">Admin: Verification Queue</CardTitle>
+                      <CardDescription>Review and process verification requests</CardDescription>
+                    </div>
                   </div>
-                  <div>
-                    <CardTitle className="text-base">Admin: Verification Queue</CardTitle>
-                    <CardDescription>Review and process verification requests</CardDescription>
+                </CardHeader>
+              </Card>
+              
+              <Card 
+                className="cursor-pointer hover:border-primary/30 transition-colors border-dashed"
+                onClick={() => setView('admin-moderation')}
+              >
+                <CardHeader>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-amber-500/10">
+                      <Shield className="h-5 w-5 text-amber-500" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-base">Admin: Moderation Queue</CardTitle>
+                      <CardDescription>Review user reports and take action</CardDescription>
+                    </div>
                   </div>
-                </div>
-              </CardHeader>
-            </Card>
+                </CardHeader>
+              </Card>
+            </>
           )}
 
           {/* Other Settings */}

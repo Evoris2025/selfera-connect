@@ -8,6 +8,7 @@ import '@/i18n';
 import { getCurrentLanguage, getLanguageDirection } from "@/i18n";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { MockSystemProvider } from "@/contexts/MockSystemContext";
+import { SafetyProvider } from "@/contexts/SafetyContext";
 import logo from '@/assets/selfera-logo.png';
 
 import Landing from "./pages/Landing";
@@ -98,15 +99,17 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <MockSystemProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <AppRoutes />
-            </BrowserRouter>
-          </TooltipProvider>
-        </MockSystemProvider>
+        <SafetyProvider>
+          <MockSystemProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <AppRoutes />
+              </BrowserRouter>
+            </TooltipProvider>
+          </MockSystemProvider>
+        </SafetyProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
