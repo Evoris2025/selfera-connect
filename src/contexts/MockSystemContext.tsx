@@ -61,6 +61,7 @@ export interface MockConversation {
   lastMessageTime: string;
   unread: boolean;
   isTyping?: boolean;
+  isNew?: boolean;
 }
 
 export interface MockCommunity {
