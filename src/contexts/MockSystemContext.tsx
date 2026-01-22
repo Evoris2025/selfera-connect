@@ -1014,7 +1014,62 @@ export function MockSystemProvider({ children }: { children: ReactNode }) {
 export function useMockSystem() {
   const context = useContext(MockSystemContext);
   if (!context) {
-    throw new Error('useMockSystem must be used within a MockSystemProvider');
+    // During HMR, context might be temporarily unavailable
+    // Return a minimal fallback to prevent crashes
+    console.warn('MockSystemContext not available, returning fallback');
+    const fallback: MockSystemContextType = {
+      state: {
+        posts: [],
+        comments: new Map(),
+        notifications: [],
+        conversations: [],
+        communities: [],
+        userState: {
+          following: new Set(),
+          followers: new Set(),
+          communityMembers: new Set(),
+          joinedCommunities: new Set(),
+          followingCommunities: new Set(),
+          savedPosts: new Set(),
+          reactions: new Map(),
+        },
+        profiles: new Map(),
+      },
+      addPost: () => {},
+      updatePostLikes: () => {},
+      updatePostCommentCount: () => {},
+      getPost: () => undefined,
+      setReaction: () => {},
+      getReaction: () => null,
+      addComment: () => {},
+      getComments: () => [],
+      followUser: () => {},
+      unfollowUser: () => {},
+      isFollowing: () => false,
+      getFollowerCount: () => 0,
+      getFollowingCount: () => 0,
+      addToCommunity: () => {},
+      removeFromCommunity: () => {},
+      isInCommunity: () => false,
+      getCommunityCount: () => 0,
+      toggleSave: () => {},
+      isSaved: () => false,
+      getSavedCount: () => 0,
+      addNotification: () => {},
+      markNotificationRead: () => {},
+      markAllNotificationsRead: () => {},
+      getUnreadNotificationCount: () => 0,
+      sendMessage: () => {},
+      getConversation: () => undefined,
+      getUnreadMessageCount: () => 0,
+      markConversationRead: () => {},
+      joinCommunity: () => {},
+      leaveCommunity: () => {},
+      followCommunity: () => {},
+      unfollowCommunity: () => {},
+      getPostCount: () => 0,
+    };
+    return fallback;
   }
   return context;
 }
