@@ -1,4 +1,3 @@
-import { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Compass, Plus, Bell, MessageCircle, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -26,9 +25,6 @@ const springGentle = { type: 'spring' as const, stiffness: 200, damping: 25 };
 
 export function MobileNav({ onCreateClick, notificationCount = 0, messageCount = 0, followRequestCount = 0 }: MobileNavProps) {
   const location = useLocation();
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const [isInteracting, setIsInteracting] = useState(false);
 
   // Combine notification count with follow request count for total badge
   const totalNotificationBadge = notificationCount + followRequestCount;
@@ -42,107 +38,45 @@ export function MobileNav({ onCreateClick, notificationCount = 0, messageCount =
     { icon: User, href: '/profile', label: 'Profile', isProfile: true },
   ];
 
-  // Hide nav on scroll down, show on scroll up
-  const handleScroll = useCallback(() => {
-    const currentScrollY = window.scrollY;
-    
-    if (currentScrollY > lastScrollY && currentScrollY > 100) {
-      setIsVisible(false);
-    } else {
-      setIsVisible(true);
-    }
-    
-    setLastScrollY(currentScrollY);
-  }, [lastScrollY]);
-
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [handleScroll]);
-
-  // Show nav when interacting
-  const handleInteraction = () => {
-    setIsInteracting(true);
-    setIsVisible(true);
-    setTimeout(() => setIsInteracting(false), 3000);
-  };
-
   return (
-    <AnimatePresence>
-      <motion.nav 
-        initial={{ y: 0, opacity: 1 }}
-        animate={{ 
-          y: isVisible || isInteracting ? 0 : 100, 
-          opacity: isVisible || isInteracting ? 1 : 0 
-        }}
-        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        onMouseEnter={handleInteraction}
-        onTouchStart={handleInteraction}
-        className="fixed bottom-0 left-0 right-0 z-50 pb-safe"
-      >
-        {/* Glass background with gradient fade */}
-        <div className="absolute inset-0 glass-heavy rounded-t-3xl border-t border-border/50" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent rounded-t-3xl pointer-events-none" />
-        
-        <div className="relative flex items-center justify-around h-18 max-w-lg mx-auto px-6">
-          {navItems.map((item, index) => {
-            const isActive = location.pathname === item.href || 
-              (item.href === '/feed' && location.pathname === '/feed') ||
-              (item.href === '/explore' && location.pathname.startsWith('/explore')) ||
-              (item.href === '/profile' && location.pathname.startsWith('/profile')) ||
-              (item.href === '/notifications' && location.pathname === '/notifications') ||
-              (item.href === '/messages' && location.pathname === '/messages');
-            
-            // Create button - special styling
-            if (item.isCreate) {
-              return (
-                <motion.button
-                  key={index}
-                  onClick={onCreateClick}
-                  whileTap={{ scale: 0.9 }}
-                  whileHover={{ scale: 1.05 }}
-                  transition={springSmooth}
-                  className="relative flex items-center justify-center w-11 h-11 rounded-xl bg-primary/10 hover:bg-primary/20 transition-colors duration-300"
-                  aria-label="Create post"
+    <nav className="fixed bottom-0 left-0 right-0 z-50 pb-safe">
+      {/* Glass background with gradient fade */}
+      <div className="absolute inset-0 glass-heavy rounded-t-3xl border-t border-border/50" />
+      <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent rounded-t-3xl pointer-events-none" />
+      
+      <div className="relative flex items-center justify-around h-18 max-w-lg mx-auto px-6">
+        {navItems.map((item, index) => {
+          const isActive = location.pathname === item.href || 
+            (item.href === '/feed' && location.pathname === '/feed') ||
+            (item.href === '/explore' && location.pathname.startsWith('/explore')) ||
+            (item.href === '/profile' && location.pathname.startsWith('/profile')) ||
+            (item.href === '/notifications' && location.pathname === '/notifications') ||
+            (item.href === '/messages' && location.pathname === '/messages');
+          
+          // Create button - special styling
+          if (item.isCreate) {
+            return (
+              <motion.button
+                key={index}
+                onClick={onCreateClick}
+                whileTap={{ scale: 0.9 }}
+                whileHover={{ scale: 1.05 }}
+                transition={springSmooth}
+                className="relative flex items-center justify-center w-11 h-11 rounded-xl bg-primary/10 hover:bg-primary/20 transition-colors duration-300"
+                aria-label="Create post"
+              >
+                <motion.div
+                  whileHover={{ rotate: 90 }}
+                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                 >
-                  <motion.div
-                    whileHover={{ rotate: 90 }}
-                    transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                  >
-                    <item.icon className="h-5 w-5 text-primary" strokeWidth={1.5} />
-                  </motion.div>
-                </motion.button>
-              );
-            }
+                  <item.icon className="h-5 w-5 text-primary" strokeWidth={1.5} />
+                </motion.div>
+              </motion.button>
+            );
+          }
 
-            // Profile with subtle ring
-            if (item.isProfile) {
-              return (
-                <Link key={item.href} to={item.href}>
-                  <motion.div
-                    whileTap={{ scale: 0.9 }}
-                    transition={springSmooth}
-                    className={cn(
-                      'relative flex items-center justify-center p-3',
-                      isActive ? 'text-foreground' : 'text-muted-foreground/50'
-                    )}
-                  >
-                    <motion.div 
-                      className={cn(
-                        "relative",
-                        isActive && "after:absolute after:inset-0 after:rounded-full after:ring-2 after:ring-primary/60 after:ring-offset-2 after:ring-offset-background"
-                      )}
-                      animate={isActive ? { scale: 1.1 } : { scale: 1 }}
-                      transition={springGentle}
-                    >
-                      <item.icon className="h-[22px] w-[22px]" strokeWidth={isActive ? 1.8 : 1.2} />
-                    </motion.div>
-                  </motion.div>
-                </Link>
-              );
-            }
-            
-            // Standard nav items - thin, elegant
+          // Profile with subtle ring
+          if (item.isProfile) {
             return (
               <Link key={item.href} to={item.href}>
                 <motion.div
@@ -150,47 +84,72 @@ export function MobileNav({ onCreateClick, notificationCount = 0, messageCount =
                   transition={springSmooth}
                   className={cn(
                     'relative flex items-center justify-center p-3',
-                    isActive ? 'text-foreground' : 'text-muted-foreground/50 hover:text-muted-foreground'
+                    isActive ? 'text-foreground' : 'text-muted-foreground/50'
                   )}
                 >
-                  <motion.div
+                  <motion.div 
+                    className={cn(
+                      "relative",
+                      isActive && "after:absolute after:inset-0 after:rounded-full after:ring-2 after:ring-primary/60 after:ring-offset-2 after:ring-offset-background"
+                    )}
                     animate={isActive ? { scale: 1.1 } : { scale: 1 }}
                     transition={springGentle}
                   >
                     <item.icon className="h-[22px] w-[22px]" strokeWidth={isActive ? 1.8 : 1.2} />
                   </motion.div>
-                  
-                  {/* Subtle active indicator */}
-                  <AnimatePresence>
-                    {isActive && (
-                      <motion.span
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0, opacity: 0 }}
-                        transition={springGentle}
-                        className="absolute -bottom-1 w-1 h-1 rounded-full bg-primary"
-                      />
-                    )}
-                  </AnimatePresence>
-                  
-                  {/* Badge - minimal pulse */}
-                  <AnimatePresence mode="popLayout">
-                    {item.hasBadge && (
-                      <motion.span 
-                        initial={{ opacity: 0, scale: 0 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0 }}
-                        transition={springGentle}
-                        className="absolute top-2 right-2 w-2 h-2 rounded-full bg-crisis/80"
-                      />
-                    )}
-                  </AnimatePresence>
                 </motion.div>
               </Link>
             );
-          })}
-        </div>
-      </motion.nav>
-    </AnimatePresence>
+          }
+          
+          // Standard nav items - thin, elegant
+          return (
+            <Link key={item.href} to={item.href}>
+              <motion.div
+                whileTap={{ scale: 0.9 }}
+                transition={springSmooth}
+                className={cn(
+                  'relative flex items-center justify-center p-3',
+                  isActive ? 'text-foreground' : 'text-muted-foreground/50 hover:text-muted-foreground'
+                )}
+              >
+                <motion.div
+                  animate={isActive ? { scale: 1.1 } : { scale: 1 }}
+                  transition={springGentle}
+                >
+                  <item.icon className="h-[22px] w-[22px]" strokeWidth={isActive ? 1.8 : 1.2} />
+                </motion.div>
+                
+                {/* Subtle active indicator */}
+                <AnimatePresence>
+                  {isActive && (
+                    <motion.span
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0, opacity: 0 }}
+                      transition={springGentle}
+                      className="absolute -bottom-1 w-1 h-1 rounded-full bg-primary"
+                    />
+                  )}
+                </AnimatePresence>
+                
+                {/* Badge - minimal pulse */}
+                <AnimatePresence mode="popLayout">
+                  {item.hasBadge && (
+                    <motion.span 
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0 }}
+                      transition={springGentle}
+                      className="absolute top-2 right-2 w-2 h-2 rounded-full bg-crisis/80"
+                    />
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
   );
 }

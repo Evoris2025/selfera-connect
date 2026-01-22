@@ -11,25 +11,30 @@ import {
   Plus,
   Camera,
   Phone,
-  Video
+  Video,
+  Check
 } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { MobileNav } from '@/components/MobileNav';
 import { useMockSystem, type MockConversation, type MockMessage } from '@/contexts/MockSystemContext';
 import { useSafety } from '@/contexts/SafetyContext';
 import { useRealtimeMessages } from '@/hooks/useRealtimeMessages';
+import { useMessageReactions } from '@/hooks/useMessageReactions';
+import { useNewConversation } from '@/hooks/useNewConversation';
+import { NewConversationModal } from '@/components/messages/NewConversationModal';
+import { ReactionPicker, MessageReactions } from '@/components/messages/MessageReactions';
+import { ReadReceipt } from '@/components/messages/ReadReceipt';
 
 // Dopamine-driven spring configs
 const springSnap = { type: 'spring' as const, stiffness: 700, damping: 30, mass: 0.8 };
 const springBounce = { type: 'spring' as const, stiffness: 500, damping: 15, mass: 0.5 };
 const springPop = { type: 'spring' as const, stiffness: 600, damping: 12 };
-const springElastic = { type: 'spring' as const, stiffness: 400, damping: 10, mass: 0.8 };
 
 interface QuickAccessUser {
   id: string;
@@ -101,16 +106,124 @@ function OnlineIndicator({ size = 'default', pulse = false }: { size?: 'small' |
   );
 }
 
+// Message bubble with reactions and read receipts
+function MessageBubble({
+  message,
+  isOwnMessage,
+  reactions,
+  onReact,
+  isLastMessage,
+  isRead,
+}: {
+  message: MockMessage;
+  isOwnMessage: boolean;
+  reactions: { emoji: string; count: number; userReacted: boolean }[];
+  onReact: (emoji: string) => void;
+  isLastMessage: boolean;
+  isRead: boolean;
+}) {
+  const [showPicker, setShowPicker] = useState(false);
+  const longPressTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleTouchStart = () => {
+    longPressTimeoutRef.current = setTimeout(() => {
+      setShowPicker(true);
+    }, 500);
+  };
+
+  const handleTouchEnd = () => {
+    if (longPressTimeoutRef.current) {
+      clearTimeout(longPressTimeoutRef.current);
+    }
+  };
+
+  const handleDoubleClick = () => {
+    onReact('❤️');
+  };
+
+  return (
+    <div className={cn('relative', isOwnMessage ? 'flex flex-col items-end' : 'flex flex-col items-start')}>
+      <motion.div
+        onDoubleClick={handleDoubleClick}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
+        whileTap={{ scale: 0.98 }}
+        className={cn(
+          'max-w-[78%] px-4 py-3 shadow-sm relative',
+          isOwnMessage
+            ? 'bg-primary text-primary-foreground rounded-[22px] rounded-br-md'
+            : 'bg-secondary/80 text-foreground rounded-[22px] rounded-bl-md'
+        )}
+      >
+        <p className="text-[15px] leading-relaxed">{message.content}</p>
+        
+        <ReactionPicker
+          isOpen={showPicker}
+          onSelect={onReact}
+          onClose={() => setShowPicker(false)}
+          position={isOwnMessage ? 'right' : 'left'}
+        />
+      </motion.div>
+      
+      {/* Reactions display */}
+      {reactions.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className={cn(
+            "flex items-center gap-1 mt-1",
+            isOwnMessage ? "justify-end" : "justify-start"
+          )}
+        >
+          {reactions.map((reaction) => (
+            <motion.button
+              key={reaction.emoji}
+              whileTap={{ scale: 0.85 }}
+              onClick={() => onReact(reaction.emoji)}
+              className={cn(
+                "flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs",
+                "bg-secondary/80 hover:bg-secondary transition-colors",
+                reaction.userReacted && "ring-1 ring-primary/50"
+              )}
+            >
+              <span>{reaction.emoji}</span>
+              {reaction.count > 1 && (
+                <span className="text-muted-foreground text-[10px]">{reaction.count}</span>
+              )}
+            </motion.button>
+          ))}
+        </motion.div>
+      )}
+
+      {/* Read receipt for own messages */}
+      {isOwnMessage && isLastMessage && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="mt-1 flex justify-end"
+        >
+          <ReadReceipt isSent={true} isRead={isRead} />
+        </motion.div>
+      )}
+    </div>
+  );
+}
+
 export default function Messages() {
   const { t } = useTranslation();
   const { state, sendMessage: sendMockMessage, markConversationRead } = useMockSystem();
   const { shouldHideUser } = useSafety();
   const { typingUsers, setTyping, onlineUsers } = useRealtimeMessages();
+  const { startConversation } = useNewConversation();
   const [selectedConversation, setSelectedConversation] = useState<MockConversation | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [newMessage, setNewMessage] = useState('');
   const [isLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [showNewConversation, setShowNewConversation] = useState(false);
+  const [messageReactions, setMessageReactions] = useState<Map<string, { emoji: string; count: number; userReacted: boolean }[]>>(new Map());
+  const [readMessages, setReadMessages] = useState<Set<string>>(new Set());
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -161,15 +274,76 @@ export default function Messages() {
     sendMockMessage(selectedConversation.id, newMessage);
     setNewMessage('');
     
+    // Simulate read receipt after sending
     setTimeout(() => {
       setIsSending(false);
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      
+      // Mark last message as read after a delay (simulating other user reading)
+      setTimeout(() => {
+        if (messages.length > 0) {
+          setReadMessages(prev => new Set([...prev, messages[messages.length - 1]?.id || '']));
+        }
+      }, 2000);
     }, 100);
   };
 
   const handleSelectConversation = (conv: MockConversation) => {
     setSelectedConversation(conv);
     markConversationRead(conv.id);
+  };
+
+  const handleStartNewConversation = async (userId: string) => {
+    const conversationId = await startConversation(userId);
+    if (conversationId) {
+      // Find or create conversation in state
+      const conv = conversations.find(c => c.id === conversationId);
+      if (conv) {
+        setSelectedConversation(conv);
+      }
+    }
+  };
+
+  const handleReactToMessage = (messageId: string, emoji: string) => {
+    setMessageReactions(prev => {
+      const newMap = new Map(prev);
+      const msgReactions = [...(newMap.get(messageId) || [])];
+      const existingIdx = msgReactions.findIndex(r => r.emoji === emoji);
+
+      if (existingIdx >= 0) {
+        const existing = msgReactions[existingIdx];
+        if (existing.userReacted) {
+          // Remove user's reaction
+          if (existing.count === 1) {
+            msgReactions.splice(existingIdx, 1);
+          } else {
+            msgReactions[existingIdx] = {
+              ...existing,
+              count: existing.count - 1,
+              userReacted: false,
+            };
+          }
+        } else {
+          // Add user's reaction
+          msgReactions[existingIdx] = {
+            ...existing,
+            count: existing.count + 1,
+            userReacted: true,
+          };
+        }
+      } else {
+        // New emoji reaction
+        msgReactions.push({ emoji, count: 1, userReacted: true });
+      }
+
+      if (msgReactions.length > 0) {
+        newMap.set(messageId, msgReactions);
+      } else {
+        newMap.delete(messageId);
+      }
+
+      return newMap;
+    });
   };
 
   const getLastMessagePreview = (conv: MockConversation) => {
@@ -262,17 +436,14 @@ export default function Messages() {
                 layout
                 className={cn('flex', message.senderId === 'me' ? 'justify-end' : 'justify-start')}
               >
-                <motion.div
-                  whileTap={{ scale: 0.95 }}
-                  className={cn(
-                    'max-w-[78%] px-4 py-3 shadow-sm',
-                    message.senderId === 'me'
-                      ? 'bg-primary text-primary-foreground rounded-[22px] rounded-br-md'
-                      : 'bg-secondary/80 text-foreground rounded-[22px] rounded-bl-md'
-                  )}
-                >
-                  <p className="text-[15px] leading-relaxed">{message.content}</p>
-                </motion.div>
+                <MessageBubble
+                  message={message}
+                  isOwnMessage={message.senderId === 'me'}
+                  reactions={messageReactions.get(message.id) || []}
+                  onReact={(emoji) => handleReactToMessage(message.id, emoji)}
+                  isLastMessage={idx === messages.length - 1}
+                  isRead={readMessages.has(message.id)}
+                />
               </motion.div>
             ))}
           </AnimatePresence>
@@ -298,18 +469,6 @@ export default function Messages() {
           )}
           <div ref={messagesEndRef} />
         </div>
-
-        {/* Seen indicator */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="px-5 pb-2 flex justify-end"
-        >
-          <span className="text-[11px] text-muted-foreground/70 flex items-center gap-1 font-medium">
-            <CheckCheck className="h-3.5 w-3.5" />
-            Seen
-          </span>
-        </motion.div>
 
         {/* Input */}
         <motion.div 
@@ -412,7 +571,12 @@ export default function Messages() {
             )}
           </AnimatePresence>
           <motion.div whileTap={{ scale: 0.85, rotate: 15 }} transition={springSnap}>
-            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-foreground hover:bg-secondary">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-10 w-10 rounded-full text-foreground hover:bg-secondary"
+              onClick={() => setShowNewConversation(true)}
+            >
               <Edit className="h-6 w-6" strokeWidth={1.5} />
             </Button>
           </motion.div>
@@ -451,7 +615,9 @@ export default function Messages() {
                 whileHover={{ scale: 1.05, y: -2 }}
                 className="flex flex-col items-center gap-2 min-w-[72px] group"
                 onClick={() => {
-                  if (user.id !== 'new' && user.id !== 'note') {
+                  if (user.id === 'new') {
+                    setShowNewConversation(true);
+                  } else if (user.id !== 'note') {
                     const conv = conversations.find(c => c.participant.name.toLowerCase().includes(user.name.toLowerCase()));
                     if (conv) setSelectedConversation(conv);
                   }
@@ -509,7 +675,7 @@ export default function Messages() {
       </motion.div>
 
       {/* Conversations */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto pb-24">
         {isLoading ? (
           Array.from({ length: 5 }).map((_, i) => <ConversationSkeleton key={`skeleton-${i}`} />)
         ) : filteredConversations.length === 0 ? (
@@ -526,7 +692,7 @@ export default function Messages() {
                 exit={{ opacity: 0, x: 30, scale: 0.95 }}
                 transition={{ ...springBounce, delay: idx * 0.03 }}
                 whileTap={{ scale: 0.97, backgroundColor: 'hsl(var(--secondary) / 0.5)' }}
-                onClick={() => setSelectedConversation(conversation)}
+                onClick={() => handleSelectConversation(conversation)}
                 className={cn(
                   "flex items-center gap-4 px-5 py-3.5 cursor-pointer",
                   conversation.isNew && "bg-primary/[0.05]"
@@ -564,12 +730,18 @@ export default function Messages() {
                       {conversation.lastMessageTime}
                     </span>
                   </div>
-                  <p className={cn(
-                    'text-[14px] truncate mt-0.5',
-                    conversation.unread ? 'text-foreground/90 font-medium' : 'text-muted-foreground/70'
-                  )}>
-                    {conversation.isTyping ? <TypingIndicator /> : getLastMessagePreview(conversation)}
-                  </p>
+                  <div className="flex items-center gap-1.5">
+                    <p className={cn(
+                      'text-[14px] truncate mt-0.5 flex-1',
+                      conversation.unread ? 'text-foreground/90 font-medium' : 'text-muted-foreground/70'
+                    )}>
+                      {conversation.isTyping ? <TypingIndicator /> : getLastMessagePreview(conversation)}
+                    </p>
+                    {/* Show read receipt in conversation list */}
+                    {!conversation.unread && (
+                      <CheckCheck className="h-3.5 w-3.5 text-primary shrink-0" />
+                    )}
+                  </div>
                 </div>
 
                 <AnimatePresence>
@@ -590,6 +762,13 @@ export default function Messages() {
       </div>
 
       <MobileNav />
+      
+      {/* New Conversation Modal */}
+      <NewConversationModal
+        isOpen={showNewConversation}
+        onClose={() => setShowNewConversation(false)}
+        onStartConversation={handleStartNewConversation}
+      />
     </div>
   );
 }
