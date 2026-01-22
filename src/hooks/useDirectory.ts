@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
+const STORAGE_KEY = 'selfera_directory_filters';
+
 export interface DirectoryEntry {
   id: string;
   name: string;
@@ -36,6 +38,16 @@ export interface DirectoryFilters {
   verifiedOnly: boolean;
 }
 
+const DEFAULT_FILTERS: DirectoryFilters = {
+  search: '',
+  region: 'all',
+  deliveryType: 'all',
+  priceRange: 'all',
+  roleType: 'all',
+  language: 'all',
+  verifiedOnly: false,
+};
+
 const ROLE_TAG_MAP: Record<string, string[]> = {
   counsellor: ['Counsellor', 'Counselling', 'Counselor'],
   psychologist: ['Psychologist'],
@@ -47,20 +59,44 @@ const ROLE_TAG_MAP: Record<string, string[]> = {
   wellbeing: ['Wellbeing', 'Non-Profit', 'Community'],
 };
 
+// Load filters from localStorage
+function loadPersistedFilters(): DirectoryFilters {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      // Merge with defaults to handle any new filter keys
+      return { ...DEFAULT_FILTERS, ...parsed, search: '' }; // Always reset search
+    }
+  } catch (e) {
+    console.warn('Failed to load directory filters:', e);
+  }
+  return DEFAULT_FILTERS;
+}
+
+// Save filters to localStorage
+function persistFilters(filters: DirectoryFilters) {
+  try {
+    // Don't persist search query
+    const { search, ...toStore } = filters;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(toStore));
+  } catch (e) {
+    console.warn('Failed to save directory filters:', e);
+  }
+}
+
 export function useDirectory() {
   const [entries, setEntries] = useState<DirectoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [filters, setFilters] = useState<DirectoryFilters>({
-    search: '',
-    region: 'all',
-    deliveryType: 'all',
-    priceRange: 'all',
-    roleType: 'all',
-    language: 'all',
-    verifiedOnly: false,
-  });
+  // Initialize filters from localStorage
+  const [filters, setFilters] = useState<DirectoryFilters>(loadPersistedFilters);
+
+  // Persist filters whenever they change (except search)
+  useEffect(() => {
+    persistFilters(filters);
+  }, [filters]);
 
   const fetchEntries = useCallback(async () => {
     try {
@@ -183,6 +219,23 @@ export function useDirectory() {
     return Array.from(languages).sort();
   }, [entries]);
 
+  // Check if any filters are active
+  const hasActiveFilters = useMemo(() => {
+    return (
+      filters.region !== 'all' ||
+      filters.deliveryType !== 'all' ||
+      filters.priceRange !== 'all' ||
+      filters.roleType !== 'all' ||
+      filters.language !== 'all' ||
+      filters.verifiedOnly
+    );
+  }, [filters]);
+
+  // Clear all filters
+  const clearFilters = useCallback(() => {
+    setFilters(DEFAULT_FILTERS);
+  }, []);
+
   return {
     entries: filteredEntries,
     allEntries: entries,
@@ -193,6 +246,8 @@ export function useDirectory() {
     updateFilter: <K extends keyof DirectoryFilters>(key: K, value: DirectoryFilters[K]) => {
       setFilters(prev => ({ ...prev, [key]: value }));
     },
+    clearFilters,
+    hasActiveFilters,
     refresh: fetchEntries,
     availableRegions,
     availableLanguages,

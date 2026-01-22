@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   Dialog,
   DialogContent,
@@ -123,9 +123,12 @@ export function ProviderDetailModal({ entry, open, onOpenChange }: ProviderDetai
       });
       return;
     }
-    // Navigate to messages (could deep-link to create conversation)
+    
+    // Get the provider's user ID for deep-linking
+    const providerId = entry.owner_profile_id || entry.owner_user_id;
     onOpenChange(false);
-    navigate('/messages');
+    // Deep-link to messages with the provider's user ID
+    navigate(`/messages?user=${providerId}`);
   };
 
   const handleVisitWebsite = () => {
