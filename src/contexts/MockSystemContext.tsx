@@ -43,7 +43,7 @@ export interface MockMessage {
   timestamp: string;
   read: boolean;
   type: 'text' | 'image';
-  imageUrl?: string;
+  imageUrls?: string[];
   createdAt: Date;
 }
 
@@ -437,7 +437,7 @@ interface MockSystemContextType {
   getUnreadNotificationCount: () => number;
   
   // Message actions
-  sendMessage: (conversationId: string, content: string, imageUrl?: string) => void;
+  sendMessage: (conversationId: string, content: string, imageUrls?: string[]) => void;
   getConversation: (conversationId: string) => MockConversation | undefined;
   getUnreadMessageCount: () => number;
   markConversationRead: (conversationId: string) => void;
@@ -787,7 +787,8 @@ export function MockSystemProvider({ children }: { children: ReactNode }) {
   // MESSAGE ACTIONS
   // -------------------------------------------------------------------------
 
-  const sendMessage = useCallback((conversationId: string, content: string, imageUrl?: string) => {
+  const sendMessage = useCallback((conversationId: string, content: string, imageUrls?: string[]) => {
+    const hasImages = imageUrls && imageUrls.length > 0;
     const newMessage: MockMessage = {
       id: `msg-${Date.now()}`,
       conversationId,
@@ -795,10 +796,14 @@ export function MockSystemProvider({ children }: { children: ReactNode }) {
       senderId: 'me',
       timestamp: 'Just now',
       read: false,
-      type: imageUrl ? 'image' : 'text',
-      imageUrl,
+      type: hasImages ? 'image' : 'text',
+      imageUrls: hasImages ? imageUrls : undefined,
       createdAt: new Date(),
     };
+
+    const lastMessageText = hasImages 
+      ? (imageUrls.length > 1 ? `📷 ${imageUrls.length} Photos` : '📷 Photo')
+      : content;
 
     setState(prev => ({
       ...prev,
@@ -807,7 +812,7 @@ export function MockSystemProvider({ children }: { children: ReactNode }) {
           ? {
               ...conv,
               messages: [...conv.messages, newMessage],
-              lastMessage: imageUrl ? '📷 Photo' : content,
+              lastMessage: lastMessageText,
               lastMessageTime: 'Just now',
             }
           : conv
