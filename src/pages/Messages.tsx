@@ -23,6 +23,7 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { MobileNav } from '@/components/MobileNav';
 import { useMockSystem, type MockConversation, type MockMessage } from '@/contexts/MockSystemContext';
 import { useSafety } from '@/contexts/SafetyContext';
+import { useRealtimeMessages } from '@/hooks/useRealtimeMessages';
 
 // Dopamine-driven spring configs
 const springSnap = { type: 'spring' as const, stiffness: 700, damping: 30, mass: 0.8 };
@@ -104,6 +105,7 @@ export default function Messages() {
   const { t } = useTranslation();
   const { state, sendMessage: sendMockMessage, markConversationRead } = useMockSystem();
   const { shouldHideUser } = useSafety();
+  const { typingUsers, setTyping, onlineUsers } = useRealtimeMessages();
   const [selectedConversation, setSelectedConversation] = useState<MockConversation | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [newMessage, setNewMessage] = useState('');
@@ -126,6 +128,25 @@ export default function Messages() {
     return conv?.messages || [];
   }, [state.conversations, selectedConversation]);
 
+  // Check if someone is typing in the current conversation
+  const currentTypingUsers = useMemo(() => {
+    if (!selectedConversation) return [];
+    return typingUsers.get(selectedConversation.id) || [];
+  }, [selectedConversation, typingUsers]);
+
+  // Handle input change with typing indicator
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setNewMessage(value);
+    
+    // Trigger typing indicator when user starts typing
+    if (value.trim()) {
+      setTyping(true);
+    } else {
+      setTyping(false);
+    }
+  };
+
   const filteredConversations = conversations.filter(
     (conv) =>
       conv.participant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -136,6 +157,7 @@ export default function Messages() {
     if (!newMessage.trim() || !selectedConversation) return;
     
     setIsSending(true);
+    setTyping(false); // Clear typing indicator
     sendMockMessage(selectedConversation.id, newMessage);
     setNewMessage('');
     
@@ -192,14 +214,16 @@ export default function Messages() {
                 {selectedConversation.participant.name.charAt(0)}
               </AvatarFallback>
             </Avatar>
-            {selectedConversation.participant.isOnline && <OnlineIndicator size="small" pulse />}
+            {(selectedConversation.participant.isOnline || onlineUsers.has(selectedConversation.participant.id)) && <OnlineIndicator size="small" pulse />}
           </motion.div>
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-[15px] text-foreground truncate tracking-tight">
               {selectedConversation.participant.name}
             </p>
             <p className="text-[13px] text-muted-foreground/80">
-              {selectedConversation.participant.isOnline ? 'Active now' : `@${selectedConversation.participant.handle}`}
+              {(selectedConversation.participant.isOnline || onlineUsers.has(selectedConversation.participant.id)) 
+                ? (currentTypingUsers.length > 0 ? 'typing...' : 'Active now')
+                : `@${selectedConversation.participant.handle}`}
             </p>
           </div>
           <div className="flex items-center gap-1">
@@ -253,16 +277,23 @@ export default function Messages() {
             ))}
           </AnimatePresence>
           
-          {selectedConversation.isTyping && (
+          {currentTypingUsers.length > 0 && (
             <motion.div
               initial={{ opacity: 0, scale: 0.8, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8, y: 10 }}
               transition={springPop}
-              className="flex justify-start"
+              className="flex justify-start items-center gap-2"
             >
               <div className="bg-secondary/80 rounded-[22px] rounded-bl-md">
                 <TypingIndicator />
               </div>
+              <span className="text-xs text-muted-foreground">
+                {currentTypingUsers.length === 1 
+                  ? `${currentTypingUsers[0].displayName} is typing...`
+                  : `${currentTypingUsers.length} people are typing...`
+                }
+              </span>
             </motion.div>
           )}
           <div ref={messagesEndRef} />
@@ -295,7 +326,7 @@ export default function Messages() {
             </motion.div>
             <Input
               value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
+              onChange={handleInputChange}
               placeholder="Message..."
               className="flex-1 border-0 bg-transparent focus-visible:ring-0 px-1 h-10 text-[15px] placeholder:text-muted-foreground/60"
               onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
