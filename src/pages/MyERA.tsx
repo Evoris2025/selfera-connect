@@ -207,11 +207,16 @@ export default function MyERA() {
             <Button
               variant="outline"
               size="sm"
-              className="flex-1 rounded-xl min-w-[80px]"
+              className="flex-1 rounded-xl min-w-[80px] relative"
               onClick={() => navigate('/provider-dashboard')}
             >
               <LayoutDashboard className="w-4 h-4 mr-2" />
               Dashboard
+              {pendingConnectionCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-medium rounded-full bg-primary text-primary-foreground">
+                  {pendingConnectionCount > 99 ? '99+' : pendingConnectionCount}
+                </span>
+              )}
             </Button>
           ) : (
             <Button
