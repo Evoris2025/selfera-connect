@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { MobileNav } from './MobileNav';
 import { AppHeader } from './AppHeader';
+import { useFollowRequests } from '@/hooks/useFollowRequests';
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -10,6 +11,8 @@ interface AppLayoutProps {
 }
 
 export function AppLayout({ children, title, showHeader = true, onCreatePost }: AppLayoutProps) {
+  const { pendingCount } = useFollowRequests();
+
   return (
     <div className="min-h-screen bg-background flex flex-col w-full">
       {showHeader && <AppHeader title={title} />}
@@ -18,7 +21,7 @@ export function AppLayout({ children, title, showHeader = true, onCreatePost }: 
         {children}
       </main>
       
-      <MobileNav onCreateClick={onCreatePost} />
+      <MobileNav onCreateClick={onCreatePost} followRequestCount={pendingCount} />
     </div>
   );
 }
