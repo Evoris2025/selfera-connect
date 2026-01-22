@@ -177,6 +177,9 @@ export default function Landing() {
             </div>
 
             <nav className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
+              <Link to="/transparency" className="hover:text-foreground transition-colors">
+                Trust & Transparency
+              </Link>
               <Link to="/privacy" className="hover:text-foreground transition-colors">
                 {t('footer.privacy')}
               </Link>
@@ -186,11 +189,8 @@ export default function Landing() {
               <Link to="/guidelines" className="hover:text-foreground transition-colors">
                 {t('footer.guidelines')}
               </Link>
-              <Link to="/safety" className="hover:text-foreground transition-colors">
-                {t('footer.safety')}
-              </Link>
-              <Link to="/contact" className="hover:text-foreground transition-colors">
-                {t('footer.contact')}
+              <Link to="/crisis" className="hover:text-foreground transition-colors">
+                Crisis Support
               </Link>
             </nav>
 

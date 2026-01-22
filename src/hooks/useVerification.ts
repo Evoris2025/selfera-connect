@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
-
+import { useAuditLog } from '@/hooks/useAuditLog';
 export type VerificationStatus = 'pending' | 'approved' | 'rejected';
 
 export interface VerificationRequest {
@@ -152,6 +152,7 @@ export function useVerification() {
 // Admin hook for managing verification requests
 export function useAdminVerification() {
   const { user } = useAuth();
+  const { logAction } = useAuditLog();
   const [requests, setRequests] = useState<(VerificationRequest & { profile?: { display_name: string; handle: string; avatar_url: string } })[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -242,6 +243,17 @@ export function useAdminVerification() {
         }
       }
 
+      // Log the action for audit trail
+      const request = requests.find(r => r.id === requestId);
+      await logAction({
+        actionType: status === 'approved' ? 'verification_approved' : 'verification_rejected',
+        targetEntityId: requestId,
+        targetEntityType: 'verification_requests',
+        previousState: { status: request?.status },
+        newState: { status, reviewed_by: user.id },
+        notes: adminNotes,
+      });
+
       toast({
         title: status === 'approved' ? 'Request approved' : 'Request rejected',
         description: status === 'approved' 
@@ -260,7 +272,7 @@ export function useAdminVerification() {
       });
       return false;
     }
-  }, [user?.id, requests, fetchRequests]);
+  }, [user?.id, requests, fetchRequests, logAction]);
 
   return {
     requests,

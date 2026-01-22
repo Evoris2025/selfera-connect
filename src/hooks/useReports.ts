@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
+import { useAuditLog } from '@/hooks/useAuditLog';
 
 export type ReportTargetType = 'post' | 'comment' | 'profile' | 'message';
 export type ReportReason = 
@@ -42,11 +43,12 @@ interface UseReportsResult {
   ) => Promise<boolean>;
   // Admin functions
   fetchAllReports: () => Promise<void>;
-  updateReportStatus: (reportId: string, status: Report['status']) => Promise<boolean>;
+  updateReportStatus: (reportId: string, status: Report['status'], internalNotes?: string) => Promise<boolean>;
 }
 
 export function useReports(): UseReportsResult {
   const { user } = useAuth();
+  const { logAction } = useAuditLog();
   const [reports, setReports] = useState<Report[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -155,12 +157,29 @@ export function useReports(): UseReportsResult {
 
   const updateReportStatus = useCallback(async (
     reportId: string,
-    status: Report['status']
+    status: Report['status'],
+    internalNotes?: string
   ): Promise<boolean> => {
+    if (!user?.id) return false;
+    
+    const currentReport = reports.find(r => r.id === reportId);
+    const previousStatus = currentReport?.status;
+
     try {
+      const updateData: Record<string, unknown> = { status };
+      
+      // If resolved or dismissed, set resolution fields
+      if (status === 'actioned' || status === 'dismissed') {
+        updateData.resolved_by = user.id;
+        updateData.resolved_at = new Date().toISOString();
+        if (internalNotes) {
+          updateData.internal_notes = internalNotes;
+        }
+      }
+
       const { error } = await supabase
         .from('reports')
-        .update({ status })
+        .update(updateData)
         .eq('id', reportId);
 
       if (error) throw error;
@@ -169,6 +188,21 @@ export function useReports(): UseReportsResult {
       setReports(prev => prev.map(r => 
         r.id === reportId ? { ...r, status } : r
       ));
+
+      // Log action for audit trail
+      const actionType = status === 'actioned' ? 'report_resolved' : 
+                         status === 'dismissed' ? 'report_dismissed' : null;
+      
+      if (actionType) {
+        await logAction({
+          actionType,
+          targetEntityId: reportId,
+          targetEntityType: 'reports',
+          previousState: { status: previousStatus },
+          newState: { status, resolved_by: user.id },
+          notes: internalNotes,
+        });
+      }
 
       toast({
         title: 'Report updated',
@@ -185,7 +219,7 @@ export function useReports(): UseReportsResult {
       });
       return false;
     }
-  }, []);
+  }, [user?.id, reports, logAction]);
 
   return {
     reports,
