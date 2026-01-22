@@ -26,6 +26,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { MobileNav } from '@/components/MobileNav';
 import { useNotifications } from '@/hooks/useNotifications';
+import { FollowRequestsSection } from '@/components/notifications/FollowRequestsSection';
 
 // Ultra-calm motion - simple fades and slides only
 const calmFade: Transition = { duration: 0.25, ease: 'easeOut' as const };
@@ -384,6 +385,9 @@ export default function Notifications() {
           <EmptyState />
         ) : (
           <div className="pb-4">
+            {/* Follow Requests Section */}
+            <FollowRequestsSection />
+
             {/* Highlights */}
             {grouped.highlights.length > 0 && (
               <motion.div 
