@@ -6,6 +6,8 @@ import { DiscoverRow } from '@/components/DiscoverRow';
 import { RearrangeableGrid } from '@/components/profile/RearrangeableGrid';
 import { RearrangeableTabBar } from '@/components/profile/RearrangeableTabBar';
 import { UserListModal, ListType } from '@/components/profile/UserListModal';
+import { BlockedProfileState } from '@/components/profile/BlockedProfileState';
+import { PrivateProfileState } from '@/components/profile/PrivateProfileState';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
@@ -16,6 +18,7 @@ import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { GridLayoutStyle } from '@/hooks/useGridLayout';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSafety } from '@/contexts/SafetyContext';
 import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
 import { useCurrentUserCover } from '@/hooks/useCurrentUserCover';
 import { useProfilePhotoUpload } from '@/hooks/useProfilePhotoUpload';
@@ -123,6 +126,7 @@ export default function Profile() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { isBlocked, isBlockedByMe, isBlockingMe } = useSafety();
   const { avatarUrl, refreshAvatar } = useCurrentUserAvatar();
   const { coverUrl, refreshCover } = useCurrentUserCover();
   const { uploadProfilePhoto, isUploading } = useProfilePhotoUpload();
@@ -211,6 +215,13 @@ export default function Profile() {
 
   const displayPosts = userPosts.length > 0 ? userPosts : mockPosts;
 
+  // Safety checks
+  const profileIsBlocked = profileUserId ? isBlocked(profileUserId) : false;
+  const iAmBlockedByProfile = profileUserId ? isBlockingMe(profileUserId) : false;
+  const iBlockedProfile = profileUserId ? isBlockedByMe(profileUserId) : false;
+  
+  // Private account check - show limited view if profile is private and user is not following
+  const isPrivateProfile = displayProfile.isPrivate && !isOwnProfile && !isFollowing;
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -265,6 +276,18 @@ export default function Profile() {
       description: 'Opening composer...',
     });
   };
+
+  // Show blocked state if either party has blocked the other
+  if (profileIsBlocked && !isOwnProfile && profileUserId) {
+    return (
+      <AppLayout showHeader={false} onCreatePost={handleCreatePost}>
+        <BlockedProfileState 
+          userId={profileUserId} 
+          isBlockedByMe={iBlockedProfile} 
+        />
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout showHeader={false} onCreatePost={handleCreatePost}>
@@ -543,67 +566,76 @@ export default function Profile() {
 
         {/* Tab Content */}
         <div className="mt-1">
-          <AnimatePresence mode="wait">
-            {activeTab === 'posts' && (
-              <motion.div
-                key="posts"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <RearrangeableGrid posts={mockPosts} isOwnProfile={isOwnProfile} layoutStyle={gridLayout} />
-              </motion.div>
-            )}
+          {/* Show private account message if applicable */}
+          {isPrivateProfile ? (
+            <PrivateProfileState
+              displayName={displayProfile.displayName || mockUser.name}
+              isFollowing={isFollowing}
+              onFollow={handleFollow}
+            />
+          ) : (
+            <AnimatePresence mode="wait">
+              {activeTab === 'posts' && (
+                <motion.div
+                  key="posts"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <RearrangeableGrid posts={mockPosts} isOwnProfile={isOwnProfile} layoutStyle={gridLayout} />
+                </motion.div>
+              )}
 
-            {activeTab === 'expressions' && (
-              <motion.div
-                key="expressions"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <RearrangeableGrid posts={mockPosts} isOwnProfile={isOwnProfile} layoutStyle={gridLayout} />
-              </motion.div>
-            )}
+              {activeTab === 'expressions' && (
+                <motion.div
+                  key="expressions"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <RearrangeableGrid posts={mockPosts} isOwnProfile={isOwnProfile} layoutStyle={gridLayout} />
+                </motion.div>
+              )}
 
-            {activeTab === 'reels' && (
-              <motion.div
-                key="reels"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <RearrangeableGrid posts={mockPosts} isOwnProfile={isOwnProfile} layoutStyle={gridLayout} />
-              </motion.div>
-            )}
+              {activeTab === 'reels' && (
+                <motion.div
+                  key="reels"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <RearrangeableGrid posts={mockPosts} isOwnProfile={isOwnProfile} layoutStyle={gridLayout} />
+                </motion.div>
+              )}
 
-            {activeTab === 'community' && (
-              <motion.div
-                key="community"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="text-center py-16 text-muted-foreground text-sm"
-              >
-                {isOwnProfile ? "Communities you've joined" : 'No communities yet'}
-              </motion.div>
-            )}
+              {activeTab === 'community' && (
+                <motion.div
+                  key="community"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="text-center py-16 text-muted-foreground text-sm"
+                >
+                  {isOwnProfile ? "Communities you've joined" : 'No communities yet'}
+                </motion.div>
+              )}
 
-            {activeTab === 'library' && (
-              <motion.div
-                key="library"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="text-center py-16 text-muted-foreground text-sm"
-              >
-                {isOwnProfile ? 'Your saved content' : 'Library is private'}
-              </motion.div>
-            )}
-          </AnimatePresence>
+              {activeTab === 'library' && (
+                <motion.div
+                  key="library"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="text-center py-16 text-muted-foreground text-sm"
+                >
+                  {isOwnProfile ? 'Your saved content' : 'Library is private'}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          )}
         </div>
       </div>
 

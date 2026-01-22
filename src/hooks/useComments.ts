@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSafety } from '@/contexts/SafetyContext';
 import { toast } from '@/hooks/use-toast';
 
 interface Comment {
@@ -43,9 +44,16 @@ function formatTimeAgo(date: Date): string {
 
 export function useComments(postId: string): UseCommentsResult {
   const { user } = useAuth();
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [commentCount, setCommentCount] = useState(0);
+  const { shouldHideUser } = useSafety();
+  const [allComments, setAllComments] = useState<Comment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Filter out comments from blocked users
+  const comments = useMemo(() => {
+    return allComments.filter(comment => !shouldHideUser(comment.author.id));
+  }, [allComments, shouldHideUser]);
+
+  const commentCount = comments.length;
 
   const isValidPost = isUuid(postId);
 
@@ -95,8 +103,7 @@ export function useComments(postId: string): UseCommentsResult {
         };
       });
 
-      setComments(formattedComments);
-      setCommentCount(formattedComments.length);
+      setAllComments(formattedComments);
     } catch (error) {
       console.error('Error fetching comments:', error);
     } finally {
@@ -106,7 +113,7 @@ export function useComments(postId: string): UseCommentsResult {
 
   useEffect(() => {
     setIsLoading(true);
-    setComments([]);
+    setAllComments([]);
     fetchComments();
 
     if (!isValidPost) return;
@@ -160,8 +167,7 @@ export function useComments(postId: string): UseCommentsResult {
     };
 
     // Optimistic update
-    setComments(prev => [...prev, optimisticComment]);
-    setCommentCount(prev => prev + 1);
+    setAllComments(prev => [...prev, optimisticComment]);
 
     try {
       const { error } = await supabase
@@ -180,8 +186,7 @@ export function useComments(postId: string): UseCommentsResult {
     } catch (error) {
       console.error('Error adding comment:', error);
       // Revert optimistic update
-      setComments(prev => prev.filter(c => c.id !== optimisticComment.id));
-      setCommentCount(prev => Math.max(0, prev - 1));
+      setAllComments(prev => prev.filter(c => c.id !== optimisticComment.id));
       toast({
         title: "Couldn't post comment",
         description: 'Please try again.',
