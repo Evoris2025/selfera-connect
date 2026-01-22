@@ -6,14 +6,40 @@ const STORAGE_KEY = 'selfera-preview-zoom';
 const AUTO_DETECTED_KEY = 'selfera-preview-zoom-auto';
 const DEFAULT_ZOOM = 1;
 
+// Reference width that gave us the perfect 76% zoom for mobile preview
+const MOBILE_REFERENCE_WIDTH = 390;
+
 interface PhoneMetrics {
   viewport_width: number;
   device_pixel_ratio: number;
 }
 
 /**
+ * Calculate zoom based on preview container width and phone metrics.
+ * Scales proportionally so content appears consistent across all preview modes.
+ */
+function calculateZoomForViewport(previewWidth: number, phoneViewport: number): number {
+  // Mobile preview mode (~430px) - use our perfected ratio
+  if (previewWidth < 500) {
+    return MOBILE_REFERENCE_WIDTH / phoneViewport;
+  }
+  
+  // Tablet preview mode (~768px) - scale down proportionally
+  if (previewWidth < 900) {
+    // Keep the same visual density as mobile by scaling based on width ratio
+    const scaleFactor = 430 / previewWidth;
+    return (MOBILE_REFERENCE_WIDTH * scaleFactor) / phoneViewport;
+  }
+  
+  // Desktop preview mode (~1024px+) - scale down further
+  const scaleFactor = 430 / previewWidth;
+  return (MOBILE_REFERENCE_WIDTH * scaleFactor) / phoneViewport;
+}
+
+/**
  * Hook to manage desktop preview zoom.
  * Automatically fetches phone metrics and calculates recommended zoom.
+ * Adapts to different preview modes (mobile/tablet/desktop).
  * Only applies on devices with fine pointer (mouse/trackpad).
  */
 export function usePreviewZoom() {
@@ -22,6 +48,7 @@ export function usePreviewZoom() {
   const [isDesktop, setIsDesktop] = useState(false);
   const [isAutoDetected, setIsAutoDetected] = useState(false);
   const [phoneMetrics, setPhoneMetrics] = useState<PhoneMetrics | null>(null);
+  const [previewWidth, setPreviewWidth] = useState(window.innerWidth);
 
   // Check if we're on a desktop-like device
   useEffect(() => {
@@ -38,7 +65,46 @@ export function usePreviewZoom() {
     return () => mediaQuery.removeEventListener('change', checkPointer);
   }, []);
 
-  // Fetch phone metrics and auto-calculate zoom on desktop
+  // Track preview container width changes (for detecting Lovable preview mode switches)
+  useEffect(() => {
+    if (!isDesktop) return;
+
+    const handleResize = () => {
+      setPreviewWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isDesktop]);
+
+  // Recalculate zoom when preview width changes (and we have phone metrics)
+  useEffect(() => {
+    if (!isDesktop || !phoneMetrics) return;
+
+    // Check if user has manually overridden
+    const manualZoom = localStorage.getItem(STORAGE_KEY);
+    const wasAutoDetected = localStorage.getItem(AUTO_DETECTED_KEY);
+    
+    if (manualZoom && !wasAutoDetected) {
+      // User has a manual setting, respect it
+      return;
+    }
+
+    const recommendedZoom = calculateZoomForViewport(previewWidth, phoneMetrics.viewport_width);
+    const clampedZoom = Math.max(0.3, Math.min(1, recommendedZoom));
+    
+    setZoomState(clampedZoom);
+    setIsAutoDetected(true);
+    
+    console.log('Auto-calculated zoom for viewport:', {
+      previewWidth,
+      phoneWidth: phoneMetrics.viewport_width,
+      recommendedZoom: Math.round(clampedZoom * 100) + '%',
+      mode: previewWidth < 500 ? 'mobile' : previewWidth < 900 ? 'tablet' : 'desktop'
+    });
+  }, [isDesktop, phoneMetrics, previewWidth]);
+
+  // Fetch phone metrics on desktop
   useEffect(() => {
     if (!isDesktop || !user) return;
 
@@ -65,40 +131,26 @@ export function usePreviewZoom() {
         if (manualZoom && !wasAutoDetected) {
           // User has a manual setting, respect it
           const parsed = parseFloat(manualZoom);
-          if (!isNaN(parsed) && parsed >= 0.5 && parsed <= 1) {
+          if (!isNaN(parsed) && parsed >= 0.3 && parsed <= 1) {
             setZoomState(parsed);
             return;
           }
         }
 
-        // Calculate recommended zoom based on matching phone viewport in preview container
-        // Use the phone viewport width as reference - we want desktop preview to show
-        // content at the same CSS pixel density as the phone
-        const MOBILE_PREVIEW_CONTAINER = 390; // Slightly smaller to zoom out more
-        const desktopDPR = window.devicePixelRatio;
+        // Calculate initial zoom based on current preview width
+        const recommendedZoom = calculateZoomForViewport(previewWidth, data.viewport_width);
+        const clampedZoom = Math.max(0.3, Math.min(1, recommendedZoom));
         
-        // The phone shows content at viewport_width CSS pixels
-        // The desktop preview container is ~430px
-        // To match the phone's content size, we scale based on ratio
-        const phoneViewport = data.viewport_width; // e.g., 513px
-        
-        // Scale factor: how much smaller/larger is preview vs phone viewport
-        // If phone is 513px and preview is 430px, content appears 430/513 = 0.84 of phone size
-        // So we need to zoom to 430/513 = 0.84 to match
-        let recommendedZoom = MOBILE_PREVIEW_CONTAINER / phoneViewport;
-        
-        // Clamp to reasonable range (0.5 to 1.0)
-        recommendedZoom = Math.max(0.5, Math.min(1, recommendedZoom));
-        
-        setZoomState(recommendedZoom);
+        setZoomState(clampedZoom);
         setIsAutoDetected(true);
         localStorage.setItem(AUTO_DETECTED_KEY, 'true');
         
-        console.log('Auto-calculated zoom:', {
+        console.log('Initial auto-calculated zoom:', {
           phoneWidth: data.viewport_width,
           phoneDPR: data.device_pixel_ratio,
-          previewContainer: MOBILE_PREVIEW_CONTAINER,
-          recommendedZoom: Math.round(recommendedZoom * 100) + '%'
+          previewWidth,
+          recommendedZoom: Math.round(clampedZoom * 100) + '%',
+          mode: previewWidth < 500 ? 'mobile' : previewWidth < 900 ? 'tablet' : 'desktop'
         });
       } catch (err) {
         console.error('Failed to fetch phone metrics:', err);
@@ -110,14 +162,14 @@ export function usePreviewZoom() {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = parseFloat(saved);
-        if (!isNaN(parsed) && parsed >= 0.5 && parsed <= 1) {
+        if (!isNaN(parsed) && parsed >= 0.3 && parsed <= 1) {
           setZoomState(parsed);
         }
       }
     };
 
     fetchPhoneMetrics();
-  }, [isDesktop, user]);
+  }, [isDesktop, user, previewWidth]);
 
   // Apply zoom to CSS variable and toggle class
   useEffect(() => {
@@ -131,7 +183,7 @@ export function usePreviewZoom() {
   }, [zoom, isDesktop]);
 
   const setZoom = useCallback((newZoom: number) => {
-    const clamped = Math.max(0.5, Math.min(1, newZoom));
+    const clamped = Math.max(0.3, Math.min(1, newZoom));
     setZoomState(clamped);
     setIsAutoDetected(false);
     localStorage.setItem(STORAGE_KEY, clamped.toString());
@@ -159,17 +211,15 @@ export function usePreviewZoom() {
       .single();
     
     if (data) {
-      const MOBILE_PREVIEW_CONTAINER = 390;
-      const phoneViewport = data.viewport_width;
-      let recommendedZoom = MOBILE_PREVIEW_CONTAINER / phoneViewport;
-      recommendedZoom = Math.max(0.5, Math.min(1, recommendedZoom));
+      const recommendedZoom = calculateZoomForViewport(previewWidth, data.viewport_width);
+      const clampedZoom = Math.max(0.3, Math.min(1, recommendedZoom));
       
-      setZoomState(recommendedZoom);
+      setZoomState(clampedZoom);
       setIsAutoDetected(true);
       setPhoneMetrics(data);
       localStorage.setItem(AUTO_DETECTED_KEY, 'true');
     }
-  }, [user, isDesktop]);
+  }, [user, isDesktop, previewWidth]);
 
   return {
     zoom,
@@ -179,5 +229,6 @@ export function usePreviewZoom() {
     isDesktop,
     isAutoDetected,
     phoneMetrics,
+    previewWidth,
   };
 }
