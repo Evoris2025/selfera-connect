@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { format } from 'date-fns';
 import { 
   ChevronRight,
   Sparkles,
@@ -22,18 +23,22 @@ import {
   ExternalLink,
   UserCheck,
   FileCheck,
-  CircleDot,
+  CreditCard,
+  Calendar,
+  User,
+  AlertCircle,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSupportLinks } from '@/hooks/useSupportLinks';
 import { usePendingConnectionCount } from '@/hooks/usePendingConnectionCount';
+import { useVerification } from '@/hooks/useVerification';
+import { useSubscription, PLAN_DETAILS } from '@/hooks/useSubscription';
 import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
 import { AccountTypeBadge, AccountType } from '@/components/AccountTypeBadge';
 import { AppLayout } from '@/components/AppLayout';
-import { CurrentPlanCard } from '@/components/pricing';
 import { supabase } from '@/integrations/supabase/client';
 import {
   DropdownMenu,
@@ -96,11 +101,28 @@ interface UserProfile {
   user_type: string | null;
 }
 
+// Helper to get step index based on verification status
+function getVerificationStepIndex(status: string | undefined): number {
+  if (!status) return -1;
+  switch (status) {
+    case 'pending':
+      return 1; // Under review
+    case 'approved':
+      return 2; // Approved
+    case 'rejected':
+      return -1; // Reset
+    default:
+      return 0; // Submitted
+  }
+}
+
 export default function MyERA() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { activeProviders, pendingProviders } = useSupportLinks();
   const { count: pendingConnectionCount } = usePendingConnectionCount();
+  const { myRequest, isLoading: verificationLoading } = useVerification();
+  const { subscription, currentPlan, loading: subscriptionLoading } = useSubscription();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [activeNetworkTab, setActiveNetworkTab] = useState<'list' | 'interactions'>('list');
   const [showIntentSelection, setShowIntentSelection] = useState(false);
@@ -119,14 +141,21 @@ export default function MyERA() {
   }, [user]);
 
   const connectionsCount = activeProviders.length + pendingProviders.length;
-
   const isVerified = profile?.is_verified;
-  const isVerifiedProvider = isVerified && 
-    (profile?.user_type === 'professional' || profile?.user_type === 'organization');
+  
+  // Verification progress based on actual request
+  const hasVerificationRequest = !!myRequest;
+  const verificationStatus = myRequest?.status;
+  const currentVerificationStep = getVerificationStepIndex(verificationStatus);
+  const verificationInProgress = hasVerificationRequest && verificationStatus === 'pending';
+  const verificationRejected = hasVerificationRequest && verificationStatus === 'rejected';
 
-  // For visual placeholder: simulate verification in progress
-  const verificationInProgress = false; // Static placeholder
-  const currentVerificationStep = 0; // Static placeholder
+  // Plan and billing info
+  const planDetails = PLAN_DETAILS.find(p => p.id === currentPlan);
+  const monthlyPrice = planDetails?.monthlyPrice || 0;
+  const billingPeriod = subscription?.billing_period;
+  const periodStart = subscription?.current_period_start;
+  const periodEnd = subscription?.current_period_end;
 
   // Default cover for visual appeal
   const coverImage = profile?.cover_url || 'https://images.unsplash.com/photo-1557683316-973673baf926?w=800&h=400&fit=crop';
@@ -224,7 +253,6 @@ export default function MyERA() {
                   </p>
                   <div className="mt-1.5 flex items-center gap-2">
                     <AccountTypeBadge type={(profile?.user_type as AccountType) || 'individual'} />
-                    {/* Placeholder for future ERA Verified badge */}
                     {isVerified && (
                       <Badge variant="outline" className="text-[10px] border-emerald-500/30 text-emerald-400 bg-emerald-500/10">
                         <Shield className="w-2.5 h-2.5 mr-1" />
@@ -265,7 +293,6 @@ export default function MyERA() {
                     {pendingConnectionCount || 0}
                   </p>
                   <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Pending</p>
-                  {/* Notification dot placeholder */}
                   {pendingConnectionCount > 0 && (
                     <span className="absolute -top-1 right-1/4 w-2 h-2 rounded-full bg-rose-500" />
                   )}
@@ -328,10 +355,10 @@ export default function MyERA() {
             <h2 className="text-lg font-semibold text-foreground">Your Journey</h2>
           </div>
 
-          <div className="px-4">
+          <div className="px-4 space-y-4">
             <AnimatePresence mode="wait">
-              {!isVerified && !showIntentSelection && !verificationInProgress && (
-                /* Primary Verification CTA Card */
+              {/* Not started verification */}
+              {!isVerified && !hasVerificationRequest && !showIntentSelection && (
                 <motion.div
                   key="verification-cta"
                   className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/20 via-accent/10 to-background border border-primary/20"
@@ -356,23 +383,15 @@ export default function MyERA() {
                           Unlock your full potential on SelfERA. Verification builds trust and connects you with the right community.
                         </p>
                         
-                        {/* Placeholder Progress */}
+                        {/* Static Progress Steps */}
                         <div className="flex items-center gap-2 mb-4">
                           {verificationSteps.map((step, idx) => (
                             <div key={step.id} className="flex items-center gap-2">
-                              <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                                idx <= currentVerificationStep 
-                                  ? 'bg-primary/20 text-primary' 
-                                  : 'bg-muted/20 text-muted-foreground'
-                              }`}>
+                              <div className="w-6 h-6 rounded-full flex items-center justify-center bg-muted/20 text-muted-foreground">
                                 <step.icon className="w-3 h-3" />
                               </div>
                               {idx < verificationSteps.length - 1 && (
-                                <div className={`w-8 h-0.5 rounded-full ${
-                                  idx < currentVerificationStep 
-                                    ? 'bg-primary' 
-                                    : 'bg-muted/30'
-                                }`} />
+                                <div className="w-8 h-0.5 rounded-full bg-muted/30" />
                               )}
                             </div>
                           ))}
@@ -396,8 +415,138 @@ export default function MyERA() {
                 </motion.div>
               )}
 
-              {showIntentSelection && !isVerified && (
-                /* Intent Selection Cards */
+              {/* Verification in progress with animated steps */}
+              {!isVerified && verificationInProgress && (
+                <motion.div
+                  key="verification-progress"
+                  className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500/20 via-orange-500/10 to-background border border-amber-500/20"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={springGentle}
+                >
+                  <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-amber-500/20 to-transparent rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                  
+                  <div className="relative p-6">
+                    <div className="flex items-start gap-4">
+                      <motion.div 
+                        className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center flex-shrink-0"
+                        animate={{ scale: [1, 1.05, 1] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                      >
+                        <Clock className="w-7 h-7 text-white" />
+                      </motion.div>
+                      
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="text-lg font-semibold text-foreground">
+                            Verification In Progress
+                          </h3>
+                          <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30 text-[9px]">
+                            <Clock className="w-2.5 h-2.5 mr-0.5" />
+                            Pending
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+                          Your request for {myRequest?.account_type_requested} verification is being reviewed.
+                        </p>
+                        
+                        {/* Animated Progress Steps */}
+                        <div className="flex items-center gap-2 mb-3">
+                          {verificationSteps.map((step, idx) => {
+                            const isCompleted = idx < currentVerificationStep;
+                            const isCurrent = idx === currentVerificationStep;
+                            
+                            return (
+                              <div key={step.id} className="flex items-center gap-2">
+                                <motion.div 
+                                  className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                                    isCompleted 
+                                      ? 'bg-emerald-500 text-white' 
+                                      : isCurrent 
+                                        ? 'bg-amber-500 text-white' 
+                                        : 'bg-muted/20 text-muted-foreground'
+                                  }`}
+                                  initial={{ scale: 0.8, opacity: 0 }}
+                                  animate={{ 
+                                    scale: isCurrent ? [1, 1.1, 1] : 1, 
+                                    opacity: 1 
+                                  }}
+                                  transition={{ 
+                                    duration: isCurrent ? 1.5 : 0.3, 
+                                    repeat: isCurrent ? Infinity : 0,
+                                    delay: idx * 0.1 
+                                  }}
+                                >
+                                  {isCompleted ? (
+                                    <Check className="w-4 h-4" />
+                                  ) : (
+                                    <step.icon className="w-4 h-4" />
+                                  )}
+                                </motion.div>
+                                {idx < verificationSteps.length - 1 && (
+                                  <motion.div 
+                                    className={`w-12 h-1 rounded-full ${
+                                      isCompleted ? 'bg-emerald-500' : 'bg-muted/30'
+                                    }`}
+                                    initial={{ scaleX: 0 }}
+                                    animate={{ scaleX: 1 }}
+                                    transition={{ duration: 0.5, delay: idx * 0.2 }}
+                                  />
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                        
+                        <p className="text-xs text-muted-foreground">
+                          Submitted on {myRequest?.created_at ? format(new Date(myRequest.created_at), 'MMM d, yyyy') : '—'} • Est. review: 2–5 days
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Verification rejected */}
+              {!isVerified && verificationRejected && (
+                <motion.div
+                  key="verification-rejected"
+                  className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-rose-500/20 via-red-500/10 to-background border border-rose-500/20"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={springGentle}
+                >
+                  <div className="relative p-5 flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-500 to-red-500 flex items-center justify-center">
+                      <AlertCircle className="w-6 h-6 text-white" />
+                    </div>
+                    
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="text-base font-semibold text-foreground">
+                          Verification Not Approved
+                        </h3>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        {myRequest?.admin_notes || 'Your request was not approved. You can submit a new request.'}
+                      </p>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        className="rounded-full"
+                        onClick={() => navigate('/settings?view=verification')}
+                      >
+                        Try Again
+                      </Button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Intent Selection */}
+              {showIntentSelection && !isVerified && !hasVerificationRequest && (
                 <motion.div
                   key="intent-selection"
                   initial={{ opacity: 0, y: 10 }}
@@ -433,11 +582,9 @@ export default function MyERA() {
                         whileTap={{ scale: 0.99 }}
                         onClick={() => navigate('/settings?view=verification')}
                       >
-                        {/* Gradient Background */}
                         <div className={`absolute inset-0 bg-gradient-to-r ${intent.gradient} opacity-15`} />
                         <div className="absolute inset-0 bg-card/70 backdrop-blur-sm" />
                         
-                        {/* Content */}
                         <div className="relative p-4 flex items-center gap-4">
                           <div className={`flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br ${intent.gradient}`}>
                             <IconComponent className="w-6 h-6 text-white" />
@@ -465,8 +612,8 @@ export default function MyERA() {
                 </motion.div>
               )}
 
+              {/* Verified Status Card */}
               {isVerified && (
-                /* Verified Status Card */
                 <motion.div
                   key="verified-status"
                   className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500/20 via-green-500/10 to-background border border-emerald-500/20"
@@ -476,9 +623,14 @@ export default function MyERA() {
                   transition={springGentle}
                 >
                   <div className="relative p-5 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center">
+                    <motion.div 
+                      className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                    >
                       <UserCheck className="w-6 h-6 text-white" />
-                    </div>
+                    </motion.div>
                     
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
@@ -500,6 +652,75 @@ export default function MyERA() {
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {/* Account Type & Billing Cards - Under Journey */}
+            <div className="grid grid-cols-2 gap-3 mt-4">
+              {/* Account Type Card */}
+              <motion.div
+                className="relative overflow-hidden rounded-2xl bg-card/50 border border-white/5 p-4"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ ...springGentle, delay: 0.25 }}
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center">
+                    <User className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Account</p>
+                    <p className="text-sm font-semibold text-foreground capitalize">
+                      {profile?.user_type || 'Individual'}
+                    </p>
+                  </div>
+                </div>
+                <AccountTypeBadge type={(profile?.user_type as AccountType) || 'individual'} />
+              </motion.div>
+
+              {/* Billing Card */}
+              <motion.div
+                className="relative overflow-hidden rounded-2xl bg-card/50 border border-white/5 p-4"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ ...springGentle, delay: 0.3 }}
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
+                    <CreditCard className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Plan</p>
+                    <p className="text-sm font-semibold text-foreground capitalize">
+                      {currentPlan}
+                    </p>
+                  </div>
+                </div>
+                
+                {currentPlan === 'free' ? (
+                  <p className="text-xs text-muted-foreground">No charges</p>
+                ) : (
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground">Amount due</span>
+                      <span className="font-medium text-foreground">
+                        ${billingPeriod === 'yearly' ? planDetails?.yearlyPrice : monthlyPrice}/{billingPeriod === 'yearly' ? 'yr' : 'mo'}
+                      </span>
+                    </div>
+                    {periodStart && (
+                      <div className="flex items-center gap-1 text-[10px] text-muted-foreground/70">
+                        <Calendar className="w-3 h-3" />
+                        <span>Last: {format(new Date(periodStart), 'MMM d')}</span>
+                      </div>
+                    )}
+                    {periodEnd && (
+                      <div className="flex items-center gap-1 text-[10px] text-muted-foreground/70">
+                        <Calendar className="w-3 h-3" />
+                        <span>Next: {format(new Date(periodEnd), 'MMM d')}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </motion.div>
+            </div>
           </div>
         </motion.section>
 
@@ -508,7 +729,7 @@ export default function MyERA() {
           className="mt-8 px-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ ...springGentle, delay: 0.25 }}
+          transition={{ ...springGentle, delay: 0.35 }}
         >
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-foreground">MyERA Network</h2>
@@ -544,7 +765,6 @@ export default function MyERA() {
               onClick={() => setActiveNetworkTab('interactions')}
             >
               Interactions
-              {/* Placeholder notification dot */}
               <span className="absolute top-1.5 right-3 w-1.5 h-1.5 rounded-full bg-primary/50" />
             </button>
           </div>
@@ -600,7 +820,6 @@ export default function MyERA() {
                             size="md"
                             ring={link.status === 'active' ? 'primary' : 'muted'}
                           />
-                          {/* Notification dot placeholder */}
                           <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-primary border-2 border-card" />
                         </div>
                         
@@ -662,38 +881,9 @@ export default function MyERA() {
           </AnimatePresence>
         </motion.section>
 
-        {/* Plan & Billing - Compressed */}
-        <motion.section
-          className="mt-8 px-4 pb-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ ...springGentle, delay: 0.3 }}
-        >
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-medium text-muted-foreground">Your Plan</h2>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-xs text-muted-foreground h-7"
-              onClick={() => navigate('/transparency')}
-            >
-              Learn more
-            </Button>
-          </div>
-          
-          <div className="opacity-75 hover:opacity-100 transition-opacity">
-            <CurrentPlanCard />
-          </div>
-
-          {/* Pricing awareness text */}
-          <p className="text-[11px] text-muted-foreground/70 mt-3 text-center leading-relaxed">
-            ERA Verified users charge according to their tier. Existing subscribers only pay the difference between tiers.
-          </p>
-        </motion.section>
-
         {/* Footer - Softened */}
         <motion.footer
-          className="px-6 py-6 text-center"
+          className="px-6 py-8 mt-6 text-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
