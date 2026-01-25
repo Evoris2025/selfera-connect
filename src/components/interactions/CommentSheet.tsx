@@ -14,6 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { useComments } from '@/hooks/useComments';
 import { useMockComments } from '@/hooks/useMockComments';
+import { EraVerifiedTick } from '@/components/EraVerifiedTick';
 
 interface CommentSheetProps {
   open: boolean;
@@ -91,7 +92,12 @@ export function CommentSheet({ open, onOpenChange, postId }: CommentSheetProps) 
                 </Avatar>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-sm text-foreground">{c.author.name}</span>
+                    <span className="inline-flex items-center gap-1">
+                      <span className="font-medium text-sm text-foreground">{c.author.name}</span>
+                      {c.author.isVerified && (
+                        <EraVerifiedTick size="sm" userEmail={c.author.email} />
+                      )}
+                    </span>
                     <span className="text-xs text-muted-foreground">{c.createdAt}</span>
                   </div>
                   <p className="text-sm text-foreground mt-0.5">{c.content}</p>

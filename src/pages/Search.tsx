@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { VerifiedBadge } from '@/components/VerifiedBadge';
+import { EraVerifiedTick } from '@/components/EraVerifiedTick';
 
 const trendingTags = [
   { name: 'Self-care', count: 2340 },
@@ -19,10 +19,10 @@ const trendingTags = [
 ];
 
 const suggestedAccounts = [
-  { name: 'Mind Matters', handle: 'mindmatters', isVerified: true },
-  { name: 'Therapy Tips', handle: 'therapytips', isVerified: true },
-  { name: 'Community Care', handle: 'communitycare', isVerified: false },
-  { name: 'Wellness Daily', handle: 'wellnessdaily', isVerified: true },
+  { name: 'Mind Matters', handle: 'mindmatters', isVerified: true, email: undefined },
+  { name: 'Therapy Tips', handle: 'therapytips', isVerified: true, email: undefined },
+  { name: 'Community Care', handle: 'communitycare', isVerified: false, email: undefined },
+  { name: 'Wellness Daily', handle: 'wellnessdaily', isVerified: true, email: undefined },
 ];
 
 export default function Search() {
@@ -95,7 +95,7 @@ export default function Search() {
                 <div className="flex-1">
                   <div className="flex items-center gap-1">
                     <span className="font-medium text-foreground">{account.name}</span>
-                    {account.isVerified && <VerifiedBadge className="h-4 w-4" />}
+                    {account.isVerified && <EraVerifiedTick size="sm" userEmail={account.email} />}
                   </div>
                   <p className="text-sm text-muted-foreground">@{account.handle}</p>
                 </div>
