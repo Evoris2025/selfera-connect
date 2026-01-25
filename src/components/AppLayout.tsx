@@ -1,6 +1,6 @@
-import { ReactNode, useState, useEffect } from 'react';
+import { ReactNode } from 'react';
 import { MobileNav } from './MobileNav';
-import { AppSidebar } from './AppSidebar';
+import { DesktopNav } from './DesktopNav';
 import { AppHeader } from './AppHeader';
 import { useFollowRequests } from '@/hooks/useFollowRequests';
 
@@ -13,45 +13,16 @@ interface AppLayoutProps {
 
 export function AppLayout({ children, title, showHeader = true, onCreatePost }: AppLayoutProps) {
   const { pendingCount } = useFollowRequests();
-  
-  // Listen for sidebar collapse state changes - start collapsed by default
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
-    if (typeof window !== 'undefined') {
-      // Default to collapsed unless explicitly pinned
-      const isPinned = localStorage.getItem('sidebar-pinned') === 'true';
-      return !isPinned;
-    }
-    return true; // Default collapsed
-  });
-
-  useEffect(() => {
-    const handleStorage = () => {
-      setSidebarCollapsed(localStorage.getItem('sidebar-collapsed') === 'true');
-    };
-    
-    // Listen for storage changes and custom events
-    window.addEventListener('storage', handleStorage);
-    window.addEventListener('sidebar-toggle', handleStorage);
-    
-    // Check periodically for changes (fallback for same-tab updates)
-    const interval = setInterval(handleStorage, 100);
-    
-    return () => {
-      window.removeEventListener('storage', handleStorage);
-      window.removeEventListener('sidebar-toggle', handleStorage);
-      clearInterval(interval);
-    };
-  }, []);
 
   return (
     <div className="min-h-dvh bg-background flex w-full">
-      {/* Left Sidebar - hidden on mobile & tablet, visible on lg+ (desktop only) */}
+      {/* Left Nav Bar - hidden on mobile & tablet, visible on lg+ (desktop only) */}
       <div className="hidden lg:block">
-        <AppSidebar onCreateClick={onCreatePost} followRequestCount={pendingCount} />
+        <DesktopNav onCreateClick={onCreatePost} followRequestCount={pendingCount} />
       </div>
       
       {/* Main content area */}
-      <div className={`flex-1 flex flex-col transition-[margin] duration-300 ${sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-60 xl:ml-64'}`}>
+      <div className="flex-1 flex flex-col lg:ml-16">
         {showHeader && <AppHeader title={title} />}
         
         {/* 
