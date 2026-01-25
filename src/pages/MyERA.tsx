@@ -365,6 +365,68 @@ export default function MyERA() {
           </div>
         </motion.section>
 
+        {/* Your Account Info Section */}
+        <motion.section
+          className="px-4 mt-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...springGentle, delay: 0.17 }}
+        >
+          <h2 className="text-lg font-semibold text-foreground mb-4">Your Account Info</h2>
+          
+          <div className="grid grid-cols-2 gap-3">
+            {/* Plan Type Card */}
+            <motion.div
+              className="rounded-2xl bg-card/50 border border-white/10 p-4"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ ...springGentle, delay: 0.18 }}
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-500 to-gray-600 flex items-center justify-center">
+                  <User className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-xs text-muted-foreground uppercase tracking-wide">Plan Type</span>
+              </div>
+              <p className={`text-sm font-medium ${isVerified ? 'text-foreground' : 'text-muted-foreground'}`}>
+                {isVerified 
+                  ? (profile?.user_type === 'professional' 
+                      ? 'Professional' 
+                      : profile?.user_type === 'organization' 
+                        ? 'Organization' 
+                        : 'Individual')
+                  : 'Free, non-verified'}
+              </p>
+            </motion.div>
+
+            {/* Amount / Billing Card */}
+            <motion.div
+              className="rounded-2xl bg-card/50 border border-white/10 p-4"
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ ...springGentle, delay: 0.19 }}
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
+                  <CreditCard className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-xs text-muted-foreground uppercase tracking-wide">Plan</span>
+              </div>
+              
+              {/* Mock billing data - replace with real data when available */}
+              <div className="space-y-1.5">
+                <p className="text-lg font-bold text-foreground">
+                  {currentPlan === 'free' ? '$0.00' : `$${monthlyPrice.toFixed(2)}`}
+                </p>
+                <div className="text-[11px] text-muted-foreground space-y-0.5">
+                  <p>Last payment: $0.00 on Jan 1, 2025</p>
+                  <p>Next due: Feb 1, 2025</p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </motion.section>
+
         {/* Your Journey - Verification Focused */}
         <motion.section
           className="mt-8"
