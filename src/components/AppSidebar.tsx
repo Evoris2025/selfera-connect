@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Compass, Plus, Bell, MessageCircle, User, LayoutDashboard, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Home, Compass, Plus, Bell, MessageCircle, User, LayoutDashboard, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BrandMark } from './BrandMark';
@@ -61,16 +61,41 @@ export function AppSidebar({
   pendingConnectionCount = 0,
 }: AppSidebarProps) {
   const location = useLocation();
-  const [isCollapsed, setIsCollapsed] = useState(() => {
-    const saved = localStorage.getItem('sidebar-collapsed');
-    return saved === 'true';
-  });
+  
+  // Start collapsed by default, expand on hover
+  const [isPinned, setIsPinned] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  
+  // Effective collapsed state - collapsed unless hovered or pinned
+  const isCollapsed = !isPinned && !isHovered;
 
-  // Persist collapse state and dispatch event for layout sync
+  // Persist pin state
   useEffect(() => {
-    localStorage.setItem('sidebar-collapsed', String(isCollapsed));
+    const saved = localStorage.getItem('sidebar-pinned');
+    if (saved === 'true') {
+      setIsPinned(true);
+    }
+  }, []);
+
+  // Sync pin state to storage and dispatch event
+  useEffect(() => {
+    localStorage.setItem('sidebar-pinned', String(isPinned));
+    localStorage.setItem('sidebar-collapsed', String(!isPinned && !isHovered));
     window.dispatchEvent(new CustomEvent('sidebar-toggle'));
-  }, [isCollapsed]);
+  }, [isPinned, isHovered]);
+
+  // Keyboard shortcut: Cmd/Ctrl + B to toggle pin
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
+        e.preventDefault();
+        setIsPinned(prev => !prev);
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const totalNotificationBadge = notificationCount + followRequestCount + pendingConnectionCount;
 
@@ -197,16 +222,19 @@ export function AppSidebar({
       initial="hidden"
       animate="visible"
       variants={sidebarVariants}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       className={cn(
         "fixed left-0 top-0 bottom-0 flex flex-col bg-background border-r border-border/50 z-40 transition-[width] duration-300 ease-out",
         isCollapsed ? "w-16" : "w-60 lg:w-64"
       )}
     >
-      {/* Logo & Toggle */}
-      <div className="h-16 flex items-center justify-between px-3 border-b border-border/30">
+      {/* Logo - only show when expanded */}
+      <div className="h-16 flex items-center justify-center px-3 border-b border-border/30">
         <AnimatePresence mode="wait">
-          {!isCollapsed && (
+          {!isCollapsed ? (
             <motion.div
+              key="logo"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
@@ -216,26 +244,22 @@ export function AppSidebar({
                 <BrandMark className="h-9 w-[140px]" />
               </Link>
             </motion.div>
+          ) : (
+            <motion.div
+              key="icon"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Link to="/feed" className="block">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+                  <Home className="h-4 w-4 text-primary" strokeWidth={1.5} />
+                </div>
+              </Link>
+            </motion.div>
           )}
         </AnimatePresence>
-        
-        <motion.button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          className={cn(
-            "p-2 rounded-lg hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors",
-            isCollapsed && "mx-auto"
-          )}
-          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-        >
-          <motion.div
-            animate={{ rotate: isCollapsed ? 180 : 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </motion.div>
-        </motion.button>
       </div>
 
       {/* Navigation */}
@@ -253,17 +277,26 @@ export function AppSidebar({
         </motion.div>
       </nav>
 
-      {/* Crisis Widget - only show when expanded */}
+      {/* Crisis Widget */}
+      <div className="px-2 pb-4">
+        <CrisisWidget collapsed={isCollapsed} />
+      </div>
+
+      {/* Pin indicator - subtle hint at bottom */}
       <AnimatePresence>
         {!isCollapsed && (
-          <motion.div 
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="px-3 pb-4 overflow-hidden"
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="px-3 pb-3 text-center"
           >
-            <CrisisWidget />
+            <button
+              onClick={() => setIsPinned(!isPinned)}
+              className="text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+            >
+              {isPinned ? 'Unpin sidebar' : 'Pin sidebar'} <span className="opacity-50">(⌘B)</span>
+            </button>
           </motion.div>
         )}
       </AnimatePresence>
