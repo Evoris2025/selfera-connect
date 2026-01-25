@@ -403,14 +403,22 @@ export default function MyERA() {
             >
               <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Amount</p>
               
-              {/* Mock billing data - replace with real data when available */}
-              <div className="space-y-1.5">
-                <p className="text-lg font-bold text-foreground">
-                  {currentPlan === 'free' ? '$0.00' : `$${monthlyPrice.toFixed(2)}`}
-                </p>
-                <div className="text-[11px] text-muted-foreground space-y-0.5">
-                  <p>Last payment: $0.00 on Jan 1, 2025</p>
-                  <p>Next due: Feb 1, 2025</p>
+              {/* Main amount - top section */}
+              <p className="text-xl font-bold text-foreground mb-3">
+                {currentPlan === 'free' ? '$0.00' : `$${monthlyPrice.toFixed(2)}`}
+              </p>
+              
+              {/* Payment info - bottom section split */}
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/5">
+                <div>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">Last Payment</p>
+                  <p className="text-xs font-medium text-foreground">$0.00</p>
+                  <p className="text-[10px] text-muted-foreground">Jan 1, 2025</p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">Next Due</p>
+                  <p className="text-xs font-medium text-foreground">$0.00</p>
+                  <p className="text-[10px] text-muted-foreground">Feb 1, 2025</p>
                 </div>
               </div>
             </motion.div>
