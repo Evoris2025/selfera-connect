@@ -27,6 +27,7 @@ import {
   Calendar,
   User,
   AlertCircle,
+  X,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSupportLinks } from '@/hooks/useSupportLinks';
@@ -447,8 +448,8 @@ export default function MyERA() {
                       </div>
                     </div>
                     
-                    {/* Progress Steps - refined */}
-                    <div className="flex items-center gap-2 my-auto py-2">
+                    {/* Progress Steps - centered */}
+                    <div className="flex items-center justify-center gap-2 my-auto py-2">
                       {verificationSteps.map((step, idx) => (
                         <div key={step.id} className="flex items-center gap-2">
                           <div className="w-6 h-6 rounded-full flex items-center justify-center bg-muted/10 border border-white/[0.08] text-muted-foreground">
@@ -756,9 +757,23 @@ export default function MyERA() {
                 Add
               </Button>
             </div>
-            <p className="text-[11px] text-muted-foreground/60 leading-relaxed mt-1 max-w-xs">
-              SelfERA is a wellbeing platform, not a clinical service. For emergencies, please contact local crisis services.
-            </p>
+            {!localStorage.getItem('hideNetworkDisclaimer') && (
+              <div className="flex items-start gap-2 mt-2">
+                <p className="text-[11px] text-muted-foreground/60 leading-relaxed flex-1">
+                  SelfERA is a wellbeing platform, not a clinical service. For emergencies, please contact local crisis services. By using SelfERA, you agree to our community guidelines.
+                </p>
+                <button
+                  onClick={() => {
+                    localStorage.setItem('hideNetworkDisclaimer', 'true');
+                    window.dispatchEvent(new Event('storage'));
+                  }}
+                  className="text-muted-foreground/40 hover:text-muted-foreground transition-colors p-0.5 -mt-0.5"
+                  aria-label="Dismiss disclaimer"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Network Tabs - Refined */}
