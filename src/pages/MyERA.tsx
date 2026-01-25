@@ -351,27 +351,33 @@ export default function MyERA() {
                   className="text-center group py-2"
                   onClick={() => navigate('/community')}
                 >
-                  <p className="text-xl font-bold text-foreground group-hover:text-primary transition-colors mb-1.5">
-                    {communitiesLoading ? '—' : communitiesCount}
-                  </p>
+                  <div className="h-7 flex items-center justify-center mb-1.5">
+                    <p className="text-xl font-bold text-foreground group-hover:text-primary transition-colors leading-none">
+                      {communitiesLoading ? '—' : communitiesCount}
+                    </p>
+                  </div>
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Waitlist</p>
                 </button>
                 <button 
                   className="text-center group py-2 border-l border-white/10"
                   onClick={() => navigate('/directory')}
                 >
-                  <p className="text-xl font-bold text-foreground group-hover:text-primary transition-colors mb-1.5">
-                    {connectionsCount}
-                  </p>
+                  <div className="h-7 flex items-center justify-center mb-1.5">
+                    <p className="text-xl font-bold text-foreground group-hover:text-primary transition-colors leading-none">
+                      {connectionsCount}
+                    </p>
+                  </div>
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wider">My List</p>
                 </button>
                 <button 
                   className="text-center group relative py-2 border-l border-white/10"
                   onClick={() => navigate('/notifications')}
                 >
-                  <p className="text-xl font-bold text-foreground group-hover:text-primary transition-colors mb-1.5">
-                    {pendingConnectionCount || 0}
-                  </p>
+                  <div className="h-7 flex items-center justify-center mb-1.5">
+                    <p className="text-xl font-bold text-foreground group-hover:text-primary transition-colors leading-none">
+                      {pendingConnectionCount || 0}
+                    </p>
+                  </div>
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Pending</p>
                   {pendingConnectionCount > 0 && (
                     <span className="absolute top-1 right-1/4 w-2 h-2 rounded-full bg-rose-500" />
@@ -381,7 +387,7 @@ export default function MyERA() {
                   className="text-center group relative py-2 border-l border-white/10"
                   onClick={() => navigate('/notifications')}
                 >
-                  <div className="flex items-center justify-center mb-1.5">
+                  <div className="h-7 flex items-center justify-center mb-1.5">
                     <Bell className="w-5 h-5 text-foreground group-hover:text-primary transition-colors" />
                   </div>
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Alerts</p>
