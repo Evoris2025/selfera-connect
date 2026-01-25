@@ -780,7 +780,7 @@ export default function MyERA() {
           </AnimatePresence>
         </motion.section>
 
-        {/* Discover Section */}
+        {/* MyERA Network Section */}
         <motion.section
           className="mt-8 px-4"
           initial={{ opacity: 0, y: 20 }}
@@ -789,7 +789,7 @@ export default function MyERA() {
         >
           <div className="mb-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-foreground tracking-tight">Discover</h2>
+              <h2 className="text-lg font-semibold text-foreground tracking-tight">MyERA Network</h2>
               <Button 
                 variant="ghost" 
                 size="sm" 
@@ -826,7 +826,7 @@ export default function MyERA() {
             </AnimatePresence>
           </div>
 
-          {/* Discover Tabs - Refined */}
+          {/* Network Tabs - Refined */}
           <div className="flex items-center gap-1 p-1 rounded-xl bg-card/30 border border-white/[0.06] mb-4">
             <button
               className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${
@@ -836,7 +836,7 @@ export default function MyERA() {
               }`}
               onClick={() => setActiveNetworkTab('list')}
             >
-              Directory
+              Discover
             </button>
             <button
               className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all relative ${
