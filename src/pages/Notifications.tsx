@@ -24,7 +24,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useNavigate } from 'react-router-dom';
-import { MobileNav } from '@/components/MobileNav';
+import { AppLayout } from '@/components/AppLayout';
 import { useNotifications } from '@/hooks/useNotifications';
 import { FollowRequestsSection } from '@/components/notifications/FollowRequestsSection';
 
@@ -352,8 +352,9 @@ export default function Notifications() {
   const allRead = notifications.every(n => n.read);
 
   return (
-    <div className="flex flex-col h-[100dvh] bg-background">
-      {/* Header */}
+    <AppLayout showHeader={false}>
+      <div className="flex flex-col min-h-[100dvh] bg-background">
+        {/* Header */}
       <motion.div 
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -458,11 +459,10 @@ export default function Notifications() {
                 ))}
               </div>
             )}
-          </div>
-        )}
+            </div>
+          )}
+        </div>
       </div>
-
-      <MobileNav />
-    </div>
+    </AppLayout>
   );
 }
