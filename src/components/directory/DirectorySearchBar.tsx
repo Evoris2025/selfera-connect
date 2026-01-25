@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
-import { VerifiedBadge } from '@/components/VerifiedBadge';
+import { EraVerifiedTick } from '@/components/EraVerifiedTick';
 import { cn } from '@/lib/utils';
 import type { DirectoryEntry } from '@/hooks/useDirectory';
 
@@ -161,7 +161,7 @@ export function DirectorySearchBar({
                           <span className="font-medium text-foreground truncate">
                             {entry.name}
                           </span>
-                          {entry.verified && <VerifiedBadge size="sm" />}
+                          {entry.verified && <EraVerifiedTick size="sm" userEmail={entry.profile?.email || undefined} />}
                         </div>
                         
                         {entry.description && (

@@ -22,7 +22,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
 import { GlassCard } from '@/components/ui/GlassCard';
-import { VerifiedBadge } from '@/components/VerifiedBadge';
+import { EraVerifiedTick } from '@/components/EraVerifiedTick';
 import { ProviderDetailModal } from '@/components/directory/ProviderDetailModal';
 import { DirectorySearchBar } from '@/components/directory/DirectorySearchBar';
 import { useDirectory, DirectoryEntry } from '@/hooks/useDirectory';
@@ -337,7 +337,7 @@ export default function Directory() {
                             <h3 className="text-base font-semibold text-foreground truncate">
                               {entry.name}
                             </h3>
-                            {entry.verified && <VerifiedBadge size="sm" />}
+                            {entry.verified && <EraVerifiedTick size="sm" userEmail={entry.profile?.email || undefined} />}
                           </div>
                           {entry.profile?.handle && (
                             <p className="text-sm text-muted-foreground">
