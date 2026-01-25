@@ -208,6 +208,7 @@ export default function Profile() {
     isVerified: mockUser.isVerified,
     isPrivate: mockUser.isPrivate,
     userType: mockUser.userType,
+    email: null as string | null,
   };
 
   // Normalize stats to a consistent shape
@@ -524,7 +525,7 @@ export default function Profile() {
                   <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground tracking-tight leading-tight">
                     {displayProfile.displayName || mockUser.name}
                   </h1>
-                  {displayProfile.isVerified && <EraVerifiedTick size="md" tier="orange" />}
+                  {displayProfile.isVerified && <EraVerifiedTick size="md" userEmail={displayProfile.email} />}
                   {displayProfile.userType && displayProfile.userType !== 'individual' && (
                     <AccountTypeBadge type={displayProfile.userType as AccountType} size="md" />
                   )}

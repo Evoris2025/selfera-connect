@@ -19,6 +19,7 @@ interface Profile {
   isVerified: boolean;
   isPrivate: boolean;
   userType: 'individual' | 'organization' | 'professional';
+  email: string | null;
 }
 
 interface UseProfileResult {
@@ -70,9 +71,10 @@ export function useProfileStats(userId: string): UseProfileResult {
           coverUrl: profileData.cover_url,
           bio: profileData.bio,
           location: profileData.country,
-          isVerified: false, // TODO: Add verification status to profiles table
+          isVerified: profileData.is_verified || false,
           isPrivate: profileData.is_private || false,
           userType: (profileData.user_type as Profile['userType']) || 'individual',
+          email: profileData.email,
         });
       }
 
