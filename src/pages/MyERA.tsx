@@ -332,14 +332,8 @@ export default function MyERA() {
                   <p className="text-sm text-muted-foreground">
                     @{profile?.handle || 'user'}
                   </p>
-                  <div className="mt-1.5 flex items-center gap-2">
+                  <div className="mt-1.5">
                     <AccountTypeBadge type={(profile?.user_type as AccountType) || 'individual'} />
-                    {isVerified && (
-                      <Badge variant="outline" className="text-[10px] border-emerald-500/30 text-emerald-400 bg-emerald-500/10">
-                        <Shield className="w-2.5 h-2.5 mr-1" />
-                        ERA Verified
-                      </Badge>
-                    )}
                   </div>
                 </div>
 
@@ -681,9 +675,20 @@ export default function MyERA() {
                         </Badge>
                       </div>
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      You're part of the trusted ERA community.
-                    </p>
+                    <ul className="text-xs text-muted-foreground space-y-1.5 mt-2">
+                      <li className="flex items-start gap-1.5">
+                        <Check className="w-3 h-3 text-emerald-400 mt-0.5 flex-shrink-0" />
+                        <span>Verified badge on profile & posts</span>
+                      </li>
+                      <li className="flex items-start gap-1.5">
+                        <Check className="w-3 h-3 text-emerald-400 mt-0.5 flex-shrink-0" />
+                        <span>Increased trust with the community</span>
+                      </li>
+                      <li className="flex items-start gap-1.5">
+                        <Check className="w-3 h-3 text-emerald-400 mt-0.5 flex-shrink-0" />
+                        <span>Priority in directory listings</span>
+                      </li>
+                    </ul>
                   </div>
                 </motion.div>
               )}
