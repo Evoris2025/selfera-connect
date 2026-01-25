@@ -14,12 +14,14 @@ interface AppLayoutProps {
 export function AppLayout({ children, title, showHeader = true, onCreatePost }: AppLayoutProps) {
   const { pendingCount } = useFollowRequests();
   
-  // Listen for sidebar collapse state changes
+  // Listen for sidebar collapse state changes - start collapsed by default
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('sidebar-collapsed') === 'true';
+      // Default to collapsed unless explicitly pinned
+      const isPinned = localStorage.getItem('sidebar-pinned') === 'true';
+      return !isPinned;
     }
-    return false;
+    return true; // Default collapsed
   });
 
   useEffect(() => {
