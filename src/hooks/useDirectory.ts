@@ -103,29 +103,40 @@ export function useDirectory() {
       setLoading(true);
       setError(null);
 
-      const { data, error: fetchError } = await supabase
-        .from('service_directory_entries')
-        .select(`
-          *,
-          profile:profiles!service_directory_entries_owner_profile_id_fkey (
-            id,
-            display_name,
-            handle,
-            avatar_url,
-            user_type,
-            is_verified
-          )
-        `)
-        .order('verified', { ascending: false })
-        .order('name', { ascending: true });
+      // Phase C: Directory now shows verified SelfERA users only (profiles with is_verified=true)
+      // Filter to verified profiles with user_type in (professional, organization)
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, display_name, handle, avatar_url, user_type, is_verified, bio, country')
+        .eq('is_verified', true)
+        .in('user_type', ['professional', 'organization'])
+        .order('display_name', { ascending: true });
 
-      if (fetchError) throw fetchError;
+      if (profilesError) throw profilesError;
 
-      const typedEntries: DirectoryEntry[] = (data || []).map(entry => ({
-        ...entry,
-        verified: entry.verified ?? false,
-        links: entry.links as { website?: string } | null,
-        profile: Array.isArray(entry.profile) ? entry.profile[0] : entry.profile,
+      // Transform profiles into DirectoryEntry format
+      const typedEntries: DirectoryEntry[] = (profilesData || []).map(profile => ({
+        id: profile.id,
+        name: profile.display_name || 'Unknown',
+        description: profile.bio,
+        regions_served: profile.country ? [profile.country] : null,
+        delivery_type: null,
+        price_range: null,
+        languages_supported: null,
+        tags: profile.user_type === 'professional' ? ['Practitioner'] : ['Organisation'],
+        verified: profile.is_verified ?? false,
+        links: null,
+        owner_user_id: profile.id,
+        owner_profile_id: profile.id,
+        created_at: null,
+        profile: {
+          id: profile.id,
+          display_name: profile.display_name,
+          handle: profile.handle,
+          avatar_url: profile.avatar_url,
+          user_type: profile.user_type,
+          is_verified: profile.is_verified ?? false,
+        },
       }));
 
       setEntries(typedEntries);

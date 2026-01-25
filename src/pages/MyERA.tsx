@@ -38,9 +38,11 @@ import { useNewConversation } from '@/hooks/useNewConversation';
 import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { VerifiedBadge } from '@/components/VerifiedBadge';
+import { EraVerifiedTick } from '@/components/EraVerifiedTick';
 import { AccountTypeBadge, AccountType } from '@/components/AccountTypeBadge';
 import { AppLayout } from '@/components/AppLayout';
+import { VerificationFlow } from '@/components/verification';
+import { VerifiedDirectoryPicker } from '@/components/myera';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import {
@@ -134,6 +136,8 @@ export default function MyERA() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [activeNetworkTab, setActiveNetworkTab] = useState<'list' | 'interactions'>('list');
   const [showIntentSelection, setShowIntentSelection] = useState(false);
+  const [showVerificationFlow, setShowVerificationFlow] = useState(false);
+  const [showDirectoryPicker, setShowDirectoryPicker] = useState(false);
   const [selectedIntents, setSelectedIntents] = useState<string[]>([]);
   const [showNetworkDisclaimer, setShowNetworkDisclaimer] = useState(() => 
     !localStorage.getItem('hideNetworkDisclaimer')
@@ -322,7 +326,7 @@ export default function MyERA() {
                     <h1 className="text-lg font-semibold text-foreground truncate">
                       {profile?.display_name || 'User'}
                     </h1>
-                    {profile?.is_verified && <VerifiedBadge size="sm" />}
+                    {profile?.is_verified && <EraVerifiedTick size="sm" tier="green" />}
                   </div>
                   <p className="text-sm text-muted-foreground">
                     @{profile?.handle || 'user'}
@@ -521,7 +525,7 @@ export default function MyERA() {
                       <Button
                         size="sm"
                         className="rounded-full h-9 w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
-                        onClick={() => setShowIntentSelection(true)}
+                        onClick={() => setShowVerificationFlow(true)}
                       >
                         Start Verification
                         <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
@@ -805,7 +809,7 @@ export default function MyERA() {
                 variant="ghost" 
                 size="sm" 
                 className="text-primary h-8 px-3"
-                onClick={() => navigate('/directory')}
+                onClick={() => setShowDirectoryPicker(true)}
               >
                 <Plus className="w-4 h-4 mr-1" />
                 Add
@@ -952,9 +956,9 @@ export default function MyERA() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-1.5">
                             <span className="text-sm font-medium text-foreground truncate">
-                              {link.provider?.display_name || 'Provider'}
+                            {link.provider?.display_name || 'Provider'}
                             </span>
-                            {link.provider?.is_verified && <VerifiedBadge size="sm" />}
+                            {link.provider?.is_verified && <EraVerifiedTick size="sm" tier="green" />}
                           </div>
                           <p className="text-xs text-muted-foreground truncate">
                             {link.organization_name || link.provider_role}
@@ -1025,6 +1029,32 @@ export default function MyERA() {
         </motion.footer>
 
       </div>
+
+      {/* Verification Flow Modal */}
+      <AnimatePresence>
+        {showVerificationFlow && (
+          <motion.div
+            className="fixed inset-0 z-50 bg-background"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <div className="container max-w-lg mx-auto p-4 pt-safe">
+              <VerificationFlow
+                onBack={() => setShowVerificationFlow(false)}
+                onComplete={() => setShowVerificationFlow(false)}
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Verified Directory Picker */}
+      <VerifiedDirectoryPicker
+        open={showDirectoryPicker}
+        onOpenChange={setShowDirectoryPicker}
+        onAdd={() => refreshSupportLinks()}
+      />
     </AppLayout>
   );
 }
