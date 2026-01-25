@@ -108,6 +108,7 @@ interface UserProfile {
   cover_url: string | null;
   is_verified: boolean | null;
   user_type: string | null;
+  email: string | null;
 }
 
 // Helper to get step index based on verification status
@@ -187,7 +188,7 @@ export default function MyERA() {
       if (!user) return;
       const { data } = await supabase
         .from('profiles')
-        .select('display_name, handle, avatar_url, cover_url, is_verified, user_type')
+        .select('display_name, handle, avatar_url, cover_url, is_verified, user_type, email')
         .eq('id', user.id)
         .single();
       if (data) setProfile(data);
@@ -326,7 +327,7 @@ export default function MyERA() {
                     <h1 className="text-lg font-semibold text-foreground truncate">
                       {profile?.display_name || 'User'}
                     </h1>
-                    {profile?.is_verified && <EraVerifiedTick size="sm" tier="green" />}
+                    {profile?.is_verified && <EraVerifiedTick size="sm" userEmail={profile?.email || undefined} />}
                   </div>
                   <p className="text-sm text-muted-foreground">
                     @{profile?.handle || 'user'}
@@ -958,7 +959,7 @@ export default function MyERA() {
                             <span className="text-sm font-medium text-foreground truncate">
                             {link.provider?.display_name || 'Provider'}
                             </span>
-                            {link.provider?.is_verified && <EraVerifiedTick size="sm" tier="green" />}
+                            {link.provider?.is_verified && <EraVerifiedTick size="sm" userEmail={link.provider?.email || undefined} />}
                           </div>
                           <p className="text-xs text-muted-foreground truncate">
                             {link.organization_name || link.provider_role}

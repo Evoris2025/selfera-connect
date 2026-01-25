@@ -18,6 +18,7 @@ interface VerifiedProfile {
   avatar_url: string | null;
   user_type: string | null;
   is_verified: boolean;
+  email: string | null;
 }
 
 interface VerifiedDirectoryPickerProps {
@@ -46,7 +47,7 @@ export function VerifiedDirectoryPicker({
       try {
         const { data, error } = await supabase
           .from('profiles')
-          .select('id, display_name, handle, avatar_url, user_type, is_verified')
+          .select('id, display_name, handle, avatar_url, user_type, is_verified, email')
           .eq('is_verified', true)
           .in('user_type', ['professional', 'organization'])
           .neq('id', user?.id || '')
@@ -191,7 +192,7 @@ export function VerifiedDirectoryPicker({
                       <span className="font-medium text-sm text-foreground truncate">
                         {profile.display_name || 'Unknown'}
                       </span>
-                      <EraVerifiedTick size="sm" tier="green" />
+                      <EraVerifiedTick size="sm" userEmail={profile.email || undefined} />
                     </div>
                     <div className="flex items-center gap-2 mt-0.5">
                       <span className="text-xs text-muted-foreground truncate">

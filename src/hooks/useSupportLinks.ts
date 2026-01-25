@@ -19,6 +19,7 @@ interface SupportLink {
     handle: string | null;
     avatar_url: string | null;
     is_verified: boolean;
+    email: string | null;
   };
 }
 
@@ -70,7 +71,7 @@ export function useSupportLinks() {
       if (providerIds.length > 0) {
         const { data: profiles, error: profilesError } = await supabase
           .from('profiles')
-          .select('id, display_name, handle, avatar_url, is_verified')
+          .select('id, display_name, handle, avatar_url, is_verified, email')
           .in('id', providerIds);
         
         if (profilesError) {

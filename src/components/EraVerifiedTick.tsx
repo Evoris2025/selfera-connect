@@ -3,6 +3,9 @@ import { cn } from '@/lib/utils';
 
 export type VerificationTier = 'pink' | 'green' | 'blue' | 'purple' | 'orange';
 
+// Owner account email that always gets orange tier
+const OWNER_EMAIL = 'martinbell@nefera.com.au';
+
 interface EraVerifiedTickProps {
   className?: string;
   size?: 'sm' | 'md';
@@ -11,6 +14,8 @@ interface EraVerifiedTickProps {
   subscriberCount?: number;
   /** If true, always shows pink tier (paid client) */
   isClient?: boolean;
+  /** User email for owner bypass logic */
+  userEmail?: string;
 }
 
 const sizeClasses = {
@@ -30,11 +35,18 @@ const tierColors: Record<VerificationTier, string> = {
 /**
  * Calculate verification tier based on subscriber count
  * Apply in descending order: Orange → Purple → Blue → Green → Pink
+ * Owner account always gets orange tier
  */
 export function calculateVerificationTier(
   subscriberCount: number = 0,
-  isClient: boolean = false
+  isClient: boolean = false,
+  userEmail?: string
 ): VerificationTier {
+  // Owner bypass - always orange
+  if (userEmail?.toLowerCase() === OWNER_EMAIL.toLowerCase()) {
+    return 'orange';
+  }
+  
   // Clients always get pink tier
   if (isClient) return 'pink';
   
@@ -48,9 +60,9 @@ export function calculateVerificationTier(
 }
 
 export const EraVerifiedTick = forwardRef<HTMLDivElement, EraVerifiedTickProps>(
-  ({ className, size = 'md', tier, subscriberCount = 0, isClient = false }, ref) => {
+  ({ className, size = 'md', tier, subscriberCount = 0, isClient = false, userEmail }, ref) => {
     // Calculate tier if not explicitly provided
-    const computedTier = tier || calculateVerificationTier(subscriberCount, isClient);
+    const computedTier = tier || calculateVerificationTier(subscriberCount, isClient, userEmail);
     const fillColor = tierColors[computedTier];
     
     return (
