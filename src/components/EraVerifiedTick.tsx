@@ -14,8 +14,8 @@ interface EraVerifiedTickProps {
 }
 
 const sizeClasses = {
-  sm: 'h-8 w-8',
-  md: 'h-10 w-10',
+  sm: 'h-5 w-5',
+  md: 'h-7 w-7',
 };
 
 // Tier colors - fill colors for the shield
