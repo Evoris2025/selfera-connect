@@ -441,13 +441,13 @@ export default function MyERA() {
               <div className="grid grid-cols-2 gap-0 pt-3 border-t border-white/[0.06] h-[72px]">
                 <div className="flex flex-col items-center py-1">
                   <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Last Payment</p>
-                  <p className="text-base font-bold text-foreground my-auto">$0.00</p>
-                  <p className="text-[11px] text-muted-foreground">Jan 1, 2025</p>
+                  <p className="text-base font-bold text-foreground my-auto">$14.99</p>
+                  <p className="text-[11px] text-muted-foreground">Dec 25, 2025</p>
                 </div>
                 <div className="flex flex-col items-center py-1 border-l border-white/10">
                   <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Next Due</p>
-                  <p className="text-base font-bold text-foreground my-auto">$0.00</p>
-                  <p className="text-[11px] text-muted-foreground">Feb 1, 2025</p>
+                  <p className="text-base font-bold text-foreground my-auto">$14.99</p>
+                  <p className="text-[11px] text-muted-foreground">Jan 25, 2026</p>
                 </div>
               </div>
             </motion.div>
