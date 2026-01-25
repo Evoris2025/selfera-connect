@@ -1,120 +1,126 @@
 
 
-# Desktop Sidebar Simplification Plan
+# Fix Desktop Navigation for MyERA, Notifications, and Messages
 
-## Overview
-Transform the desktop sidebar from an expanding/collapsible sidebar into a simple, static vertical icon bar - essentially a vertical version of the mobile bottom navigation. The bar will be fixed on the left side, always show only icons (no text labels), and have no hover-to-expand or pinning functionality.
+## Problem
+The MyERA, Notifications, and Messages pages have their own navigation bars rendered directly (using `MobileNav`), instead of using the `AppLayout` component. This causes the navigation to appear at the bottom on desktop, when it should appear on the left side like other pages.
 
-## Current State
-- **Mobile/Tablet**: Uses `MobileNav` - a horizontal bottom navigation bar with icons only
-- **Desktop**: Uses `AppSidebar` - a complex sidebar with hover-to-expand, pinning, keyboard shortcuts, and collapse delay features
-
-## Goal
-Desktop should have a **vertical icon bar** that:
-- Is positioned on the left side (not bottom)
-- Shows only icons (like mobile)
-- Has no expanding/collapsing behavior
-- Looks and feels like the mobile nav, just rotated vertical
-- Fixed width (~64px)
+## Solution
+Wrap these three pages with the `AppLayout` component, which handles the responsive navigation logic:
+- Desktop (lg+): Shows `DesktopNav` on the left side
+- Tablet (md) and Mobile: Shows `MobileNav` at the bottom
 
 ## Changes Required
 
-### 1. Create New `DesktopNav` Component
-Create a new simple component that mirrors `MobileNav` but oriented vertically:
-
-- **File**: `src/components/DesktopNav.tsx` (new file)
-- **Layout**: Fixed left side, full height, narrow width (~w-16)
-- **Content**: 
-  - Same nav items as MobileNav (Home, Explore, MyERA, Create, Notifications, Messages, Profile)
-  - Same secondary items (Crisis Support, Settings)
-  - Icons only, no text labels
-  - Tooltips on hover for accessibility
-- **Styling**: Match the mobile nav's glass aesthetic but vertical
-- **Animations**: Same subtle tap/hover animations as MobileNav
-- **Badge indicators**: Same dot-style badges for notifications/messages
-
-### 2. Update `AppLayout.tsx`
-Replace the complex sidebar with the new simple vertical nav:
-
-- Remove the `sidebarCollapsed` state and related `useEffect` (no longer needed)
-- Replace `AppSidebar` with new `DesktopNav`
-- Simplify margin logic to use fixed `lg:ml-16` (always the same width)
-- Remove the `transition-[margin]` since width is now static
-
-### 3. Clean Up `AppSidebar.tsx` (Optional)
-The `AppSidebar.tsx` file can be deleted or kept for future use. Since it's no longer used, we can remove it to keep the codebase clean.
-
-### 4. Settings Page Cleanup
-Remove the "Sidebar Collapse Delay" setting from `Settings.tsx` since the collapse functionality no longer exists for desktop.
-
-## Visual Comparison
-
-```text
-BEFORE (Desktop):                    AFTER (Desktop):
-┌──────────────────────────┐         ┌──────────────────────────┐
-│ ┌────────┐               │         │ ┌───┐                    │
-│ │ LOGO   │               │         │ │ 🏠 │                    │
-│ ├────────┤               │         │ ├───┤                    │
-│ │ 🏠 Home │               │         │ │ 🧭 │                    │
-│ │ 🧭 Explore              │         │ │ 📊 │                    │
-│ │ 📊 MyERA │              │         │ │ ➕ │   Content Area     │
-│ │ ➕ Create│   Content    │ ──────► │ │ 🔔 │                    │
-│ │ 🔔 Notif │               │         │ │ 💬 │                    │
-│ │ 💬 Msgs │               │         │ │ 👤 │                    │
-│ │ 👤 Profile              │         │ ├───┤                    │
-│ │ ⚙️ Settings              │         │ │ ❤️ │                    │
-│ └────────┘               │         │ │ ⚙️ │                    │
-└──────────────────────────┘         │ └───┘                    │
-                                     └──────────────────────────┘
-Hover/Collapse/Pin                   Static icons, tooltips
+### 1. MyERA Page (`src/pages/MyERA.tsx`)
+**Current structure:**
+```tsx
+return (
+  <div className="min-h-screen bg-background pb-24">
+    {/* Page content */}
+    <MobileNav ... />
+  </div>
+);
 ```
+
+**New structure:**
+```tsx
+return (
+  <AppLayout showHeader={false}>
+    <div className="min-h-screen bg-background">
+      {/* Page content - remove MobileNav, it's handled by AppLayout */}
+    </div>
+  </AppLayout>
+);
+```
+
+Changes:
+- Import `AppLayout` instead of (or in addition to) `MobileNav`
+- Remove the direct `MobileNav` component
+- Remove `pb-24` padding (AppLayout handles navigation spacing with `pb-nav-safe`)
+- Wrap content in `AppLayout` with `showHeader={false}` (page has its own hero section)
+
+### 2. Notifications Page (`src/pages/Notifications.tsx`)
+**Current structure:**
+```tsx
+return (
+  <div className="flex flex-col h-[100dvh] bg-background">
+    {/* Header and content */}
+    <MobileNav />
+  </div>
+);
+```
+
+**New structure:**
+```tsx
+return (
+  <AppLayout showHeader={false}>
+    <div className="flex flex-col min-h-[100dvh] bg-background">
+      {/* Header and content - remove MobileNav */}
+    </div>
+  </AppLayout>
+);
+```
+
+Changes:
+- Import `AppLayout`
+- Remove the direct `MobileNav` component
+- Wrap content in `AppLayout` with `showHeader={false}` (page has its own header)
+- Adjust height handling as needed
+
+### 3. Messages Page (`src/pages/Messages.tsx`)
+**Current structure:**
+```tsx
+return (
+  <div className="...">
+    {/* Page content */}
+    <MobileNav />
+    <NewConversationModal ... />
+  </div>
+);
+```
+
+**New structure:**
+```tsx
+return (
+  <AppLayout showHeader={false}>
+    <div className="...">
+      {/* Page content - remove MobileNav */}
+      <NewConversationModal ... />
+    </div>
+  </AppLayout>
+);
+```
+
+Changes:
+- Import `AppLayout`
+- Remove the direct `MobileNav` component
+- Wrap content in `AppLayout` with `showHeader={false}` (page has its own header)
 
 ## Technical Details
 
-### New DesktopNav Component Structure
-```typescript
-// Key elements:
-- Fixed positioning: fixed left-0 top-0 bottom-0
-- Narrow width: w-16
-- Vertical flex layout: flex flex-col
-- Glass background: Same as MobileNav's glass-heavy styling
-- Navigation items centered vertically: justify-center
-- Tooltips: Each icon wrapped with Tooltip for accessibility
-- Same nav items array as MobileNav
-- Framer Motion animations for tap/hover (matching MobileNav)
-```
+### AppLayout Props
+- `showHeader={false}` - These pages have their own custom headers, so we disable AppLayout's header
+- The `onCreatePost` prop can be added if these pages need to trigger the creator studio
 
-### AppLayout Changes
-```typescript
-// Before:
-<div className="hidden lg:block">
-  <AppSidebar ... />
-</div>
-<div className={`... ${sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-60 lg:ml-64'}`}>
-
-// After:
+### Why This Works
+`AppLayout` already contains the correct responsive logic:
+```tsx
+{/* Desktop - left sidebar */}
 <div className="hidden lg:block">
   <DesktopNav ... />
 </div>
-<div className="... lg:ml-16">
+
+{/* Mobile/Tablet - bottom bar */}
+<div className="lg:hidden">
+  <MobileNav ... />
+</div>
 ```
 
-### Files to Create
-- `src/components/DesktopNav.tsx`
+By using `AppLayout`, these pages will automatically get the correct navigation placement based on screen size.
 
-### Files to Modify
-- `src/components/AppLayout.tsx` - Use DesktopNav, remove collapse logic
-
-### Files to Delete (Optional)
-- `src/components/AppSidebar.tsx` - No longer used
-
-### Settings Cleanup
-- Remove sidebar collapse delay slider from `src/pages/Settings.tsx`
-
-## Summary
-This simplification removes the complex expanding sidebar in favor of a clean, static vertical icon bar that matches the mobile experience. The result is:
-- Consistent look/feel across all device sizes
-- Simpler codebase (removing ~200 lines of collapse/expand logic)
-- Better UX - no unexpected expanding behavior
-- Icons with tooltips for accessibility
+## Files to Modify
+1. `src/pages/MyERA.tsx` - Wrap with AppLayout, remove MobileNav
+2. `src/pages/Notifications.tsx` - Wrap with AppLayout, remove MobileNav
+3. `src/pages/Messages.tsx` - Wrap with AppLayout, remove MobileNav
 
