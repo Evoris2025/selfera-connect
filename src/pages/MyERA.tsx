@@ -35,6 +35,8 @@ import { usePendingConnectionCount } from '@/hooks/usePendingConnectionCount';
 import { useVerification } from '@/hooks/useVerification';
 import { useSubscription, PLAN_DETAILS } from '@/hooks/useSubscription';
 import { useNewConversation } from '@/hooks/useNewConversation';
+import { useUserRole } from '@/hooks/useUserRole';
+import { useInteractions } from '@/hooks/useInteractions';
 import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -42,7 +44,13 @@ import { EraVerifiedTick } from '@/components/EraVerifiedTick';
 import { AccountTypeBadge, AccountType } from '@/components/AccountTypeBadge';
 import { AppLayout } from '@/components/AppLayout';
 import { VerificationFlow } from '@/components/verification';
-import { VerifiedDirectoryPicker } from '@/components/myera';
+import { 
+  VerifiedDirectoryPicker, 
+  ClientView, 
+  CreatorView, 
+  PractitionerView, 
+  OrganisationView,
+} from '@/components/myera';
 import { EraAccountStatusCard } from '@/components/billing';
 import { EraTier, PlanType } from '@/lib/eraTiers';
 import { supabase } from '@/integrations/supabase/client';
@@ -137,6 +145,8 @@ export default function MyERA() {
   const { myRequest, isLoading: verificationLoading } = useVerification();
   const { subscription, currentPlan, loading: subscriptionLoading } = useSubscription();
   const { startConversation } = useNewConversation();
+  const { role, isVerified: userIsVerified, isProvider, tierColour: userTierColour, planType: userPlanType, loading: roleLoading } = useUserRole();
+  const { fetchMyInteractions, loading: interactionsLoading } = useInteractions();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [activeNetworkTab, setActiveNetworkTab] = useState<'discover' | 'mylist' | 'interactions'>('discover');
   const [showIntentSelection, setShowIntentSelection] = useState(false);
@@ -243,6 +253,11 @@ export default function MyERA() {
   const planType: PlanType = subscriptionData?.plan_type || 'free';
   const tierColour: EraTier | null = subscriptionData?.tier_colour || null;
   const amountDue: number = subscriptionData?.amount_due || 0;
+
+  // Role-specific data
+  const pendingInteractionsCount = 0; // Mock for now
+  const confirmedInteractionsCount = 0; // Mock for now
+  const subscriberCount = subscriptionData?.subscriber_count || 0;
 
   // Default cover for visual appeal
   const coverImage = profile?.cover_url || 'https://images.unsplash.com/photo-1557683316-973673baf926?w=800&h=400&fit=crop';
