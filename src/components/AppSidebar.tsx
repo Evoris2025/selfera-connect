@@ -187,6 +187,10 @@ export function AppSidebar({
       <motion.div
         variants={itemVariants}
         whileTap={{ scale: 0.95 }}
+        whileHover={isCollapsed ? { 
+          scale: 1.1,
+          backgroundColor: 'hsl(var(--primary) / 0.15)'
+        } : undefined}
         transition={springSmooth}
         className={cn(
           'relative flex items-center rounded-xl transition-colors duration-200',
@@ -205,7 +209,7 @@ export function AppSidebar({
           className={cn("flex items-center justify-center", isCollapsed ? "w-5" : "w-6")}
           animate={isActive ? { scale: 1.05 } : { scale: 1 }}
           transition={springGentle}
-          whileHover={item.isCreate ? { rotate: 90 } : undefined}
+          whileHover={item.isCreate ? { rotate: 90 } : isCollapsed ? { scale: 1.15 } : undefined}
         >
           <IconComponent className="h-5 w-5" strokeWidth={isActive ? 1.8 : 1.2} />
         </motion.div>
@@ -355,12 +359,19 @@ export function AppSidebar({
             exit={{ opacity: 0 }}
             className="px-3 pb-3 text-center"
           >
-            <button
-              onClick={() => setIsPinned(!isPinned)}
-              className="text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
-            >
-              {isPinned ? 'Unpin sidebar' : 'Pin sidebar'} <span className="opacity-50">(⌘B)</span>
-            </button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => setIsPinned(!isPinned)}
+                  className="text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+                >
+                  {isPinned ? 'Unpin sidebar' : 'Pin sidebar'} <span className="opacity-50">(⌘B)</span>
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                <span>Collapse delay: {collapseDelay}ms</span>
+              </TooltipContent>
+            </Tooltip>
           </motion.div>
         )}
       </AnimatePresence>
