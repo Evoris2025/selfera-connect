@@ -105,8 +105,39 @@ export function useVerification() {
           const oldData = payload.old as any;
           
           if (newData) {
-            // Show toast notification when status changes
+            // Show toast notification when status changes with sound & haptic feedback
             if (oldData?.status !== newData.status) {
+              // Haptic feedback (if supported)
+              if (navigator.vibrate) {
+                navigator.vibrate(newData.status === 'approved' ? [100, 50, 100] : [200]);
+              }
+
+              // Sound feedback
+              try {
+                const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                if (newData.status === 'approved') {
+                  // Pleasant ascending tone for approval
+                  oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+                  oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+                  oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
+                } else {
+                  // Lower tone for rejection
+                  oscillator.frequency.setValueAtTime(349.23, audioContext.currentTime); // F4
+                }
+                
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+              } catch (e) {
+                // Audio not supported
+              }
+
               if (newData.status === 'approved') {
                 toast({
                   title: '🎉 Verification Approved!',
