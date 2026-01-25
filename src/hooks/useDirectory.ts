@@ -25,6 +25,7 @@ export interface DirectoryEntry {
     avatar_url: string | null;
     user_type: string | null;
     is_verified: boolean;
+    email: string | null;
   } | null;
 }
 
@@ -107,7 +108,7 @@ export function useDirectory() {
       // Filter to verified profiles with user_type in (professional, organization)
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
-        .select('id, display_name, handle, avatar_url, user_type, is_verified, bio, country')
+        .select('id, display_name, handle, avatar_url, user_type, is_verified, bio, country, email')
         .eq('is_verified', true)
         .in('user_type', ['professional', 'organization'])
         .order('display_name', { ascending: true });
@@ -136,6 +137,7 @@ export function useDirectory() {
           avatar_url: profile.avatar_url,
           user_type: profile.user_type,
           is_verified: profile.is_verified ?? false,
+          email: profile.email,
         },
       }));
 
