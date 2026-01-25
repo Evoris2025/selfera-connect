@@ -30,7 +30,7 @@ export function AppLayout({ children, title, showHeader = true, onCreatePost }: 
           Tablet (md): full width
           Desktop (lg+): max-w-lg centered
         */}
-        <main className="flex-1 pb-nav-safe lg:pb-0 max-w-lg md:max-w-full lg:max-w-lg mx-auto w-full">
+        <main className="flex-1 pb-nav-safe lg:pb-0 max-w-lg md:max-w-full lg:max-w-2xl mx-auto w-full">
           {children}
         </main>
         
