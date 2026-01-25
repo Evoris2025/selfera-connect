@@ -1,9 +1,11 @@
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Compass, Plus, Bell, MessageCircle, User, LayoutDashboard, Settings } from 'lucide-react';
+import { Home, Compass, Plus, Bell, MessageCircle, User, LayoutDashboard, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BrandMark } from './BrandMark';
 import { CrisisWidget } from './CrisisWidget';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface NavItem {
   icon: typeof Home;
@@ -26,6 +28,31 @@ interface AppSidebarProps {
 const springSmooth = { type: 'spring' as const, stiffness: 300, damping: 30 };
 const springGentle = { type: 'spring' as const, stiffness: 200, damping: 25 };
 
+// Slide-in animation variants
+const sidebarVariants = {
+  hidden: { x: -280, opacity: 0 },
+  visible: { 
+    x: 0, 
+    opacity: 1,
+    transition: {
+      type: 'spring' as const,
+      stiffness: 300,
+      damping: 30,
+      staggerChildren: 0.05,
+      delayChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { x: -20, opacity: 0 },
+  visible: { 
+    x: 0, 
+    opacity: 1,
+    transition: springGentle
+  }
+};
+
 export function AppSidebar({ 
   onCreateClick, 
   notificationCount = 0, 
@@ -34,6 +61,16 @@ export function AppSidebar({
   pendingConnectionCount = 0,
 }: AppSidebarProps) {
   const location = useLocation();
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    const saved = localStorage.getItem('sidebar-collapsed');
+    return saved === 'true';
+  });
+
+  // Persist collapse state and dispatch event for layout sync
+  useEffect(() => {
+    localStorage.setItem('sidebar-collapsed', String(isCollapsed));
+    window.dispatchEvent(new CustomEvent('sidebar-toggle'));
+  }, [isCollapsed]);
 
   const totalNotificationBadge = notificationCount + followRequestCount + pendingConnectionCount;
 
@@ -64,128 +101,172 @@ export function AppSidebar({
 
   const renderNavItem = (item: NavItem, index: number) => {
     const isActive = isActiveRoute(item.href);
+    const IconComponent = item.icon;
 
-    // Create button
-    if (item.isCreate) {
-      return (
-        <motion.button
-          key={index}
-          onClick={onCreateClick}
-          whileTap={{ scale: 0.95 }}
-          whileHover={{ scale: 1.02 }}
-          transition={springSmooth}
-          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl bg-primary/10 hover:bg-primary/20 transition-colors duration-300 text-primary"
-          aria-label="Create post"
-        >
-          <motion.div
-            whileHover={{ rotate: 90 }}
-            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="flex items-center justify-center w-6"
-          >
-            <item.icon className="h-5 w-5" strokeWidth={1.5} />
-          </motion.div>
-          <span className="font-medium text-sm">Create</span>
-        </motion.button>
-      );
-    }
-
-    // Profile with ring
-    if (item.isProfile) {
-      return (
-        <Link key={item.href} to={item.href} className="block">
-          <motion.div
-            whileTap={{ scale: 0.95 }}
-            transition={springSmooth}
-            className={cn(
-              'flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors duration-200',
-              isActive 
-                ? 'bg-primary/10 text-foreground' 
-                : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
-            )}
-          >
-            <motion.div 
-              className={cn(
-                "relative flex items-center justify-center w-6",
-                isActive && "after:absolute after:inset-[-4px] after:rounded-full after:ring-2 after:ring-primary/60"
-              )}
-              animate={isActive ? { scale: 1.05 } : { scale: 1 }}
-              transition={springGentle}
-            >
-              <item.icon className="h-5 w-5" strokeWidth={isActive ? 1.8 : 1.2} />
-            </motion.div>
-            <span className={cn("text-sm", isActive && "font-medium")}>{item.label}</span>
-          </motion.div>
-        </Link>
-      );
-    }
-
-    // Standard nav items
-    return (
-      <Link key={item.href} to={item.href} className="block">
-        <motion.div
-          whileTap={{ scale: 0.95 }}
-          transition={springSmooth}
-          className={cn(
-            'relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors duration-200',
-            isActive 
+    const itemContent = (
+      <motion.div
+        variants={itemVariants}
+        whileTap={{ scale: 0.95 }}
+        transition={springSmooth}
+        className={cn(
+          'relative flex items-center rounded-xl transition-colors duration-200',
+          isCollapsed ? 'justify-center px-2 py-2.5' : 'gap-3 px-3 py-2.5',
+          item.isCreate 
+            ? 'bg-primary/10 hover:bg-primary/20 text-primary'
+            : isActive 
               ? 'bg-primary/10 text-foreground' 
-              : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
-          )}
+              : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground',
+          item.isProfile && isActive && !isCollapsed && "after:absolute after:left-3 after:top-1/2 after:-translate-y-1/2 after:w-6 after:h-6 after:rounded-full after:ring-2 after:ring-primary/60"
+        )}
+      >
+        <motion.div
+          className={cn("flex items-center justify-center", isCollapsed ? "w-5" : "w-6")}
+          animate={isActive ? { scale: 1.05 } : { scale: 1 }}
+          transition={springGentle}
+          whileHover={item.isCreate ? { rotate: 90 } : undefined}
         >
-          <motion.div
-            className="flex items-center justify-center w-6"
-            animate={isActive ? { scale: 1.05 } : { scale: 1 }}
-            transition={springGentle}
-          >
-            <item.icon className="h-5 w-5" strokeWidth={isActive ? 1.8 : 1.2} />
-          </motion.div>
-          <span className={cn("text-sm", isActive && "font-medium")}>{item.label}</span>
-          
-          {/* Badge */}
-          <AnimatePresence mode="popLayout">
-            {item.hasBadge && (
-              <motion.span 
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0 }}
-                transition={springGentle}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-crisis/80"
-              />
-            )}
-          </AnimatePresence>
+          <IconComponent className="h-5 w-5" strokeWidth={isActive ? 1.8 : 1.2} />
         </motion.div>
-      </Link>
+        
+        <AnimatePresence>
+          {!isCollapsed && (
+            <motion.span 
+              initial={{ opacity: 0, width: 0 }}
+              animate={{ opacity: 1, width: 'auto' }}
+              exit={{ opacity: 0, width: 0 }}
+              transition={{ duration: 0.2 }}
+              className={cn("text-sm whitespace-nowrap overflow-hidden", isActive && "font-medium")}
+            >
+              {item.label}
+            </motion.span>
+          )}
+        </AnimatePresence>
+        
+        {/* Badge */}
+        <AnimatePresence mode="popLayout">
+          {item.hasBadge && (
+            <motion.span 
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0 }}
+              transition={springGentle}
+              className={cn(
+                "w-2 h-2 rounded-full bg-crisis/80",
+                isCollapsed ? "absolute top-1 right-1" : "absolute right-3 top-1/2 -translate-y-1/2"
+              )}
+            />
+          )}
+        </AnimatePresence>
+      </motion.div>
     );
+
+    const wrappedContent = isCollapsed ? (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          {item.isCreate ? (
+            <button onClick={onCreateClick} className="w-full" aria-label={item.label}>
+              {itemContent}
+            </button>
+          ) : (
+            <Link to={item.href} className="block">
+              {itemContent}
+            </Link>
+          )}
+        </TooltipTrigger>
+        <TooltipContent side="right" sideOffset={8}>
+          {item.label}
+        </TooltipContent>
+      </Tooltip>
+    ) : (
+      item.isCreate ? (
+        <button onClick={onCreateClick} className="w-full" aria-label={item.label}>
+          {itemContent}
+        </button>
+      ) : (
+        <Link to={item.href} className="block">
+          {itemContent}
+        </Link>
+      )
+    );
+
+    return <div key={item.href + index}>{wrappedContent}</div>;
   };
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-60 lg:w-64 flex flex-col bg-background border-r border-border/50 z-40">
-      {/* Logo */}
-      <div className="h-16 flex items-center px-4 border-b border-border/30">
-        <Link to="/feed">
-          <BrandMark className="h-9 w-[160px]" />
-        </Link>
+    <motion.aside
+      initial="hidden"
+      animate="visible"
+      variants={sidebarVariants}
+      className={cn(
+        "fixed left-0 top-0 bottom-0 flex flex-col bg-background border-r border-border/50 z-40 transition-[width] duration-300 ease-out",
+        isCollapsed ? "w-16" : "w-60 lg:w-64"
+      )}
+    >
+      {/* Logo & Toggle */}
+      <div className="h-16 flex items-center justify-between px-3 border-b border-border/30">
+        <AnimatePresence mode="wait">
+          {!isCollapsed && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Link to="/feed">
+                <BrandMark className="h-9 w-[140px]" />
+              </Link>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
+        <motion.button
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          className={cn(
+            "p-2 rounded-lg hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors",
+            isCollapsed && "mx-auto"
+          )}
+          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          <motion.div
+            animate={{ rotate: isCollapsed ? 180 : 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </motion.div>
+        </motion.button>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 overflow-y-auto">
-        <div className="space-y-1">
+      <nav className="flex-1 px-2 py-4 overflow-y-auto">
+        <motion.div className="space-y-1" variants={sidebarVariants}>
           {navItems.map((item, index) => renderNavItem(item, index))}
-        </div>
+        </motion.div>
 
         {/* Separator */}
-        <div className="my-4 h-px bg-border/50" />
+        <div className="my-4 h-px bg-border/50 mx-1" />
 
         {/* Secondary Items */}
-        <div className="space-y-1">
+        <motion.div className="space-y-1" variants={sidebarVariants}>
           {secondaryItems.map((item, index) => renderNavItem(item, index))}
-        </div>
+        </motion.div>
       </nav>
 
-      {/* Crisis Widget */}
-      <div className="px-3 pb-4">
-        <CrisisWidget />
-      </div>
-    </aside>
+      {/* Crisis Widget - only show when expanded */}
+      <AnimatePresence>
+        {!isCollapsed && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="px-3 pb-4 overflow-hidden"
+          >
+            <CrisisWidget />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.aside>
   );
 }

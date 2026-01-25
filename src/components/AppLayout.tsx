@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import { MobileNav } from './MobileNav';
 import { AppSidebar } from './AppSidebar';
 import { AppHeader } from './AppHeader';
@@ -13,6 +13,33 @@ interface AppLayoutProps {
 
 export function AppLayout({ children, title, showHeader = true, onCreatePost }: AppLayoutProps) {
   const { pendingCount } = useFollowRequests();
+  
+  // Listen for sidebar collapse state changes
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('sidebar-collapsed') === 'true';
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    const handleStorage = () => {
+      setSidebarCollapsed(localStorage.getItem('sidebar-collapsed') === 'true');
+    };
+    
+    // Listen for storage changes and custom events
+    window.addEventListener('storage', handleStorage);
+    window.addEventListener('sidebar-toggle', handleStorage);
+    
+    // Check periodically for changes (fallback for same-tab updates)
+    const interval = setInterval(handleStorage, 100);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('sidebar-toggle', handleStorage);
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
     <div className="min-h-dvh bg-background flex w-full">
@@ -22,7 +49,7 @@ export function AppLayout({ children, title, showHeader = true, onCreatePost }: 
       </div>
       
       {/* Main content area */}
-      <div className="flex-1 flex flex-col md:ml-60 lg:ml-64">
+      <div className={`flex-1 flex flex-col transition-[margin] duration-300 ${sidebarCollapsed ? 'md:ml-16' : 'md:ml-60 lg:ml-64'}`}>
         {showHeader && <AppHeader title={title} />}
         
         <main className="flex-1 pb-nav-safe md:pb-0 max-w-lg mx-auto w-full">
