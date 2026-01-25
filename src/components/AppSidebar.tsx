@@ -1,0 +1,191 @@
+import { Link, useLocation } from 'react-router-dom';
+import { Home, Compass, Plus, Bell, MessageCircle, User, LayoutDashboard, Settings } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
+import { BrandMark } from './BrandMark';
+import { CrisisWidget } from './CrisisWidget';
+
+interface NavItem {
+  icon: typeof Home;
+  href: string;
+  label: string;
+  isCreate?: boolean;
+  isProfile?: boolean;
+  hasBadge?: boolean;
+}
+
+interface AppSidebarProps {
+  onCreateClick?: () => void;
+  notificationCount?: number;
+  messageCount?: number;
+  followRequestCount?: number;
+  pendingConnectionCount?: number;
+}
+
+// Cinematic spring configs
+const springSmooth = { type: 'spring' as const, stiffness: 300, damping: 30 };
+const springGentle = { type: 'spring' as const, stiffness: 200, damping: 25 };
+
+export function AppSidebar({ 
+  onCreateClick, 
+  notificationCount = 0, 
+  messageCount = 0, 
+  followRequestCount = 0,
+  pendingConnectionCount = 0,
+}: AppSidebarProps) {
+  const location = useLocation();
+
+  const totalNotificationBadge = notificationCount + followRequestCount + pendingConnectionCount;
+
+  const navItems: NavItem[] = [
+    { icon: Home, href: '/feed', label: 'Home' },
+    { icon: Compass, href: '/explore', label: 'Explore' },
+    { icon: LayoutDashboard, href: '/my-era', label: 'MyERA' },
+    { icon: Plus, href: '#create', isCreate: true, label: 'Create' },
+    { icon: Bell, href: '/notifications', label: 'Notifications', hasBadge: totalNotificationBadge > 0 },
+    { icon: MessageCircle, href: '/messages', label: 'Messages', hasBadge: messageCount > 0 },
+    { icon: User, href: '/profile', label: 'Profile', isProfile: true },
+  ];
+
+  const secondaryItems: NavItem[] = [
+    { icon: Settings, href: '/settings', label: 'Settings' },
+  ];
+
+  const isActiveRoute = (href: string) => {
+    if (href === '/feed') return location.pathname === '/feed';
+    if (href === '/explore') return location.pathname.startsWith('/explore');
+    if (href === '/my-era') return location.pathname === '/my-era';
+    if (href === '/profile') return location.pathname.startsWith('/profile');
+    if (href === '/notifications') return location.pathname === '/notifications';
+    if (href === '/messages') return location.pathname === '/messages';
+    if (href === '/settings') return location.pathname === '/settings';
+    return location.pathname === href;
+  };
+
+  const renderNavItem = (item: NavItem, index: number) => {
+    const isActive = isActiveRoute(item.href);
+
+    // Create button
+    if (item.isCreate) {
+      return (
+        <motion.button
+          key={index}
+          onClick={onCreateClick}
+          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.02 }}
+          transition={springSmooth}
+          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl bg-primary/10 hover:bg-primary/20 transition-colors duration-300 text-primary"
+          aria-label="Create post"
+        >
+          <motion.div
+            whileHover={{ rotate: 90 }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className="flex items-center justify-center w-6"
+          >
+            <item.icon className="h-5 w-5" strokeWidth={1.5} />
+          </motion.div>
+          <span className="font-medium text-sm">Create</span>
+        </motion.button>
+      );
+    }
+
+    // Profile with ring
+    if (item.isProfile) {
+      return (
+        <Link key={item.href} to={item.href} className="block">
+          <motion.div
+            whileTap={{ scale: 0.95 }}
+            transition={springSmooth}
+            className={cn(
+              'flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors duration-200',
+              isActive 
+                ? 'bg-primary/10 text-foreground' 
+                : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+            )}
+          >
+            <motion.div 
+              className={cn(
+                "relative flex items-center justify-center w-6",
+                isActive && "after:absolute after:inset-[-4px] after:rounded-full after:ring-2 after:ring-primary/60"
+              )}
+              animate={isActive ? { scale: 1.05 } : { scale: 1 }}
+              transition={springGentle}
+            >
+              <item.icon className="h-5 w-5" strokeWidth={isActive ? 1.8 : 1.2} />
+            </motion.div>
+            <span className={cn("text-sm", isActive && "font-medium")}>{item.label}</span>
+          </motion.div>
+        </Link>
+      );
+    }
+
+    // Standard nav items
+    return (
+      <Link key={item.href} to={item.href} className="block">
+        <motion.div
+          whileTap={{ scale: 0.95 }}
+          transition={springSmooth}
+          className={cn(
+            'relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors duration-200',
+            isActive 
+              ? 'bg-primary/10 text-foreground' 
+              : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+          )}
+        >
+          <motion.div
+            className="flex items-center justify-center w-6"
+            animate={isActive ? { scale: 1.05 } : { scale: 1 }}
+            transition={springGentle}
+          >
+            <item.icon className="h-5 w-5" strokeWidth={isActive ? 1.8 : 1.2} />
+          </motion.div>
+          <span className={cn("text-sm", isActive && "font-medium")}>{item.label}</span>
+          
+          {/* Badge */}
+          <AnimatePresence mode="popLayout">
+            {item.hasBadge && (
+              <motion.span 
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0 }}
+                transition={springGentle}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-crisis/80"
+              />
+            )}
+          </AnimatePresence>
+        </motion.div>
+      </Link>
+    );
+  };
+
+  return (
+    <aside className="fixed left-0 top-0 bottom-0 w-60 lg:w-64 flex flex-col bg-background border-r border-border/50 z-40">
+      {/* Logo */}
+      <div className="h-16 flex items-center px-4 border-b border-border/30">
+        <Link to="/feed">
+          <BrandMark className="h-9 w-[160px]" />
+        </Link>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 px-3 py-4 overflow-y-auto">
+        <div className="space-y-1">
+          {navItems.map((item, index) => renderNavItem(item, index))}
+        </div>
+
+        {/* Separator */}
+        <div className="my-4 h-px bg-border/50" />
+
+        {/* Secondary Items */}
+        <div className="space-y-1">
+          {secondaryItems.map((item, index) => renderNavItem(item, index))}
+        </div>
+      </nav>
+
+      {/* Crisis Widget */}
+      <div className="px-3 pb-4">
+        <CrisisWidget />
+      </div>
+    </aside>
+  );
+}
