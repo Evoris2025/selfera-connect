@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { useCommunityFeed } from '@/hooks/useCommunityFeed';
 import { formatDistanceToNow } from 'date-fns';
-import { VerifiedBadge } from '@/components/VerifiedBadge';
+import { EraVerifiedTick } from '@/components/EraVerifiedTick';
 import { toast } from 'sonner';
 
 interface CommunityFeedViewProps {
@@ -147,7 +147,7 @@ export function CommunityFeedView({ community, onBack }: CommunityFeedViewProps)
                         <span className="font-medium text-sm">
                           {post.author?.display_name || 'User'}
                         </span>
-                        {post.author?.is_verified && <VerifiedBadge size="sm" />}
+                        {post.author?.is_verified && <EraVerifiedTick size="sm" userEmail={post.author?.email || undefined} />}
                         <span className="text-xs text-muted-foreground">
                           @{post.author?.handle}
                         </span>

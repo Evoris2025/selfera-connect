@@ -20,6 +20,7 @@ interface CommunityPost {
     avatar_url: string | null;
     is_verified: boolean;
     is_private: boolean;
+    email: string | null;
   };
 }
 
@@ -71,7 +72,8 @@ export function useCommunityFeed(communityId: string | null) {
             handle,
             avatar_url,
             is_verified,
-            is_private
+            is_private,
+            email
           )
         `)
         .eq('community_id', communityId)
