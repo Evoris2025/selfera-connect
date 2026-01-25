@@ -799,28 +799,41 @@ export default function MyERA() {
             </div>
           </div>
 
-          {/* Network Tabs - Premium Social Style */}
-          <div className="flex items-center gap-0.5 p-1 rounded-2xl bg-card/40 backdrop-blur-sm border border-white/[0.08] mb-5">
-            {[
-              { id: 'discover', label: 'Discover' },
-              { id: 'mylist', label: 'My List' },
-              { id: 'interactions', label: 'Interactions', hasIndicator: true },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                className={`flex-1 py-2.5 px-3 rounded-xl text-sm font-medium transition-all relative ${
-                  activeNetworkTab === tab.id
-                    ? 'bg-primary text-primary-foreground shadow-md'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.04]'
-                }`}
-                onClick={() => setActiveNetworkTab(tab.id as 'discover' | 'mylist' | 'interactions')}
-              >
-                {tab.label}
-                {tab.hasIndicator && activeNetworkTab !== tab.id && (
-                  <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                )}
-              </button>
-            ))}
+          {/* Network Tabs - Evenly Spaced */}
+          <div className="grid grid-cols-3 gap-2 p-1.5 rounded-2xl bg-card/40 backdrop-blur-sm border border-white/[0.08] mb-5">
+            <button
+              className={`py-2.5 rounded-xl text-sm font-medium transition-all text-center ${
+                activeNetworkTab === 'discover'
+                  ? 'bg-primary text-primary-foreground shadow-md'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.06]'
+              }`}
+              onClick={() => setActiveNetworkTab('discover')}
+            >
+              Discover
+            </button>
+            <button
+              className={`py-2.5 rounded-xl text-sm font-medium transition-all text-center ${
+                activeNetworkTab === 'mylist'
+                  ? 'bg-primary text-primary-foreground shadow-md'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.06]'
+              }`}
+              onClick={() => setActiveNetworkTab('mylist')}
+            >
+              My List
+            </button>
+            <button
+              className={`py-2.5 rounded-xl text-sm font-medium transition-all text-center relative ${
+                activeNetworkTab === 'interactions'
+                  ? 'bg-primary text-primary-foreground shadow-md'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.06]'
+              }`}
+              onClick={() => setActiveNetworkTab('interactions')}
+            >
+              Interactions
+              {activeNetworkTab !== 'interactions' && (
+                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+              )}
+            </button>
           </div>
 
           <AnimatePresence mode="wait">
