@@ -7,6 +7,8 @@ interface NotificationUser {
   name: string;
   handle: string;
   avatarUrl?: string;
+  isVerified?: boolean;
+  email?: string;
 }
 
 interface Notification {
@@ -119,7 +121,9 @@ export function useNotifications(): UseNotificationsResult {
             id,
             display_name,
             handle,
-            avatar_url
+            avatar_url,
+            is_verified,
+            email
           )
         `)
         .eq('user_id', user.id)
@@ -140,6 +144,8 @@ export function useNotifications(): UseNotificationsResult {
             name: actor.display_name || actor.handle || 'Someone',
             handle: actor.handle || 'unknown',
             avatarUrl: actor.avatar_url,
+            isVerified: actor.is_verified ?? false,
+            email: actor.email || undefined,
           }] : undefined,
           action: getActionText(n.type),
           preview: n.message || undefined,

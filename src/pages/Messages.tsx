@@ -35,6 +35,7 @@ import { ReactionPicker, MessageReactions } from '@/components/messages/MessageR
 import { ReadReceipt } from '@/components/messages/ReadReceipt';
 import { ImagePreviewBar } from '@/components/messages/ImagePreviewBar';
 import { ImageMessage } from '@/components/messages/ImageMessage';
+import { EraVerifiedTick } from '@/components/EraVerifiedTick';
 import { supabase } from '@/integrations/supabase/client';
 
 // Dopamine-driven spring configs
@@ -309,7 +310,7 @@ export default function Messages() {
             if (otherParticipant) {
               const { data: profile } = await supabase
                 .from('profiles')
-                .select('id, display_name, handle, avatar_url')
+                .select('id, display_name, handle, avatar_url, is_verified, email')
                 .eq('id', otherParticipant.user_id)
                 .single();
               
@@ -322,6 +323,8 @@ export default function Messages() {
                     handle: profile.handle || 'user',
                     avatarUrl: profile.avatar_url || undefined,
                     isOnline: false,
+                    isVerified: profile.is_verified ?? false,
+                    email: profile.email || undefined,
                   },
                   lastMessage: '',
                   lastMessageTime: 'now',
@@ -345,7 +348,7 @@ export default function Messages() {
           // Fetch the target user's profile
           const { data: profile } = await supabase
             .from('profiles')
-            .select('id, display_name, handle, avatar_url')
+            .select('id, display_name, handle, avatar_url, is_verified, email')
             .eq('id', targetUserId)
             .single();
 
@@ -373,6 +376,8 @@ export default function Messages() {
                     handle: profile.handle || 'user',
                     avatarUrl: profile.avatar_url || undefined,
                     isOnline: false,
+                    isVerified: profile.is_verified ?? false,
+                    email: profile.email || undefined,
                   },
                   lastMessage: '',
                   lastMessageTime: 'now',
@@ -619,9 +624,14 @@ export default function Messages() {
             {(selectedConversation.participant.isOnline || onlineUsers.has(selectedConversation.participant.id)) && <OnlineIndicator size="small" pulse />}
           </motion.div>
           <div className="flex-1 min-w-0">
-            <p className="font-semibold text-[15px] text-foreground truncate tracking-tight">
-              {selectedConversation.participant.name}
-            </p>
+            <div className="flex items-center gap-1">
+              <p className="font-semibold text-[15px] text-foreground truncate tracking-tight">
+                {selectedConversation.participant.name}
+              </p>
+              {selectedConversation.participant.isVerified && (
+                <EraVerifiedTick size="sm" userEmail={selectedConversation.participant.email} />
+              )}
+            </div>
             <p className="text-[13px] text-muted-foreground/80">
               {(selectedConversation.participant.isOnline || onlineUsers.has(selectedConversation.participant.id)) 
                 ? (currentTypingUsers.length > 0 ? 'typing...' : 'Active now')
@@ -982,12 +992,15 @@ export default function Messages() {
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
-                    <p className={cn(
-                      'text-[15px] text-foreground truncate tracking-tight',
+                    <div className={cn(
+                      'flex items-center gap-1 text-[15px] text-foreground truncate tracking-tight',
                       conversation.unread ? 'font-semibold' : 'font-normal'
                     )}>
-                      {conversation.participant.name}
-                    </p>
+                      <span className="truncate">{conversation.participant.name}</span>
+                      {conversation.participant.isVerified && (
+                        <EraVerifiedTick size="sm" userEmail={conversation.participant.email} />
+                      )}
+                    </div>
                     <span className={cn(
                       'text-[12px] shrink-0',
                       conversation.unread ? 'text-foreground/80 font-medium' : 'text-muted-foreground/60'

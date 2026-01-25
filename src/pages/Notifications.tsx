@@ -27,16 +27,25 @@ import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/AppLayout';
 import { useNotifications } from '@/hooks/useNotifications';
 import { FollowRequestsSection } from '@/components/notifications/FollowRequestsSection';
+import { EraVerifiedTick } from '@/components/EraVerifiedTick';
 
 // Ultra-calm motion - simple fades and slides only
 const calmFade: Transition = { duration: 0.25, ease: 'easeOut' as const };
 const calmSlide: Transition = { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] as const };
 const calmStagger: Transition = { duration: 0.2, ease: 'easeOut' as const };
 
+interface NotificationUser {
+  name: string;
+  handle: string;
+  avatarUrl?: string;
+  isVerified?: boolean;
+  email?: string;
+}
+
 interface Notification {
   id: string;
   type: 'reaction' | 'follow' | 'comment' | 'mention' | 'community' | 'message' | 'verification' | 'follow_suggestion' | 'connection_request';
-  users?: { name: string; handle: string; avatarUrl?: string }[];
+  users?: NotificationUser[];
   action: string;
   preview?: string;
   thumbnailUrl?: string;
@@ -203,7 +212,12 @@ function NotificationItem({ notification, index }: { notification: Notification;
           {/* Content */}
           <div className="flex-1 min-w-0">
             <p className={cn("text-[14px] text-foreground leading-snug", !notification.read && "font-medium")}>
-              {primaryUser && <span className="font-semibold">{primaryUser.name}</span>}
+              {primaryUser && (
+                <span className="inline-flex items-center gap-1">
+                  <span className="font-semibold">{primaryUser.name}</span>
+                  {primaryUser.isVerified && <EraVerifiedTick size="sm" userEmail={primaryUser.email} />}
+                </span>
+              )}
               {' '}{notification.action}
               {' '}<span className="text-muted-foreground/70">{notification.time}</span>
             </p>
@@ -280,7 +294,12 @@ function HighlightCard({ notification, index }: { notification: Notification; in
 
       <div className="flex-1 min-w-0">
         <p className="text-[14px] text-foreground font-semibold leading-snug">
-          {primaryUser && <span>{primaryUser.name}</span>}
+          {primaryUser && (
+            <span className="inline-flex items-center gap-1">
+              <span>{primaryUser.name}</span>
+              {primaryUser.isVerified && <EraVerifiedTick size="sm" userEmail={primaryUser.email} />}
+            </span>
+          )}
           {' '}{notification.action}
         </p>
         <p className="text-[12px] text-muted-foreground/70 mt-0.5">{notification.time}</p>
