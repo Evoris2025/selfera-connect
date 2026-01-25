@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { ChevronRight, ChevronDown, Check } from 'lucide-react';
 import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
 import { GlassCard } from '@/components/ui/GlassCard';
+import { EraVerifiedTick } from '@/components/EraVerifiedTick';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -42,6 +43,8 @@ interface SuggestedProfile {
   avatar_url: string | null;
   bio: string | null;
   isFollowing: boolean;
+  is_verified?: boolean;
+  email?: string | null;
 }
 
 const loadHiddenProfiles = (): Set<string> => {
@@ -95,7 +98,7 @@ export function DiscoverRow() {
       
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
-        .select('id, display_name, handle, avatar_url, bio')
+        .select('id, display_name, handle, avatar_url, bio, is_verified, email')
         .neq('id', user?.id || '')
         .range(currentOffset, currentOffset + FETCH_COUNT - 1);
 
@@ -333,9 +336,14 @@ export function DiscoverRow() {
                       />
                     </div>
 
-                    <p className="text-sm font-semibold text-foreground truncate w-full mb-0.5">
-                      {profile.display_name || 'User'}
-                    </p>
+                    <div className="flex items-center justify-center gap-1 mb-0.5 w-full">
+                      <p className="text-sm font-semibold text-foreground truncate">
+                        {profile.display_name || 'User'}
+                      </p>
+                      {profile.is_verified && (
+                        <EraVerifiedTick size="sm" userEmail={profile.email || undefined} />
+                      )}
+                    </div>
                     
                     <p className="text-xs text-muted-foreground truncate w-full mb-3">
                       @{profile.handle || 'user'}

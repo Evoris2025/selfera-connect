@@ -252,7 +252,9 @@ export function useFeedPosts(): UseFeedPostsResult {
             id,
             display_name,
             handle,
-            avatar_url
+            avatar_url,
+            is_verified,
+            email
           )
         `)
         .eq('moderation_status', 'published')
@@ -351,7 +353,8 @@ export function useFeedPosts(): UseFeedPostsResult {
             name: profile?.display_name || profile?.handle || 'Anonymous',
             handle: profile?.handle || 'anonymous',
             avatar: profile?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${post.author_id}`,
-            isVerified: false,
+            isVerified: profile?.is_verified || false,
+            email: profile?.email || undefined,
           },
           content: post.content || '',
           media: post.media_url ? {

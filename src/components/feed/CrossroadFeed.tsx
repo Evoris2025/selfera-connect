@@ -11,6 +11,7 @@ export interface FeedPost {
     handle: string;
     avatar: string;
     isVerified?: boolean;
+    email?: string;
   };
   content: string;
   media?: {
