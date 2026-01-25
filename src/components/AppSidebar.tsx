@@ -1,10 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Compass, Plus, Bell, MessageCircle, User, LayoutDashboard, Settings } from 'lucide-react';
+import { Home, Compass, Plus, Bell, MessageCircle, User, LayoutDashboard, Settings, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BrandMark } from './BrandMark';
-import { CrisisWidget } from './CrisisWidget';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface NavItem {
@@ -14,6 +13,7 @@ interface NavItem {
   isCreate?: boolean;
   isProfile?: boolean;
   hasBadge?: boolean;
+  isCrisis?: boolean;
 }
 
 interface AppSidebarProps {
@@ -53,8 +53,8 @@ const itemVariants = {
   }
 };
 
-// Collapse delay in ms
-const COLLAPSE_DELAY = 300;
+// Default collapse delay in ms (can be overridden via settings)
+const DEFAULT_COLLAPSE_DELAY = 300;
 
 export function AppSidebar({ 
   onCreateClick, 
@@ -70,9 +70,28 @@ export function AppSidebar({
   const [isPinned, setIsPinned] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [showKeyboardFeedback, setShowKeyboardFeedback] = useState(false);
+  const [collapseDelay, setCollapseDelay] = useState(DEFAULT_COLLAPSE_DELAY);
   
   // Effective collapsed state - collapsed unless hovered or pinned
   const isCollapsed = !isPinned && !isHovered;
+
+  // Load collapse delay from settings
+  useEffect(() => {
+    const savedDelay = localStorage.getItem('sidebar-collapse-delay');
+    if (savedDelay) {
+      setCollapseDelay(parseInt(savedDelay, 10));
+    }
+    
+    // Listen for settings changes
+    const handleDelayChange = () => {
+      const newDelay = localStorage.getItem('sidebar-collapse-delay');
+      if (newDelay) {
+        setCollapseDelay(parseInt(newDelay, 10));
+      }
+    };
+    window.addEventListener('sidebar-delay-change', handleDelayChange);
+    return () => window.removeEventListener('sidebar-delay-change', handleDelayChange);
+  }, []);
 
   // Handle mouse enter - expand immediately
   const handleMouseEnter = useCallback(() => {
@@ -84,12 +103,12 @@ export function AppSidebar({
     setIsHovered(true);
   }, []);
 
-  // Handle mouse leave - delay collapse
+  // Handle mouse leave - delay collapse using configurable delay
   const handleMouseLeave = useCallback(() => {
     collapseTimeoutRef.current = setTimeout(() => {
       setIsHovered(false);
-    }, COLLAPSE_DELAY);
-  }, []);
+    }, collapseDelay);
+  }, [collapseDelay]);
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -145,6 +164,7 @@ export function AppSidebar({
   ];
 
   const secondaryItems: NavItem[] = [
+    { icon: Heart, href: '/crisis-support', label: 'Find Support', isCrisis: true },
     { icon: Settings, href: '/settings', label: 'Settings' },
   ];
 
@@ -171,11 +191,13 @@ export function AppSidebar({
         className={cn(
           'relative flex items-center rounded-xl transition-colors duration-200',
           isCollapsed ? 'justify-center px-2 py-2.5' : 'gap-3 px-3 py-2.5',
-          item.isCreate 
-            ? 'bg-primary/10 hover:bg-primary/20 text-primary'
-            : isActive 
-              ? 'bg-primary/10 text-foreground' 
-              : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground',
+          item.isCrisis
+            ? 'bg-crisis/10 hover:bg-crisis/20 text-crisis'
+            : item.isCreate 
+              ? 'bg-primary/10 hover:bg-primary/20 text-primary'
+              : isActive 
+                ? 'bg-primary/10 text-foreground' 
+                : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground',
           item.isProfile && isActive && !isCollapsed && "after:absolute after:left-3 after:top-1/2 after:-translate-y-1/2 after:w-6 after:h-6 after:rounded-full after:ring-2 after:ring-primary/60"
         )}
       >
@@ -260,8 +282,11 @@ export function AppSidebar({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       className={cn(
-        "fixed left-0 top-0 bottom-0 flex flex-col bg-background border-r border-border/50 z-40 transition-[width] duration-300 ease-out",
-        isCollapsed ? "w-16" : "w-60 lg:w-64"
+        "fixed left-0 top-0 bottom-0 flex flex-col bg-background border-r z-40 transition-all duration-300 ease-out",
+        isCollapsed ? "w-16" : "w-60 lg:w-64",
+        isPinned 
+          ? "border-primary/40 shadow-[0_0_15px_-3px_hsl(var(--primary)/0.3)]" 
+          : "border-border/50"
       )}
     >
       {/* Keyboard shortcut visual feedback overlay */}
@@ -277,7 +302,7 @@ export function AppSidebar({
         )}
       </AnimatePresence>
 
-      {/* Logo - only show when expanded */}
+      {/* Logo - only show full brand when expanded, minimal when collapsed */}
       <div className="h-16 flex items-center justify-center px-3 border-b border-border/30">
         <AnimatePresence mode="wait">
           {!isCollapsed ? (
@@ -299,13 +324,8 @@ export function AppSidebar({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
               transition={{ duration: 0.2 }}
-            >
-              <Link to="/feed" className="block">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
-                  <Home className="h-4 w-4 text-primary" strokeWidth={1.5} />
-                </div>
-              </Link>
-            </motion.div>
+              className="w-8 h-8"
+            />
           )}
         </AnimatePresence>
       </div>
@@ -325,10 +345,6 @@ export function AppSidebar({
         </motion.div>
       </nav>
 
-      {/* Crisis Widget */}
-      <div className="px-2 pb-4">
-        <CrisisWidget collapsed={isCollapsed} />
-      </div>
 
       {/* Pin indicator - subtle hint at bottom */}
       <AnimatePresence>
