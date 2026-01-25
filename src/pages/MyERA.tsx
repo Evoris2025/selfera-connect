@@ -1,11 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  User, 
-  Settings, 
-  Shield, 
-  MessageCircle, 
   ChevronRight,
   Sparkles,
   Stethoscope,
@@ -16,7 +12,18 @@ import {
   Bookmark,
   Users,
   Compass,
-  LayoutDashboard,
+  Settings,
+  Bell,
+  Shield,
+  Star,
+  Zap,
+  Crown,
+  ArrowRight,
+  Plus,
+  MessageCircle,
+  MoreVertical,
+  Share2,
+  ExternalLink,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserPathways, PathwayType } from '@/hooks/useUserPathways';
@@ -28,37 +35,46 @@ import { Badge } from '@/components/ui/badge';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
 import { AccountTypeBadge, AccountType } from '@/components/AccountTypeBadge';
 import { AppLayout } from '@/components/AppLayout';
-import { GlassCard } from '@/components/ui/GlassCard';
 import { CurrentPlanCard } from '@/components/pricing';
 import { supabase } from '@/integrations/supabase/client';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
-const springGentle = { type: "spring" as const, stiffness: 200, damping: 25 };
+const springGentle = { type: "spring" as const, stiffness: 260, damping: 28 };
 
-const pathwayIcons: Record<PathwayType, React.ReactNode> = {
-  creator: <Sparkles className="w-5 h-5" />,
-  professional: <Stethoscope className="w-5 h-5" />,
-  organization: <Building2 className="w-5 h-5" />,
-  support_seeker: <Heart className="w-5 h-5" />,
-};
-
-const pathwayGradients: Record<PathwayType, string> = {
-  creator: 'from-amber-500/20 via-orange-500/20 to-rose-500/20',
-  professional: 'from-blue-500/20 via-cyan-500/20 to-teal-500/20',
-  organization: 'from-violet-500/20 via-purple-500/20 to-indigo-500/20',
-  support_seeker: 'from-rose-500/20 via-pink-500/20 to-fuchsia-500/20',
-};
-
-const pathwayAccents: Record<PathwayType, string> = {
-  creator: 'text-amber-400',
-  professional: 'text-cyan-400',
-  organization: 'text-violet-400',
-  support_seeker: 'text-pink-400',
+const pathwayMeta: Record<PathwayType, { icon: React.ElementType; gradient: string; accent: string }> = {
+  creator: { 
+    icon: Sparkles, 
+    gradient: 'from-amber-500 via-orange-500 to-rose-500',
+    accent: 'text-amber-400',
+  },
+  professional: { 
+    icon: Stethoscope, 
+    gradient: 'from-cyan-500 via-blue-500 to-indigo-500',
+    accent: 'text-cyan-400',
+  },
+  organization: { 
+    icon: Building2, 
+    gradient: 'from-violet-500 via-purple-500 to-fuchsia-500',
+    accent: 'text-violet-400',
+  },
+  support_seeker: { 
+    icon: Heart, 
+    gradient: 'from-rose-500 via-pink-500 to-red-500',
+    accent: 'text-rose-400',
+  },
 };
 
 interface UserProfile {
   display_name: string | null;
   handle: string | null;
   avatar_url: string | null;
+  cover_url: string | null;
   is_verified: boolean | null;
   user_type: string | null;
 }
@@ -76,7 +92,7 @@ export default function MyERA() {
       if (!user) return;
       const { data } = await supabase
         .from('profiles')
-        .select('display_name, handle, avatar_url, is_verified, user_type')
+        .select('display_name, handle, avatar_url, cover_url, is_verified, user_type')
         .eq('id', user.id)
         .single();
       if (data) setProfile(data);
@@ -89,7 +105,6 @@ export default function MyERA() {
   const inProgressCount = pathways.filter(p => p.status === 'in_progress').length;
   const connectionsCount = activeProviders.length + pendingProviders.length;
 
-  // Check if user is a verified provider (can access provider dashboard)
   const isVerifiedProvider = profile?.is_verified && 
     (profile?.user_type === 'professional' || profile?.user_type === 'organization');
 
@@ -103,343 +118,425 @@ export default function MyERA() {
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    if (status === 'completed') {
-      return (
-        <Badge variant="secondary" className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-[10px]">
-          <Check className="w-2.5 h-2.5 mr-1" />
-          Complete
-        </Badge>
-      );
-    }
-    if (status === 'in_progress') {
-      return (
-        <Badge variant="secondary" className="bg-amber-500/20 text-amber-400 border-amber-500/30 text-[10px]">
-          <Clock className="w-2.5 h-2.5 mr-1" />
-          Active
-        </Badge>
-      );
-    }
-    return (
-      <Badge variant="outline" className="text-muted-foreground text-[10px]">
-        Available
-      </Badge>
-    );
-  };
-
-  // Quick access shortcuts
-  const quickAccess = [
-    { icon: User, label: 'Profile', path: '/profile' },
-    { icon: Bookmark, label: 'Saved', path: '/profile?tab=saved' },
-    { icon: Users, label: 'Communities', path: '/community' },
-    { icon: Compass, label: 'Directory', path: '/directory' },
-  ];
+  // Default cover for visual appeal
+  const coverImage = profile?.cover_url || 'https://images.unsplash.com/photo-1557683316-973673baf926?w=800&h=400&fit=crop';
 
   return (
     <AppLayout showHeader={false}>
-      <div className="min-h-screen bg-background pb-nav-safe">
-        {/* Identity Header */}
-        <motion.header 
-          className="relative px-4 pt-8 pb-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={springGentle}
-        >
-          <div className="flex items-center gap-4">
-            <CinematicAvatar
-              src={profile?.avatar_url || undefined}
-              alt={profile?.display_name || 'User'}
-              fallback={profile?.display_name?.[0] || 'U'}
-              size="xl"
-              ring="gradient"
-              interactive
-              onClick={() => navigate('/profile')}
-            />
-            
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-xl font-semibold text-foreground truncate">
-                  {profile?.display_name || 'User'}
-                </h1>
-                {profile?.is_verified && <VerifiedBadge size="sm" />}
-                {/* Placeholder for future ERA Verified badge */}
-              </div>
-              
-              <p className="text-sm text-muted-foreground truncate">
-                @{profile?.handle || 'user'}
-              </p>
-              
-              <div className="flex items-center gap-2 mt-2">
-                <AccountTypeBadge 
-                  type={(profile?.user_type as AccountType) || 'individual'} 
-                />
-              </div>
-            </div>
-          </div>
-        </motion.header>
-
-        {/* Hero Status Card (Placeholder) */}
+      <div className="min-h-dvh bg-background pb-nav-safe">
+        
+        {/* Hero Section with Cover - Matches Profile Page */}
         <motion.section
-          className="px-4 mb-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ ...springGentle, delay: 0.05 }}
+          className="relative w-full"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4 }}
         >
-          <GlassCard variant="floating" className="p-5 border-primary/20">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-primary/30 to-accent/20">
-                <Sparkles className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <h2 className="text-sm font-medium text-foreground">ERA Account Status</h2>
-                <p className="text-xs text-muted-foreground">Your ERA account status will appear here</p>
-              </div>
-            </div>
+          {/* Cover Image */}
+          <div className="relative h-40 sm:h-48 overflow-hidden">
+            <motion.div 
+              className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/20 to-background"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            />
+            <motion.img
+              src={coverImage}
+              alt=""
+              className="w-full h-full object-cover opacity-60"
+              initial={{ scale: 1.1 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.8 }}
+            />
+            {/* Gradient overlays */}
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-b from-background/40 to-transparent h-16" />
             
-            {/* Placeholder skeleton indicators */}
-            <div className="flex items-center gap-2 mb-4">
-              <div className="h-6 w-20 rounded-full bg-muted/30 animate-pulse" />
-              <div className="h-6 w-16 rounded-full bg-muted/20 animate-pulse" />
-            </div>
-            
-            <Button 
-              className="w-full rounded-xl"
-              onClick={() => navigate('/settings?view=verification')}
+            {/* Menu Button */}
+            <motion.div
+              className="absolute top-3 right-3 z-10"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
             >
-              {isVerifiedProvider ? 'View Status' : 'Get Verified'}
-              <ChevronRight className="w-4 h-4 ml-1" />
-            </Button>
-          </GlassCard>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9 rounded-full bg-black/40 backdrop-blur-sm text-white hover:bg-black/50"
+                  >
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem className="gap-2" onClick={() => navigate('/settings')}>
+                    <Settings className="h-4 w-4" />
+                    Settings
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="gap-2" onClick={() => navigate('/transparency')}>
+                    <ExternalLink className="h-4 w-4" />
+                    About SelfERA
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </motion.div>
+          </div>
+
+          {/* Profile Card Floating Over Cover */}
+          <div className="px-4 -mt-20 relative z-10">
+            <motion.div
+              className="bg-card/80 backdrop-blur-xl rounded-3xl border border-white/10 p-5 shadow-2xl"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ ...springGentle, delay: 0.1 }}
+            >
+              {/* Avatar + Info Row */}
+              <div className="flex items-center gap-4">
+                <CinematicAvatar
+                  src={profile?.avatar_url || undefined}
+                  alt={profile?.display_name || 'User'}
+                  fallback={profile?.display_name?.[0] || 'U'}
+                  size="xl"
+                  ring="gradient"
+                  interactive
+                  onClick={() => navigate('/profile')}
+                />
+                
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h1 className="text-lg font-semibold text-foreground truncate">
+                      {profile?.display_name || 'User'}
+                    </h1>
+                    {profile?.is_verified && <VerifiedBadge size="sm" />}
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    @{profile?.handle || 'user'}
+                  </p>
+                  <div className="mt-1.5">
+                    <AccountTypeBadge type={(profile?.user_type as AccountType) || 'individual'} />
+                  </div>
+                </div>
+
+                {/* Quick Action */}
+                <Button 
+                  size="sm" 
+                  variant="secondary"
+                  className="rounded-full h-9 px-4"
+                  onClick={() => navigate('/profile')}
+                >
+                  View Profile
+                </Button>
+              </div>
+
+              {/* Stats Row */}
+              <div className="flex items-center justify-around mt-5 pt-4 border-t border-white/10">
+                <button 
+                  className="text-center flex-1 group"
+                  onClick={() => navigate('/community')}
+                >
+                  <p className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+                    {completedCount}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Complete</p>
+                </button>
+                <div className="w-px h-8 bg-white/10" />
+                <button 
+                  className="text-center flex-1 group"
+                  onClick={() => navigate('/directory')}
+                >
+                  <p className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+                    {connectionsCount}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Connections</p>
+                </button>
+                <div className="w-px h-8 bg-white/10" />
+                <button 
+                  className="text-center flex-1 group"
+                  onClick={() => navigate('/notifications')}
+                >
+                  <p className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+                    {pendingConnectionCount || 0}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Pending</p>
+                </button>
+              </div>
+            </motion.div>
+          </div>
         </motion.section>
 
-        {/* Quick Access Strip */}
+        {/* Quick Actions Grid */}
         <motion.section
-          className="px-4 mb-6"
+          className="px-4 mt-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ ...springGentle, delay: 0.1 }}
+          transition={{ ...springGentle, delay: 0.15 }}
         >
-          <div className="flex items-center justify-between gap-2">
-            {quickAccess.map((item, index) => (
+          <div className="grid grid-cols-4 gap-3">
+            {[
+              { icon: Bookmark, label: 'Saved', path: '/profile?tab=saved', color: 'from-blue-500 to-cyan-500' },
+              { icon: Users, label: 'Community', path: '/community', color: 'from-purple-500 to-pink-500' },
+              { icon: Compass, label: 'Directory', path: '/directory', color: 'from-orange-500 to-amber-500' },
+              { icon: Bell, label: 'Alerts', path: '/notifications', color: 'from-green-500 to-emerald-500' },
+            ].map((item, i) => (
               <motion.button
                 key={item.label}
-                className="flex-1 flex flex-col items-center gap-1.5 py-3 rounded-xl glass-subtle hover:bg-white/5 transition-colors"
+                className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-card/50 border border-white/5 hover:bg-card/80 transition-all"
                 onClick={() => navigate(item.path)}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ ...springGentle, delay: 0.1 + index * 0.03 }}
+                transition={{ ...springGentle, delay: 0.15 + i * 0.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <item.icon className="w-5 h-5 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground">{item.label}</span>
+                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center`}>
+                  <item.icon className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-xs text-muted-foreground font-medium">{item.label}</span>
               </motion.button>
             ))}
           </div>
         </motion.section>
 
-        {/* Your Journey Section */}
+        {/* Your Journey - Full Width Cards */}
         <motion.section
-          className="mb-6"
+          className="mt-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ ...springGentle, delay: 0.15 }}
+          transition={{ ...springGentle, delay: 0.2 }}
         >
-          <div className="flex items-center justify-between px-4 mb-3">
-            <h2 className="text-base font-semibold text-foreground">Your Journey</h2>
+          <div className="flex items-center justify-between px-4 mb-4">
+            <h2 className="text-lg font-semibold text-foreground">Your Journey</h2>
             {inProgressCount > 0 && (
-              <Badge variant="secondary" className="text-[10px] bg-primary/10 text-primary border-primary/20">
-                {inProgressCount} active
+              <Badge className="bg-primary/20 text-primary border-primary/30 text-[10px]">
+                {inProgressCount} in progress
               </Badge>
             )}
           </div>
 
           <div className="px-4 space-y-3">
-            {pathways.map((pathway, index) => (
-              <motion.button
-                key={pathway.type}
-                className={`
-                  relative w-full p-4 rounded-2xl text-left
-                  bg-gradient-to-r ${pathwayGradients[pathway.type]}
-                  border border-white/10 backdrop-blur-sm
-                  transition-all duration-200
-                `}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ ...springGentle, delay: 0.15 + index * 0.05 }}
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
-                onClick={() => handlePathwayAction(pathway)}
-              >
-                <div className="flex items-start gap-3">
-                  <div className={`flex items-center justify-center w-10 h-10 rounded-xl bg-black/20 ${pathwayAccents[pathway.type]}`}>
-                    {pathwayIcons[pathway.type]}
-                  </div>
+            {pathways.map((pathway, index) => {
+              const meta = pathwayMeta[pathway.type];
+              const IconComponent = meta.icon;
+              
+              return (
+                <motion.button
+                  key={pathway.type}
+                  className="relative w-full overflow-hidden rounded-2xl text-left"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ ...springGentle, delay: 0.2 + index * 0.05 }}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  onClick={() => handlePathwayAction(pathway)}
+                >
+                  {/* Gradient Background */}
+                  <div className={`absolute inset-0 bg-gradient-to-r ${meta.gradient} opacity-20`} />
+                  <div className="absolute inset-0 bg-card/60 backdrop-blur-sm" />
                   
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2">
-                      <h3 className="text-sm font-medium text-foreground truncate">
-                        {pathway.title}
-                      </h3>
-                      {getStatusBadge(pathway.status)}
+                  {/* Content */}
+                  <div className="relative p-4 flex items-center gap-4">
+                    <div className={`flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br ${meta.gradient}`}>
+                      <IconComponent className="w-6 h-6 text-white" />
                     </div>
                     
-                    {/* Static progress placeholder */}
-                    <div className="mt-2 h-1 w-full rounded-full bg-white/10 overflow-hidden">
-                      <div 
-                        className={`h-full rounded-full bg-gradient-to-r ${
-                          pathway.status === 'completed' 
-                            ? 'from-emerald-500 to-emerald-400 w-full' 
-                            : pathway.status === 'in_progress' 
-                            ? 'from-amber-500 to-amber-400 w-1/2' 
-                            : 'from-muted to-muted w-0'
-                        }`} 
-                      />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="text-sm font-semibold text-foreground">
+                          {pathway.title}
+                        </h3>
+                        {pathway.status === 'completed' && (
+                          <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-[9px] px-1.5">
+                            <Check className="w-2.5 h-2.5 mr-0.5" />
+                            Done
+                          </Badge>
+                        )}
+                        {pathway.status === 'in_progress' && (
+                          <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30 text-[9px] px-1.5">
+                            <Clock className="w-2.5 h-2.5 mr-0.5" />
+                            Active
+                          </Badge>
+                        )}
+                      </div>
+                      
+                      {/* Progress Bar */}
+                      <div className="h-1.5 w-full rounded-full bg-white/10 overflow-hidden">
+                        <motion.div 
+                          className={`h-full rounded-full bg-gradient-to-r ${meta.gradient}`}
+                          initial={{ width: 0 }}
+                          animate={{ 
+                            width: pathway.status === 'completed' ? '100%' : 
+                                   pathway.status === 'in_progress' ? '50%' : '0%' 
+                          }}
+                          transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
+                        />
+                      </div>
                     </div>
-                    
-                    <p className="text-xs text-muted-foreground mt-2">
-                      {pathway.status === 'completed' 
-                        ? 'Journey complete' 
-                        : pathway.status === 'in_progress' 
-                        ? 'Continue your path' 
-                        : 'Start when ready'}
-                    </p>
-                  </div>
 
-                  <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-3" />
-                </div>
-              </motion.button>
-            ))}
+                    <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                  </div>
+                </motion.button>
+              );
+            })}
           </div>
         </motion.section>
 
-        {/* Support Connections Section */}
+        {/* Support Network */}
         <motion.section
-          className="px-4 mb-6"
+          className="mt-8 px-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ ...springGentle, delay: 0.2 }}
+          transition={{ ...springGentle, delay: 0.25 }}
         >
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-base font-semibold text-foreground">Your Support Connections</h2>
-            {connectionsCount > 0 && (
-              <Badge variant="secondary" className="text-[10px]">
-                {connectionsCount}
-              </Badge>
-            )}
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-foreground">Support Network</h2>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-primary h-8 px-3"
+              onClick={() => navigate('/directory')}
+            >
+              <Plus className="w-4 h-4 mr-1" />
+              Add
+            </Button>
           </div>
 
           {activeProviders.length === 0 && pendingProviders.length === 0 ? (
-            <GlassCard variant="subtle" className="p-6 text-center">
-              <div className="flex items-center justify-center w-12 h-12 mx-auto mb-3 rounded-full bg-gradient-to-br from-rose-500/20 to-pink-500/20">
-                <Heart className="w-6 h-6 text-rose-400" />
+            <motion.div 
+              className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-rose-500/10 via-pink-500/10 to-fuchsia-500/10 border border-white/5 p-6"
+              whileHover={{ scale: 1.01 }}
+            >
+              <div className="text-center">
+                <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-500 flex items-center justify-center">
+                  <Heart className="w-7 h-7 text-white" />
+                </div>
+                <h3 className="text-base font-medium text-foreground mb-1">
+                  Build your support circle
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4 max-w-[240px] mx-auto">
+                  Connect with verified professionals and organizations ready to help
+                </p>
+                <Button
+                  className="rounded-full px-6"
+                  onClick={() => navigate('/directory')}
+                >
+                  <Compass className="w-4 h-4 mr-2" />
+                  Explore Directory
+                </Button>
               </div>
-              <h3 className="text-sm font-medium text-foreground mb-1">
-                No connections yet
-              </h3>
-              <p className="text-xs text-muted-foreground mb-4">
-                Find support when you're ready
-              </p>
-              <Button
-                variant="outline"
-                size="sm"
-                className="rounded-xl"
-                onClick={() => navigate('/directory')}
-              >
-                <Compass className="w-4 h-4 mr-2" />
-                Browse Directory
-              </Button>
-            </GlassCard>
+            </motion.div>
           ) : (
             <div className="space-y-2">
               {[...activeProviders, ...pendingProviders].map((link, index) => (
                 <motion.div
                   key={link.id}
+                  className="flex items-center gap-3 p-3 rounded-xl bg-card/50 border border-white/5"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ ...springGentle, delay: 0.2 + index * 0.05 }}
+                  transition={{ ...springGentle, delay: 0.25 + index * 0.05 }}
                 >
-                  <GlassCard variant="subtle" className="p-3">
-                    <div className="flex items-center gap-3">
-                      <CinematicAvatar
-                        src={link.provider?.avatar_url || undefined}
-                        alt={link.provider?.display_name || 'Provider'}
-                        fallback={link.provider?.display_name?.[0] || 'P'}
-                        size="md"
-                        ring={link.status === 'active' ? 'primary' : 'muted'}
-                      />
-                      
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-sm font-medium text-foreground truncate">
-                            {link.provider?.display_name || 'Provider'}
-                          </span>
-                          {link.provider?.is_verified && <VerifiedBadge size="sm" />}
-                        </div>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {link.provider_role}
-                          {link.organization_name && ` • ${link.organization_name}`}
-                        </p>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        {link.status === 'pending' && (
-                          <Badge variant="secondary" className="text-[10px] bg-amber-500/20 text-amber-400">
-                            Pending
-                          </Badge>
-                        )}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 rounded-full"
-                          onClick={() => navigate('/messages')}
-                        >
-                          <MessageCircle className="w-4 h-4" />
-                        </Button>
-                      </div>
+                  <CinematicAvatar
+                    src={link.provider?.avatar_url || undefined}
+                    alt={link.provider?.display_name || 'Provider'}
+                    fallback={link.provider?.display_name?.[0] || 'P'}
+                    size="md"
+                    ring={link.status === 'active' ? 'primary' : 'muted'}
+                  />
+                  
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-sm font-medium text-foreground truncate">
+                        {link.provider?.display_name || 'Provider'}
+                      </span>
+                      {link.provider?.is_verified && <VerifiedBadge size="sm" />}
                     </div>
-                  </GlassCard>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {link.provider_role}
+                    </p>
+                  </div>
+
+                  {link.status === 'pending' && (
+                    <Badge className="bg-amber-500/20 text-amber-400 text-[10px]">
+                      Pending
+                    </Badge>
+                  )}
+                  
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-full"
+                    onClick={() => navigate('/messages')}
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                  </Button>
                 </motion.div>
               ))}
             </div>
           )}
         </motion.section>
 
-        {/* Plan & Billing Section (Compressed) */}
+        {/* ERA Status Card */}
         <motion.section
-          className="px-4 mb-6"
+          className="mt-8 px-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ ...springGentle, delay: 0.25 }}
+          transition={{ ...springGentle, delay: 0.3 }}
+        >
+          <motion.div
+            className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/20 via-accent/10 to-background border border-primary/20 p-5"
+            whileHover={{ scale: 1.01 }}
+          >
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/20 to-transparent rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
+            
+            <div className="relative flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center flex-shrink-0">
+                <Shield className="w-6 h-6 text-white" />
+              </div>
+              
+              <div className="flex-1">
+                <h3 className="text-base font-semibold text-foreground mb-1">
+                  ERA Account Status
+                </h3>
+                <p className="text-sm text-muted-foreground mb-3">
+                  {isVerifiedProvider 
+                    ? 'Your verification is active' 
+                    : 'Complete verification to unlock more features'}
+                </p>
+                
+                <Button
+                  size="sm"
+                  className="rounded-full"
+                  onClick={() => navigate('/settings?view=verification')}
+                >
+                  {isVerifiedProvider ? 'View Status' : 'Get Verified'}
+                  <ArrowRight className="w-4 h-4 ml-1.5" />
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        </motion.section>
+
+        {/* Subscription Status - Compact */}
+        <motion.section
+          className="mt-6 px-4 pb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...springGentle, delay: 0.35 }}
         >
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-medium text-muted-foreground">Plan & Billing</h2>
+            <h2 className="text-sm font-medium text-muted-foreground">Your Plan</h2>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-xs text-muted-foreground h-7"
+              onClick={() => navigate('/transparency')}
+            >
+              Learn more
+            </Button>
           </div>
-          
-          <div className="opacity-80 hover:opacity-100 transition-opacity">
+          <div className="opacity-80">
             <CurrentPlanCard />
           </div>
         </motion.section>
 
-        {/* Footer */}
-        <motion.footer
-          className="px-4 pb-8 pt-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ ...springGentle, delay: 0.3 }}
-        >
-          <div className="text-center space-y-2">
-            <p className="text-[11px] text-muted-foreground/50 leading-relaxed">
-              SelfERA connects you with wellbeing content and verified support.
-              This is not a crisis service or medical advice platform.
-            </p>
-            <button 
-              className="text-[11px] text-muted-foreground/40 hover:text-muted-foreground/60 transition-colors"
-              onClick={() => navigate('/transparency')}
-            >
-              Learn more about our approach
-            </button>
-          </div>
-        </motion.footer>
       </div>
     </AppLayout>
   );
