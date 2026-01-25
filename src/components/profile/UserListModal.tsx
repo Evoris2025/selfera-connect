@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, UserPlus, UserMinus, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
+import { EraVerifiedTick } from '@/components/EraVerifiedTick';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAuth } from '@/contexts/AuthContext';
@@ -17,6 +18,8 @@ interface UserListItem {
   avatar_url: string | null;
   bio: string | null;
   isFollowing?: boolean;
+  is_verified?: boolean;
+  email?: string | null;
 }
 
 interface UserListModalProps {
@@ -29,22 +32,22 @@ interface UserListModalProps {
 
 // Mock data for demo
 const mockFollowers: UserListItem[] = [
-  { id: '1', display_name: 'Sarah Chen', handle: 'sarahc', avatar_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop', bio: 'Mental health advocate', isFollowing: true },
-  { id: '2', display_name: 'Mind Matters', handle: 'mindmatters', avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop', bio: 'Daily wellness tips', isFollowing: false },
-  { id: '3', display_name: 'James Wilson', handle: 'jwilson', avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop', bio: 'Sharing my journey', isFollowing: true },
-  { id: '4', display_name: 'Wellness Hub', handle: 'wellnesshub', avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop', bio: 'Your daily dose of calm', isFollowing: false },
-  { id: '5', display_name: 'Emma Roberts', handle: 'emmar', avatar_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop', bio: 'Mindfulness coach', isFollowing: true },
+  { id: '1', display_name: 'Sarah Chen', handle: 'sarahc', avatar_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop', bio: 'Mental health advocate', isFollowing: true, is_verified: true },
+  { id: '2', display_name: 'Mind Matters', handle: 'mindmatters', avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop', bio: 'Daily wellness tips', isFollowing: false, is_verified: true },
+  { id: '3', display_name: 'James Wilson', handle: 'jwilson', avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop', bio: 'Sharing my journey', isFollowing: true, is_verified: false },
+  { id: '4', display_name: 'Wellness Hub', handle: 'wellnesshub', avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop', bio: 'Your daily dose of calm', isFollowing: false, is_verified: true },
+  { id: '5', display_name: 'Emma Roberts', handle: 'emmar', avatar_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop', bio: 'Mindfulness coach', isFollowing: true, is_verified: false },
 ];
 
 const mockFollowing: UserListItem[] = [
-  { id: '6', display_name: 'Alex Turner', handle: 'alext', avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop', bio: 'Daily reflections', isFollowing: true },
-  { id: '7', display_name: 'Calm Corner', handle: 'calmcorner', avatar_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop', bio: 'Peace of mind', isFollowing: true },
-  { id: '8', display_name: 'Mike Chen', handle: 'mikec', avatar_url: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop', bio: 'Growth mindset', isFollowing: true },
+  { id: '6', display_name: 'Alex Turner', handle: 'alext', avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop', bio: 'Daily reflections', isFollowing: true, is_verified: false },
+  { id: '7', display_name: 'Calm Corner', handle: 'calmcorner', avatar_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop', bio: 'Peace of mind', isFollowing: true, is_verified: true },
+  { id: '8', display_name: 'Mike Chen', handle: 'mikec', avatar_url: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop', bio: 'Growth mindset', isFollowing: true, is_verified: false },
 ];
 
 const mockCommunity: UserListItem[] = [
-  { id: '9', display_name: 'Support Circle', handle: 'supportcircle', avatar_url: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=200&h=200&fit=crop', bio: 'Community support group', isFollowing: false },
-  { id: '10', display_name: 'Mindful Living', handle: 'mindfulliving', avatar_url: 'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=200&h=200&fit=crop', bio: 'Living in the moment', isFollowing: true },
+  { id: '9', display_name: 'Support Circle', handle: 'supportcircle', avatar_url: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=200&h=200&fit=crop', bio: 'Community support group', isFollowing: false, is_verified: true },
+  { id: '10', display_name: 'Mindful Living', handle: 'mindfulliving', avatar_url: 'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=200&h=200&fit=crop', bio: 'Living in the moment', isFollowing: true, is_verified: false },
 ];
 
 export function UserListModal({ isOpen, onClose, type, userId, userName }: UserListModalProps) {
@@ -82,7 +85,9 @@ export function UserListModal({ isOpen, onClose, type, userId, userName }: UserL
               display_name,
               handle,
               avatar_url,
-              bio
+              bio,
+              is_verified,
+              email
             )
           `)
           .eq('following_id', userId)
@@ -97,6 +102,8 @@ export function UserListModal({ isOpen, onClose, type, userId, userName }: UserL
               handle: (f.profiles as any).handle,
               avatar_url: (f.profiles as any).avatar_url,
               bio: (f.profiles as any).bio,
+              is_verified: (f.profiles as any).is_verified,
+              email: (f.profiles as any).email,
             }));
         }
       } else if (type === 'following') {
@@ -110,7 +117,9 @@ export function UserListModal({ isOpen, onClose, type, userId, userName }: UserL
               display_name,
               handle,
               avatar_url,
-              bio
+              bio,
+              is_verified,
+              email
             )
           `)
           .eq('follower_id', userId)
@@ -125,6 +134,8 @@ export function UserListModal({ isOpen, onClose, type, userId, userName }: UserL
               handle: (f.profiles as any).handle,
               avatar_url: (f.profiles as any).avatar_url,
               bio: (f.profiles as any).bio,
+              is_verified: (f.profiles as any).is_verified,
+              email: (f.profiles as any).email,
             }));
         }
       } else if (type === 'community') {
@@ -138,7 +149,9 @@ export function UserListModal({ isOpen, onClose, type, userId, userName }: UserL
               display_name,
               handle,
               avatar_url,
-              bio
+              bio,
+              is_verified,
+              email
             )
           `)
           .eq('user_id', userId);
@@ -152,6 +165,8 @@ export function UserListModal({ isOpen, onClose, type, userId, userName }: UserL
               handle: (f.profiles as any).handle,
               avatar_url: (f.profiles as any).avatar_url,
               bio: (f.profiles as any).bio,
+              is_verified: (f.profiles as any).is_verified,
+              email: (f.profiles as any).email,
             }));
         }
       }
@@ -310,8 +325,11 @@ export function UserListModal({ isOpen, onClose, type, userId, userName }: UserL
                           className="flex-1 min-w-0 cursor-pointer"
                           onClick={() => handleUserClick(listUser.handle, listUser.id)}
                         >
-                          <p className="font-semibold text-sm text-foreground truncate">
-                            {listUser.display_name || 'User'}
+                          <p className="font-semibold text-sm text-foreground truncate inline-flex items-center gap-1">
+                            <span>{listUser.display_name || 'User'}</span>
+                            {listUser.is_verified && (
+                              <EraVerifiedTick size="sm" userEmail={listUser.email || undefined} />
+                            )}
                           </p>
                           <p className="text-xs text-muted-foreground truncate">
                             @{listUser.handle || 'user'}
