@@ -49,7 +49,7 @@ import {
 
 const springGentle = { type: "spring" as const, stiffness: 260, damping: 28 };
 
-// Verification intent options
+// Verification intent options - using explicit verification process names
 const verificationIntents = [
   {
     id: 'creator',
@@ -58,30 +58,34 @@ const verificationIntents = [
     description: 'Mental health & wellbeing content creator',
     depth: 'Light verification',
     gradient: 'from-amber-500 via-orange-500 to-rose-500',
+    accountType: 'individual' as const,
   },
   {
     id: 'professional',
     icon: Stethoscope,
-    title: 'Practitioner',
-    description: 'Licensed mental health professional',
+    title: 'Professional',
+    description: 'Licensed mental health practitioner',
     depth: 'Full verification',
     gradient: 'from-cyan-500 via-blue-500 to-indigo-500',
+    accountType: 'professional' as const,
   },
   {
     id: 'organization',
     icon: Building2,
-    title: 'Organisation',
+    title: 'Organization',
     description: 'Mental health service or clinic',
     depth: 'Full verification',
     gradient: 'from-violet-500 via-purple-500 to-fuchsia-500',
+    accountType: 'organization' as const,
   },
   {
-    id: 'support_seeker',
+    id: 'individual',
     icon: Heart,
-    title: 'Support Seeker',
+    title: 'Individual',
     description: 'Looking for professional support',
     depth: 'Simple profile',
     gradient: 'from-rose-500 via-pink-500 to-red-500',
+    accountType: 'individual' as const,
   },
 ];
 
@@ -126,6 +130,23 @@ export default function MyERA() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [activeNetworkTab, setActiveNetworkTab] = useState<'list' | 'interactions'>('list');
   const [showIntentSelection, setShowIntentSelection] = useState(false);
+  const [selectedIntents, setSelectedIntents] = useState<string[]>([]);
+
+  // Toggle intent selection (multi-select)
+  const handleIntentToggle = (intentId: string) => {
+    setSelectedIntents(prev => 
+      prev.includes(intentId) 
+        ? prev.filter(id => id !== intentId)
+        : [...prev, intentId]
+    );
+  };
+
+  // Navigate to verification with selected intents
+  const handleProceedToVerification = () => {
+    if (selectedIntents.length === 0) return;
+    const queryParam = selectedIntents.join(',');
+    navigate(`/settings?view=verification&types=${queryParam}`);
+  };
 
   useEffect(() => {
     async function fetchProfile() {
@@ -545,7 +566,7 @@ export default function MyERA() {
                 </motion.div>
               )}
 
-              {/* Intent Selection */}
+              {/* Intent Selection - Multi-select */}
               {showIntentSelection && !isVerified && !hasVerificationRequest && (
                 <motion.div
                   key="intent-selection"
@@ -556,14 +577,22 @@ export default function MyERA() {
                   className="space-y-3"
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <p className="text-sm text-muted-foreground">
-                      What best describes you?
-                    </p>
+                    <div>
+                      <p className="text-sm text-muted-foreground">
+                        What best describes you?
+                      </p>
+                      <p className="text-xs text-muted-foreground/70">
+                        Select all that apply
+                      </p>
+                    </div>
                     <Button
                       variant="ghost"
                       size="sm"
                       className="text-xs h-7"
-                      onClick={() => setShowIntentSelection(false)}
+                      onClick={() => {
+                        setShowIntentSelection(false);
+                        setSelectedIntents([]);
+                      }}
                     >
                       Back
                     </Button>
@@ -571,18 +600,22 @@ export default function MyERA() {
                   
                   {verificationIntents.map((intent, index) => {
                     const IconComponent = intent.icon;
+                    const isSelected = selectedIntents.includes(intent.id);
+                    
                     return (
                       <motion.button
                         key={intent.id}
-                        className="relative w-full overflow-hidden rounded-2xl text-left"
+                        className={`relative w-full overflow-hidden rounded-2xl text-left transition-all ${
+                          isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : ''
+                        }`}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ ...springGentle, delay: index * 0.05 }}
                         whileHover={{ scale: 1.01 }}
                         whileTap={{ scale: 0.99 }}
-                        onClick={() => navigate('/settings?view=verification')}
+                        onClick={() => handleIntentToggle(intent.id)}
                       >
-                        <div className={`absolute inset-0 bg-gradient-to-r ${intent.gradient} opacity-15`} />
+                        <div className={`absolute inset-0 bg-gradient-to-r ${intent.gradient} ${isSelected ? 'opacity-25' : 'opacity-15'}`} />
                         <div className="absolute inset-0 bg-card/70 backdrop-blur-sm" />
                         
                         <div className="relative p-4 flex items-center gap-4">
@@ -604,11 +637,35 @@ export default function MyERA() {
                             </p>
                           </div>
 
-                          <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                          {/* Checkbox indicator */}
+                          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                            isSelected 
+                              ? 'bg-primary border-primary' 
+                              : 'border-muted-foreground/30 bg-transparent'
+                          }`}>
+                            {isSelected && <Check className="w-4 h-4 text-primary-foreground" />}
+                          </div>
                         </div>
                       </motion.button>
                     );
                   })}
+
+                  {/* Continue Button */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: selectedIntents.length > 0 ? 1 : 0.5, y: 0 }}
+                    transition={{ ...springGentle, delay: 0.25 }}
+                    className="pt-2"
+                  >
+                    <Button
+                      className="w-full rounded-full"
+                      disabled={selectedIntents.length === 0}
+                      onClick={handleProceedToVerification}
+                    >
+                      Continue with {selectedIntents.length} selected
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  </motion.div>
                 </motion.div>
               )}
 
