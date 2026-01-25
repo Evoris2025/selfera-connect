@@ -31,6 +31,8 @@ export const ERA_TIER_CONFIG: Record<EraTier, {
   colorClass: string;
   bgClass: string;
   borderClass: string;
+  color: string;
+  interactionCap: number;
 }> = {
   pink: {
     label: 'Client',
@@ -38,6 +40,8 @@ export const ERA_TIER_CONFIG: Record<EraTier, {
     colorClass: 'text-pink-500',
     bgClass: 'bg-pink-500/10',
     borderClass: 'border-pink-500/30',
+    color: '#ec4899',
+    interactionCap: ERA_TIER_PRICES.pink,
   },
   green: {
     label: 'Verified',
@@ -45,6 +49,8 @@ export const ERA_TIER_CONFIG: Record<EraTier, {
     colorClass: 'text-emerald-500',
     bgClass: 'bg-emerald-500/10',
     borderClass: 'border-emerald-500/30',
+    color: '#10b981',
+    interactionCap: ERA_TIER_PRICES.green,
   },
   blue: {
     label: 'Verified Pro',
@@ -52,6 +58,8 @@ export const ERA_TIER_CONFIG: Record<EraTier, {
     colorClass: 'text-blue-500',
     bgClass: 'bg-blue-500/10',
     borderClass: 'border-blue-500/30',
+    color: '#3b82f6',
+    interactionCap: ERA_TIER_PRICES.blue,
   },
   purple: {
     label: 'Verified Elite',
@@ -59,6 +67,8 @@ export const ERA_TIER_CONFIG: Record<EraTier, {
     colorClass: 'text-purple-500',
     bgClass: 'bg-purple-500/10',
     borderClass: 'border-purple-500/30',
+    color: '#a855f7',
+    interactionCap: ERA_TIER_PRICES.purple,
   },
   orange: {
     label: 'Verified Legend',
@@ -66,6 +76,8 @@ export const ERA_TIER_CONFIG: Record<EraTier, {
     colorClass: 'text-orange-500',
     bgClass: 'bg-orange-500/10',
     borderClass: 'border-orange-500/30',
+    color: '#f97316',
+    interactionCap: ERA_TIER_PRICES.orange,
   },
 };
 
