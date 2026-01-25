@@ -356,7 +356,7 @@ export default function MyERA() {
                       {communitiesLoading ? '—' : communitiesCount}
                     </p>
                   </div>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Waitlist</p>
+                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Waitlist</p>
                 </button>
                 <button 
                   className="text-center group py-2 border-l border-white/10"
@@ -367,7 +367,7 @@ export default function MyERA() {
                       {connectionsCount}
                     </p>
                   </div>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">My List</p>
+                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide">My List</p>
                 </button>
                 <button 
                   className="text-center group relative py-2 border-l border-white/10"
@@ -378,7 +378,7 @@ export default function MyERA() {
                       {pendingConnectionCount || 0}
                     </p>
                   </div>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Pending</p>
+                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Pending</p>
                   {pendingConnectionCount > 0 && (
                     <span className="absolute top-1 right-1/4 w-2 h-2 rounded-full bg-rose-500" />
                   )}
@@ -390,7 +390,7 @@ export default function MyERA() {
                   <div className="h-7 flex items-center justify-center mb-1.5">
                     <Bell className="w-5 h-5 text-foreground group-hover:text-primary transition-colors" />
                   </div>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Alerts</p>
+                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Alerts</p>
                 </button>
               </div>
             </motion.div>
