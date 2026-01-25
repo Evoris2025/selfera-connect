@@ -425,46 +425,47 @@ export default function MyERA() {
               {!isVerified && !hasVerificationRequest && !showIntentSelection && (
                 <motion.div
                   key="verification-cta"
-                  className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/20 via-accent/10 to-card/40 backdrop-blur-lg border border-primary/20 min-h-[180px] flex flex-col p-5"
+                  className="relative overflow-hidden rounded-2xl bg-card/40 backdrop-blur-lg border border-white/[0.06] min-h-[180px] flex flex-col p-5"
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -10 }}
                   transition={{ ...springGentle, delay: 0.19 }}
                 >
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-primary/30 to-transparent rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-                  
                   <div className="relative flex flex-col flex-1">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center flex-shrink-0">
-                        <Shield className="w-5 h-5 text-white" />
+                    {/* Header with icon and title */}
+                    <div className="flex items-start gap-3 mb-3">
+                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-emerald-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary/20">
+                        <Shield className="w-4 h-4 text-white" />
                       </div>
-                      <h3 className="text-sm font-semibold text-foreground">
-                        Become ERA Verified
-                      </h3>
+                      <div>
+                        <h3 className="text-sm font-semibold text-foreground leading-tight">
+                          Become ERA Verified
+                        </h3>
+                        <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                          Build trust and connect with the right community.
+                        </p>
+                      </div>
                     </div>
                     
-                    <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
-                      Build trust and connect with the right community.
-                    </p>
-                    
-                    {/* Static Progress Steps */}
-                    <div className="flex items-center gap-1.5 mb-3">
+                    {/* Progress Steps - refined */}
+                    <div className="flex items-center gap-2 my-auto py-2">
                       {verificationSteps.map((step, idx) => (
-                        <div key={step.id} className="flex items-center gap-1.5">
-                          <div className="w-5 h-5 rounded-full flex items-center justify-center bg-muted/20 text-muted-foreground">
-                            <step.icon className="w-2.5 h-2.5" />
+                        <div key={step.id} className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-full flex items-center justify-center bg-muted/10 border border-white/[0.08] text-muted-foreground">
+                            <step.icon className="w-3 h-3" />
                           </div>
                           {idx < verificationSteps.length - 1 && (
-                            <div className="w-4 h-0.5 rounded-full bg-muted/30" />
+                            <div className="w-6 h-px bg-white/10" />
                           )}
                         </div>
                       ))}
                     </div>
                     
-                    <div className="mt-auto">
+                    {/* CTA Button */}
+                    <div className="mt-auto pt-2">
                       <Button
                         size="sm"
-                        className="rounded-full h-8 w-full"
+                        className="rounded-full h-9 w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
                         onClick={() => setShowIntentSelection(true)}
                       >
                         Start Verification
