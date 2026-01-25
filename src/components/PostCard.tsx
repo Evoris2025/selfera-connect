@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { VerifiedBadge } from './VerifiedBadge';
+import { EraVerifiedTick } from './EraVerifiedTick';
 import { AccountTypeBadge, AccountType } from './AccountTypeBadge';
 import { Hashtag } from './Hashtag';
 import { CommentButton, ShareButton, CommentSheet, CommunityButton } from './interactions';
@@ -172,7 +172,7 @@ function PostCardBase({
             <button onClick={handleCreatorClick} className="text-left hover:underline">
               <div className="flex items-center gap-1.5 flex-wrap">
                 <span className="font-semibold text-foreground text-[15px]">{author.name}</span>
-                {author.isVerified && <VerifiedBadge size="sm" />}
+                {author.isVerified && <EraVerifiedTick size="sm" tier="green" />}
                 {author.accountType && <AccountTypeBadge type={author.accountType} size="sm" />}
               </div>
               <p className="text-muted-foreground text-sm">@{author.handle} · {createdAt}</p>
@@ -338,7 +338,7 @@ function PostCardBase({
               />
               <div className="flex items-center gap-1.5 flex-wrap">
                 <span className="font-semibold text-foreground text-[15px] drop-shadow-md">{author.name}</span>
-                {author.isVerified && <VerifiedBadge size="sm" />}
+                {author.isVerified && <EraVerifiedTick size="sm" tier="green" />}
                 {author.accountType && <AccountTypeBadge type={author.accountType} size="sm" />}
                 <span className="text-foreground/70 text-sm drop-shadow-sm">@{author.handle}</span>
               </div>

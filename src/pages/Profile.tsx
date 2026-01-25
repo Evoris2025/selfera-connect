@@ -12,7 +12,7 @@ import { ReportModal } from '@/components/moderation/ReportModal';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
-import { VerifiedBadge } from '@/components/VerifiedBadge';
+import { EraVerifiedTick, VerificationTier } from '@/components/EraVerifiedTick';
 import { AccountTypeBadge, AccountType } from '@/components/AccountTypeBadge';
 import { FollowButton } from '@/components/interactions';
 import { toast } from '@/hooks/use-toast';
@@ -524,11 +524,21 @@ export default function Profile() {
                   <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground tracking-tight leading-tight">
                     {displayProfile.displayName || mockUser.name}
                   </h1>
-                  {displayProfile.isVerified && <VerifiedBadge size="md" />}
+                  {displayProfile.isVerified && <EraVerifiedTick size="md" tier="green" />}
                   {displayProfile.userType && displayProfile.userType !== 'individual' && (
                     <AccountTypeBadge type={displayProfile.userType as AccountType} size="md" />
                   )}
                   {displayProfile.isPrivate && <Lock className="h-4 w-4 text-muted-foreground" />}
+                  
+                  {/* TEST: Display all five color ticks for visual testing */}
+                  {isOwnProfile && (
+                    <div className="flex items-center gap-1.5 ml-2 px-2 py-1 rounded-full bg-muted/50">
+                      <span className="text-[10px] text-muted-foreground mr-1">Ticks:</span>
+                      {(['pink', 'green', 'blue', 'purple', 'orange'] as VerificationTier[]).map((tier) => (
+                        <EraVerifiedTick key={tier} size="sm" tier={tier} />
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Handle + Location */}
