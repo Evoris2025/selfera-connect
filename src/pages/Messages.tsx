@@ -282,59 +282,112 @@ export default function Messages() {
 
   const requestCount = 2;
 
-  // Handle deep-linking: check for ?user=<userId> param
+  // Handle deep-linking: check for ?user=<userId> or ?conversation=<conversationId> param
   useEffect(() => {
     const targetUserId = searchParams.get('user');
-    if (!targetUserId) return;
+    const targetConversationId = searchParams.get('conversation');
+    
+    if (!targetUserId && !targetConversationId) return;
 
     const handleDeepLink = async () => {
       setIsLoading(true);
       try {
-        // Fetch the target user's profile
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('id, display_name, handle, avatar_url')
-          .eq('id', targetUserId)
-          .single();
-
-        if (profile) {
-          setDeepLinkUser({
-            id: profile.id,
-            name: profile.display_name || 'User',
-            handle: profile.handle || undefined,
-          });
-
-          // Check for existing conversation or start a new one
-          const conversationId = await startConversation(targetUserId);
-          if (conversationId) {
-            // Look for it in mock conversations or create a temporary one
-            const existingConv = state.conversations.find(c => c.id === conversationId);
-            if (existingConv) {
-              setSelectedConversation(existingConv);
-            } else {
-              // Create a temporary conversation object for the UI
-              const tempConv: MockConversation = {
-                id: conversationId,
-                participant: {
-                  id: profile.id,
-                  name: profile.display_name || 'User',
-                  handle: profile.handle || 'user',
-                  avatarUrl: profile.avatar_url || undefined,
-                  isOnline: false,
-                },
-                lastMessage: '',
-                lastMessageTime: 'now',
-                unread: false,
-                messages: [],
-                isNew: true,
-              };
-              setSelectedConversation(tempConv);
+        // If we have a direct conversation ID, use it
+        if (targetConversationId) {
+          // Fetch conversation participants to get the other user's profile
+          const { data: participants } = await supabase
+            .from('conversation_participants')
+            .select('user_id')
+            .eq('conversation_id', targetConversationId);
+          
+          if (participants && participants.length > 0) {
+            // Get the other participant (not the current user)
+            const { data: sessionData } = await supabase.auth.getSession();
+            const currentUserId = sessionData?.session?.user?.id;
+            const otherParticipant = participants.find(p => p.user_id !== currentUserId);
+            
+            if (otherParticipant) {
+              const { data: profile } = await supabase
+                .from('profiles')
+                .select('id, display_name, handle, avatar_url')
+                .eq('id', otherParticipant.user_id)
+                .single();
+              
+              if (profile) {
+                const tempConv: MockConversation = {
+                  id: targetConversationId,
+                  participant: {
+                    id: profile.id,
+                    name: profile.display_name || 'User',
+                    handle: profile.handle || 'user',
+                    avatarUrl: profile.avatar_url || undefined,
+                    isOnline: false,
+                  },
+                  lastMessage: '',
+                  lastMessageTime: 'now',
+                  unread: false,
+                  messages: [],
+                  isNew: false,
+                };
+                setSelectedConversation(tempConv);
+              }
             }
           }
+          
+          // Clear the URL param after handling
+          setSearchParams({}, { replace: true });
+          setIsLoading(false);
+          return;
         }
 
-        // Clear the URL param after handling
-        setSearchParams({}, { replace: true });
+        // Handle user param (original logic)
+        if (targetUserId) {
+          // Fetch the target user's profile
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('id, display_name, handle, avatar_url')
+            .eq('id', targetUserId)
+            .single();
+
+          if (profile) {
+            setDeepLinkUser({
+              id: profile.id,
+              name: profile.display_name || 'User',
+              handle: profile.handle || undefined,
+            });
+
+            // Check for existing conversation or start a new one
+            const conversationId = await startConversation(targetUserId);
+            if (conversationId) {
+              // Look for it in mock conversations or create a temporary one
+              const existingConv = state.conversations.find(c => c.id === conversationId);
+              if (existingConv) {
+                setSelectedConversation(existingConv);
+              } else {
+                // Create a temporary conversation object for the UI
+                const tempConv: MockConversation = {
+                  id: conversationId,
+                  participant: {
+                    id: profile.id,
+                    name: profile.display_name || 'User',
+                    handle: profile.handle || 'user',
+                    avatarUrl: profile.avatar_url || undefined,
+                    isOnline: false,
+                  },
+                  lastMessage: '',
+                  lastMessageTime: 'now',
+                  unread: false,
+                  messages: [],
+                  isNew: true,
+                };
+                setSelectedConversation(tempConv);
+              }
+            }
+          }
+
+          // Clear the URL param after handling
+          setSearchParams({}, { replace: true });
+        }
       } catch (err) {
         console.error('Error handling deep link:', err);
       } finally {

@@ -41,6 +41,7 @@ export function useSupportLinks() {
   const [supportLinks, setSupportLinks] = useState<SupportLink[]>([]);
   const [connectedClients, setConnectedClients] = useState<ConnectedClient[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchSupportLinks = useCallback(async () => {
     if (!user) {
@@ -50,8 +51,10 @@ export function useSupportLinks() {
       return;
     }
 
+    setError(null);
+
     try {
-      // Fetch support links where user is the client
+      // Step 1: Fetch support links where user is the client
       const { data: clientLinks, error: clientError } = await supabase
         .from('user_support_links')
         .select('*')
@@ -60,20 +63,24 @@ export function useSupportLinks() {
 
       if (clientError) throw clientError;
 
-      // Fetch provider profiles separately
+      // Step 2: Extract provider IDs and fetch their profiles separately
       const providerIds = (clientLinks || []).map(link => link.provider_user_id);
       let providerProfiles: Record<string, any> = {};
       
       if (providerIds.length > 0) {
-        const { data: profiles } = await supabase
+        const { data: profiles, error: profilesError } = await supabase
           .from('profiles')
           .select('id, display_name, handle, avatar_url, is_verified')
           .in('id', providerIds);
         
-        providerProfiles = (profiles || []).reduce((acc, p) => ({ ...acc, [p.id]: p }), {});
+        if (profilesError) {
+          console.warn('Error fetching provider profiles:', profilesError);
+        } else {
+          providerProfiles = (profiles || []).reduce((acc, p) => ({ ...acc, [p.id]: p }), {});
+        }
       }
 
-      // Fetch support links where user is the provider
+      // Step 3: Fetch support links where user is the provider
       const { data: providerLinks, error: providerError } = await supabase
         .from('user_support_links')
         .select('id, user_id, status, created_at')
@@ -82,35 +89,53 @@ export function useSupportLinks() {
 
       if (providerError) throw providerError;
 
-      // Fetch client profiles separately
+      // Step 4: Extract client IDs and fetch their profiles separately
       const clientIds = (providerLinks || []).map(link => link.user_id);
       let clientProfiles: Record<string, any> = {};
       
       if (clientIds.length > 0) {
-        const { data: profiles } = await supabase
+        const { data: profiles, error: clientProfilesError } = await supabase
           .from('profiles')
           .select('id, display_name, handle, avatar_url')
           .in('id', clientIds);
         
-        clientProfiles = (profiles || []).reduce((acc, p) => ({ ...acc, [p.id]: p }), {});
+        if (clientProfilesError) {
+          console.warn('Error fetching client profiles:', clientProfilesError);
+        } else {
+          clientProfiles = (profiles || []).reduce((acc, p) => ({ ...acc, [p.id]: p }), {});
+        }
       }
 
+      // Step 5: Merge provider profiles into support links
       const typedLinks = (clientLinks || []).map(link => ({
         ...link,
         status: link.status as SupportLinkStatus,
-        provider: providerProfiles[link.provider_user_id] || null,
+        provider: providerProfiles[link.provider_user_id] || {
+          id: link.provider_user_id,
+          display_name: null,
+          handle: null,
+          avatar_url: null,
+          is_verified: false,
+        },
       }));
 
+      // Step 6: Merge client profiles into connected clients
       const typedClients = (providerLinks || []).map(link => ({
         ...link,
         status: link.status as SupportLinkStatus,
-        client: clientProfiles[link.user_id] || null,
+        client: clientProfiles[link.user_id] || {
+          id: link.user_id,
+          display_name: null,
+          handle: null,
+          avatar_url: null,
+        },
       }));
 
       setSupportLinks(typedLinks);
       setConnectedClients(typedClients);
-    } catch (error) {
-      console.error('Error fetching support links:', error);
+    } catch (err) {
+      console.error('Error fetching support links:', err);
+      setError('Failed to load support connections');
     } finally {
       setLoading(false);
     }
@@ -214,6 +239,7 @@ export function useSupportLinks() {
     
     // State
     loading,
+    error,
     refresh: fetchSupportLinks,
   };
 }

@@ -34,6 +34,7 @@ import { useSupportLinks } from '@/hooks/useSupportLinks';
 import { usePendingConnectionCount } from '@/hooks/usePendingConnectionCount';
 import { useVerification } from '@/hooks/useVerification';
 import { useSubscription, PLAN_DETAILS } from '@/hooks/useSubscription';
+import { useNewConversation } from '@/hooks/useNewConversation';
 import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -41,6 +42,7 @@ import { VerifiedBadge } from '@/components/VerifiedBadge';
 import { AccountTypeBadge, AccountType } from '@/components/AccountTypeBadge';
 import { AppLayout } from '@/components/AppLayout';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -124,10 +126,11 @@ function getVerificationStepIndex(status: string | undefined): number {
 export default function MyERA() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { activeProviders, pendingProviders } = useSupportLinks();
+  const { activeProviders, pendingProviders, loading: supportLinksLoading, error: supportLinksError, refresh: refreshSupportLinks } = useSupportLinks();
   const { count: pendingConnectionCount } = usePendingConnectionCount();
   const { myRequest, isLoading: verificationLoading } = useVerification();
   const { subscription, currentPlan, loading: subscriptionLoading } = useSubscription();
+  const { startConversation } = useNewConversation();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [activeNetworkTab, setActiveNetworkTab] = useState<'list' | 'interactions'>('list');
   const [showIntentSelection, setShowIntentSelection] = useState(false);
@@ -135,6 +138,29 @@ export default function MyERA() {
   const [showNetworkDisclaimer, setShowNetworkDisclaimer] = useState(() => 
     !localStorage.getItem('hideNetworkDisclaimer')
   );
+  const [communitiesCount, setCommunitiesCount] = useState<number>(0);
+  const [communitiesLoading, setCommunitiesLoading] = useState(true);
+  const [messagingProviderId, setMessagingProviderId] = useState<string | null>(null);
+
+  // Handle messaging a provider - create or find conversation and navigate
+  const handleMessageProvider = async (providerId: string) => {
+    if (messagingProviderId) return; // Prevent double-clicks
+    setMessagingProviderId(providerId);
+    
+    try {
+      const conversationId = await startConversation(providerId);
+      if (conversationId) {
+        navigate(`/messages?conversation=${conversationId}`);
+      } else {
+        toast.error('Could not start conversation');
+      }
+    } catch (err) {
+      console.error('Error starting conversation:', err);
+      toast.error('Failed to open conversation');
+    } finally {
+      setMessagingProviderId(null);
+    }
+  };
 
   // Toggle intent selection (multi-select)
   const handleIntentToggle = (intentId: string) => {
@@ -163,6 +189,31 @@ export default function MyERA() {
       if (data) setProfile(data);
     }
     fetchProfile();
+  }, [user]);
+
+  // Fetch real communities count from community_memberships
+  useEffect(() => {
+    async function fetchCommunitiesCount() {
+      if (!user) {
+        setCommunitiesLoading(false);
+        return;
+      }
+      try {
+        const { count, error } = await supabase
+          .from('community_memberships')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user.id);
+        
+        if (error) throw error;
+        setCommunitiesCount(count || 0);
+      } catch (err) {
+        console.error('Error fetching communities count:', err);
+        setCommunitiesCount(0);
+      } finally {
+        setCommunitiesLoading(false);
+      }
+    }
+    fetchCommunitiesCount();
   }, [user]);
 
   const connectionsCount = activeProviders.length + pendingProviders.length;
@@ -305,6 +356,16 @@ export default function MyERA() {
                   onClick={() => navigate('/community')}
                 >
                   <p className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+                    {communitiesLoading ? '—' : communitiesCount}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Communities</p>
+                </button>
+                <div className="w-px h-8 bg-white/10" />
+                <button 
+                  className="text-center flex-1 group"
+                  onClick={() => navigate('/directory')}
+                >
+                  <p className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
                     {connectionsCount}
                   </p>
                   <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Connections</p>
@@ -321,16 +382,6 @@ export default function MyERA() {
                   {pendingConnectionCount > 0 && (
                     <span className="absolute -top-1 right-1/4 w-2 h-2 rounded-full bg-rose-500" />
                   )}
-                </button>
-                <div className="w-px h-8 bg-white/10" />
-                <button 
-                  className="text-center flex-1 group"
-                  onClick={() => navigate('/profile?tab=saved')}
-                >
-                  <p className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
-                    —
-                  </p>
-                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Saved</p>
                 </button>
               </div>
             </motion.div>
@@ -820,7 +871,35 @@ export default function MyERA() {
                 exit={{ opacity: 0, x: 10 }}
                 transition={{ duration: 0.2 }}
               >
-                {activeProviders.length === 0 && pendingProviders.length === 0 ? (
+                {/* Loading state */}
+                {supportLinksLoading && (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                  </div>
+                )}
+
+                {/* Error state */}
+                {!supportLinksLoading && supportLinksError && (
+                  <motion.div 
+                    className="rounded-2xl bg-card/50 border border-white/5 p-6 text-center"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    <AlertCircle className="w-8 h-8 mx-auto mb-3 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground mb-3">Couldn't load support connections</p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="rounded-full"
+                      onClick={() => refreshSupportLinks()}
+                    >
+                      Try again
+                    </Button>
+                  </motion.div>
+                )}
+
+                {/* Empty state */}
+                {!supportLinksLoading && !supportLinksError && activeProviders.length === 0 && pendingProviders.length === 0 && (
                   <motion.div 
                     className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-rose-500/10 via-pink-500/10 to-fuchsia-500/10 border border-white/5 p-6"
                     whileHover={{ scale: 1.01 }}
@@ -844,7 +923,10 @@ export default function MyERA() {
                       </Button>
                     </div>
                   </motion.div>
-                ) : (
+                )}
+
+                {/* List of providers */}
+                {!supportLinksLoading && !supportLinksError && (activeProviders.length > 0 || pendingProviders.length > 0) && (
                   <div className="space-y-2">
                     {[...activeProviders, ...pendingProviders].map((link, index) => (
                       <motion.div
@@ -862,7 +944,9 @@ export default function MyERA() {
                             size="md"
                             ring={link.status === 'active' ? 'primary' : 'muted'}
                           />
-                          <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-primary border-2 border-card" />
+                          {link.status === 'active' && (
+                            <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-primary border-2 border-card" />
+                          )}
                         </div>
                         
                         <div className="flex-1 min-w-0">
@@ -873,7 +957,7 @@ export default function MyERA() {
                             {link.provider?.is_verified && <VerifiedBadge size="sm" />}
                           </div>
                           <p className="text-xs text-muted-foreground truncate">
-                            {link.provider_role}
+                            {link.organization_name || link.provider_role}
                           </p>
                         </div>
 
@@ -887,9 +971,14 @@ export default function MyERA() {
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 rounded-full"
-                          onClick={() => navigate('/messages')}
+                          disabled={messagingProviderId === link.provider_user_id}
+                          onClick={() => handleMessageProvider(link.provider_user_id)}
                         >
-                          <MessageCircle className="w-4 h-4" />
+                          {messagingProviderId === link.provider_user_id ? (
+                            <div className="w-4 h-4 border-2 border-muted-foreground/30 border-t-muted-foreground rounded-full animate-spin" />
+                          ) : (
+                            <MessageCircle className="w-4 h-4" />
+                          )}
                         </Button>
                       </motion.div>
                     ))}
