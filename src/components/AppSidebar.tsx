@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Compass, Plus, Bell, MessageCircle, User, LayoutDashboard, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -53,6 +53,9 @@ const itemVariants = {
   }
 };
 
+// Collapse delay in ms
+const COLLAPSE_DELAY = 300;
+
 export function AppSidebar({ 
   onCreateClick, 
   notificationCount = 0, 
@@ -61,13 +64,41 @@ export function AppSidebar({
   pendingConnectionCount = 0,
 }: AppSidebarProps) {
   const location = useLocation();
+  const collapseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Start collapsed by default, expand on hover
   const [isPinned, setIsPinned] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [showKeyboardFeedback, setShowKeyboardFeedback] = useState(false);
   
   // Effective collapsed state - collapsed unless hovered or pinned
   const isCollapsed = !isPinned && !isHovered;
+
+  // Handle mouse enter - expand immediately
+  const handleMouseEnter = useCallback(() => {
+    // Clear any pending collapse
+    if (collapseTimeoutRef.current) {
+      clearTimeout(collapseTimeoutRef.current);
+      collapseTimeoutRef.current = null;
+    }
+    setIsHovered(true);
+  }, []);
+
+  // Handle mouse leave - delay collapse
+  const handleMouseLeave = useCallback(() => {
+    collapseTimeoutRef.current = setTimeout(() => {
+      setIsHovered(false);
+    }, COLLAPSE_DELAY);
+  }, []);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (collapseTimeoutRef.current) {
+        clearTimeout(collapseTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Persist pin state
   useEffect(() => {
@@ -90,6 +121,10 @@ export function AppSidebar({
       if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
         e.preventDefault();
         setIsPinned(prev => !prev);
+        
+        // Show visual feedback
+        setShowKeyboardFeedback(true);
+        setTimeout(() => setShowKeyboardFeedback(false), 400);
       }
     };
     
@@ -222,13 +257,26 @@ export function AppSidebar({
       initial="hidden"
       animate="visible"
       variants={sidebarVariants}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       className={cn(
         "fixed left-0 top-0 bottom-0 flex flex-col bg-background border-r border-border/50 z-40 transition-[width] duration-300 ease-out",
         isCollapsed ? "w-16" : "w-60 lg:w-64"
       )}
     >
+      {/* Keyboard shortcut visual feedback overlay */}
+      <AnimatePresence>
+        {showKeyboardFeedback && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="absolute inset-0 bg-primary/10 pointer-events-none z-50 rounded-r-xl"
+          />
+        )}
+      </AnimatePresence>
+
       {/* Logo - only show when expanded */}
       <div className="h-16 flex items-center justify-center px-3 border-b border-border/30">
         <AnimatePresence mode="wait">
@@ -262,8 +310,8 @@ export function AppSidebar({
         </AnimatePresence>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 px-2 py-4 overflow-y-auto">
+      {/* Navigation - centered vertically */}
+      <nav className="flex-1 px-2 py-4 overflow-y-auto flex flex-col justify-center">
         <motion.div className="space-y-1" variants={sidebarVariants}>
           {navItems.map((item, index) => renderNavItem(item, index))}
         </motion.div>
