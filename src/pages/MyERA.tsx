@@ -374,121 +374,111 @@ export default function MyERA() {
         >
           <h2 className="text-lg font-semibold text-foreground mb-4 tracking-tight">Your Account Info</h2>
           
-          <div className="grid grid-cols-2 gap-4">
-            {/* Plan Type Card */}
-            <motion.div
-              className="flex flex-col justify-between min-h-[140px] rounded-2xl bg-card/40 backdrop-blur-lg border border-white/[0.06] p-5"
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ ...springGentle, delay: 0.18 }}
-            >
-              <div>
-                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-3">Plan Type</p>
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <User className="w-4 h-4 text-primary" />
-                  </div>
-                  <p className={`text-sm font-semibold ${isVerified ? 'text-foreground' : 'text-muted-foreground'}`}>
-                    {isVerified 
-                      ? (profile?.user_type === 'professional' 
-                          ? 'Professional' 
-                          : profile?.user_type === 'organization' 
-                            ? 'Organization' 
-                            : 'Individual')
-                      : 'Free, non-verified'}
-                  </p>
-                </div>
-              </div>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="w-fit h-7 text-xs mt-3 -ml-2 text-primary hover:text-primary"
-                onClick={() => navigate('/transparency')}
+          <div className="grid grid-cols-1 gap-4">
+            {/* Top Row: Plan Type + Amount */}
+            <div className="grid grid-cols-2 gap-4">
+              {/* Plan Type Card */}
+              <motion.div
+                className="flex flex-col justify-between min-h-[140px] rounded-2xl bg-card/40 backdrop-blur-lg border border-white/[0.06] p-5"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ ...springGentle, delay: 0.18 }}
               >
-                Upgrade Plan
-                <ChevronRight className="w-3 h-3 ml-1" />
-              </Button>
-            </motion.div>
-
-            {/* Amount Card */}
-            <motion.div
-              className="flex flex-col min-h-[140px] rounded-2xl bg-card/40 backdrop-blur-lg border border-white/[0.06] p-5"
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ ...springGentle, delay: 0.19 }}
-            >
-              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-3">Amount</p>
-              
-              {/* Main amount - top section centered */}
-              <p className="text-2xl font-bold text-foreground text-center mb-auto">
-                {currentPlan === 'free' ? '$0.00' : `$${monthlyPrice.toFixed(2)}`}
-              </p>
-              
-              {/* Payment info - bottom section split */}
-              <div className="grid grid-cols-2 gap-2 pt-3 border-t border-white/[0.06]">
-                <div className="text-center">
-                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide mb-0.5">Last Payment</p>
-                  <p className="text-xs font-semibold text-foreground">$0.00</p>
-                  <p className="text-[11px] text-muted-foreground">Jan 1, 2025</p>
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-3">Plan Type</p>
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <User className="w-4 h-4 text-primary" />
+                    </div>
+                    <p className={`text-sm font-semibold ${isVerified ? 'text-foreground' : 'text-muted-foreground'}`}>
+                      {isVerified 
+                        ? (profile?.user_type === 'professional' 
+                            ? 'Professional' 
+                            : profile?.user_type === 'organization' 
+                              ? 'Organization' 
+                              : 'Individual')
+                        : 'Free, non-verified'}
+                    </p>
+                  </div>
                 </div>
-                <div className="text-center">
-                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide mb-0.5">Next Due</p>
-                  <p className="text-xs font-semibold text-foreground">$0.00</p>
-                  <p className="text-[11px] text-muted-foreground">Feb 1, 2025</p>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-fit h-7 text-xs mt-3 -ml-2 text-primary hover:text-primary"
+                  onClick={() => navigate('/transparency')}
+                >
+                  Upgrade Plan
+                  <ChevronRight className="w-3 h-3 ml-1" />
+                </Button>
+              </motion.div>
+
+              {/* Amount Card */}
+              <motion.div
+                className="flex flex-col min-h-[140px] rounded-2xl bg-card/40 backdrop-blur-lg border border-white/[0.06] p-5"
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ ...springGentle, delay: 0.19 }}
+              >
+                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-3">Amount</p>
+                
+                {/* Main amount - top section centered */}
+                <p className="text-2xl font-bold text-foreground text-center mb-auto">
+                  {currentPlan === 'free' ? '$0.00' : `$${monthlyPrice.toFixed(2)}`}
+                </p>
+                
+                {/* Payment info - bottom section split */}
+                <div className="grid grid-cols-2 gap-2 pt-3 border-t border-white/[0.06]">
+                  <div className="text-center">
+                    <p className="text-[11px] text-muted-foreground uppercase tracking-wide mb-0.5">Last Payment</p>
+                    <p className="text-xs font-semibold text-foreground">$0.00</p>
+                    <p className="text-[11px] text-muted-foreground">Jan 1, 2025</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-[11px] text-muted-foreground uppercase tracking-wide mb-0.5">Next Due</p>
+                    <p className="text-xs font-semibold text-foreground">$0.00</p>
+                    <p className="text-[11px] text-muted-foreground">Feb 1, 2025</p>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          </div>
-        </motion.section>
+              </motion.div>
+            </div>
 
-        {/* Your Journey - Verification Focused */}
-        <motion.section
-          className="mt-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ ...springGentle, delay: 0.2 }}
-        >
-          <div className="flex items-center justify-between px-4 mb-4">
-            <h2 className="text-lg font-semibold text-foreground tracking-tight">Your Journey</h2>
-          </div>
-
-          <div className="px-4 space-y-4">
+            {/* Verification Card - Full Width Below */}
             <AnimatePresence mode="wait">
               {/* Not started verification */}
               {!isVerified && !hasVerificationRequest && !showIntentSelection && (
                 <motion.div
                   key="verification-cta"
-                  className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/20 via-accent/10 to-background border border-primary/20"
+                  className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/20 via-accent/10 to-card/40 backdrop-blur-lg border border-primary/20"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  transition={springGentle}
+                  transition={{ ...springGentle, delay: 0.2 }}
                 >
-                  <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-primary/30 to-transparent rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/30 to-transparent rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
                   
-                  <div className="relative p-6">
+                  <div className="relative p-5">
                     <div className="flex items-start gap-4">
-                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center flex-shrink-0">
-                        <Shield className="w-7 h-7 text-white" />
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center flex-shrink-0">
+                        <Shield className="w-6 h-6 text-white" />
                       </div>
                       
                       <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-foreground mb-1">
+                        <h3 className="text-base font-semibold text-foreground mb-1">
                           Become ERA Verified
                         </h3>
-                        <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-                          Unlock your full potential on SelfERA. Verification builds trust and connects you with the right community.
+                        <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
+                          Build trust and connect with the right community.
                         </p>
                         
                         {/* Static Progress Steps */}
-                        <div className="flex items-center gap-2 mb-4">
+                        <div className="flex items-center gap-2 mb-3">
                           {verificationSteps.map((step, idx) => (
                             <div key={step.id} className="flex items-center gap-2">
-                              <div className="w-6 h-6 rounded-full flex items-center justify-center bg-muted/20 text-muted-foreground">
-                                <step.icon className="w-3 h-3" />
+                              <div className="w-5 h-5 rounded-full flex items-center justify-center bg-muted/20 text-muted-foreground">
+                                <step.icon className="w-2.5 h-2.5" />
                               </div>
                               {idx < verificationSteps.length - 1 && (
-                                <div className="w-8 h-0.5 rounded-full bg-muted/30" />
+                                <div className="w-6 h-0.5 rounded-full bg-muted/30" />
                               )}
                             </div>
                           ))}
@@ -496,14 +486,15 @@ export default function MyERA() {
                         
                         <div className="flex items-center gap-3">
                           <Button
-                            className="rounded-full"
+                            size="sm"
+                            className="rounded-full h-8"
                             onClick={() => setShowIntentSelection(true)}
                           >
                             Start Verification
-                            <ArrowRight className="w-4 h-4 ml-1.5" />
+                            <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
                           </Button>
                           <span className="text-xs text-muted-foreground">
-                            Est. review: 2–5 days
+                            Est. 2–5 days
                           </span>
                         </div>
                       </div>
@@ -516,27 +507,27 @@ export default function MyERA() {
               {!isVerified && verificationInProgress && (
                 <motion.div
                   key="verification-progress"
-                  className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500/20 via-orange-500/10 to-background border border-amber-500/20"
+                  className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500/20 via-orange-500/10 to-card/40 backdrop-blur-lg border border-amber-500/20"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  transition={springGentle}
+                  transition={{ ...springGentle, delay: 0.2 }}
                 >
-                  <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-amber-500/20 to-transparent rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-500/20 to-transparent rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
                   
-                  <div className="relative p-6">
+                  <div className="relative p-5">
                     <div className="flex items-start gap-4">
                       <motion.div 
-                        className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center flex-shrink-0"
+                        className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center flex-shrink-0"
                         animate={{ scale: [1, 1.05, 1] }}
                         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                       >
-                        <Clock className="w-7 h-7 text-white" />
+                        <Clock className="w-6 h-6 text-white" />
                       </motion.div>
                       
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <h3 className="text-lg font-semibold text-foreground">
+                          <h3 className="text-base font-semibold text-foreground">
                             Verification In Progress
                           </h3>
                           <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30 text-[9px]">
@@ -544,12 +535,12 @@ export default function MyERA() {
                             Pending
                           </Badge>
                         </div>
-                        <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+                        <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
                           Your request for {myRequest?.account_type_requested} verification is being reviewed.
                         </p>
                         
                         {/* Animated Progress Steps */}
-                        <div className="flex items-center gap-2 mb-3">
+                        <div className="flex items-center gap-2 mb-2">
                           {verificationSteps.map((step, idx) => {
                             const isCompleted = idx < currentVerificationStep;
                             const isCurrent = idx === currentVerificationStep;
@@ -557,7 +548,7 @@ export default function MyERA() {
                             return (
                               <div key={step.id} className="flex items-center gap-2">
                                 <motion.div 
-                                  className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                                  className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${
                                     isCompleted 
                                       ? 'bg-emerald-500 text-white' 
                                       : isCurrent 
@@ -576,14 +567,14 @@ export default function MyERA() {
                                   }}
                                 >
                                   {isCompleted ? (
-                                    <Check className="w-4 h-4" />
+                                    <Check className="w-3.5 h-3.5" />
                                   ) : (
-                                    <step.icon className="w-4 h-4" />
+                                    <step.icon className="w-3.5 h-3.5" />
                                   )}
                                 </motion.div>
                                 {idx < verificationSteps.length - 1 && (
                                   <motion.div 
-                                    className={`w-12 h-1 rounded-full ${
+                                    className={`w-10 h-1 rounded-full ${
                                       isCompleted ? 'bg-emerald-500' : 'bg-muted/30'
                                     }`}
                                     initial={{ scaleX: 0 }}
@@ -609,30 +600,30 @@ export default function MyERA() {
               {!isVerified && verificationRejected && (
                 <motion.div
                   key="verification-rejected"
-                  className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-rose-500/20 via-red-500/10 to-background border border-rose-500/20"
+                  className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-rose-500/20 via-red-500/10 to-card/40 backdrop-blur-lg border border-rose-500/20"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  transition={springGentle}
+                  transition={{ ...springGentle, delay: 0.2 }}
                 >
                   <div className="relative p-5 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-500 to-red-500 flex items-center justify-center">
-                      <AlertCircle className="w-6 h-6 text-white" />
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-red-500 flex items-center justify-center">
+                      <AlertCircle className="w-5 h-5 text-white" />
                     </div>
                     
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <h3 className="text-base font-semibold text-foreground">
+                        <h3 className="text-sm font-semibold text-foreground">
                           Verification Not Approved
                         </h3>
                       </div>
-                      <p className="text-sm text-muted-foreground mb-2">
+                      <p className="text-xs text-muted-foreground mb-2">
                         {myRequest?.admin_notes || 'Your request was not approved. You can submit a new request.'}
                       </p>
                       <Button
                         size="sm"
                         variant="secondary"
-                        className="rounded-full"
+                        className="rounded-full h-7 text-xs"
                         onClick={() => navigate('/settings?view=verification')}
                       >
                         Try Again
@@ -749,25 +740,25 @@ export default function MyERA() {
               {isVerified && (
                 <motion.div
                   key="verified-status"
-                  className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500/20 via-green-500/10 to-background border border-emerald-500/20"
+                  className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500/20 via-green-500/10 to-card/40 backdrop-blur-lg border border-emerald-500/20"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  transition={springGentle}
+                  transition={{ ...springGentle, delay: 0.2 }}
                 >
                   <div className="relative p-5 flex items-center gap-4">
                     <motion.div 
-                      className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center"
+                      className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center"
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ type: "spring", stiffness: 400, damping: 15 }}
                     >
-                      <UserCheck className="w-6 h-6 text-white" />
+                      <UserCheck className="w-5 h-5 text-white" />
                     </motion.div>
                     
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <h3 className="text-base font-semibold text-foreground">
+                        <h3 className="text-sm font-semibold text-foreground">
                           ERA Verified
                         </h3>
                         <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-[9px]">
@@ -775,7 +766,7 @@ export default function MyERA() {
                           Active
                         </Badge>
                       </div>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs text-muted-foreground">
                         Your verification is active. You're part of the trusted ERA community.
                       </p>
                     </div>
