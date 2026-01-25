@@ -382,12 +382,10 @@ export default function MyERA() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ ...springGentle, delay: 0.18 }}
             >
-              {/* Plan Type - Top */}
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <User className="w-3.5 h-3.5 text-primary" />
-                </div>
-                <p className={`text-xs font-semibold ${isVerified ? 'text-foreground' : 'text-muted-foreground'}`}>
+              {/* Account Type - Top */}
+              <div className="mb-4">
+                <p className="text-[11px] text-muted-foreground uppercase tracking-wide mb-1">Account Type</p>
+                <p className={`text-sm font-semibold ${isVerified ? 'text-foreground' : 'text-muted-foreground'}`}>
                   {isVerified 
                     ? (profile?.user_type === 'professional' 
                         ? 'Professional' 
@@ -399,7 +397,7 @@ export default function MyERA() {
               </div>
 
               {/* Amount Label */}
-              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Amount</p>
+              <p className="text-[11px] text-muted-foreground uppercase tracking-wide mb-1">Amount</p>
               
               {/* Main amount - centered */}
               <p className="text-2xl font-bold text-foreground text-center mb-auto">
@@ -427,7 +425,7 @@ export default function MyERA() {
               {!isVerified && !hasVerificationRequest && !showIntentSelection && (
                 <motion.div
                   key="verification-cta"
-                  className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/20 via-accent/10 to-card/40 backdrop-blur-lg border border-primary/20 min-h-[180px] flex flex-col"
+                  className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/20 via-accent/10 to-card/40 backdrop-blur-lg border border-primary/20 min-h-[180px] flex flex-col p-5"
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -10 }}
@@ -435,7 +433,7 @@ export default function MyERA() {
                 >
                   <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-primary/30 to-transparent rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
                   
-                  <div className="relative p-5 flex flex-col flex-1">
+                  <div className="relative flex flex-col flex-1">
                     <div className="flex items-center gap-3 mb-3">
                       <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center flex-shrink-0">
                         <Shield className="w-5 h-5 text-white" />
