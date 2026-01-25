@@ -135,7 +135,7 @@ export default function MyERA() {
   const { subscription, currentPlan, loading: subscriptionLoading } = useSubscription();
   const { startConversation } = useNewConversation();
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [activeNetworkTab, setActiveNetworkTab] = useState<'list' | 'interactions'>('list');
+  const [activeNetworkTab, setActiveNetworkTab] = useState<'discover' | 'mylist' | 'interactions'>('discover');
   const [showIntentSelection, setShowIntentSelection] = useState(false);
   const [showVerificationFlow, setShowVerificationFlow] = useState(false);
   const [showDirectoryPicker, setShowDirectoryPicker] = useState(false);
@@ -830,13 +830,23 @@ export default function MyERA() {
           <div className="flex items-center gap-1 p-1 rounded-xl bg-card/30 border border-white/[0.06] mb-4">
             <button
               className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${
-                activeNetworkTab === 'list'
+                activeNetworkTab === 'discover'
                   ? 'bg-card/80 text-foreground shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
-              onClick={() => setActiveNetworkTab('list')}
+              onClick={() => setActiveNetworkTab('discover')}
             >
               Discover
+            </button>
+            <button
+              className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${
+                activeNetworkTab === 'mylist'
+                  ? 'bg-card/80 text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+              onClick={() => setActiveNetworkTab('mylist')}
+            >
+              My List
             </button>
             <button
               className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all relative ${
@@ -852,9 +862,9 @@ export default function MyERA() {
           </div>
 
           <AnimatePresence mode="wait">
-            {activeNetworkTab === 'list' && (
+            {activeNetworkTab === 'discover' && (
               <motion.div
-                key="my-list"
+                key="discover-tab"
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 10 }}
@@ -973,6 +983,29 @@ export default function MyERA() {
                     ))}
                   </div>
                 )}
+              </motion.div>
+            )}
+
+            {activeNetworkTab === 'mylist' && (
+              <motion.div
+                key="mylist-tab"
+                initial={{ opacity: 0, x: 0 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 10 }}
+                transition={{ duration: 0.2 }}
+                className="relative overflow-hidden rounded-2xl bg-card/30 border border-white/5 p-6"
+              >
+                <div className="text-center">
+                  <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-muted/30 flex items-center justify-center">
+                    <Heart className="w-6 h-6 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-sm font-medium text-foreground mb-1">
+                    Your saved connections
+                  </h3>
+                  <p className="text-xs text-muted-foreground max-w-[200px] mx-auto">
+                    People and providers you've added to your personal list will appear here.
+                  </p>
+                </div>
               </motion.div>
             )}
 
