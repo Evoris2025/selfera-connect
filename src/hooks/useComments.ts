@@ -12,6 +12,8 @@ interface Comment {
     name: string;
     handle: string;
     avatar: string;
+    isVerified: boolean;
+    email?: string;
   };
   content: string;
   createdAt: string;
@@ -75,7 +77,9 @@ export function useComments(postId: string): UseCommentsResult {
             id,
             display_name,
             handle,
-            avatar_url
+            avatar_url,
+            is_verified,
+            email
           )
         `)
         .eq('post_id', postId)
@@ -96,6 +100,8 @@ export function useComments(postId: string): UseCommentsResult {
             name: profile?.display_name || profile?.handle || 'Anonymous',
             handle: profile?.handle || 'anonymous',
             avatar: profile?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.user_id}`,
+            isVerified: profile?.is_verified || false,
+            email: profile?.email,
           },
           content: c.body,
           createdAt: formatTimeAgo(createdAt),
@@ -148,7 +154,7 @@ export function useComments(postId: string): UseCommentsResult {
     // Get current user profile for optimistic update
     const { data: profileData } = await supabase
       .from('profiles')
-      .select('display_name, handle, avatar_url')
+      .select('display_name, handle, avatar_url, is_verified, email')
       .eq('id', user.id)
       .single();
 
@@ -160,6 +166,8 @@ export function useComments(postId: string): UseCommentsResult {
         name: profileData?.display_name || profileData?.handle || 'You',
         handle: profileData?.handle || 'you',
         avatar: profileData?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`,
+        isVerified: profileData?.is_verified || false,
+        email: profileData?.email || undefined,
       },
       content: content.trim(),
       createdAt: 'now',
