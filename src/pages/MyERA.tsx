@@ -410,12 +410,12 @@ export default function MyERA() {
               
               {/* Payment info - bottom section split */}
               <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/5">
-                <div>
+                <div className="text-center">
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">Last Payment</p>
                   <p className="text-xs font-medium text-foreground">$0.00</p>
                   <p className="text-[10px] text-muted-foreground">Jan 1, 2025</p>
                 </div>
-                <div>
+                <div className="text-center">
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">Next Due</p>
                   <p className="text-xs font-medium text-foreground">$0.00</p>
                   <p className="text-[10px] text-muted-foreground">Feb 1, 2025</p>
