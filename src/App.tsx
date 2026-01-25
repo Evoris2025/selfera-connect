@@ -40,7 +40,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (loading) {
     return (
       <div className="min-h-dvh bg-background flex items-center justify-center">
-        <div className="flex items-center">
+        <div className="flex items-center animate-fade-in">
           <img src={logo} alt="SelfERA" className="h-36 object-contain animate-pulse" />
         </div>
       </div>
@@ -61,7 +61,7 @@ function HomeRoute() {
   if (loading) {
     return (
       <div className="min-h-dvh bg-background flex items-center justify-center">
-        <div className="flex items-center">
+        <div className="flex items-center animate-fade-in">
           <img src={logo} alt="SelfERA" className="h-36 object-contain animate-pulse" />
         </div>
       </div>
