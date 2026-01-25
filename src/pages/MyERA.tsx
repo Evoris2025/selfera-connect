@@ -140,9 +140,6 @@ export default function MyERA() {
   const [showVerificationFlow, setShowVerificationFlow] = useState(false);
   const [showDirectoryPicker, setShowDirectoryPicker] = useState(false);
   const [selectedIntents, setSelectedIntents] = useState<string[]>([]);
-  const [showNetworkDisclaimer, setShowNetworkDisclaimer] = useState(() => 
-    !localStorage.getItem('hideNetworkDisclaimer')
-  );
   const [communitiesCount, setCommunitiesCount] = useState<number>(0);
   const [communitiesLoading, setCommunitiesLoading] = useState(true);
   const [messagingProviderId, setMessagingProviderId] = useState<string | null>(null);
@@ -800,65 +797,30 @@ export default function MyERA() {
                 Add
               </Button>
             </div>
-            <AnimatePresence>
-              {showNetworkDisclaimer && (
-                <motion.div 
-                  className="flex items-start gap-2 mt-2"
-                  initial={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                  transition={{ duration: 0.2, ease: 'easeOut' }}
-                >
-                  <p className="text-[11px] text-muted-foreground/60 leading-relaxed flex-1">
-                    SelfERA is a wellbeing platform, not a clinical service. For emergencies, please contact local crisis services. By using SelfERA, you agree to our community guidelines.
-                  </p>
-                  <button
-                    onClick={() => {
-                      localStorage.setItem('hideNetworkDisclaimer', 'true');
-                      setShowNetworkDisclaimer(false);
-                    }}
-                    className="text-muted-foreground/40 hover:text-muted-foreground transition-colors p-0.5 -mt-0.5"
-                    aria-label="Dismiss disclaimer"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
           </div>
 
-          {/* Network Tabs - Refined */}
-          <div className="flex items-center gap-1 p-1 rounded-xl bg-card/30 border border-white/[0.06] mb-4">
-            <button
-              className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${
-                activeNetworkTab === 'discover'
-                  ? 'bg-card/80 text-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-              onClick={() => setActiveNetworkTab('discover')}
-            >
-              Discover
-            </button>
-            <button
-              className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${
-                activeNetworkTab === 'mylist'
-                  ? 'bg-card/80 text-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-              onClick={() => setActiveNetworkTab('mylist')}
-            >
-              My List
-            </button>
-            <button
-              className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all relative ${
-                activeNetworkTab === 'interactions'
-                  ? 'bg-card/80 text-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-              onClick={() => setActiveNetworkTab('interactions')}
-            >
-              Interactions
-              <span className="absolute top-1.5 right-3 w-1.5 h-1.5 rounded-full bg-primary/50" />
-            </button>
+          {/* Network Tabs - Premium Social Style */}
+          <div className="flex items-center gap-0.5 p-1 rounded-2xl bg-card/40 backdrop-blur-sm border border-white/[0.08] mb-5">
+            {[
+              { id: 'discover', label: 'Discover' },
+              { id: 'mylist', label: 'My List' },
+              { id: 'interactions', label: 'Interactions', hasIndicator: true },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                className={`flex-1 py-2.5 px-3 rounded-xl text-sm font-medium transition-all relative ${
+                  activeNetworkTab === tab.id
+                    ? 'bg-primary text-primary-foreground shadow-md'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.04]'
+                }`}
+                onClick={() => setActiveNetworkTab(tab.id as 'discover' | 'mylist' | 'interactions')}
+              >
+                {tab.label}
+                {tab.hasIndicator && activeNetworkTab !== tab.id && (
+                  <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                )}
+              </button>
+            ))}
           </div>
 
           <AnimatePresence mode="wait">
