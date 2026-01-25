@@ -438,15 +438,15 @@ export default function MyERA() {
               </p>
               
               {/* Payment info - bottom section split */}
-              <div className="grid grid-cols-2 gap-0 pt-3 border-t border-white/[0.06]">
-                <div className="text-center py-1">
-                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide mb-1">Last Payment</p>
-                  <p className="text-xs font-semibold text-foreground">$0.00</p>
+              <div className="grid grid-cols-2 gap-0 pt-3 border-t border-white/[0.06] h-[72px]">
+                <div className="flex flex-col items-center py-1">
+                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Last Payment</p>
+                  <p className="text-base font-bold text-foreground my-auto">$0.00</p>
                   <p className="text-[11px] text-muted-foreground">Jan 1, 2025</p>
                 </div>
-                <div className="text-center py-1 border-l border-white/10">
-                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide mb-1">Next Due</p>
-                  <p className="text-xs font-semibold text-foreground">$0.00</p>
+                <div className="flex flex-col items-center py-1 border-l border-white/10">
+                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Next Due</p>
+                  <p className="text-base font-bold text-foreground my-auto">$0.00</p>
                   <p className="text-[11px] text-muted-foreground">Feb 1, 2025</p>
                 </div>
               </div>
