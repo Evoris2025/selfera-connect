@@ -41,7 +41,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
     return (
       <div className="min-h-dvh bg-background flex items-center justify-center">
         <div className="flex items-center">
-          <img src={logo} alt="SelfERA" className="h-12 object-contain animate-pulse" />
+          <img src={logo} alt="SelfERA" className="h-36 object-contain animate-pulse" />
         </div>
       </div>
     );
@@ -62,7 +62,7 @@ function HomeRoute() {
     return (
       <div className="min-h-dvh bg-background flex items-center justify-center">
         <div className="flex items-center">
-          <img src={logo} alt="SelfERA" className="h-12 object-contain animate-pulse" />
+          <img src={logo} alt="SelfERA" className="h-36 object-contain animate-pulse" />
         </div>
       </div>
     );
