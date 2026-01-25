@@ -357,7 +357,7 @@ export default function MyERA() {
                   <p className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
                     {communitiesLoading ? '—' : communitiesCount}
                   </p>
-                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Communities</p>
+                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Waitlist</p>
                 </button>
                 <div className="w-px h-8 bg-white/10" />
                 <button 
@@ -367,7 +367,7 @@ export default function MyERA() {
                   <p className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
                     {connectionsCount}
                   </p>
-                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Connections</p>
+                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide">My List</p>
                 </button>
                 <div className="w-px h-8 bg-white/10" />
                 <button 
@@ -382,42 +382,21 @@ export default function MyERA() {
                     <span className="absolute -top-1 right-1/4 w-2 h-2 rounded-full bg-rose-500" />
                   )}
                 </button>
+                <div className="w-px h-8 bg-white/10" />
+                <button 
+                  className="text-center flex-1 group relative"
+                  onClick={() => navigate('/notifications')}
+                >
+                  <p className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+                    <Bell className="w-5 h-5 mx-auto" />
+                  </p>
+                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Alerts</p>
+                </button>
               </div>
             </motion.div>
           </div>
         </motion.section>
 
-        {/* Quick Actions Grid */}
-        <motion.section
-          className="px-4 mt-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ ...springGentle, delay: 0.15 }}
-        >
-          <div className="grid grid-cols-4 gap-3">
-            {[
-              { icon: Bookmark, label: 'Saved', path: '/profile?tab=saved', color: 'from-blue-500 to-cyan-500' },
-              { icon: Users, label: 'Community', path: '/community', color: 'from-purple-500 to-pink-500' },
-              { icon: Compass, label: 'Directory', path: '/directory', color: 'from-orange-500 to-amber-500' },
-              { icon: Bell, label: 'Alerts', path: '/notifications', color: 'from-green-500 to-emerald-500' },
-            ].map((item, i) => (
-              <motion.button
-                key={item.label}
-                className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-card/30 border border-white/[0.06] hover:bg-card/60 hover:shadow-soft transition-all"
-                onClick={() => navigate(item.path)}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ ...springGentle, delay: 0.15 + i * 0.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center shadow-md`}>
-                  <item.icon className="w-4 h-4 text-white" />
-                </div>
-                <span className="text-xs text-muted-foreground font-medium tracking-wide">{item.label}</span>
-              </motion.button>
-            ))}
-          </div>
-        </motion.section>
 
         {/* Your Account Info Section */}
         <motion.section
@@ -801,7 +780,7 @@ export default function MyERA() {
           </AnimatePresence>
         </motion.section>
 
-        {/* MyERA Network */}
+        {/* Discover Section */}
         <motion.section
           className="mt-8 px-4"
           initial={{ opacity: 0, y: 20 }}
@@ -810,7 +789,7 @@ export default function MyERA() {
         >
           <div className="mb-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-foreground tracking-tight">MyERA Network</h2>
+              <h2 className="text-lg font-semibold text-foreground tracking-tight">Discover</h2>
               <Button 
                 variant="ghost" 
                 size="sm" 
@@ -847,7 +826,7 @@ export default function MyERA() {
             </AnimatePresence>
           </div>
 
-          {/* Network Tabs - Refined */}
+          {/* Discover Tabs - Refined */}
           <div className="flex items-center gap-1 p-1 rounded-xl bg-card/30 border border-white/[0.06] mb-4">
             <button
               className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${
@@ -857,7 +836,7 @@ export default function MyERA() {
               }`}
               onClick={() => setActiveNetworkTab('list')}
             >
-              My List
+              Directory
             </button>
             <button
               className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all relative ${
