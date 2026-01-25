@@ -382,12 +382,7 @@ export default function MyERA() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ ...springGentle, delay: 0.18 }}
             >
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-500 to-gray-600 flex items-center justify-center">
-                  <User className="w-5 h-5 text-white" />
-                </div>
-                <span className="text-xs text-muted-foreground uppercase tracking-wide">Plan Type</span>
-              </div>
+              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Plan Type</p>
               <p className={`text-sm font-medium ${isVerified ? 'text-foreground' : 'text-muted-foreground'}`}>
                 {isVerified 
                   ? (profile?.user_type === 'professional' 
@@ -399,19 +394,14 @@ export default function MyERA() {
               </p>
             </motion.div>
 
-            {/* Amount / Billing Card */}
+            {/* Amount Card */}
             <motion.div
               className="rounded-2xl bg-card/50 border border-white/10 p-4"
               initial={{ opacity: 0, x: 10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ ...springGentle, delay: 0.19 }}
             >
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
-                  <CreditCard className="w-5 h-5 text-white" />
-                </div>
-                <span className="text-xs text-muted-foreground uppercase tracking-wide">Plan</span>
-              </div>
+              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Amount</p>
               
               {/* Mock billing data - replace with real data when available */}
               <div className="space-y-1.5">
@@ -771,75 +761,6 @@ export default function MyERA() {
                 </motion.div>
               )}
             </AnimatePresence>
-
-            {/* Account Type & Billing Cards - Under Journey */}
-            <div className="grid grid-cols-2 gap-3 mt-4">
-              {/* Account Type Card */}
-              <motion.div
-                className="relative overflow-hidden rounded-2xl bg-card/50 border border-white/5 p-4"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ ...springGentle, delay: 0.25 }}
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center">
-                    <User className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Account</p>
-                    <p className="text-sm font-semibold text-foreground capitalize">
-                      {profile?.user_type || 'Individual'}
-                    </p>
-                  </div>
-                </div>
-                <AccountTypeBadge type={(profile?.user_type as AccountType) || 'individual'} />
-              </motion.div>
-
-              {/* Billing Card */}
-              <motion.div
-                className="relative overflow-hidden rounded-2xl bg-card/50 border border-white/5 p-4"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ ...springGentle, delay: 0.3 }}
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
-                    <CreditCard className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Plan</p>
-                    <p className="text-sm font-semibold text-foreground capitalize">
-                      {currentPlan}
-                    </p>
-                  </div>
-                </div>
-                
-                {currentPlan === 'free' ? (
-                  <p className="text-xs text-muted-foreground">No charges</p>
-                ) : (
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-muted-foreground">Amount due</span>
-                      <span className="font-medium text-foreground">
-                        ${billingPeriod === 'yearly' ? planDetails?.yearlyPrice : monthlyPrice}/{billingPeriod === 'yearly' ? 'yr' : 'mo'}
-                      </span>
-                    </div>
-                    {periodStart && (
-                      <div className="flex items-center gap-1 text-[10px] text-muted-foreground/70">
-                        <Calendar className="w-3 h-3" />
-                        <span>Last: {format(new Date(periodStart), 'MMM d')}</span>
-                      </div>
-                    )}
-                    {periodEnd && (
-                      <div className="flex items-center gap-1 text-[10px] text-muted-foreground/70">
-                        <Calendar className="w-3 h-3" />
-                        <span>Next: {format(new Date(periodEnd), 'MMM d')}</span>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </motion.div>
-            </div>
           </div>
         </motion.section>
 
