@@ -439,10 +439,12 @@ export type Database = {
       interactions: {
         Row: {
           amount_due: number
+          cancelled_by: string | null
           client_base_price: number
           client_user_id: string
           created_at: string
           id: string
+          metadata: Json | null
           notes: string | null
           provider_tier_price: number
           provider_user_id: string
@@ -451,10 +453,12 @@ export type Database = {
         }
         Insert: {
           amount_due?: number
+          cancelled_by?: string | null
           client_base_price?: number
           client_user_id: string
           created_at?: string
           id?: string
+          metadata?: Json | null
           notes?: string | null
           provider_tier_price?: number
           provider_user_id: string
@@ -463,10 +467,12 @@ export type Database = {
         }
         Update: {
           amount_due?: number
+          cancelled_by?: string | null
           client_base_price?: number
           client_user_id?: string
           created_at?: string
           id?: string
+          metadata?: Json | null
           notes?: string | null
           provider_tier_price?: number
           provider_user_id?: string
@@ -1385,6 +1391,8 @@ export type Database = {
         | "confirmed"
         | "completed"
         | "cancelled"
+        | "accepted"
+        | "declined"
       moderation_status: "published" | "limited" | "removed"
       pathway_status: "available" | "in_progress" | "completed"
       plan_type: "free" | "client" | "provider"
@@ -1534,6 +1542,8 @@ export const Constants = {
         "confirmed",
         "completed",
         "cancelled",
+        "accepted",
+        "declined",
       ],
       moderation_status: ["published", "limited", "removed"],
       pathway_status: ["available", "in_progress", "completed"],

@@ -36,7 +36,8 @@ import { useVerification } from '@/hooks/useVerification';
 import { useSubscription, PLAN_DETAILS } from '@/hooks/useSubscription';
 import { useNewConversation } from '@/hooks/useNewConversation';
 import { useUserRole } from '@/hooks/useUserRole';
-import { useInteractions } from '@/hooks/useInteractions';
+import { useInteractionLifecycle } from '@/hooks/useInteractionLifecycle';
+import { InteractionList } from '@/components/interactions';
 import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -146,7 +147,17 @@ export default function MyERA() {
   const { subscription, currentPlan, loading: subscriptionLoading } = useSubscription();
   const { startConversation } = useNewConversation();
   const { role, isVerified: userIsVerified, isProvider, tierColour: userTierColour, planType: userPlanType, loading: roleLoading } = useUserRole();
-  const { fetchMyInteractions, loading: interactionsLoading } = useInteractions();
+  const { 
+    myInteractions, 
+    fetchInteractions, 
+    acceptInteraction,
+    declineInteraction,
+    confirmInteraction,
+    completeInteraction,
+    cancelInteraction,
+    getGroupedInteractions,
+    loading: interactionsLoading 
+  } = useInteractionLifecycle();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [activeNetworkTab, setActiveNetworkTab] = useState<'discover' | 'mylist' | 'interactions'>('discover');
   const [showIntentSelection, setShowIntentSelection] = useState(false);
@@ -254,10 +265,19 @@ export default function MyERA() {
   const tierColour: EraTier | null = subscriptionData?.tier_colour || null;
   const amountDue: number = subscriptionData?.amount_due || 0;
 
-  // Role-specific data
-  const pendingInteractionsCount = 0; // Mock for now
-  const confirmedInteractionsCount = 0; // Mock for now
+  // Role-specific interaction data - derived from real interactions
+  const userInteractionRole = isProvider ? 'provider' : 'client';
+  const groupedInteractions = getGroupedInteractions(userInteractionRole as 'client' | 'provider');
+  const pendingInteractionsCount = groupedInteractions.pending.length;
+  const confirmedInteractionsCount = groupedInteractions.active.length;
   const subscriberCount = subscriptionData?.subscriber_count || 0;
+
+  // Fetch interactions on mount
+  useEffect(() => {
+    if (user) {
+      fetchInteractions();
+    }
+  }, [user, fetchInteractions]);
 
   // Default cover for visual appeal
   const coverImage = profile?.cover_url || 'https://images.unsplash.com/photo-1557683316-973673baf926?w=800&h=400&fit=crop';
@@ -984,19 +1004,25 @@ export default function MyERA() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -10 }}
                 transition={{ duration: 0.2 }}
-                className="relative overflow-hidden rounded-2xl bg-card/30 border border-white/5 p-6"
               >
-                <div className="text-center">
-                  <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-muted/30 flex items-center justify-center">
-                    <MessageCircle className="w-6 h-6 text-muted-foreground" />
+                {interactionsLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
                   </div>
-                  <h3 className="text-sm font-medium text-foreground mb-1">
-                    Recent interactions
-                  </h3>
-                  <p className="text-xs text-muted-foreground max-w-[200px] mx-auto">
-                    Your conversations and connection requests will appear here.
-                  </p>
-                </div>
+                ) : (
+                  <InteractionList
+                    pending={groupedInteractions.pending}
+                    active={groupedInteractions.active}
+                    completed={groupedInteractions.completed}
+                    cancelled={groupedInteractions.cancelled}
+                    userRole={userInteractionRole as 'client' | 'provider'}
+                    onAccept={isProvider ? acceptInteraction : undefined}
+                    onDecline={isProvider ? declineInteraction : undefined}
+                    onConfirm={!isProvider ? confirmInteraction : undefined}
+                    onComplete={completeInteraction}
+                    onCancel={cancelInteraction}
+                  />
+                )}
               </motion.div>
             )}
           </AnimatePresence>
