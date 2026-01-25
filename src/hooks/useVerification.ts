@@ -102,7 +102,25 @@ export function useVerification() {
         (payload) => {
           // Update the local state when the verification request changes
           const newData = payload.new as any;
+          const oldData = payload.old as any;
+          
           if (newData) {
+            // Show toast notification when status changes
+            if (oldData?.status !== newData.status) {
+              if (newData.status === 'approved') {
+                toast({
+                  title: '🎉 Verification Approved!',
+                  description: 'Congratulations! Your ERA verification has been approved.',
+                });
+              } else if (newData.status === 'rejected') {
+                toast({
+                  title: 'Verification Update',
+                  description: 'Your verification request was not approved. Check your request for details.',
+                  variant: 'destructive',
+                });
+              }
+            }
+            
             setMyRequest({
               id: newData.id,
               user_id: newData.user_id,
