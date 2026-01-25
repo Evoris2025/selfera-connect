@@ -1,5 +1,4 @@
 import { forwardRef } from 'react';
-import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export type VerificationTier = 'pink' | 'green' | 'blue' | 'purple' | 'orange';
@@ -19,18 +18,13 @@ const sizeClasses = {
   md: 'h-5 w-5',
 };
 
-const tickSizeClasses = {
-  sm: 'h-2.5 w-2.5',
-  md: 'h-3 w-3',
-};
-
-// Tier colors - fully colored circular badge with white tick
-const tierClasses: Record<VerificationTier, string> = {
-  orange: 'bg-orange-500', // 5M+ subscribers
-  purple: 'bg-purple-500', // 1M+ subscribers
-  blue: 'bg-blue-500',     // 250K+ subscribers
-  green: 'bg-emerald-500', // Verified creator/pro/org with <250K subscribers
-  pink: 'bg-pink-500',     // Paid client / general paid user
+// Tier colors - fill colors for the shield
+const tierColors: Record<VerificationTier, string> = {
+  orange: '#f97316', // 5M+ subscribers
+  purple: '#a855f7', // 1M+ subscribers
+  blue: '#3b82f6',   // 250K+ subscribers
+  green: '#10b981',  // Verified creator/pro/org with <250K subscribers
+  pink: '#ec4899',   // Paid client / general paid user
 };
 
 /**
@@ -57,19 +51,31 @@ export const EraVerifiedTick = forwardRef<HTMLDivElement, EraVerifiedTickProps>(
   ({ className, size = 'md', tier, subscriberCount = 0, isClient = false }, ref) => {
     // Calculate tier if not explicitly provided
     const computedTier = tier || calculateVerificationTier(subscriberCount, isClient);
+    const fillColor = tierColors[computedTier];
     
     return (
       <div
         ref={ref}
-        className={cn(
-          'inline-flex items-center justify-center rounded-full',
-          sizeClasses[size],
-          tierClasses[computedTier],
-          className
-        )}
+        className={cn('inline-flex items-center justify-center', sizeClasses[size], className)}
         title={`ERA Verified${computedTier !== 'pink' ? ` (${computedTier})` : ''}`}
       >
-        <Check className={cn('text-white stroke-[3]', tickSizeClasses[size])} />
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-full h-full"
+        >
+          {/* Shield shape */}
+          <path
+            d="M12 2L4 5.5V11C4 16.25 7.4 21.15 12 22.5C16.6 21.15 20 16.25 20 11V5.5L12 2Z"
+            fill={fillColor}
+          />
+          {/* White checkmark */}
+          <path
+            d="M10.5 14.5L8 12L9.41 10.59L10.5 11.67L14.59 7.59L16 9L10.5 14.5Z"
+            fill="white"
+          />
+        </svg>
       </div>
     );
   }
