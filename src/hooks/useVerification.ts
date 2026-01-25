@@ -85,7 +85,44 @@ export function useVerification() {
 
   useEffect(() => {
     fetchMyRequest();
-  }, [fetchMyRequest]);
+
+    // Subscribe to real-time updates for this user's verification request
+    if (!user?.id) return;
+
+    const channel = supabase
+      .channel('verification-status')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'verification_requests',
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          // Update the local state when the verification request changes
+          const newData = payload.new as any;
+          if (newData) {
+            setMyRequest({
+              id: newData.id,
+              user_id: newData.user_id,
+              status: newData.status as VerificationStatus,
+              account_type_requested: newData.account_type_requested || 'professional',
+              submitted_fields: newData.submitted_fields,
+              admin_notes: newData.admin_notes,
+              reviewed_by: newData.reviewed_by || undefined,
+              reviewed_at: newData.reviewed_at || undefined,
+              created_at: newData.created_at || '',
+            });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchMyRequest, user?.id]);
 
   // Submit a new verification request
   const submitRequest = useCallback(async (data: SubmitVerificationData) => {

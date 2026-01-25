@@ -54,51 +54,57 @@ export function useSupportLinks() {
       // Fetch support links where user is the client
       const { data: clientLinks, error: clientError } = await supabase
         .from('user_support_links')
-        .select(`
-          *,
-          provider:profiles!user_support_links_provider_user_id_fkey (
-            id,
-            display_name,
-            handle,
-            avatar_url,
-            is_verified
-          )
-        `)
+        .select('*')
         .eq('user_id', user.id)
         .in('status', ['pending', 'active']);
 
       if (clientError) throw clientError;
 
+      // Fetch provider profiles separately
+      const providerIds = (clientLinks || []).map(link => link.provider_user_id);
+      let providerProfiles: Record<string, any> = {};
+      
+      if (providerIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, display_name, handle, avatar_url, is_verified')
+          .in('id', providerIds);
+        
+        providerProfiles = (profiles || []).reduce((acc, p) => ({ ...acc, [p.id]: p }), {});
+      }
+
       // Fetch support links where user is the provider
       const { data: providerLinks, error: providerError } = await supabase
         .from('user_support_links')
-        .select(`
-          id,
-          user_id,
-          status,
-          created_at,
-          client:profiles!user_support_links_user_id_fkey (
-            id,
-            display_name,
-            handle,
-            avatar_url
-          )
-        `)
+        .select('id, user_id, status, created_at')
         .eq('provider_user_id', user.id)
         .in('status', ['pending', 'active']);
 
       if (providerError) throw providerError;
 
+      // Fetch client profiles separately
+      const clientIds = (providerLinks || []).map(link => link.user_id);
+      let clientProfiles: Record<string, any> = {};
+      
+      if (clientIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, display_name, handle, avatar_url')
+          .in('id', clientIds);
+        
+        clientProfiles = (profiles || []).reduce((acc, p) => ({ ...acc, [p.id]: p }), {});
+      }
+
       const typedLinks = (clientLinks || []).map(link => ({
         ...link,
         status: link.status as SupportLinkStatus,
-        provider: Array.isArray(link.provider) ? link.provider[0] : link.provider,
+        provider: providerProfiles[link.provider_user_id] || null,
       }));
 
       const typedClients = (providerLinks || []).map(link => ({
         ...link,
         status: link.status as SupportLinkStatus,
-        client: Array.isArray(link.client) ? link.client[0] : link.client,
+        client: clientProfiles[link.user_id] || null,
       }));
 
       setSupportLinks(typedLinks);
