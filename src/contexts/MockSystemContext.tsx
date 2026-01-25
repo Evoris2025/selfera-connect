@@ -55,6 +55,8 @@ export interface MockConversation {
     handle: string;
     avatarUrl?: string;
     isOnline?: boolean;
+    isVerified?: boolean;
+    email?: string;
   };
   messages: MockMessage[];
   lastMessage: string;
@@ -307,6 +309,7 @@ const createInitialConversations = (): MockConversation[] => [
       name: 'Mind Matters',
       handle: 'mindmatters',
       isOnline: true,
+      isVerified: true,
     },
     messages: [
       { id: 'msg-1-1', conversationId: 'conv-1', content: 'Hey! I saw your post about managing anxiety. Really helpful!', senderId: 'other', timestamp: '10:30 AM', read: true, type: 'text', createdAt: new Date() },
@@ -326,6 +329,7 @@ const createInitialConversations = (): MockConversation[] => [
       name: 'Dr. Sarah',
       handle: 'drsarah',
       isOnline: true,
+      isVerified: true,
     },
     messages: [
       { id: 'msg-2-1', conversationId: 'conv-2', content: 'Looking forward to our session tomorrow!', senderId: 'other', timestamp: '1h', read: true, type: 'text', createdAt: new Date() },
@@ -342,6 +346,7 @@ const createInitialConversations = (): MockConversation[] => [
       name: 'Jamie',
       handle: 'jamie_journey',
       isOnline: false,
+      isVerified: false,
     },
     messages: [
       { id: 'msg-3-1', conversationId: 'conv-3', content: 'Are you coming to the community meetup?', senderId: 'other', timestamp: '3h', read: true, type: 'text', createdAt: new Date() },
