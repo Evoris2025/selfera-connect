@@ -743,17 +743,22 @@ export default function MyERA() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...springGentle, delay: 0.35 }}
         >
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-foreground tracking-tight">MyERA Network</h2>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-primary h-8 px-3"
-              onClick={() => navigate('/directory')}
-            >
-              <Plus className="w-4 h-4 mr-1" />
-              Add
-            </Button>
+          <div className="mb-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-foreground tracking-tight">MyERA Network</h2>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-primary h-8 px-3"
+                onClick={() => navigate('/directory')}
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Add
+              </Button>
+            </div>
+            <p className="text-[11px] text-muted-foreground/60 leading-relaxed mt-1 max-w-xs">
+              SelfERA is a wellbeing platform, not a clinical service. For emergencies, please contact local crisis services.
+            </p>
           </div>
 
           {/* Network Tabs - Refined */}
@@ -901,7 +906,6 @@ export default function MyERA() {
           transition={{ delay: 0.4 }}
         >
           <p className="text-[11px] text-muted-foreground/50 leading-relaxed max-w-sm mx-auto tracking-wide">
-            SelfERA is a wellbeing platform, not a clinical service. For emergencies, please contact local crisis services. 
             By using SelfERA, you agree to our community guidelines.
           </p>
         </motion.footer>
