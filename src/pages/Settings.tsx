@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Palette, Globe, Eye, Bell, Lock, User, HelpCircle, BadgeCheck, Shield, ShieldOff, VolumeX, UserPlus, CreditCard, Timer } from 'lucide-react';
+import { Palette, Globe, Eye, Bell, Lock, User, HelpCircle, BadgeCheck, Shield, ShieldOff, VolumeX, UserPlus, CreditCard } from 'lucide-react';
 import { AppLayout } from '@/components/AppLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Slider } from '@/components/ui/slider';
 import { languages, changeLanguage, getCurrentLanguage, type LanguageCode } from '@/i18n';
 import { ThemeSelector } from '@/components/settings/ThemeSelector';
 import { PreviewZoomControl } from '@/components/settings/PreviewZoomControl';
@@ -45,17 +44,6 @@ export default function Settings() {
   const [view, setView] = useState<SettingsView>(initialView);
   const [isAdmin, setIsAdmin] = useState(false);
   const [followRequestsOpen, setFollowRequestsOpen] = useState(false);
-  const [collapseDelay, setCollapseDelay] = useState(() => {
-    const saved = localStorage.getItem('sidebar-collapse-delay');
-    return saved ? parseInt(saved, 10) : 300;
-  });
-
-  const handleCollapseDelayChange = (value: number[]) => {
-    const newDelay = value[0];
-    setCollapseDelay(newDelay);
-    localStorage.setItem('sidebar-collapse-delay', String(newDelay));
-    window.dispatchEvent(new CustomEvent('sidebar-delay-change'));
-  };
 
   // Sync view state with URL
   useEffect(() => {
@@ -235,38 +223,6 @@ export default function Settings() {
                 <Switch id="reduce-motion" />
               </div>
             </CardHeader>
-          </Card>
-
-          {/* Sidebar Collapse Delay */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Timer className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <CardTitle className="text-base">Sidebar Collapse Delay</CardTitle>
-                  <CardDescription>How long before sidebar collapses after mouse leaves</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <Slider
-                  value={[collapseDelay]}
-                  onValueChange={handleCollapseDelayChange}
-                  min={0}
-                  max={1000}
-                  step={50}
-                  className="w-full"
-                />
-                <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>Instant</span>
-                  <span className="font-medium text-foreground">{collapseDelay}ms</span>
-                  <span>1 second</span>
-                </div>
-              </div>
-            </CardContent>
           </Card>
 
           {/* Private Account */}
