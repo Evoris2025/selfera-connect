@@ -11,7 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
-import { VerifiedBadge } from '@/components/VerifiedBadge';
+import { EraVerifiedTick } from '@/components/EraVerifiedTick';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSupportLinks } from '@/hooks/useSupportLinks';
@@ -155,7 +155,7 @@ export function ProviderDetailModal({ entry, open, onOpenChange }: ProviderDetai
                 <DialogTitle className="text-xl font-semibold truncate">
                   {entry.name}
                 </DialogTitle>
-                {entry.verified && <VerifiedBadge size="sm" />}
+                {entry.verified && <EraVerifiedTick size="sm" userEmail={entry.profile?.email || undefined} />}
               </div>
               {entry.profile?.handle && (
                 <p className="text-sm text-muted-foreground">
