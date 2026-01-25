@@ -436,6 +436,45 @@ export type Database = {
           },
         ]
       }
+      interactions: {
+        Row: {
+          amount_due: number
+          client_base_price: number
+          client_user_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          provider_tier_price: number
+          provider_user_id: string
+          status: Database["public"]["Enums"]["interaction_status"]
+          updated_at: string
+        }
+        Insert: {
+          amount_due?: number
+          client_base_price?: number
+          client_user_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          provider_tier_price?: number
+          provider_user_id: string
+          status?: Database["public"]["Enums"]["interaction_status"]
+          updated_at?: string
+        }
+        Update: {
+          amount_due?: number
+          client_base_price?: number
+          client_user_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          provider_tier_price?: number
+          provider_user_id?: string
+          status?: Database["public"]["Enums"]["interaction_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       message_reactions: {
         Row: {
           created_at: string
@@ -1184,41 +1223,53 @@ export type Database = {
       }
       user_subscriptions: {
         Row: {
+          amount_due: number | null
           billing_period: Database["public"]["Enums"]["billing_period"] | null
           created_at: string
           current_period_end: string | null
           current_period_start: string | null
           id: string
           plan: Database["public"]["Enums"]["subscription_plan"]
+          plan_type: Database["public"]["Enums"]["plan_type"] | null
           status: Database["public"]["Enums"]["subscription_status"]
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
+          subscriber_count: number | null
+          tier_colour: Database["public"]["Enums"]["era_tier"] | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          amount_due?: number | null
           billing_period?: Database["public"]["Enums"]["billing_period"] | null
           created_at?: string
           current_period_end?: string | null
           current_period_start?: string | null
           id?: string
           plan?: Database["public"]["Enums"]["subscription_plan"]
+          plan_type?: Database["public"]["Enums"]["plan_type"] | null
           status?: Database["public"]["Enums"]["subscription_status"]
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
+          subscriber_count?: number | null
+          tier_colour?: Database["public"]["Enums"]["era_tier"] | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          amount_due?: number | null
           billing_period?: Database["public"]["Enums"]["billing_period"] | null
           created_at?: string
           current_period_end?: string | null
           current_period_start?: string | null
           id?: string
           plan?: Database["public"]["Enums"]["subscription_plan"]
+          plan_type?: Database["public"]["Enums"]["plan_type"] | null
           status?: Database["public"]["Enums"]["subscription_status"]
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
+          subscriber_count?: number | null
+          tier_colour?: Database["public"]["Enums"]["era_tier"] | null
           updated_at?: string
           user_id?: string
         }
@@ -1326,9 +1377,17 @@ export type Database = {
       billing_period: "monthly" | "yearly"
       content_warning_type: "sensitive" | "triggering" | "graphic" | "other"
       emotional_tone: "support" | "steady" | "inspiration" | "progress"
+      era_tier: "pink" | "green" | "blue" | "purple" | "orange"
       follow_status: "requested" | "approved"
+      interaction_status:
+        | "draft"
+        | "requested"
+        | "confirmed"
+        | "completed"
+        | "cancelled"
       moderation_status: "published" | "limited" | "removed"
       pathway_status: "available" | "in_progress" | "completed"
+      plan_type: "free" | "client" | "provider"
       reaction_type: "heart" | "hug"
       report_status: "new" | "reviewing" | "actioned" | "dismissed"
       subscription_plan: "free" | "creator" | "professional" | "organization"
@@ -1467,9 +1526,18 @@ export const Constants = {
       billing_period: ["monthly", "yearly"],
       content_warning_type: ["sensitive", "triggering", "graphic", "other"],
       emotional_tone: ["support", "steady", "inspiration", "progress"],
+      era_tier: ["pink", "green", "blue", "purple", "orange"],
       follow_status: ["requested", "approved"],
+      interaction_status: [
+        "draft",
+        "requested",
+        "confirmed",
+        "completed",
+        "cancelled",
+      ],
       moderation_status: ["published", "limited", "removed"],
       pathway_status: ["available", "in_progress", "completed"],
+      plan_type: ["free", "client", "provider"],
       reaction_type: ["heart", "hug"],
       report_status: ["new", "reviewing", "actioned", "dismissed"],
       subscription_plan: ["free", "creator", "professional", "organization"],

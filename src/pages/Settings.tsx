@@ -14,7 +14,7 @@ import { VerificationRequestForm } from '@/components/settings/VerificationReque
 import { BlockedUsersList } from '@/components/settings/BlockedUsersList';
 import { MutedUsersList } from '@/components/settings/MutedUsersList';
 import { FollowRequestsModal } from '@/components/settings/FollowRequestsModal';
-import { PricingSection } from '@/components/pricing';
+import { BillingSettingsView } from '@/components/billing';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSafety } from '@/contexts/SafetyContext';
 import { useFollowRequests } from '@/hooks/useFollowRequests';
@@ -141,11 +141,12 @@ export default function Settings() {
   if (view === 'billing') {
     return (
       <AppLayout>
-        <div className="max-w-5xl mx-auto p-4">
+        <div className="max-w-2xl mx-auto p-4">
           <Button variant="ghost" onClick={() => handleViewChange('main')} className="gap-2 -ml-2 mb-4">
             ← Back to Settings
           </Button>
-          <PricingSection showTransparency={true} />
+          <h1 className="text-2xl font-bold text-foreground mb-6">Plan & Billing</h1>
+          <BillingSettingsView />
         </div>
       </AppLayout>
     );
