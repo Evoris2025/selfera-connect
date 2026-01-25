@@ -126,6 +126,33 @@ function getVerificationStepIndex(status: string | undefined): number {
   }
 }
 
+// Billing status types and helper
+type BillingStatus = 'current' | 'warning' | 'overdue';
+
+function getBillingStatus(
+  nextDueDate: string | null | undefined,
+  status: string | undefined
+): BillingStatus {
+  if (status === 'past_due') return 'overdue';
+  if (!nextDueDate) return 'current';
+  
+  const now = new Date();
+  const dueDate = new Date(nextDueDate);
+  const daysUntilDue = Math.ceil(
+    (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+  );
+  
+  if (daysUntilDue < 0) return 'overdue';
+  if (daysUntilDue <= 7) return 'warning';
+  return 'current';
+}
+
+const billingStatusColors = {
+  current: { amount: 'text-green-500', date: 'text-green-500/70' },
+  warning: { amount: 'text-amber-500', date: 'text-amber-500/70' },
+  overdue: { amount: 'text-red-500', date: 'text-red-500/70' },
+};
+
 export default function MyERA() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -234,6 +261,12 @@ export default function MyERA() {
   const billingPeriod = subscription?.billing_period;
   const periodStart = subscription?.current_period_start;
   const periodEnd = subscription?.current_period_end;
+  
+  // Billing status for color-coding (only for paid plans)
+  const billingStatus = currentPlan !== 'free' 
+    ? getBillingStatus(periodEnd, subscription?.status)
+    : null;
+  const billingColors = billingStatus ? billingStatusColors[billingStatus] : null;
 
   // Default cover for visual appeal
   const coverImage = profile?.cover_url || 'https://images.unsplash.com/photo-1557683316-973673baf926?w=800&h=400&fit=crop';
@@ -441,13 +474,21 @@ export default function MyERA() {
               <div className="grid grid-cols-2 gap-0 pt-3 border-t border-white/[0.06] h-[72px]">
                 <div className="flex flex-col items-center py-1">
                   <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Last Payment</p>
-                  <p className="text-base font-bold text-foreground my-auto">$14.99</p>
-                  <p className="text-[11px] text-muted-foreground">Dec 25, 2025</p>
+                  <p className="text-base font-bold text-foreground my-auto">
+                    {currentPlan === 'free' ? '—' : `$${monthlyPrice.toFixed(2)}`}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">
+                    {periodStart ? format(new Date(periodStart), 'MMM d, yyyy') : '—'}
+                  </p>
                 </div>
                 <div className="flex flex-col items-center py-1 border-l border-white/10">
                   <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Next Due</p>
-                  <p className="text-base font-bold text-foreground my-auto">$14.99</p>
-                  <p className="text-[11px] text-muted-foreground">Jan 25, 2026</p>
+                  <p className={`text-base font-bold my-auto ${billingColors?.amount || 'text-foreground'}`}>
+                    {currentPlan === 'free' ? '—' : `$${monthlyPrice.toFixed(2)}`}
+                  </p>
+                  <p className={`text-[11px] ${billingColors?.date || 'text-muted-foreground'}`}>
+                    {periodEnd ? format(new Date(periodEnd), 'MMM d, yyyy') : '—'}
+                  </p>
                 </div>
               </div>
             </motion.div>
