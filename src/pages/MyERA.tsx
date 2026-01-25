@@ -43,6 +43,8 @@ import { AccountTypeBadge, AccountType } from '@/components/AccountTypeBadge';
 import { AppLayout } from '@/components/AppLayout';
 import { VerificationFlow } from '@/components/verification';
 import { VerifiedDirectoryPicker } from '@/components/myera';
+import { EraAccountStatusCard } from '@/components/billing';
+import { EraTier, PlanType } from '@/lib/eraTiers';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import {
@@ -126,32 +128,6 @@ function getVerificationStepIndex(status: string | undefined): number {
   }
 }
 
-// Billing status types and helper
-type BillingStatus = 'current' | 'warning' | 'overdue';
-
-function getBillingStatus(
-  nextDueDate: string | null | undefined,
-  status: string | undefined
-): BillingStatus {
-  if (status === 'past_due') return 'overdue';
-  if (!nextDueDate) return 'current';
-  
-  const now = new Date();
-  const dueDate = new Date(nextDueDate);
-  const daysUntilDue = Math.ceil(
-    (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
-  );
-  
-  if (daysUntilDue < 0) return 'overdue';
-  if (daysUntilDue <= 7) return 'warning';
-  return 'current';
-}
-
-const billingStatusColors = {
-  current: { amount: 'text-green-500', date: 'text-green-500/70' },
-  warning: { amount: 'text-amber-500', date: 'text-amber-500/70' },
-  overdue: { amount: 'text-red-500', date: 'text-red-500/70' },
-};
 
 export default function MyERA() {
   const navigate = useNavigate();
@@ -262,11 +238,11 @@ export default function MyERA() {
   const periodStart = subscription?.current_period_start;
   const periodEnd = subscription?.current_period_end;
   
-  // Billing status for color-coding (only for paid plans)
-  const billingStatus = currentPlan !== 'free' 
-    ? getBillingStatus(periodEnd, subscription?.status)
-    : null;
-  const billingColors = billingStatus ? billingStatusColors[billingStatus] : null;
+  // Extract ERA tier data from subscription (with type safety)
+  const subscriptionData = subscription as any;
+  const planType: PlanType = subscriptionData?.plan_type || 'free';
+  const tierColour: EraTier | null = subscriptionData?.tier_colour || null;
+  const amountDue: number = subscriptionData?.amount_due || 0;
 
   // Default cover for visual appeal
   const coverImage = profile?.cover_url || 'https://images.unsplash.com/photo-1557683316-973673baf926?w=800&h=400&fit=crop';
@@ -441,57 +417,15 @@ export default function MyERA() {
           <h2 className="text-lg font-semibold text-foreground mb-4 tracking-tight">Your Account Info</h2>
           
           <div className="grid grid-cols-2 gap-4">
-            {/* Plan & Amount Card - Left */}
-            <motion.div
-              className="flex flex-col min-h-[180px] rounded-2xl bg-card/40 backdrop-blur-lg border border-white/[0.06] p-5"
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ ...springGentle, delay: 0.18 }}
-            >
-              {/* Account Type - Top */}
-              <div className="mb-4">
-                <p className="text-[11px] text-muted-foreground uppercase tracking-wide mb-1">Account Type</p>
-                <p className={`text-sm font-semibold ${isVerified ? 'text-foreground' : 'text-muted-foreground'}`}>
-                  {isVerified 
-                    ? (profile?.user_type === 'professional' 
-                        ? 'Professional' 
-                        : profile?.user_type === 'organization' 
-                          ? 'Organization' 
-                          : 'Individual')
-                    : 'Free, non-verified'}
-                </p>
-              </div>
-
-              {/* Amount Label */}
-              <p className="text-[11px] text-muted-foreground uppercase tracking-wide mb-1">Amount</p>
-              
-              {/* Main amount - centered */}
-              <p className="text-2xl font-bold text-foreground text-center mb-auto">
-                {currentPlan === 'free' ? '$0.00' : `$${monthlyPrice.toFixed(2)}`}
-              </p>
-              
-              {/* Payment info - bottom section split */}
-              <div className="grid grid-cols-2 gap-0 pt-3 border-t border-white/[0.06] h-[72px]">
-                <div className="flex flex-col items-center py-1">
-                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Last Payment</p>
-                  <p className="text-base font-bold text-foreground my-auto">
-                    {currentPlan === 'free' ? '—' : `$${monthlyPrice.toFixed(2)}`}
-                  </p>
-                  <p className="text-[11px] text-muted-foreground">
-                    {periodStart ? format(new Date(periodStart), 'MMM d, yyyy') : '—'}
-                  </p>
-                </div>
-                <div className="flex flex-col items-center py-1 border-l border-white/10">
-                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Next Due</p>
-                  <p className={`text-base font-bold my-auto ${billingColors?.amount || 'text-foreground'}`}>
-                    {currentPlan === 'free' ? '—' : `$${monthlyPrice.toFixed(2)}`}
-                  </p>
-                  <p className={`text-[11px] ${billingColors?.date || 'text-muted-foreground'}`}>
-                    {periodEnd ? format(new Date(periodEnd), 'MMM d, yyyy') : '—'}
-                  </p>
-                </div>
-              </div>
-            </motion.div>
+            {/* ERA Account Status Card - Left */}
+            <EraAccountStatusCard
+              planType={planType}
+              tierColour={tierColour}
+              status={subscription?.status || 'active'}
+              currentPeriodEnd={periodEnd || null}
+              amountDue={amountDue}
+              isVerified={!!isVerified}
+            />
 
             {/* Verification Card - Right */}
             <AnimatePresence mode="wait">
