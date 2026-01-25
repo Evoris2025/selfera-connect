@@ -23,7 +23,7 @@ import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { MobileNav } from '@/components/MobileNav';
+import { AppLayout } from '@/components/AppLayout';
 import { useMockSystem, type MockConversation, type MockMessage } from '@/contexts/MockSystemContext';
 import { useSafety } from '@/contexts/SafetyContext';
 import { useRealtimeMessages } from '@/hooks/useRealtimeMessages';
@@ -744,8 +744,9 @@ export default function Messages() {
 
   // Inbox View
   return (
-    <div className="flex flex-col h-[100dvh] bg-background">
-      {/* Header */}
+    <AppLayout showHeader={false}>
+      <div className="flex flex-col h-[100dvh] bg-background">
+        {/* Header */}
       <motion.div 
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -971,8 +972,6 @@ export default function Messages() {
           </AnimatePresence>
         )}
       </div>
-
-      <MobileNav />
       
       {/* New Conversation Modal */}
       <NewConversationModal
@@ -980,6 +979,7 @@ export default function Messages() {
         onClose={() => setShowNewConversation(false)}
         onStartConversation={handleStartNewConversation}
       />
-    </div>
+      </div>
+    </AppLayout>
   );
 }

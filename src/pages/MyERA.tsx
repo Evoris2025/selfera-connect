@@ -20,14 +20,13 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useUserPathways, PathwayType } from '@/hooks/useUserPathways';
 import { useSupportLinks } from '@/hooks/useSupportLinks';
 import { usePendingConnectionCount } from '@/hooks/usePendingConnectionCount';
-import { useNotifications } from '@/hooks/useNotifications';
 import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
 import { AccountTypeBadge, AccountType } from '@/components/AccountTypeBadge';
-import { MobileNav } from '@/components/MobileNav';
+import { AppLayout } from '@/components/AppLayout';
 import { CurrentPlanCard } from '@/components/pricing';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -68,7 +67,6 @@ export default function MyERA() {
   const { getPathwaysWithInfo, startPathway } = useUserPathways();
   const { activeProviders, pendingProviders } = useSupportLinks();
   const { count: pendingConnectionCount } = usePendingConnectionCount();
-  const { unreadCount: notificationCount } = useNotifications();
   const [profile, setProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
@@ -124,8 +122,9 @@ export default function MyERA() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24">
-      {/* Hero Section */}
+    <AppLayout showHeader={false}>
+      <div className="min-h-screen bg-background">
+        {/* Hero Section */}
       <motion.div 
         className="relative px-4 pt-6 pb-8"
         initial={{ opacity: 0, y: 20 }}
@@ -417,13 +416,8 @@ export default function MyERA() {
             </span>
           </div>
         </div>
-      </motion.footer>
-
-      {/* Bottom Navigation */}
-      <MobileNav 
-        notificationCount={notificationCount}
-        pendingConnectionCount={pendingConnectionCount}
-      />
-    </div>
+        </motion.footer>
+      </div>
+    </AppLayout>
   );
 }
