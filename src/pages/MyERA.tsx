@@ -132,6 +132,9 @@ export default function MyERA() {
   const [activeNetworkTab, setActiveNetworkTab] = useState<'list' | 'interactions'>('list');
   const [showIntentSelection, setShowIntentSelection] = useState(false);
   const [selectedIntents, setSelectedIntents] = useState<string[]>([]);
+  const [showNetworkDisclaimer, setShowNetworkDisclaimer] = useState(() => 
+    !localStorage.getItem('hideNetworkDisclaimer')
+  );
 
   // Toggle intent selection (multi-select)
   const handleIntentToggle = (intentId: string) => {
@@ -757,23 +760,30 @@ export default function MyERA() {
                 Add
               </Button>
             </div>
-            {!localStorage.getItem('hideNetworkDisclaimer') && (
-              <div className="flex items-start gap-2 mt-2">
-                <p className="text-[11px] text-muted-foreground/60 leading-relaxed flex-1">
-                  SelfERA is a wellbeing platform, not a clinical service. For emergencies, please contact local crisis services. By using SelfERA, you agree to our community guidelines.
-                </p>
-                <button
-                  onClick={() => {
-                    localStorage.setItem('hideNetworkDisclaimer', 'true');
-                    window.dispatchEvent(new Event('storage'));
-                  }}
-                  className="text-muted-foreground/40 hover:text-muted-foreground transition-colors p-0.5 -mt-0.5"
-                  aria-label="Dismiss disclaimer"
+            <AnimatePresence>
+              {showNetworkDisclaimer && (
+                <motion.div 
+                  className="flex items-start gap-2 mt-2"
+                  initial={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                  transition={{ duration: 0.2, ease: 'easeOut' }}
                 >
-                  <X className="w-3 h-3" />
-                </button>
-              </div>
-            )}
+                  <p className="text-[11px] text-muted-foreground/60 leading-relaxed flex-1">
+                    SelfERA is a wellbeing platform, not a clinical service. For emergencies, please contact local crisis services. By using SelfERA, you agree to our community guidelines.
+                  </p>
+                  <button
+                    onClick={() => {
+                      localStorage.setItem('hideNetworkDisclaimer', 'true');
+                      setShowNetworkDisclaimer(false);
+                    }}
+                    className="text-muted-foreground/40 hover:text-muted-foreground transition-colors p-0.5 -mt-0.5"
+                    aria-label="Dismiss disclaimer"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Network Tabs - Refined */}
