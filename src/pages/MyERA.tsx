@@ -404,7 +404,7 @@ export default function MyERA() {
               <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Amount</p>
               
               {/* Main amount - top section */}
-              <p className="text-xl font-bold text-foreground mb-3">
+              <p className="text-xl font-bold text-foreground mb-3 text-center">
                 {currentPlan === 'free' ? '$0.00' : `$${monthlyPrice.toFixed(2)}`}
               </p>
               
