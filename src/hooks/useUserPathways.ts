@@ -161,6 +161,32 @@ export function useUserPathways() {
     }
   }, [user, fetchPathways]);
 
+  // Complete a pathway
+  const completePathway = useCallback(async (pathwayId: string) => {
+    if (!user) return false;
+
+    try {
+      const { error } = await supabase
+        .from('user_pathways')
+        .update({
+          status: 'completed',
+          completed_at: new Date().toISOString(),
+        })
+        .eq('id', pathwayId)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      toast.success('Pathway completed! 🎉');
+      await fetchPathways();
+      return true;
+    } catch (error) {
+      console.error('Error completing pathway:', error);
+      toast.error('Failed to complete pathway');
+      return false;
+    }
+  }, [user, fetchPathways]);
+
   // Get pathway status
   const getPathwayStatus = useCallback((pathwayType: PathwayType): PathwayStatus => {
     const pathway = pathways.find(p => p.pathway_type === pathwayType);
@@ -176,12 +202,19 @@ export function useUserPathways() {
     }));
   }, [pathways, getPathwayStatus]);
 
+  // Derived counts
+  const inProgressCount = pathways.filter(p => p.status === 'in_progress').length;
+  const completedCount = pathways.filter(p => p.status === 'completed').length;
+
   return {
     pathways,
     loading,
     startPathway,
+    completePathway,
     getPathwayStatus,
     getPathwaysWithInfo,
+    inProgressCount,
+    completedCount,
     refresh: fetchPathways,
   };
 }
