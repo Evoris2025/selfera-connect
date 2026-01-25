@@ -335,7 +335,7 @@ export default function MyERA() {
 
         {/* Quick Actions Grid */}
         <motion.section
-          className="px-4 mt-6"
+          className="px-4 mt-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...springGentle, delay: 0.15 }}
@@ -349,17 +349,17 @@ export default function MyERA() {
             ].map((item, i) => (
               <motion.button
                 key={item.label}
-                className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-card/50 border border-white/5 hover:bg-card/80 transition-all"
+                className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-card/30 border border-white/[0.06] hover:bg-card/60 hover:shadow-soft transition-all"
                 onClick={() => navigate(item.path)}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ ...springGentle, delay: 0.15 + i * 0.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center`}>
-                  <item.icon className="w-5 h-5 text-white" />
+                <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center shadow-md`}>
+                  <item.icon className="w-4 h-4 text-white" />
                 </div>
-                <span className="text-xs text-muted-foreground font-medium">{item.label}</span>
+                <span className="text-xs text-muted-foreground font-medium tracking-wide">{item.label}</span>
               </motion.button>
             ))}
           </div>
@@ -367,58 +367,74 @@ export default function MyERA() {
 
         {/* Your Account Info Section */}
         <motion.section
-          className="px-4 mt-6"
+          className="px-4 mt-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...springGentle, delay: 0.17 }}
         >
-          <h2 className="text-lg font-semibold text-foreground mb-4">Your Account Info</h2>
+          <h2 className="text-lg font-semibold text-foreground mb-4 tracking-tight">Your Account Info</h2>
           
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-4">
             {/* Plan Type Card */}
             <motion.div
-              className="rounded-2xl bg-card/50 border border-white/10 p-4"
+              className="flex flex-col justify-between min-h-[140px] rounded-2xl bg-card/40 backdrop-blur-lg border border-white/[0.06] p-5"
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ ...springGentle, delay: 0.18 }}
             >
-              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Plan Type</p>
-              <p className={`text-sm font-medium ${isVerified ? 'text-foreground' : 'text-muted-foreground'}`}>
-                {isVerified 
-                  ? (profile?.user_type === 'professional' 
-                      ? 'Professional' 
-                      : profile?.user_type === 'organization' 
-                        ? 'Organization' 
-                        : 'Individual')
-                  : 'Free, non-verified'}
-              </p>
+              <div>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide mb-3">Plan Type</p>
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <User className="w-4 h-4 text-primary" />
+                  </div>
+                  <p className={`text-sm font-semibold ${isVerified ? 'text-foreground' : 'text-muted-foreground'}`}>
+                    {isVerified 
+                      ? (profile?.user_type === 'professional' 
+                          ? 'Professional' 
+                          : profile?.user_type === 'organization' 
+                            ? 'Organization' 
+                            : 'Individual')
+                      : 'Free, non-verified'}
+                  </p>
+                </div>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="w-fit h-7 text-xs mt-3 -ml-2 text-primary hover:text-primary"
+                onClick={() => navigate('/transparency')}
+              >
+                Upgrade Plan
+                <ChevronRight className="w-3 h-3 ml-1" />
+              </Button>
             </motion.div>
 
             {/* Amount Card */}
             <motion.div
-              className="rounded-2xl bg-card/50 border border-white/10 p-4"
+              className="flex flex-col min-h-[140px] rounded-2xl bg-card/40 backdrop-blur-lg border border-white/[0.06] p-5"
               initial={{ opacity: 0, x: 10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ ...springGentle, delay: 0.19 }}
             >
-              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Amount</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-3">Amount</p>
               
-              {/* Main amount - top section */}
-              <p className="text-xl font-bold text-foreground mb-3 text-center">
+              {/* Main amount - top section centered */}
+              <p className="text-2xl font-bold text-foreground text-center mb-auto">
                 {currentPlan === 'free' ? '$0.00' : `$${monthlyPrice.toFixed(2)}`}
               </p>
               
               {/* Payment info - bottom section split */}
-              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/5">
+              <div className="grid grid-cols-2 gap-2 pt-3 border-t border-white/[0.06]">
                 <div className="text-center">
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">Last Payment</p>
-                  <p className="text-xs font-medium text-foreground">$0.00</p>
-                  <p className="text-[10px] text-muted-foreground">Jan 1, 2025</p>
+                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide mb-0.5">Last Payment</p>
+                  <p className="text-xs font-semibold text-foreground">$0.00</p>
+                  <p className="text-[11px] text-muted-foreground">Jan 1, 2025</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-0.5">Next Due</p>
-                  <p className="text-xs font-medium text-foreground">$0.00</p>
-                  <p className="text-[10px] text-muted-foreground">Feb 1, 2025</p>
+                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide mb-0.5">Next Due</p>
+                  <p className="text-xs font-semibold text-foreground">$0.00</p>
+                  <p className="text-[11px] text-muted-foreground">Feb 1, 2025</p>
                 </div>
               </div>
             </motion.div>
@@ -433,7 +449,7 @@ export default function MyERA() {
           transition={{ ...springGentle, delay: 0.2 }}
         >
           <div className="flex items-center justify-between px-4 mb-4">
-            <h2 className="text-lg font-semibold text-foreground">Your Journey</h2>
+            <h2 className="text-lg font-semibold text-foreground tracking-tight">Your Journey</h2>
           </div>
 
           <div className="px-4 space-y-4">
@@ -780,7 +796,7 @@ export default function MyERA() {
           transition={{ ...springGentle, delay: 0.35 }}
         >
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-foreground">MyERA Network</h2>
+            <h2 className="text-lg font-semibold text-foreground tracking-tight">MyERA Network</h2>
             <Button 
               variant="ghost" 
               size="sm" 
@@ -792,12 +808,12 @@ export default function MyERA() {
             </Button>
           </div>
 
-          {/* Network Tabs */}
-          <div className="flex items-center gap-1 p-1 rounded-xl bg-muted/30 mb-4">
+          {/* Network Tabs - Refined */}
+          <div className="flex items-center gap-1 p-1 rounded-xl bg-card/30 border border-white/[0.06] mb-4">
             <button
               className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${
                 activeNetworkTab === 'list'
-                  ? 'bg-card text-foreground shadow-sm'
+                  ? 'bg-card/80 text-foreground shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
               onClick={() => setActiveNetworkTab('list')}
@@ -807,7 +823,7 @@ export default function MyERA() {
             <button
               className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all relative ${
                 activeNetworkTab === 'interactions'
-                  ? 'bg-card text-foreground shadow-sm'
+                  ? 'bg-card/80 text-foreground shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
               onClick={() => setActiveNetworkTab('interactions')}
@@ -931,12 +947,12 @@ export default function MyERA() {
 
         {/* Footer - Softened */}
         <motion.footer
-          className="px-6 py-8 mt-6 text-center"
+          className="px-6 py-8 mt-8 text-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
         >
-          <p className="text-[10px] text-muted-foreground/50 leading-relaxed max-w-sm mx-auto">
+          <p className="text-[11px] text-muted-foreground/50 leading-relaxed max-w-sm mx-auto tracking-wide">
             SelfERA is a wellbeing platform, not a clinical service. For emergencies, please contact local crisis services. 
             By using SelfERA, you agree to our community guidelines.
           </p>
