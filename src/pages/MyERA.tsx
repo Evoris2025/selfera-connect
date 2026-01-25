@@ -345,49 +345,46 @@ export default function MyERA() {
                 </Button>
               </div>
 
-              {/* Stats Row */}
-              <div className="flex items-center justify-around mt-5 pt-4 border-t border-white/10">
+              {/* Stats Row - Evenly Spaced Grid */}
+              <div className="grid grid-cols-4 gap-0 mt-5 pt-4 border-t border-white/10">
                 <button 
-                  className="text-center flex-1 group"
+                  className="text-center group py-2"
                   onClick={() => navigate('/community')}
                 >
-                  <p className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+                  <p className="text-xl font-bold text-foreground group-hover:text-primary transition-colors mb-1.5">
                     {communitiesLoading ? '—' : communitiesCount}
                   </p>
-                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Waitlist</p>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Waitlist</p>
                 </button>
-                <div className="w-px h-8 bg-white/10" />
                 <button 
-                  className="text-center flex-1 group"
+                  className="text-center group py-2 border-l border-white/10"
                   onClick={() => navigate('/directory')}
                 >
-                  <p className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+                  <p className="text-xl font-bold text-foreground group-hover:text-primary transition-colors mb-1.5">
                     {connectionsCount}
                   </p>
-                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide">My List</p>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">My List</p>
                 </button>
-                <div className="w-px h-8 bg-white/10" />
                 <button 
-                  className="text-center flex-1 group relative"
+                  className="text-center group relative py-2 border-l border-white/10"
                   onClick={() => navigate('/notifications')}
                 >
-                  <p className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+                  <p className="text-xl font-bold text-foreground group-hover:text-primary transition-colors mb-1.5">
                     {pendingConnectionCount || 0}
                   </p>
-                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Pending</p>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Pending</p>
                   {pendingConnectionCount > 0 && (
-                    <span className="absolute -top-1 right-1/4 w-2 h-2 rounded-full bg-rose-500" />
+                    <span className="absolute top-1 right-1/4 w-2 h-2 rounded-full bg-rose-500" />
                   )}
                 </button>
-                <div className="w-px h-8 bg-white/10" />
                 <button 
-                  className="text-center flex-1 group relative"
+                  className="text-center group relative py-2 border-l border-white/10"
                   onClick={() => navigate('/notifications')}
                 >
-                  <p className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
-                    <Bell className="w-5 h-5 mx-auto" />
-                  </p>
-                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Alerts</p>
+                  <div className="flex items-center justify-center mb-1.5">
+                    <Bell className="w-5 h-5 text-foreground group-hover:text-primary transition-colors" />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Alerts</p>
                 </button>
               </div>
             </motion.div>
