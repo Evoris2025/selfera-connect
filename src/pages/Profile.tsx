@@ -125,23 +125,21 @@ function renderBioWithHashtags(bio: string) {
   );
 }
 
-// Admin button - only visible to founder
-function AdminButton() {
+// Founder admin menu item - only visible to founder
+function FounderAdminMenuItem() {
   const navigate = useNavigate();
   const { isFounder, isLoading } = useFounderAccess();
   
   if (isLoading || !isFounder) return null;
   
   return (
-    <motion.button
-      onClick={() => navigate('/admin')}
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.9 }}
-      className="w-6 h-6 rounded-full bg-primary/15 hover:bg-primary/25 flex items-center justify-center transition-colors ml-1"
-      aria-label="Admin Console"
-    >
-      <Shield className="w-4 h-4 text-primary" strokeWidth={2} />
-    </motion.button>
+    <>
+      <DropdownMenuSeparator />
+      <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate('/admin')}>
+        <Shield className="h-4 w-4" />
+        Admin Console
+      </DropdownMenuItem>
+    </>
   );
 }
 
@@ -396,7 +394,7 @@ export default function Profile() {
                       <MoreVertical className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-44">
+                  <DropdownMenuContent align="end" className="w-44 bg-popover border border-border">
                     <DropdownMenuItem className="gap-2 cursor-pointer">
                       <Share2 className="h-4 w-4" />
                       Share profile
@@ -405,6 +403,7 @@ export default function Profile() {
                       <Settings className="h-4 w-4" />
                       Settings
                     </DropdownMenuItem>
+                    <FounderAdminMenuItem />
                   </DropdownMenuContent>
                 </DropdownMenu>
               </motion.div>
@@ -561,9 +560,6 @@ export default function Profile() {
                     )}
                     {displayProfile.isPrivate && <Lock className="h-4 w-4 text-muted-foreground" />}
                   </div>
-                  
-                  {/* Admin Button - Founder Only - Far Right */}
-                  <AdminButton />
                 </div>
 
                 {/* Handle + Location */}
