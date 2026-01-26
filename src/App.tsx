@@ -32,6 +32,7 @@ import Settings from "./pages/Settings";
 import Transparency from "./pages/Transparency";
 import AdminConsole from "./pages/AdminConsole";
 import Guidelines from "./pages/Guidelines";
+import CreatorDashboard from "./pages/CreatorDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -102,6 +103,7 @@ function AppRoutes() {
         <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
         <Route path="/provider-dashboard" element={<ProtectedRoute><ProviderDashboard /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute><AdminConsole /></ProtectedRoute>} />
+        <Route path="/creator-dashboard" element={<ProtectedRoute><CreatorDashboard /></ProtectedRoute>} />
         {/* Public routes */}
         <Route path="/directory" element={<Directory />} />
         <Route path="/crisis" element={<CrisisSupport />} />

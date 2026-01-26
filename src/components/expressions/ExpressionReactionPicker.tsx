@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { toast } from '@/hooks/use-toast';
+import { useExpressionInteractions } from '@/hooks/useExpressionInteractions';
 
 interface ExpressionReaction {
   emoji: string;
@@ -29,20 +29,24 @@ export function ExpressionReactionPicker({
   onReact,
 }: ExpressionReactionPickerProps) {
   const [sentEmoji, setSentEmoji] = useState<string | null>(null);
+  const { addReaction } = useExpressionInteractions(expressionId);
 
-  const handleReact = (reaction: ExpressionReaction) => {
+  const handleReact = async (reaction: ExpressionReaction) => {
     setSentEmoji(reaction.emoji);
     
     // Haptic feedback
     if (navigator.vibrate) navigator.vibrate([10, 30, 10]);
     
-    // Callback
+    // Callback for UI animation
     onReact?.(reaction.emoji);
     
-    // Show toast notification (simulating sending to author)
-    toast({
-      description: `Sent ${reaction.emoji} to ${authorName}`,
-    });
+    // Persist reaction to database
+    try {
+      await addReaction.mutateAsync(reaction.emoji);
+    } catch (error) {
+      // Silently fail - the animation still happens for good UX
+      console.error('Failed to save reaction:', error);
+    }
 
     // Reset after animation
     setTimeout(() => setSentEmoji(null), 1000);
