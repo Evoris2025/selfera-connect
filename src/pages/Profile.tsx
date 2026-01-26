@@ -137,10 +137,10 @@ function AdminButton() {
       onClick={() => navigate('/admin')}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.9 }}
-      className="w-7 h-7 rounded-full bg-primary/10 hover:bg-primary/20 flex items-center justify-center transition-colors ml-1"
+      className="w-6 h-6 rounded-full bg-primary/15 hover:bg-primary/25 flex items-center justify-center transition-colors ml-1"
       aria-label="Admin Console"
     >
-      <Shield className="w-3.5 h-3.5 text-primary" />
+      <Shield className="w-4 h-4 text-primary" strokeWidth={2} />
     </motion.button>
   );
 }
