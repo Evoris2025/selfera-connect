@@ -1,304 +1,197 @@
 
-# Content Studio Enhancement: Platform-Matching Redesign
+# ERA Studio Dashboard: Premium Redesign Plan
 
-## Overview
+## Problem Analysis
 
-Based on my research and analysis of the current codebase, I'll now implement enhancements to each content creation tab to match the flows of their respective social media platform references:
+Based on the screenshot you provided, I can see several critical issues:
 
-- **Expression** → Instagram Stories / Snapchat style
-- **Video** → YouTube Studio style  
-- **Photo** → Instagram post style
-- **Post** → Facebook / Twitter style
+1. **Broken Logo Display**: The BrandMark component is showing only a partial/cropped logo due to conflicting sizing (the component uses `h-10 w-auto opacity-80` which breaks the internal scaling logic)
 
----
+2. **Generic Card Design**: The current 2x2 grid with simple gradient icon boxes looks like a basic template rather than a premium content creation studio
 
-## Current State Analysis
+3. **Weak Visual Hierarchy**: All cards have equal visual weight with no clear focal point or journey
 
-### Expression Creator (ExpressionCreator.tsx - 719 lines)
-**Current Features:**
-- Camera capture and gallery selection
-- Text overlays, stickers, sounds, drawing
-- Interactive stickers (poll, question, quiz, countdown)
-- Close Friends toggle and Highlights
+4. **Missing Brand Identity**: The SelfERA brand colors (blue → purple → orange gradient) aren't being leveraged effectively
 
-**Missing/Needs Enhancement:**
-- Vertical tools rail on right side (Instagram-style)
-- Full-screen immersive camera interface
-- Better tool organization and visual hierarchy
-- Instagram-style capture button (hold for video)
-
-### Video Studio (VideoStudio.tsx - 594 lines)
-**Current Features:**
-- Multi-step wizard (Upload → Details → Elements → Visibility)
-- Auto-thumbnail generation
-- Chapters and end screen
-- Content warnings
-
-**Missing/Needs Enhancement:**
-- More polished step indicator (YouTube-style pill navigation)
-- Better visual hierarchy in each step
-- AI thumbnail generation prompts
-- Processing/encoding status indicator
-
-### Image Studio (ImageStudio.tsx - 511 lines)
-**Current Features:**
-- Multi-image carousel (up to 20)
-- Filters, adjustments, cropping
-- User tagging, location, alt text
-- Sound for carousels
-
-**Missing/Needs Enhancement:**
-- Instagram-style gallery grid selection
-- Better filter preview thumbnails
-- Swipe navigation between images
-- More prominent editing tools
-
-### Post Composer (PostComposer.tsx - 528 lines)
-**Current Features:**
-- Text-first interface with visibility selector
-- Poll, GIF, feeling/activity, location, scheduling
-- Thread mode
-- Character counter
-
-**Missing/Needs Enhancement:**
-- More prominent author row (Facebook-style)
-- Better attachment bar organization
-- Link preview cards
-- Improved visual hierarchy
+5. **Flat Appearance**: Cards lack depth, glass effects, and the cinematic quality of the rest of the app
 
 ---
 
-## Phase 1: Expression Creator Enhancement
+## Design Direction: Premium Content Creation Hub
 
-### Changes to ExpressionCreator.tsx
+Drawing inspiration from TikTok Studio, Instagram Create, and premium dark-themed apps, the new design will feel like entering a professional creative space.
 
-**1. Full-Screen Immersive Camera Interface**
-```
+### Visual Layout
+
+```text
 ┌─────────────────────────────────────────┐
-│  ✕                               [Flip] │  ← Minimal header
+│  ←          ERA STUDIO              ✕   │
 ├─────────────────────────────────────────┤
 │                                         │
+│    ╔═══════════════════════════════╗   │
+│    ║                               ║   │
+│    ║      [SelfERA Full Logo]      ║   │  ← Large, prominent logo
+│    ║         with gradient         ║   │
+│    ║                               ║   │
+│    ╚═══════════════════════════════╝   │
 │                                         │
-│          FULL SCREEN CAMERA             │
-│          (Edge to edge)                 │
+│    What would you like to create?       │  ← Welcoming subtext
 │                                         │
+│    ┌───────────────────────────────┐   │
+│    │  ✨  EXPRESSION               │   │  ← Full-width cards
+│    │      Moments that fade        │→│  │    with icons + arrows
+│    └───────────────────────────────┘   │
+│                                         │
+│    ┌───────────────────────────────┐   │
+│    │  🎬  VIDEO                    │   │
+│    │      Long-form content        │→│  │
+│    └───────────────────────────────┘   │
+│                                         │
+│    ┌───────────────────────────────┐   │
+│    │  📷  PHOTO                    │   │
+│    │      Share with style         │→│  │
+│    └───────────────────────────────┘   │
+│                                         │
+│    ┌───────────────────────────────┐   │
+│    │  📝  POST                     │   │
+│    │      Thoughts & polls         │→│  │
+│    └───────────────────────────────┘   │
 │                                         │
 ├─────────────────────────────────────────┤
-│  [Gallery]      ◉       [Effects]       │  ← Bottom controls
-│               Capture                    │
+│  [📄 Drafts (3)]                        │
 └─────────────────────────────────────────┘
 ```
-
-**2. Vertical Tools Rail (Right Side)**
-Move tools from bottom to right side rail for Instagram/Snapchat feel:
-```
-[Aa] Text
-[✏️] Draw  
-[😊] Stickers
-[🎵] Music
-[📊] Interactive
-[✨] Effects
-```
-
-**3. Enhanced Capture Button**
-- Tap to capture photo
-- Hold to record video (with progress ring)
-- Haptic feedback
-
-**Implementation Details:**
-- Restructure layout for full-screen camera
-- Add `ToolsRail` component with vertical icon buttons
-- Add hold-to-record logic with visual progress indicator
-- Better transition animations between capture/preview modes
 
 ---
 
-## Phase 2: Video Studio Enhancement
+## Key Design Changes
 
-### Changes to VideoStudio.tsx
+### 1. Fix Logo Display
+- Remove broken className override on BrandMark
+- Use proper container sizing with the scale transform
+- Make logo larger and more prominent (center hero position)
+- Add subtle glow/ambient effect behind logo
 
-**1. YouTube-Style Step Pills**
-Replace current step indicator with premium pill navigation:
-```
-┌─────────────────────────────────────────┐
-│  [Details]  [Elements]  [Visibility]    │
-│      ●         ○           ○            │
-└─────────────────────────────────────────┘
-```
+### 2. Switch from Grid to Vertical List
+Major platforms use vertical action lists for creation menus because:
+- Easier to scan top-to-bottom
+- Better touch targets on mobile
+- Each option has equal prominence
+- Allows for more descriptive text
 
-**2. Upload Step Enhancement**
-- Larger drop zone with better visual feedback
-- Drag state indicator with color change
-- Upload progress with percentage and time estimate
-- Processing/encoding status after upload
+### 3. Premium Card Styling
+Each content type card will feature:
+- Full-width horizontal layout
+- Left-aligned gradient icon with brand colors
+- Title + subtle description
+- Right-aligned chevron indicator
+- Subtle border with glass effect
+- Hover/press state with ambient glow
+- Staggered entrance animation
 
-**3. Details Step Polish**
-- Thumbnail selector with larger previews
-- "AI Generate" button for thumbnails
-- Better title/description input styling
-- Visual tag chips with remove buttons
+### 4. Brand-Aligned Gradients
+Use SelfERA brand gradient per card type:
+- **Expression**: Rose to pink (warm/fleeting)
+- **Video**: Blue to indigo (professional/deep)
+- **Photo**: Amber to orange (creative/warm)
+- **Post**: Emerald to teal (growth/connection)
 
-**4. Elements Step Clarity**
-- Collapsible sections for Chapters and End Screen
-- Video timeline preview with chapter markers
-- End screen template options
+### 5. Enhanced Background
+- Deep charcoal base matching app theme
+- Radial gradient from center (warm glow)
+- Ambient light orbs with brand colors
+- Subtle noise texture for depth
 
-**Implementation Details:**
-- Create `StepPills` component for premium navigation
-- Add drag-over visual states
-- Enhance thumbnail selector layout
-- Add collapsible section components
-
----
-
-## Phase 3: Image Studio Enhancement
-
-### Changes to ImageStudio.tsx
-
-**1. Gallery Selection Grid**
-Replace file input with Instagram-style gallery grid:
-```
-┌─────────────────────────────────────────┐
-│  ┌─────────────────────────────────┐   │
-│  │      SELECTED IMAGE PREVIEW      │   │
-│  └─────────────────────────────────┘   │
-│                                         │
-│  [Recents ▼]     Select multiple       │
-│                                         │
-│  ┌──┬──┬──┬──┐                         │
-│  │  │  │  │  │                         │
-│  ├──┼──┼──┼──┤  ← 4-column grid        │
-│  │  │  │  │  │                         │
-│  └──┴──┴──┴──┘                         │
-└─────────────────────────────────────────┘
-```
-
-**2. Edit Mode with Bottom Tabs**
-- Larger image preview area
-- Bottom-aligned filter/adjust/crop tabs
-- Horizontal filter scrolling with preview thumbnails
-- Swipe between images in carousel
-
-**3. Filter Enhancements**
-- Each filter shows mini-preview of current image
-- Filter name labels
-- Intensity slider when filter is selected
-
-**Implementation Details:**
-- Create `GalleryGrid` component showing device photos
-- Enhance filter thumbnails with actual image previews
-- Add swipe gesture handling for carousel
-- Improve tab bar styling
-
----
-
-## Phase 4: Post Composer Enhancement
-
-### Changes to PostComposer.tsx
-
-**1. Facebook-Style Author Row**
-More prominent author section:
-```
-┌─────────────────────────────────────────┐
-│  [Large Avatar]  Your Name              │
-│                  🌍 Public ▼            │
-└─────────────────────────────────────────┘
-```
-
-**2. Clean Attachment Bar**
-Reorganize with icons + labels:
-```
-┌─────────────────────────────────────────┐
-│  🖼 Photo  📹 Video  GIF  📊 Poll       │
-│  😊 Feeling  📍 Check In  🕐 Schedule   │
-└─────────────────────────────────────────┘
-```
-
-**3. Link Preview Cards**
-When URL is detected in content:
-```
-┌─────────────────────────────────────────┐
-│  [🖼 Preview Image          ]  ✕        │
-│  Site Title                             │
-│  Description excerpt...                 │
-│  example.com                            │
-└─────────────────────────────────────────┘
-```
-
-**4. Thread Mode Enhancement**
-- Better visual thread connector line
-- Drag handles for reordering
-- Individual character counters per post
-
-**Implementation Details:**
-- Enhance author row with larger avatar
-- Restructure attachment bar with 2-row layout
-- Add URL detection and link preview component
-- Improve thread visual design
+### 6. Simplified Quick Actions
+- Single "Drafts" button with count badge
+- Remove "Recent" to reduce clutter
+- Position at bottom with slide-up animation
 
 ---
 
 ## Technical Implementation
 
-### Files to Modify
+### File Changes
 
-| File | Changes |
-|------|---------|
-| `ExpressionCreator.tsx` | Full-screen camera, tools rail, hold-to-record |
-| `VideoStudio.tsx` | Step pills, better sections, thumbnail polish |
-| `ImageStudio.tsx` | Gallery grid, filter previews, swipe navigation |
-| `PostComposer.tsx` | Author row, attachment bar, link previews |
+**ContentTypeDashboard.tsx** - Complete rewrite:
 
-### New Components to Create
+1. **Header Section**
+   - Clean header with back button + "ERA STUDIO" title + close button
+   - Subtle bottom border
 
-| Component | Purpose |
-|-----------|---------|
-| `ToolsRail.tsx` | Vertical icon toolbar for Expression Creator |
-| `StepPills.tsx` | Premium step navigation for Video Studio |
-| `GalleryGrid.tsx` | Photo selection grid for Image Studio |
-| `LinkPreviewCard.tsx` | URL preview display for Post Composer |
-| `HoldToRecordButton.tsx` | Capture button with hold-for-video |
+2. **Logo Hero Section**
+   - Large, properly-scaled BrandMark component
+   - Centered with ambient glow effect behind it
+   - "What would you like to create?" subtext below
+
+3. **Content Type List**
+   - Vertical stack of full-width cards
+   - Each card has:
+     - Gradient icon container (left)
+     - Title + description (center)
+     - Chevron arrow (right)
+   - Spring-based stagger animations on mount
+   - Scale + glow on hover/press
+
+4. **Bottom Actions**
+   - Drafts button with badge
+   - Fixed position with glass background
 
 ### Animation Enhancements
+- Logo: Scale-in with spring physics
+- Cards: Stagger fade + slide from bottom (50ms delay each)
+- Hover: Scale 1.02 + subtle glow
+- Press: Scale 0.98 for tactile feedback
+- Transitions: Use `ease-cinematic` timing function
 
-- **Tools Rail**: Slide in from right with stagger
-- **Step Pills**: Smooth indicator slide
-- **Gallery Grid**: Scale-in on photo select
-- **Link Preview**: Fade-in with slight slide up
-- **Capture Button**: Ring progress animation
+### Color Tokens Used
+- Background: `hsl(230, 25%, 4%)` (deep charcoal)
+- Cards: `hsl(230, 22%, 7%)` with glass border
+- Brand gradient: Rose → Pink → Purple
 
 ---
 
-## Implementation Order
+## Implementation Checklist
 
-1. **Expression Creator** (Most visual impact)
-   - Full-screen camera layout
-   - Vertical tools rail
-   - Hold-to-record button
-   
-2. **Video Studio** (Already close to target)
-   - Step pills component
-   - Section polish
-   - Better visual hierarchy
+1. **Fix BrandMark Integration**
+   - Remove conflicting className props
+   - Use proper container wrapper with padding
+   - Add ambient glow div behind logo
 
-3. **Image Studio** (Medium complexity)
-   - Gallery grid layout
-   - Filter preview thumbnails
-   - Swipe navigation
+2. **Restructure Layout**
+   - Change from 2x2 grid to vertical list
+   - Full-width card layout
+   - Proper spacing rhythm
 
-4. **Post Composer** (Already functional)
-   - Author row enhancement
-   - Attachment bar reorganization
-   - Link preview integration
+3. **Enhance Cards**
+   - Horizontal layout with icon + text + arrow
+   - Glass card styling with subtle border
+   - Per-card gradient icons
+   - Hover glow effects
+
+4. **Improve Typography**
+   - "What would you like to create?" heading
+   - Card titles in semibold
+   - Descriptions in muted smaller text
+
+5. **Polish Animations**
+   - Spring-based entrance animations
+   - Smooth hover/press transitions
+   - Stagger effect on card list
+
+6. **Simplify Footer**
+   - Single Drafts action
+   - Glass background
+   - Slide-up entrance
 
 ---
 
 ## Success Criteria
 
-- Expression Creator feels like Instagram Stories/Snapchat
-- Video Studio matches YouTube Creator Studio flow
-- Image Studio mirrors Instagram post creation
-- Post Composer resembles Facebook/Twitter compose
-- All studios have consistent premium feel matching ERA Studio dashboard
-- Smooth 60fps animations throughout
+- Logo displays correctly at prominent size
+- Design matches premium quality of rest of SelfERA app
+- Vertical list feels more like TikTok/Instagram creation menus
+- Cards have depth and glass effects
+- Animations are smooth and satisfying (60fps)
+- Brand colors are used consistently
 - Mobile-first responsive design maintained
