@@ -6,11 +6,15 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Slider } from '@/components/ui/slider';
 import { useAuth } from '@/contexts/AuthContext';
+import { useFeedData } from '@/contexts/FeedDataContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { TopicTagSelector } from './shared/TopicTagSelector';
 import { ContentWarningToggle } from './shared/ContentWarningToggle';
 import { cn } from '@/lib/utils';
+
+// Simulation mode flag - when true, uses FeedDataContext instead of Supabase
+const SIMULATION_MODE = true;
 
 type Step = 'select' | 'edit' | 'share';
 type ContentWarningType = 'sensitive' | 'triggering' | 'graphic' | 'other' | null;
@@ -32,6 +36,7 @@ const filters = [
 export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { createPost, isSimulationMode } = useFeedData();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [step, setStep] = useState<Step>('select');
@@ -62,11 +67,43 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
   };
 
   const handleSubmit = async () => {
-    if (!user || !selectedFile || selectedTags.length === 0) return;
+    if (!selectedFile || selectedTags.length === 0) return;
 
     setIsSubmitting(true);
 
     try {
+      // Use simulation mode via FeedDataContext
+      if (SIMULATION_MODE || isSimulationMode) {
+        const displayName = user?.email?.split('@')[0] || 'You';
+
+        // Create post via FeedDataContext - it will appear instantly in feed
+        createPost({
+          authorId: user?.id || `sim-user-${Date.now()}`,
+          author: {
+            name: displayName,
+            handle: displayName.toLowerCase().replace(/\s+/g, ''),
+            avatar: '',
+            isVerified: false,
+            email: user?.email,
+          },
+          content: caption.trim(),
+          tags: selectedTags,
+          contentType: 'image',
+          media: { type: 'image', url: previewUrl },
+        });
+
+        toast({
+          title: 'Photo shared!',
+          description: 'Your photo is now live in the feed.',
+        });
+
+        onSuccess();
+        return;
+      }
+
+      // Real Supabase mode (when not in simulation)
+      if (!user) return;
+
       // Upload image
       const fileExt = selectedFile.name.split('.').pop();
       const fileName = `${user.id}/${Date.now()}.${fileExt}`;

@@ -4,9 +4,13 @@ import { ArrowLeft, Camera, Image as ImageIcon, X, Loader2, Sparkles } from 'luc
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import { useFeedData } from '@/contexts/FeedDataContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+
+// Simulation mode flag - when true, uses FeedDataContext instead of Supabase
+const SIMULATION_MODE = true;
 
 type Step = 'capture' | 'preview';
 
@@ -18,6 +22,7 @@ interface ExpressionCreatorProps {
 export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { createExpression, isSimulationMode } = useFeedData();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -89,11 +94,37 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
   };
 
   const handleSubmit = async () => {
-    if (!user || !selectedFile) return;
+    if (!selectedFile) return;
 
     setIsSubmitting(true);
 
     try {
+      // Use simulation mode via FeedDataContext
+      if (SIMULATION_MODE || isSimulationMode) {
+        const displayName = user?.email?.split('@')[0] || 'You';
+
+        // Create expression via FeedDataContext - it will appear instantly
+        createExpression({
+          userId: user?.id || `sim-user-${Date.now()}`,
+          userName: displayName,
+          userAvatar: '',
+          mediaUrl: previewUrl,
+          mediaType: isVideo ? 'video' : 'image',
+          hasUnseenExpression: true,
+        });
+
+        toast({
+          title: 'Expression shared!',
+          description: 'Your expression is now visible for 24 hours.',
+        });
+
+        onSuccess();
+        return;
+      }
+
+      // Real Supabase mode (when not in simulation)
+      if (!user) return;
+
       // Upload media
       const fileExt = selectedFile.name.split('.').pop() || 'jpg';
       const fileName = `${user.id}/${Date.now()}.${fileExt}`;

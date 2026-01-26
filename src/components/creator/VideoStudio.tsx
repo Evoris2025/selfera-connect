@@ -7,11 +7,15 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
+import { useFeedData } from '@/contexts/FeedDataContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { TopicTagSelector } from './shared/TopicTagSelector';
 import { ContentWarningToggle } from './shared/ContentWarningToggle';
 import { cn } from '@/lib/utils';
+
+// Simulation mode flag - when true, uses FeedDataContext instead of Supabase
+const SIMULATION_MODE = true;
 
 type Step = 'upload' | 'details' | 'review';
 type ContentWarningType = 'sensitive' | 'triggering' | 'graphic' | 'other' | null;
@@ -24,6 +28,7 @@ interface VideoStudioProps {
 export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { createPost, isSimulationMode } = useFeedData();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -114,12 +119,57 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
   };
 
   const handleSubmit = async () => {
-    if (!user || !selectedFile || !title.trim() || selectedTags.length === 0) return;
+    if (!selectedFile || !title.trim() || selectedTags.length === 0) return;
 
     setIsSubmitting(true);
     setIsUploading(true);
 
     try {
+      // Use simulation mode via FeedDataContext
+      if (SIMULATION_MODE || isSimulationMode) {
+        // Simulate upload progress
+        const progressInterval = setInterval(() => {
+          setUploadProgress((prev) => Math.min(prev + 15, 100));
+        }, 100);
+
+        await new Promise(resolve => setTimeout(resolve, 800));
+        clearInterval(progressInterval);
+        setUploadProgress(100);
+
+        const displayName = user?.email?.split('@')[0] || 'You';
+
+        // Create post via FeedDataContext - it will appear instantly in feed
+        createPost({
+          authorId: user?.id || `sim-user-${Date.now()}`,
+          author: {
+            name: displayName,
+            handle: displayName.toLowerCase().replace(/\s+/g, ''),
+            avatar: '',
+            isVerified: false,
+            email: user?.email,
+          },
+          content: `${title}\n\n${description}`.trim(),
+          tags: selectedTags,
+          contentType: 'video',
+          media: { 
+            type: 'video', 
+            url: previewUrl,
+            thumbnail: thumbnails[selectedThumbnail] || undefined,
+          },
+        });
+
+        toast({
+          title: 'Video uploaded!',
+          description: 'Your video is now live in the feed.',
+        });
+
+        onSuccess();
+        return;
+      }
+
+      // Real Supabase mode (when not in simulation)
+      if (!user) return;
+
       // Upload video
       const fileExt = selectedFile.name.split('.').pop();
       const fileName = `${user.id}/${Date.now()}.${fileExt}`;
