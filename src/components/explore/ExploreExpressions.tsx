@@ -95,7 +95,7 @@ function ExpressionSection({ title, icon, expressions, isLoading }: ExpressionSe
         {icon}
         <h2 className="font-semibold text-foreground">{title}</h2>
       </div>
-      <div className="flex gap-3 overflow-x-auto px-4 pb-2 scrollbar-hide">
+      <div className="flex gap-1 overflow-x-auto px-4 pb-2 scrollbar-hide">
         {isLoading ? (
           Array.from({ length: 4 }).map((_, i) => (
             <ExpressionCardSkeleton key={i} />
