@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useCallback, useEffect, Rea
 import type { FeedPost } from '@/components/feed/CrossroadFeed';
 import type { ReactionType } from '@/components/feed/ReactionPicker';
 import { useAuth } from '@/contexts/AuthContext';
+import { MockUUIDs, generateMockUUID, getMockUUID } from '@/lib/mockUUIDs';
 
 // =============================================================================
 // TYPES
@@ -95,13 +96,13 @@ function savePersistedState(state: PersistedFeedState) {
 }
 
 // =============================================================================
-// INITIAL MOCK DATA
+// INITIAL MOCK DATA WITH STABLE UUIDs
 // =============================================================================
 
 const createInitialExpressions = (): FeedExpression[] => [
   {
-    id: 'expr-1',
-    userId: 'user-jennifer',
+    id: MockUUIDs.EXPR_1,
+    userId: MockUUIDs.JENNIFER,
     userName: 'Jennifer',
     userAvatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop',
     mediaUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=700&fit=crop',
@@ -112,8 +113,8 @@ const createInitialExpressions = (): FeedExpression[] => [
     expiresAt: new Date(Date.now() + 22 * 60 * 60 * 1000),
   },
   {
-    id: 'expr-2',
-    userId: 'user-cody',
+    id: MockUUIDs.EXPR_2,
+    userId: MockUUIDs.CODY,
     userName: 'Cody',
     userAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop',
     mediaUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=700&fit=crop',
@@ -124,8 +125,8 @@ const createInitialExpressions = (): FeedExpression[] => [
     expiresAt: new Date(Date.now() + 20 * 60 * 60 * 1000),
   },
   {
-    id: 'expr-3',
-    userId: 'user-amy',
+    id: MockUUIDs.EXPR_3,
+    userId: MockUUIDs.AMY,
     userName: 'Amy',
     userAvatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop',
     mediaUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=700&fit=crop',
@@ -136,8 +137,8 @@ const createInitialExpressions = (): FeedExpression[] => [
     expiresAt: new Date(Date.now() + 18 * 60 * 60 * 1000),
   },
   {
-    id: 'expr-4',
-    userId: 'user-trent',
+    id: MockUUIDs.EXPR_4,
+    userId: MockUUIDs.TRENT,
     userName: 'Trent',
     userAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop',
     mediaUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=700&fit=crop',
@@ -148,8 +149,8 @@ const createInitialExpressions = (): FeedExpression[] => [
     expiresAt: new Date(Date.now() + 12 * 60 * 60 * 1000),
   },
   {
-    id: 'expr-5',
-    userId: 'user-donna',
+    id: MockUUIDs.EXPR_5,
+    userId: MockUUIDs.DONNA,
     userName: 'Donna',
     userAvatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop',
     mediaUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=700&fit=crop',
@@ -160,8 +161,8 @@ const createInitialExpressions = (): FeedExpression[] => [
     expiresAt: new Date(Date.now() + 16 * 60 * 60 * 1000),
   },
   {
-    id: 'expr-6',
-    userId: 'user-marcus',
+    id: MockUUIDs.EXPR_6,
+    userId: MockUUIDs.MARCUS,
     userName: 'Marcus',
     userAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop',
     mediaUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=700&fit=crop',
@@ -175,8 +176,8 @@ const createInitialExpressions = (): FeedExpression[] => [
 
 const createInitialPosts = (): FeedPost[] => [
   {
-    id: 'post-1',
-    authorId: 'author-sarahc',
+    id: MockUUIDs.POST_1,
+    authorId: MockUUIDs.SARAH_CHEN,
     author: {
       name: 'Sarah Chen',
       handle: 'sarahc',
@@ -191,8 +192,8 @@ const createInitialPosts = (): FeedPost[] => [
     contentType: 'text',
   },
   {
-    id: 'post-2',
-    authorId: 'author-mindmatters',
+    id: MockUUIDs.POST_2,
+    authorId: MockUUIDs.MIND_MATTERS,
     author: {
       name: 'Mind Matters',
       handle: 'mindmatters',
@@ -211,8 +212,8 @@ const createInitialPosts = (): FeedPost[] => [
     contentType: 'image',
   },
   {
-    id: 'post-video-1',
-    authorId: 'author-calmstudios',
+    id: MockUUIDs.POST_VIDEO_1,
+    authorId: MockUUIDs.CALM_STUDIOS,
     author: {
       name: 'Calm Studios',
       handle: 'calmstudios',
@@ -232,8 +233,8 @@ const createInitialPosts = (): FeedPost[] => [
     contentType: 'video',
   },
   {
-    id: 'post-3',
-    authorId: 'author-jwilson',
+    id: MockUUIDs.POST_3,
+    authorId: MockUUIDs.JAMES_WILSON,
     author: {
       name: 'James Wilson',
       handle: 'jwilson',
@@ -248,8 +249,8 @@ const createInitialPosts = (): FeedPost[] => [
     contentType: 'text',
   },
   {
-    id: 'post-4',
-    authorId: 'author-wellnesshub',
+    id: MockUUIDs.POST_4,
+    authorId: MockUUIDs.WELLNESS_HUB,
     author: {
       name: 'Wellness Hub',
       handle: 'wellnesshub',
@@ -268,8 +269,8 @@ const createInitialPosts = (): FeedPost[] => [
     contentType: 'image',
   },
   {
-    id: 'post-video-2',
-    authorId: 'author-naturesounds',
+    id: MockUUIDs.POST_VIDEO_2,
+    authorId: MockUUIDs.NATURE_SOUNDS,
     author: {
       name: 'Nature Sounds',
       handle: 'naturesounds',
@@ -289,8 +290,8 @@ const createInitialPosts = (): FeedPost[] => [
     contentType: 'video',
   },
   {
-    id: 'post-5',
-    authorId: 'author-emmar',
+    id: MockUUIDs.POST_5,
+    authorId: MockUUIDs.EMMA_ROBERTS,
     author: {
       name: 'Emma Roberts',
       handle: 'emmar',
@@ -305,8 +306,8 @@ const createInitialPosts = (): FeedPost[] => [
     contentType: 'text',
   },
   {
-    id: 'post-6',
-    authorId: 'author-alext',
+    id: MockUUIDs.POST_6,
+    authorId: MockUUIDs.ALEX_TURNER,
     author: {
       name: 'Alex Turner',
       handle: 'alext',
@@ -327,31 +328,31 @@ const createInitialPosts = (): FeedPost[] => [
 ];
 
 const createInitialComments = (): Record<string, FeedComment[]> => ({
-  'post-1': [
+  [MockUUIDs.POST_1]: [
     {
-      id: 'comment-1-1',
-      postId: 'post-1',
-      userId: 'user-marcus',
+      id: MockUUIDs.COMMENT_1_1,
+      postId: MockUUIDs.POST_1,
+      userId: MockUUIDs.MARCUS_JOHNSON,
       author: { name: 'Marcus Johnson', handle: 'marcusj', avatar: '' },
       content: 'This really resonates with me. Thank you for sharing! 💙',
       createdAt: '1h',
       timestamp: new Date(Date.now() - 3600000),
     },
     {
-      id: 'comment-1-2',
-      postId: 'post-1',
-      userId: 'user-jamie',
+      id: MockUUIDs.COMMENT_1_2,
+      postId: MockUUIDs.POST_1,
+      userId: MockUUIDs.JAMIE_LEE,
       author: { name: 'Jamie Lee', handle: 'jamielee', avatar: '' },
       content: 'Beautifully expressed. We all need reminders like this.',
       createdAt: '30m',
       timestamp: new Date(Date.now() - 1800000),
     },
   ],
-  'post-2': [
+  [MockUUIDs.POST_2]: [
     {
-      id: 'comment-2-1',
-      postId: 'post-2',
-      userId: 'user-alex',
+      id: MockUUIDs.COMMENT_2_1,
+      postId: MockUUIDs.POST_2,
+      userId: MockUUIDs.ALEX_CHEN,
       author: { name: 'Alex Chen', handle: 'alexchen', avatar: '' },
       content: 'What a beautiful scene! Where was this taken?',
       createdAt: '2h',
@@ -469,7 +470,7 @@ export function FeedDataProvider({ children }: { children: ReactNode }) {
   const createPost = useCallback((postData: Omit<FeedPost, 'id' | 'createdAt' | 'commentCount' | 'likes'>) => {
     const newPost: FeedPost = {
       ...postData,
-      id: `post-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: generateMockUUID(), // Use proper UUID for new posts
       createdAt: 'Just now',
       commentCount: 0,
       likes: 0,
@@ -547,7 +548,7 @@ export function FeedDataProvider({ children }: { children: ReactNode }) {
     if (!content.trim() || !user) return;
     
     const newComment: FeedComment = {
-      id: `comment-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: generateMockUUID(), // Use proper UUID for new comments
       postId,
       userId: user.id,
       author: {
@@ -640,7 +641,7 @@ export function FeedDataProvider({ children }: { children: ReactNode }) {
     const now = new Date();
     const newExpression: FeedExpression = {
       ...expressionData,
-      id: `expr-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: generateMockUUID(), // Use proper UUID for new expressions
       createdAt: now,
       expiresAt: new Date(now.getTime() + 24 * 60 * 60 * 1000), // 24 hours
     };
