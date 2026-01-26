@@ -1,9 +1,8 @@
 import { motion } from 'framer-motion';
-import { Sparkles, Video, Image, FileText, ChevronRight, FileEdit, X } from 'lucide-react';
+import { Sparkles, Video, Image, FileText, ChevronRight, FileEdit, X, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BrandMark } from '@/components/BrandMark';
 import { useDrafts } from './shared/DraftManager';
-import { GlassCard } from '@/components/ui/GlassCard';
 
 export type ContentType = 'expression' | 'video' | 'image' | 'post';
 
@@ -13,7 +12,7 @@ interface ContentTypeCard {
   title: string;
   description: string;
   gradient: string;
-  glowColor: string;
+  nodeColor: string;
 }
 
 const contentTypes: ContentTypeCard[] = [
@@ -23,7 +22,7 @@ const contentTypes: ContentTypeCard[] = [
     title: 'Expression',
     description: 'Moments that fade in 24h',
     gradient: 'from-rose-500 to-pink-600',
-    glowColor: 'hover:shadow-[0_0_40px_-10px_hsl(346,77%,50%,0.4)]',
+    nodeColor: 'bg-gradient-to-br from-rose-500 to-pink-600',
   },
   {
     id: 'video',
@@ -31,7 +30,7 @@ const contentTypes: ContentTypeCard[] = [
     title: 'Video',
     description: 'Long-form content',
     gradient: 'from-blue-500 to-indigo-600',
-    glowColor: 'hover:shadow-[0_0_40px_-10px_hsl(217,91%,60%,0.4)]',
+    nodeColor: 'bg-gradient-to-br from-blue-500 to-indigo-600',
   },
   {
     id: 'image',
@@ -39,7 +38,7 @@ const contentTypes: ContentTypeCard[] = [
     title: 'Photo',
     description: 'Share with style',
     gradient: 'from-amber-500 to-orange-600',
-    glowColor: 'hover:shadow-[0_0_40px_-10px_hsl(38,92%,50%,0.4)]',
+    nodeColor: 'bg-gradient-to-br from-amber-500 to-orange-600',
   },
   {
     id: 'post',
@@ -47,7 +46,7 @@ const contentTypes: ContentTypeCard[] = [
     title: 'Post',
     description: 'Thoughts & polls',
     gradient: 'from-emerald-500 to-teal-600',
-    glowColor: 'hover:shadow-[0_0_40px_-10px_hsl(160,84%,39%,0.4)]',
+    nodeColor: 'bg-gradient-to-br from-emerald-500 to-teal-600',
   },
 ];
 
@@ -74,18 +73,16 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
         <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-blue-500/5 rounded-full blur-[80px]" />
       </div>
 
-      {/* Header */}
+      {/* Minimal Header */}
       <div className="relative z-10 flex items-center justify-between px-4 py-3 border-b border-border/30">
         <button
           onClick={onClose}
           className="p-2 -ml-2 rounded-lg hover:bg-secondary/50 transition-colors"
           aria-label="Go back"
         >
-          <ChevronRight className="h-5 w-5 rotate-180 text-muted-foreground" />
+          <ArrowLeft className="h-5 w-5 text-muted-foreground" />
         </button>
-        <h2 className="text-sm font-semibold tracking-widest text-foreground/80 uppercase">
-          ERA Studio
-        </h2>
+        <div className="w-5" /> {/* Spacer for centering */}
         <button
           onClick={onClose}
           className="p-2 -mr-2 rounded-lg hover:bg-secondary/50 transition-colors"
@@ -96,9 +93,9 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto relative z-10">
+      <div className="flex-1 overflow-y-auto relative z-10 flex flex-col">
         {/* Logo Hero Section */}
-        <div className="flex flex-col items-center pt-8 pb-6 px-4">
+        <div className="flex flex-col items-center pt-8 pb-4 px-4">
           {/* Ambient glow behind logo */}
           <div className="absolute top-8 left-1/2 -translate-x-1/2 w-64 h-20 bg-gradient-to-r from-rose-500/20 via-purple-500/20 to-orange-500/20 blur-[60px] rounded-full" />
           
@@ -111,68 +108,101 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
             <BrandMark className="h-14 w-[240px]" />
           </motion.div>
           
-          <motion.p
+          {/* ERA STUDIO Title */}
+          <motion.h1
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mt-6 text-base text-muted-foreground font-medium"
+            className="mt-6 text-xl font-bold tracking-[0.3em] text-foreground uppercase"
+          >
+            ERA STUDIO
+          </motion.h1>
+          
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            className="mt-2 text-sm text-muted-foreground font-medium"
           >
             What would you like to create?
           </motion.p>
         </div>
 
-        {/* Content Type Cards */}
-        <div className="px-4 pb-6 space-y-3">
-          {contentTypes.map((type, index) => (
-            <motion.button
-              key={type.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ 
-                delay: 0.15 + index * 0.05, 
-                type: 'spring', 
-                stiffness: 400, 
-                damping: 30 
-              }}
-              onClick={() => onSelect(type.id)}
-              className={cn(
-                'group w-full flex items-center gap-4 p-4',
-                'bg-card/40 border border-border/30',
-                'transition-all duration-300 ease-out',
-                'hover:bg-card/60 hover:border-border/50',
-                'hover:scale-[1.01] active:scale-[0.99]',
-                'focus:outline-none focus:ring-2 focus:ring-primary/30',
-                type.glowColor
-              )}
-            >
-              {/* Gradient Icon */}
-              <div
-                className={cn(
-                  'flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center',
-                  'bg-gradient-to-br shadow-lg',
-                  type.gradient,
-                  'transition-transform duration-300 group-hover:scale-105'
-                )}
-              >
-                <type.icon className="h-6 w-6 text-white" />
-              </div>
-
-              {/* Text Content */}
-              <div className="flex-1 text-left min-w-0">
-                <span className="block font-semibold text-foreground text-base">
-                  {type.title}
-                </span>
-                <span className="block text-sm text-muted-foreground mt-0.5">
-                  {type.description}
-                </span>
-              </div>
-
-              {/* Chevron Arrow */}
-              <ChevronRight 
-                className="flex-shrink-0 h-5 w-5 text-muted-foreground/50 transition-all duration-300 group-hover:text-muted-foreground group-hover:translate-x-1" 
-              />
-            </motion.button>
-          ))}
+        {/* Editorial Timeline */}
+        <div className="flex-1 px-6 py-6">
+          <div className="relative h-full flex flex-col">
+            {/* Vertical Timeline Line */}
+            <motion.div 
+              className="absolute left-[11px] top-2 bottom-2 w-[2px] bg-gradient-to-b from-rose-500 via-blue-500 via-amber-500 to-emerald-500 rounded-full"
+              initial={{ scaleY: 0 }}
+              animate={{ scaleY: 1 }}
+              transition={{ delay: 0.3, duration: 0.5, ease: 'easeOut' }}
+              style={{ originY: 0 }}
+            />
+            
+            {/* Timeline Items */}
+            <div className="flex flex-col flex-1 justify-evenly">
+              {contentTypes.map((type, index) => (
+                <motion.button
+                  key={type.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ 
+                    delay: 0.4 + index * 0.08, 
+                    type: 'spring', 
+                    stiffness: 400, 
+                    damping: 30 
+                  }}
+                  onClick={() => onSelect(type.id)}
+                  className="group relative flex items-center gap-5 py-4 text-left focus:outline-none"
+                >
+                  {/* Timeline Node */}
+                  <motion.div 
+                    className={cn(
+                      "relative z-10 w-6 h-6 rounded-full shadow-lg flex items-center justify-center",
+                      "transition-all duration-300",
+                      "group-hover:scale-110 group-hover:shadow-xl",
+                      type.nodeColor
+                    )}
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ 
+                      delay: 0.35 + index * 0.08, 
+                      type: 'spring', 
+                      stiffness: 500, 
+                      damping: 25 
+                    }}
+                  >
+                    <type.icon className="h-3 w-3 text-white" />
+                  </motion.div>
+                  
+                  {/* Horizontal Connector */}
+                  <motion.div 
+                    className="w-6 h-[2px] bg-border/40 group-hover:bg-border/60 transition-colors"
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ delay: 0.45 + index * 0.08, duration: 0.2 }}
+                    style={{ originX: 0 }}
+                  />
+                  
+                  {/* Content */}
+                  <div className="flex-1 flex flex-col gap-0.5 transition-transform duration-200 group-hover:translate-x-1">
+                    <span className="text-lg font-semibold text-foreground tracking-wide">
+                      {type.title}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      {type.description}
+                    </span>
+                  </div>
+                  
+                  {/* Action Indicator */}
+                  <ChevronRight 
+                    className="h-5 w-5 text-muted-foreground/30 transition-all duration-200 group-hover:text-muted-foreground group-hover:translate-x-1" 
+                  />
+                </motion.button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -180,7 +210,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
+        transition={{ delay: 0.6 }}
         className="relative z-10 p-4 border-t border-border/30 bg-card/20 backdrop-blur-sm"
       >
         <button 
