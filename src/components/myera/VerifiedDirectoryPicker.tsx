@@ -177,7 +177,7 @@ export function VerifiedDirectoryPicker({
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.02 }}
-                  className="flex items-center gap-3 p-3 rounded-xl bg-card/40 border border-white/[0.06] hover:bg-card/60 transition-colors"
+                  className="flex items-center gap-3 p-3 bg-card/40 border border-white/[0.06] hover:bg-card/60 transition-colors"
                 >
                   <CinematicAvatar
                     src={profile.avatar_url || undefined}

@@ -117,7 +117,7 @@ export function EraAccountStatusCard({
 
   return (
     <motion.div
-      className="rounded-2xl bg-card/40 backdrop-blur-lg border border-white/[0.06] p-5"
+      className="bg-card/40 backdrop-blur-lg border border-white/[0.06] p-5"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={springGentle}

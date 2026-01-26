@@ -6,7 +6,7 @@ interface SkeletonLoaderProps {
 }
 
 export function SkeletonLoader({ className, variant = 'text' }: SkeletonLoaderProps) {
-  const baseClasses = 'skeleton-shimmer rounded-lg';
+  const baseClasses = 'skeleton-shimmer';
   
   const variantClasses = {
     text: 'h-4 w-full',
@@ -22,7 +22,7 @@ export function SkeletonLoader({ className, variant = 'text' }: SkeletonLoaderPr
 
 export function PostCardSkeleton() {
   return (
-    <div className="rounded-xl border border-border bg-card p-4 space-y-4">
+    <div className="border border-border bg-card p-4 space-y-4">
       <div className="flex items-center gap-3">
         <SkeletonLoader variant="avatar" />
         <div className="space-y-2 flex-1">
@@ -31,8 +31,8 @@ export function PostCardSkeleton() {
         </div>
       </div>
       <div className="flex gap-2">
-        <SkeletonLoader className="h-6 w-16 rounded-full" />
-        <SkeletonLoader className="h-6 w-20 rounded-full" />
+        <SkeletonLoader className="h-6 w-16" />
+        <SkeletonLoader className="h-6 w-20" />
       </div>
       <SkeletonLoader className="h-4 w-full" />
       <SkeletonLoader className="h-4 w-3/4" />

@@ -63,13 +63,13 @@ export function CreatorView({
     >
       {/* Creator Dashboard Header */}
       <motion.div
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500/15 via-orange-500/10 to-card/40 backdrop-blur-lg border border-amber-500/20 p-5"
+        className="relative overflow-hidden bg-gradient-to-br from-amber-500/15 via-orange-500/10 to-card/40 backdrop-blur-lg border border-amber-500/20 p-5"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ ...springGentle, delay: 0.25 }}
       >
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center flex-shrink-0">
+          <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center flex-shrink-0">
             <Sparkles className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1">
@@ -97,7 +97,7 @@ export function CreatorView({
         transition={{ ...springGentle, delay: 0.3 }}
       >
         {/* Subscriber Count */}
-        <div className="rounded-2xl bg-card/40 border border-white/[0.06] p-4">
+        <div className="bg-card/40 border border-white/[0.06] p-4">
           <div className="flex items-center gap-2 mb-2">
             <Users className="w-4 h-4 text-primary" />
             <span className="text-xs text-muted-foreground">Subscribers</span>
@@ -106,7 +106,7 @@ export function CreatorView({
         </div>
 
         {/* Visibility Tier */}
-        <div className="rounded-2xl bg-card/40 border border-white/[0.06] p-4">
+        <div className="bg-card/40 border border-white/[0.06] p-4">
           <div className="flex items-center gap-2 mb-2">
             <Eye className="w-4 h-4 text-primary" />
             <span className="text-xs text-muted-foreground">Visibility Tier</span>
@@ -137,14 +137,14 @@ export function CreatorView({
 
         <div className="grid grid-cols-2 gap-3">
           {/* Pending */}
-          <div className="rounded-xl bg-amber-500/10 border border-amber-500/20 p-4 text-center">
+          <div className="bg-amber-500/10 border border-amber-500/20 p-4 text-center">
             <Clock className="w-5 h-5 mx-auto mb-1 text-amber-400" />
             <p className="text-xl font-bold text-foreground">{pendingInteractions}</p>
             <p className="text-xs text-muted-foreground">Pending</p>
           </div>
 
           {/* Confirmed */}
-          <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-4 text-center">
+          <div className="bg-emerald-500/10 border border-emerald-500/20 p-4 text-center">
             <Check className="w-5 h-5 mx-auto mb-1 text-emerald-400" />
             <p className="text-xl font-bold text-foreground">{confirmedInteractions}</p>
             <p className="text-xs text-muted-foreground">Confirmed</p>
@@ -187,14 +187,14 @@ export function CreatorView({
 
       {/* Tier Info */}
       <motion.div
-        className="rounded-2xl bg-card/30 border border-white/5 p-4"
+        className="bg-card/30 border border-white/5 p-4"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ ...springGentle, delay: 0.5 }}
       >
         <div className="flex items-center gap-3">
           <div 
-            className="w-10 h-10 rounded-xl flex items-center justify-center"
+            className="w-10 h-10 flex items-center justify-center"
             style={{ backgroundColor: `${tierConfig.color}20` }}
           >
             <div 
