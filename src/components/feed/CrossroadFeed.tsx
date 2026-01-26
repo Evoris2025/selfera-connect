@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence, PanInfo } from 'framer-motion';
+import { Heart } from 'lucide-react';
 import { PostCard } from '@/components/PostCard';
 import { PostCardSkeleton } from '@/components/SkeletonLoader';
+import { useFeedReactions } from '@/hooks/useFeedReactions';
+import { useAuth } from '@/contexts/AuthContext';
 import type { ContentType } from '@/hooks/useCrossroadScroll';
 
 export interface FeedPost {
@@ -37,6 +40,79 @@ interface CrossroadFeedProps {
   onLoadMore?: () => void;
 }
 
+// Haptic feedback utility
+const triggerHaptic = (pattern: number | number[] = 10) => {
+  if (navigator.vibrate) {
+    navigator.vibrate(pattern);
+  }
+};
+
+// Double tap detection hook
+function useDoubleTap(callback: () => void, delay = 300) {
+  const lastTapRef = useRef<number>(0);
+
+  const handleTap = useCallback(() => {
+    const now = Date.now();
+    if (now - lastTapRef.current < delay) {
+      callback();
+      lastTapRef.current = 0;
+    } else {
+      lastTapRef.current = now;
+    }
+  }, [callback, delay]);
+
+  return handleTap;
+}
+
+// Heart overlay component for double-tap feedback
+function HeartOverlay({ show }: { show: boolean }) {
+  return (
+    <AnimatePresence>
+      {show && (
+        <motion.div
+          className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ 
+              scale: [0, 1.4, 1.2],
+              opacity: [0, 1, 1]
+            }}
+            exit={{ 
+              scale: 1.5,
+              opacity: 0
+            }}
+            transition={{ 
+              duration: 0.4,
+              ease: [0.22, 1, 0.36, 1]
+            }}
+          >
+            <Heart className="h-24 w-24 fill-red-500 text-red-500 drop-shadow-lg" />
+          </motion.div>
+          {/* Particle burst effect */}
+          {[...Array(6)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-3 h-3 bg-red-500 rounded-full"
+              initial={{ scale: 0, x: 0, y: 0, opacity: 1 }}
+              animate={{
+                scale: [0, 1, 0],
+                x: Math.cos((i * 60 * Math.PI) / 180) * 80,
+                y: Math.sin((i * 60 * Math.PI) / 180) * 80,
+                opacity: [1, 1, 0],
+              }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            />
+          ))}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 export function CrossroadFeed({
   posts,
   loading,
@@ -46,9 +122,18 @@ export function CrossroadFeed({
   onPostClick,
   onLoadMore,
 }: CrossroadFeedProps) {
+  const { user } = useAuth();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [showHeartOverlay, setShowHeartOverlay] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Get current post's reaction handler
+  const currentPost = posts[currentIndex];
+  const { currentReaction, setReaction } = useFeedReactions(
+    currentPost?.id || '', 
+    currentPost?.likes || 0
+  );
 
   // Reset index when posts change significantly
   useEffect(() => {
@@ -64,6 +149,23 @@ export function CrossroadFeed({
     }
   }, [currentIndex, posts.length, hasMore, onLoadMore, loadingMore]);
 
+  const handleDoubleTapLike = useCallback(() => {
+    if (!user || !currentPost) return;
+    
+    // Haptic feedback for double-tap like
+    triggerHaptic([10, 30, 10]);
+    
+    setShowHeartOverlay(true);
+    setTimeout(() => setShowHeartOverlay(false), 800);
+    
+    // Only like if not already liked
+    if (!currentReaction) {
+      setReaction('like');
+    }
+  }, [user, currentPost, currentReaction, setReaction]);
+
+  const handleDoubleTap = useDoubleTap(handleDoubleTapLike);
+
   const handleDragStart = useCallback(() => {
     setIsDragging(true);
   }, []);
@@ -75,13 +177,21 @@ export function CrossroadFeed({
       const velocity = info.velocity.y;
       const offset = info.offset.y;
 
+      let newIndex = currentIndex;
+
       // Swipe up = next post
       if ((offset < -threshold || velocity < -500) && currentIndex < posts.length - 1) {
-        setCurrentIndex((prev) => prev + 1);
+        newIndex = currentIndex + 1;
       }
       // Swipe down = previous post
       else if ((offset > threshold || velocity > 500) && currentIndex > 0) {
-        setCurrentIndex((prev) => prev - 1);
+        newIndex = currentIndex - 1;
+      }
+
+      if (newIndex !== currentIndex) {
+        // Haptic feedback for successful swipe
+        triggerHaptic(15);
+        setCurrentIndex(newIndex);
       }
     },
     [currentIndex, posts.length]
@@ -92,15 +202,23 @@ export function CrossroadFeed({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowDown' || e.key === 'j') {
         e.preventDefault();
-        setCurrentIndex((prev) => Math.min(prev + 1, posts.length - 1));
+        const newIndex = Math.min(currentIndex + 1, posts.length - 1);
+        if (newIndex !== currentIndex) {
+          triggerHaptic(10);
+          setCurrentIndex(newIndex);
+        }
       } else if (e.key === 'ArrowUp' || e.key === 'k') {
         e.preventDefault();
-        setCurrentIndex((prev) => Math.max(prev - 1, 0));
+        const newIndex = Math.max(currentIndex - 1, 0);
+        if (newIndex !== currentIndex) {
+          triggerHaptic(10);
+          setCurrentIndex(newIndex);
+        }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [posts.length]);
+  }, [currentIndex, posts.length]);
 
   // Skeletons only on initial load
   if (loading && posts.length === 0) {
@@ -125,8 +243,8 @@ export function CrossroadFeed({
   return (
     <div 
       ref={containerRef}
-      className="relative flex-1 overflow-hidden touch-none"
-      style={{ height: 'calc(100dvh - 200px)' }}
+      className="relative flex-1 overflow-hidden touch-none pb-20"
+      style={{ height: 'calc(100dvh - 280px)' }}
     >
       {refreshing && (
         <div className="absolute top-2 left-1/2 -translate-x-1/2 z-50">
@@ -143,6 +261,7 @@ export function CrossroadFeed({
           dragElastic={0.2}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
+          onTap={handleDoubleTap}
           initial={{ y: isDragging ? 0 : '100%', opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: '-100%', opacity: 0 }}
@@ -160,6 +279,9 @@ export function CrossroadFeed({
               />
             </div>
           )}
+          
+          {/* Double-tap heart overlay */}
+          <HeartOverlay show={showHeartOverlay} />
         </motion.div>
       </AnimatePresence>
 
@@ -171,7 +293,10 @@ export function CrossroadFeed({
           return (
             <button
               key={post.id}
-              onClick={() => setCurrentIndex(actualIndex)}
+              onClick={() => {
+                triggerHaptic(5);
+                setCurrentIndex(actualIndex);
+              }}
               className={`w-1 rounded-full transition-all duration-200 ${
                 isActive 
                   ? 'h-6 bg-primary' 
