@@ -286,6 +286,7 @@ export function ExpressionViewer({ isOpen, onClose, initialIndex = 0 }: Expressi
                 active={liked[currentExpression.id] || false}
                 onClick={handleLike}
                 size="lg"
+                layout="vertical"
               />
             </div>
 
