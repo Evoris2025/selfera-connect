@@ -66,7 +66,7 @@ function ImageCard({ image, index, onClick }: ImageCardProps) {
 }
 
 function ImageCardSkeleton() {
-  return <Skeleton className="aspect-square rounded-xl" />;
+  return <Skeleton shimmer className="aspect-square rounded-xl" />;
 }
 
 interface ImageViewerProps {
