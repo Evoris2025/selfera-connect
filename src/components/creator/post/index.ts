@@ -5,3 +5,4 @@ export { LocationPicker, type Location } from './LocationPicker';
 export { ScheduleSelector } from './ScheduleSelector';
 export { GifPicker, type GifData } from './GifPicker';
 export { ThreadComposer, type ThreadItem } from './ThreadComposer';
+export { LinkPreviewCard, useLinkPreview, extractUrls, type LinkPreviewData } from './LinkPreviewCard';

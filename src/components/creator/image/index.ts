@@ -4,3 +4,4 @@ export { AdjustmentPanel, getAdjustmentStyles, type ImageAdjustments } from './A
 export { FilterLibrary, getFilterClass, filters, type ImageFilter, type FilterCategory } from './FilterLibrary';
 export { UserTagOverlay, type UserTag } from './UserTagOverlay';
 export { AltTextInput } from './AltTextInput';
+export { GalleryGrid } from './GalleryGrid';
