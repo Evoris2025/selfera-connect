@@ -95,7 +95,7 @@ function VideoCard({ video, index }: VideoCardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
     >
-      <Card className="overflow-hidden cursor-pointer group hover:border-primary/30 transition-all flex-shrink-0 w-[280px]">
+      <Card className="overflow-hidden cursor-pointer group hover:border-primary/30 transition-all w-full">
         <div className="relative aspect-video bg-secondary overflow-hidden">
           <img 
             src={video.thumbnail} 
@@ -140,7 +140,7 @@ function VideoCard({ video, index }: VideoCardProps) {
 
 function VideoCardSkeleton() {
   return (
-    <Card className="overflow-hidden flex-shrink-0 w-[280px]">
+    <Card className="overflow-hidden w-full">
       <Skeleton shimmer className="aspect-video" />
       <div className="p-3">
         <div className="flex gap-3">
@@ -177,9 +177,9 @@ function VideoSection({ title, icon, videos, isLoading }: VideoSectionProps) {
           <ChevronRight className="h-4 w-4" />
         </button>
       </div>
-      <div className="flex gap-3 overflow-x-auto px-4 pb-2 scrollbar-hide">
+      <div className="grid grid-cols-2 gap-3 px-4">
         {isLoading ? (
-          Array.from({ length: 3 }).map((_, i) => (
+          Array.from({ length: 2 }).map((_, i) => (
             <VideoCardSkeleton key={i} />
           ))
         ) : (
