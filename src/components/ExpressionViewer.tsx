@@ -12,7 +12,7 @@ import { ExpressionReactionPicker } from '@/components/expressions/ExpressionRea
 import { ExpressionAnalyticsCard, useExpressionAnalytics } from '@/components/expressions/ExpressionAnalyticsCard';
 import { HeartButton } from '@/components/interactions/HeartButton';
 import { HashtagText } from '@/components/HashtagText';
-import { toast } from '@/hooks/use-toast';
+import { useExpressionInteractions } from '@/hooks/useExpressionInteractions';
 import { cn } from '@/lib/utils';
 
 function formatCount(count: number): string {
@@ -54,6 +54,9 @@ export function ExpressionViewer({ isOpen, onClose, initialIndex = 0 }: Expressi
   
   // Get analytics for the current expression
   const { analytics } = useExpressionAnalytics(currentExpression?.id || '');
+  
+  // Get interaction methods for persisting replies
+  const { addReply, recordView } = useExpressionInteractions(currentExpression?.id || '');
 
   // Reset index when opening
   useEffect(() => {
@@ -155,15 +158,20 @@ export function ExpressionViewer({ isOpen, onClose, initialIndex = 0 }: Expressi
     if (navigator.vibrate) navigator.vibrate(10);
   }, [currentExpression]);
 
-  const handleSendReply = useCallback(() => {
+  const handleSendReply = useCallback(async () => {
     if (!replyText.trim() || !currentExpression) return;
-    toast({
-      description: `Reply sent to @${currentExpression.userName.toLowerCase().replace(/\s+/g, '_')}`,
-    });
+    
+    // Persist reply to database
+    try {
+      await addReply.mutateAsync(replyText.trim());
+    } catch (error) {
+      console.error('Failed to save reply:', error);
+    }
+    
     setReplyText('');
     setShowReplyInput(false);
     if (navigator.vibrate) navigator.vibrate([10, 30, 10]);
-  }, [replyText, currentExpression]);
+  }, [replyText, currentExpression, addReply]);
 
   const handleReaction = useCallback((emoji: string) => {
     setSentReaction(emoji);

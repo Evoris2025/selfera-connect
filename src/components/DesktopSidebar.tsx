@@ -8,6 +8,7 @@ import {
   User,
   Heart,
   Settings,
+  BarChart3,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CrisisWidget } from './CrisisWidget';
@@ -23,6 +24,7 @@ const mainNavItems = [
 ];
 
 const secondaryNavItems = [
+  { icon: BarChart3, label: 'Creator Dashboard', href: '/creator-dashboard' },
   { icon: Settings, label: 'nav.settings', href: '/settings' },
 ];
 

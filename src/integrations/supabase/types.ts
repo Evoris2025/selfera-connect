@@ -458,6 +458,126 @@ export type Database = {
         }
         Relationships: []
       }
+      expression_reactions: {
+        Row: {
+          created_at: string
+          emoji: string
+          expression_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          emoji: string
+          expression_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          emoji?: string
+          expression_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expression_reactions_expression_id_fkey"
+            columns: ["expression_id"]
+            isOneToOne: false
+            referencedRelation: "expressions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expression_reactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      expression_replies: {
+        Row: {
+          content: string
+          created_at: string
+          expression_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          expression_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          expression_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expression_replies_expression_id_fkey"
+            columns: ["expression_id"]
+            isOneToOne: false
+            referencedRelation: "expressions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expression_replies_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      expression_views: {
+        Row: {
+          completed: boolean | null
+          expression_id: string
+          id: string
+          viewed_at: string
+          viewer_id: string
+          watch_duration_seconds: number | null
+        }
+        Insert: {
+          completed?: boolean | null
+          expression_id: string
+          id?: string
+          viewed_at?: string
+          viewer_id: string
+          watch_duration_seconds?: number | null
+        }
+        Update: {
+          completed?: boolean | null
+          expression_id?: string
+          id?: string
+          viewed_at?: string
+          viewer_id?: string
+          watch_duration_seconds?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expression_views_expression_id_fkey"
+            columns: ["expression_id"]
+            isOneToOne: false
+            referencedRelation: "expressions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expression_views_viewer_id_fkey"
+            columns: ["viewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       expressions: {
         Row: {
           created_at: string
@@ -914,6 +1034,44 @@ export type Database = {
           user_type?: Database["public"]["Enums"]["user_type"] | null
         }
         Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth_key: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh_key: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auth_key: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh_key: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auth_key?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh_key?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "push_subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reactions: {
         Row: {
