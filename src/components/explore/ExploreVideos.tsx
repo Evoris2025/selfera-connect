@@ -1,9 +1,12 @@
+import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Play, Clock, Users, Compass, ChevronRight, TrendingUp, Eye, Upload } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
+import { PullToRefresh } from '@/components/ui/PullToRefresh';
+import { ExploreFilters, FilterType, DateRange } from './ExploreFilters';
 
 // Mock video data
 const forYouVideos = [
@@ -197,42 +200,66 @@ interface ExploreVideosProps {
 }
 
 export function ExploreVideos({ isLoading = false }: ExploreVideosProps) {
+  const [activeFilter, setActiveFilter] = useState<FilterType>('trending');
+  const [dateRange, setDateRange] = useState<DateRange>('7d');
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    setIsRefreshing(false);
+  }, []);
+
+  const loading = isLoading || isRefreshing;
+
   return (
-    <div className="py-4 space-y-6">
-      <VideoSection
-        title="For you right now"
-        icon={<Compass className="h-5 w-5 text-primary" />}
-        videos={forYouVideos}
-        isLoading={isLoading}
-      />
-      
-      <VideoSection
-        title="Creators you follow"
-        icon={<Users className="h-5 w-5 text-emerald-400" />}
-        videos={followingVideos}
-        isLoading={isLoading}
-      />
-      
-      <VideoSection
-        title="Trending videos"
-        icon={<TrendingUp className="h-5 w-5 text-rose-500" />}
-        videos={trendingVideos}
-        isLoading={isLoading}
-      />
-      
-      <VideoSection
-        title="Most watched"
-        icon={<Eye className="h-5 w-5 text-accent" />}
-        videos={mostWatchedVideos}
-        isLoading={isLoading}
-      />
-      
-      <VideoSection
-        title="Recently uploaded"
-        icon={<Upload className="h-5 w-5 text-muted-foreground" />}
-        videos={recentVideos}
-        isLoading={isLoading}
-      />
-    </div>
+    <PullToRefresh onRefresh={handleRefresh} className="h-full">
+      <div className="py-4 space-y-6">
+        {/* Filter bar */}
+        <div className="px-4">
+          <ExploreFilters
+            activeFilter={activeFilter}
+            dateRange={dateRange}
+            onFilterChange={setActiveFilter}
+            onDateRangeChange={setDateRange}
+          />
+        </div>
+
+        <VideoSection
+          title="For you right now"
+          icon={<Compass className="h-5 w-5 text-primary" />}
+          videos={forYouVideos}
+          isLoading={loading}
+        />
+        
+        <VideoSection
+          title="Creators you follow"
+          icon={<Users className="h-5 w-5 text-emerald-400" />}
+          videos={followingVideos}
+          isLoading={loading}
+        />
+        
+        <VideoSection
+          title="Trending videos"
+          icon={<TrendingUp className="h-5 w-5 text-rose-500" />}
+          videos={trendingVideos}
+          isLoading={loading}
+        />
+        
+        <VideoSection
+          title="Most watched"
+          icon={<Eye className="h-5 w-5 text-accent" />}
+          videos={mostWatchedVideos}
+          isLoading={loading}
+        />
+        
+        <VideoSection
+          title="Recently uploaded"
+          icon={<Upload className="h-5 w-5 text-muted-foreground" />}
+          videos={recentVideos}
+          isLoading={loading}
+        />
+      </div>
+    </PullToRefresh>
   );
 }

@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TrendingUp, Flame, Users, Clock, Heart, X, Share2, Bookmark } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
+import { PullToRefresh } from '@/components/ui/PullToRefresh';
+import { ExploreFilters, FilterType, DateRange } from './ExploreFilters';
 import { cn } from '@/lib/utils';
 
 // Mock image data
@@ -166,42 +168,65 @@ interface ExploreImagesProps {
 
 export function ExploreImages({ isLoading = false }: ExploreImagesProps) {
   const [selectedImage, setSelectedImage] = useState<typeof trendingImages[0] | null>(null);
+  const [activeFilter, setActiveFilter] = useState<FilterType>('trending');
+  const [dateRange, setDateRange] = useState<DateRange>('7d');
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    setIsRefreshing(false);
+  }, []);
+
+  const loading = isLoading || isRefreshing;
 
   return (
     <>
-      <div className="py-4 space-y-6">
-        <ImageSection
-          title="Trending visuals"
-          icon={<TrendingUp className="h-5 w-5 text-rose-500" />}
-          images={trendingImages}
-          isLoading={isLoading}
-          onImageClick={setSelectedImage}
-        />
-        
-        <ImageSection
-          title="Popular this week"
-          icon={<Flame className="h-5 w-5 text-orange-500" />}
-          images={popularWeekImages}
-          isLoading={isLoading}
-          onImageClick={setSelectedImage}
-        />
-        
-        <ImageSection
-          title="From communities you follow"
-          icon={<Users className="h-5 w-5 text-emerald-400" />}
-          images={communityImages}
-          isLoading={isLoading}
-          onImageClick={setSelectedImage}
-        />
-        
-        <ImageSection
-          title="Recently added"
-          icon={<Clock className="h-5 w-5 text-muted-foreground" />}
-          images={recentImages}
-          isLoading={isLoading}
-          onImageClick={setSelectedImage}
-        />
-      </div>
+      <PullToRefresh onRefresh={handleRefresh} className="h-full">
+        <div className="py-4 space-y-6">
+          {/* Filter bar */}
+          <div className="px-4">
+            <ExploreFilters
+              activeFilter={activeFilter}
+              dateRange={dateRange}
+              onFilterChange={setActiveFilter}
+              onDateRangeChange={setDateRange}
+            />
+          </div>
+
+          <ImageSection
+            title="Trending visuals"
+            icon={<TrendingUp className="h-5 w-5 text-rose-500" />}
+            images={trendingImages}
+            isLoading={loading}
+            onImageClick={setSelectedImage}
+          />
+          
+          <ImageSection
+            title="Popular this week"
+            icon={<Flame className="h-5 w-5 text-orange-500" />}
+            images={popularWeekImages}
+            isLoading={loading}
+            onImageClick={setSelectedImage}
+          />
+          
+          <ImageSection
+            title="From communities you follow"
+            icon={<Users className="h-5 w-5 text-emerald-400" />}
+            images={communityImages}
+            isLoading={loading}
+            onImageClick={setSelectedImage}
+          />
+          
+          <ImageSection
+            title="Recently added"
+            icon={<Clock className="h-5 w-5 text-muted-foreground" />}
+            images={recentImages}
+            isLoading={loading}
+            onImageClick={setSelectedImage}
+          />
+        </div>
+      </PullToRefresh>
 
       <ImageViewer image={selectedImage} onClose={() => setSelectedImage(null)} />
     </>
