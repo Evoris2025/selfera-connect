@@ -1,7 +1,7 @@
 /**
- * Expression Analytics Hook
+ * Creator Analytics Hook
  * 
- * Fetches real analytics data for expressions from the database
+ * Fetches real analytics data for expressions, posts, videos, and images from the database
  */
 
 import { useQuery } from '@tanstack/react-query';
@@ -19,16 +19,42 @@ export interface ExpressionAnalytics {
   reactionsByDay: { date: string; reactions: number }[];
 }
 
+export interface ContentItem {
+  id: string;
+  type: 'expression' | 'post' | 'video' | 'image';
+  mediaUrl: string | null;
+  thumbnailUrl: string | null;
+  views: number;
+  reactions: number;
+  comments: number;
+  createdAt: string;
+}
+
 export interface AggregatedCreatorAnalytics {
+  // Content counts
   totalExpressions: number;
+  totalPosts: number;
+  totalVideos: number;
+  totalImages: number;
+  totalContent: number;
+  
+  // Engagement metrics
   totalViews: number;
   totalReactions: number;
   totalReplies: number;
+  totalComments: number;
   avgCompletionRate: number;
   avgWatchTime: number;
+  
+  // Trends
   viewsTrend: { date: string; views: number }[];
   reactionsTrend: { date: string; reactions: number }[];
   repliesTrend: { date: string; replies: number }[];
+  
+  // Top content across all types
+  topContent: ContentItem[];
+  
+  // Legacy support
   topExpressions: {
     id: string;
     mediaUrl: string;
@@ -43,9 +69,9 @@ interface DateItem {
   [key: string]: unknown;
 }
 
-function getViewsByDay(items: DateItem[], dateField: string, days: number): { date: string; views: number }[] {
+function getCountByDay(items: DateItem[], dateField: string, days: number, key: string): { date: string; [key: string]: number | string }[] {
   const now = new Date();
-  const result: { date: string; views: number }[] = [];
+  const result: { date: string; [key: string]: number | string }[] = [];
 
   for (let i = days - 1; i >= 0; i--) {
     const date = new Date(now);
@@ -57,50 +83,22 @@ function getViewsByDay(items: DateItem[], dateField: string, days: number): { da
       return itemDate.toISOString().split('T')[0] === dateStr;
     }).length;
 
-    result.push({ date: dateStr, views: count });
+    result.push({ date: dateStr, [key]: count });
   }
 
   return result;
+}
+
+function getViewsByDay(items: DateItem[], dateField: string, days: number): { date: string; views: number }[] {
+  return getCountByDay(items, dateField, days, 'views') as { date: string; views: number }[];
 }
 
 function getReactionsByDay(items: DateItem[], dateField: string, days: number): { date: string; reactions: number }[] {
-  const now = new Date();
-  const result: { date: string; reactions: number }[] = [];
-
-  for (let i = days - 1; i >= 0; i--) {
-    const date = new Date(now);
-    date.setDate(date.getDate() - i);
-    const dateStr = date.toISOString().split('T')[0];
-    
-    const count = items.filter(item => {
-      const itemDate = new Date(item[dateField] as string);
-      return itemDate.toISOString().split('T')[0] === dateStr;
-    }).length;
-
-    result.push({ date: dateStr, reactions: count });
-  }
-
-  return result;
+  return getCountByDay(items, dateField, days, 'reactions') as { date: string; reactions: number }[];
 }
 
 function getRepliesByDay(items: DateItem[], dateField: string, days: number): { date: string; replies: number }[] {
-  const now = new Date();
-  const result: { date: string; replies: number }[] = [];
-
-  for (let i = days - 1; i >= 0; i--) {
-    const date = new Date(now);
-    date.setDate(date.getDate() - i);
-    const dateStr = date.toISOString().split('T')[0];
-    
-    const count = items.filter(item => {
-      const itemDate = new Date(item[dateField] as string);
-      return itemDate.toISOString().split('T')[0] === dateStr;
-    }).length;
-
-    result.push({ date: dateStr, replies: count });
-  }
-
-  return result;
+  return getCountByDay(items, dateField, days, 'replies') as { date: string; replies: number }[];
 }
 
 export function useExpressionAnalytics(expressionId: string) {
@@ -184,68 +182,163 @@ export function useCreatorAnalytics() {
 
       if (expressionsError) throw expressionsError;
 
+      // Fetch all user's posts (including videos and images)
+      const { data: posts, error: postsError } = await supabase
+        .from('posts')
+        .select('id, media_url, thumbnail_url, media_type, created_at')
+        .eq('author_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (postsError) throw postsError;
+
+      // Categorize posts by type
+      const videoPosts = posts?.filter(p => p.media_type === 'video') || [];
+      const imagePosts = posts?.filter(p => p.media_type === 'image') || [];
+      const textPosts = posts?.filter(p => !p.media_type || p.media_type === 'text') || [];
+
       const expressionIds = expressions?.map(e => e.id) || [];
+      const postIds = posts?.map(p => p.id) || [];
       
-      if (expressionIds.length === 0) {
-        return {
-          totalExpressions: 0,
-          totalViews: 0,
-          totalReactions: 0,
-          totalReplies: 0,
-          avgCompletionRate: 0,
-          avgWatchTime: 0,
-          viewsTrend: [],
-          reactionsTrend: [],
-          repliesTrend: [],
-          topExpressions: [],
-        };
+      // Initialize empty analytics
+      let totalExpressionViews = 0;
+      let totalExpressionReactions = 0;
+      let totalExpressionReplies = 0;
+      let avgCompletionRate = 0;
+      let avgWatchTime = 0;
+      let allViews: DateItem[] = [];
+      let allExpressionReactions: DateItem[] = [];
+      let allReplies: DateItem[] = [];
+
+      // Fetch expression analytics if there are expressions
+      if (expressionIds.length > 0) {
+        const { data: views, error: viewsError } = await supabase
+          .from('expression_views')
+          .select('*')
+          .in('expression_id', expressionIds);
+
+        if (viewsError) throw viewsError;
+        allViews = views || [];
+
+        const { data: reactions, error: reactionsError } = await supabase
+          .from('expression_reactions')
+          .select('*')
+          .in('expression_id', expressionIds);
+
+        if (reactionsError) throw reactionsError;
+        allExpressionReactions = reactions || [];
+
+        const { data: replies, error: repliesError } = await supabase
+          .from('expression_replies')
+          .select('*')
+          .in('expression_id', expressionIds);
+
+        if (repliesError) throw repliesError;
+        allReplies = replies || [];
+
+        totalExpressionViews = allViews.length;
+        totalExpressionReactions = allExpressionReactions.length;
+        totalExpressionReplies = allReplies.length;
+
+        const completedViews = allViews.filter(v => v.completed).length;
+        avgCompletionRate = totalExpressionViews > 0 ? Math.round((completedViews / totalExpressionViews) * 100) : 0;
+
+        const totalWatchTime = allViews.reduce((sum, v) => sum + ((v.watch_duration_seconds as number) || 0), 0);
+        avgWatchTime = totalExpressionViews > 0 ? Math.round(totalWatchTime / totalExpressionViews) : 0;
       }
 
-      // Fetch all views for user's expressions
-      const { data: allViews, error: viewsError } = await supabase
-        .from('expression_views')
-        .select('*')
-        .in('expression_id', expressionIds);
+      // Fetch post reactions and comments
+      let totalPostReactions = 0;
+      let totalComments = 0;
+      let allPostReactions: DateItem[] = [];
+      let allComments: DateItem[] = [];
 
-      if (viewsError) throw viewsError;
+      if (postIds.length > 0) {
+        const { data: reactions, error: reactionsError } = await supabase
+          .from('reactions')
+          .select('*')
+          .in('post_id', postIds);
 
-      // Fetch all reactions for user's expressions
-      const { data: allReactions, error: reactionsError } = await supabase
-        .from('expression_reactions')
-        .select('*')
-        .in('expression_id', expressionIds);
+        if (reactionsError) throw reactionsError;
+        allPostReactions = reactions || [];
+        totalPostReactions = allPostReactions.length;
 
-      if (reactionsError) throw reactionsError;
+        const { data: comments, error: commentsError } = await supabase
+          .from('comments')
+          .select('*')
+          .in('post_id', postIds)
+          .eq('is_removed', false);
 
-      // Fetch all replies for user's expressions
-      const { data: allReplies, error: repliesError } = await supabase
-        .from('expression_replies')
-        .select('*')
-        .in('expression_id', expressionIds);
+        if (commentsError) throw commentsError;
+        allComments = comments || [];
+        totalComments = allComments.length;
+      }
 
-      if (repliesError) throw repliesError;
+      // Combined totals
+      const totalViews = totalExpressionViews; // Note: Posts don't have a view tracking table yet
+      const totalReactions = totalExpressionReactions + totalPostReactions;
+      const totalReplies = totalExpressionReplies;
 
-      // Calculate totals
-      const totalViews = allViews?.length || 0;
-      const totalReactions = allReactions?.length || 0;
-      const totalReplies = allReplies?.length || 0;
+      // Trends (last 30 days) - combine expression views with post reactions for engagement
+      const viewsTrend = getViewsByDay(allViews, 'viewed_at', 30);
+      const reactionsTrend = getReactionsByDay([...allExpressionReactions, ...allPostReactions], 'created_at', 30);
+      const repliesTrend = getRepliesByDay([...allReplies, ...allComments], 'created_at', 30);
 
-      const completedViews = allViews?.filter(v => v.completed).length || 0;
-      const avgCompletionRate = totalViews > 0 ? Math.round((completedViews / totalViews) * 100) : 0;
+      // Build top content list across all types
+      const topContent: ContentItem[] = [];
 
-      const totalWatchTime = allViews?.reduce((sum, v) => sum + (v.watch_duration_seconds || 0), 0) || 0;
-      const avgWatchTime = totalViews > 0 ? Math.round(totalWatchTime / totalViews) : 0;
+      // Add expressions
+      expressions?.forEach(expr => {
+        const views = allViews.filter(v => v.expression_id === expr.id).length;
+        const reactions = allExpressionReactions.filter(r => r.expression_id === expr.id).length;
+        const comments = allReplies.filter(r => r.expression_id === expr.id).length;
+        topContent.push({
+          id: expr.id,
+          type: 'expression',
+          mediaUrl: expr.media_url,
+          thumbnailUrl: expr.thumbnail_url,
+          views,
+          reactions,
+          comments,
+          createdAt: expr.created_at,
+        });
+      });
 
-      // Trends (last 30 days)
-      const viewsTrend = getViewsByDay(allViews || [], 'viewed_at', 30);
-      const reactionsTrend = getReactionsByDay(allReactions || [], 'created_at', 30);
-      const repliesTrend = getRepliesByDay(allReplies || [], 'created_at', 30);
+      // Add posts (videos, images)
+      posts?.forEach(post => {
+        const reactions = allPostReactions.filter(r => r.post_id === post.id).length;
+        const comments = allComments.filter(c => c.post_id === post.id).length;
+        
+        let type: 'post' | 'video' | 'image' = 'post';
+        if (post.media_type === 'video') type = 'video';
+        else if (post.media_type === 'image') type = 'image';
+        
+        topContent.push({
+          id: post.id,
+          type,
+          mediaUrl: post.media_url,
+          thumbnailUrl: post.thumbnail_url,
+          views: 0, // Posts don't have view tracking yet
+          reactions,
+          comments,
+          createdAt: post.created_at || '',
+        });
+      });
 
-      // Top expressions by engagement
-      const expressionStats = expressions?.map(expr => {
-        const views = allViews?.filter(v => v.expression_id === expr.id).length || 0;
-        const reactions = allReactions?.filter(r => r.expression_id === expr.id).length || 0;
-        const replies = allReplies?.filter(r => r.expression_id === expr.id).length || 0;
+      // Sort by engagement and take top 10
+      const sortedTopContent = topContent
+        .map(item => ({
+          ...item,
+          engagement: item.views + item.reactions * 2 + item.comments * 3,
+        }))
+        .sort((a, b) => b.engagement - a.engagement)
+        .slice(0, 10)
+        .map(({ engagement, ...rest }) => rest);
+
+      // Legacy top expressions format
+      const topExpressions = expressions?.map(expr => {
+        const views = allViews.filter(v => v.expression_id === expr.id).length;
+        const reactions = allExpressionReactions.filter(r => r.expression_id === expr.id).length;
+        const replies = allReplies.filter(r => r.expression_id === expr.id).length;
         return {
           id: expr.id,
           mediaUrl: expr.media_url,
@@ -255,23 +348,27 @@ export function useCreatorAnalytics() {
           replies,
           engagement: views + reactions * 2 + replies * 3,
         };
-      }) || [];
-
-      const topExpressions = expressionStats
+      })
         .sort((a, b) => b.engagement - a.engagement)
         .slice(0, 5)
-        .map(({ engagement, ...rest }) => rest);
+        .map(({ engagement, ...rest }) => rest) || [];
 
       return {
         totalExpressions: expressions?.length || 0,
+        totalPosts: textPosts.length,
+        totalVideos: videoPosts.length,
+        totalImages: imagePosts.length,
+        totalContent: (expressions?.length || 0) + (posts?.length || 0),
         totalViews,
         totalReactions,
         totalReplies,
+        totalComments,
         avgCompletionRate,
         avgWatchTime,
         viewsTrend,
         reactionsTrend,
         repliesTrend,
+        topContent: sortedTopContent,
         topExpressions,
       };
     },
