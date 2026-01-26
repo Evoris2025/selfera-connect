@@ -548,14 +548,15 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
                 {/* Chapters - Collapsible */}
                 <ChapterEditor
                   chapters={chapters}
-                  onChaptersChange={setChapters}
+                  onChange={setChapters}
                   videoDuration={videoDuration}
                 />
 
                 {/* End Screen */}
                 <EndScreenEditor
                   elements={endScreenElements}
-                  onElementsChange={setEndScreenElements}
+                  onChange={setEndScreenElements}
+                  videoDuration={videoDuration}
                 />
               </div>
             </ScrollArea>
@@ -586,7 +587,7 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
               <div className="space-y-6">
                 <VisibilitySettings
                   visibility={visibility}
-                  onVisibilityChange={setVisibility}
+                  onChange={setVisibility}
                   scheduledDate={scheduledDate}
                   onScheduledDateChange={setScheduledDate}
                   commentsEnabled={commentsEnabled}
