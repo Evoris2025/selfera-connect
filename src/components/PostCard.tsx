@@ -11,7 +11,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { EraVerifiedTick } from './EraVerifiedTick';
+import { EraVerifiedTick, calculateVerificationTier } from './EraVerifiedTick';
+import { EraVerifiedTooltip } from './profile/EraVerifiedTooltip';
 import { AccountTypeBadge, AccountType } from './AccountTypeBadge';
 import { Hashtag } from './Hashtag';
 import { CommentButton, ShareButton, CommentSheet, CommunityButton } from './interactions';
@@ -173,7 +174,9 @@ function PostCardBase({
             <button onClick={handleCreatorClick} className="text-left hover:underline">
               <div className="flex items-center gap-1.5 flex-wrap">
                 <span className="font-semibold text-foreground text-[15px]">{author.name}</span>
-                {author.isVerified && <EraVerifiedTick size="sm" userEmail={author.email} />}
+                {author.isVerified && (
+                  <EraVerifiedTooltip tier={calculateVerificationTier(0, false, author.email)} userEmail={author.email} size="sm" />
+                )}
                 {author.accountType && <AccountTypeBadge type={author.accountType} size="sm" />}
               </div>
               <p className="text-muted-foreground text-sm">@{author.handle} · {createdAt}</p>
@@ -339,7 +342,9 @@ function PostCardBase({
               />
               <div className="flex items-center gap-1.5 flex-wrap">
                 <span className="font-semibold text-foreground text-[15px] drop-shadow-md">{author.name}</span>
-                {author.isVerified && <EraVerifiedTick size="sm" userEmail={author.email} />}
+                {author.isVerified && (
+                  <EraVerifiedTooltip tier={calculateVerificationTier(0, false, author.email)} userEmail={author.email} size="sm" />
+                )}
                 {author.accountType && <AccountTypeBadge type={author.accountType} size="sm" />}
                 <span className="text-foreground/70 text-sm drop-shadow-sm">@{author.handle}</span>
               </div>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Send } from 'lucide-react';
+import { Send, Flag, MoreHorizontal } from 'lucide-react';
 import { motion } from 'framer-motion';
 import {
   Drawer,
@@ -11,10 +11,18 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
 import { useComments } from '@/hooks/useComments';
 import { useMockComments } from '@/hooks/useMockComments';
 import { EraVerifiedTick } from '@/components/EraVerifiedTick';
+import { EraVerifiedTooltip } from '@/components/profile/EraVerifiedTooltip';
+import { ReportModal } from '@/components/moderation/ReportModal';
 
 interface CommentSheetProps {
   open: boolean;
@@ -40,6 +48,8 @@ export function CommentSheet({ open, onOpenChange, postId }: CommentSheetProps) 
   const { comments, commentCount, addComment } = isRealPost ? realComments : mockComments;
   const [comment, setComment] = useState('');
   const [isSending, setIsSending] = useState(false);
+  const [reportingCommentId, setReportingCommentId] = useState<string | null>(null);
+  const [reportingCommentAuthor, setReportingCommentAuthor] = useState<string>('');
 
   const handleSendComment = async () => {
     if (!comment.trim()) return;
@@ -82,7 +92,7 @@ export function CommentSheet({ open, onOpenChange, postId }: CommentSheetProps) 
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ ...springConfig, delay: index * 0.05 }}
-                className="flex gap-3"
+                className="flex gap-3 group"
               >
                 <Avatar className="h-8 w-8 flex-shrink-0">
                   <AvatarImage src={c.author.avatar} />
@@ -95,10 +105,33 @@ export function CommentSheet({ open, onOpenChange, postId }: CommentSheetProps) 
                     <span className="inline-flex items-center gap-1">
                       <span className="font-medium text-sm text-foreground">{c.author.name}</span>
                       {c.author.isVerified && (
-                        <EraVerifiedTick size="sm" userEmail={c.author.email} />
+                        <EraVerifiedTooltip userEmail={c.author.email} size="sm" />
                       )}
                     </span>
                     <span className="text-xs text-muted-foreground">{c.createdAt}</span>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity ml-auto"
+                        >
+                          <MoreHorizontal className="h-3.5 w-3.5" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-40">
+                        <DropdownMenuItem
+                          className="gap-2"
+                          onClick={() => {
+                            setReportingCommentId(c.id);
+                            setReportingCommentAuthor(c.author.name);
+                          }}
+                        >
+                          <Flag className="h-4 w-4" />
+                          Report comment
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                   <p className="text-sm text-foreground mt-0.5">{c.content}</p>
                 </div>
@@ -152,6 +185,20 @@ export function CommentSheet({ open, onOpenChange, postId }: CommentSheetProps) 
           </div>
         </motion.div>
       </DrawerContent>
+
+      {/* Comment Report Modal */}
+      <ReportModal
+        open={!!reportingCommentId}
+        onOpenChange={(open) => {
+          if (!open) {
+            setReportingCommentId(null);
+            setReportingCommentAuthor('');
+          }
+        }}
+        targetType="comment"
+        targetId={reportingCommentId || ''}
+        targetLabel={`${reportingCommentAuthor}'s comment`}
+      />
     </Drawer>
   );
 }
