@@ -24,8 +24,6 @@ const SIMULATION_MODE = true;
 interface PostComposerProps {
   onBack: () => void;
   onSuccess: () => void;
-  intent?: 'express' | 'share' | 'teach' | 'reflect' | null;
-  tone?: 'gentle' | 'neutral' | 'uplifting';
 }
 
 type Visibility = 'public' | 'followers' | 'private';
@@ -37,7 +35,7 @@ const visibilityOptions = [
   { value: 'private' as const, label: 'Only me', icon: Lock },
 ];
 
-export function PostComposer({ onBack, onSuccess, intent, tone }: PostComposerProps) {
+export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { createPost, isSimulationMode } = useFeedData();
