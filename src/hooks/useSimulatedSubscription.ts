@@ -1,91 +1,34 @@
 /**
  * SIMULATION MODE: Subscription Hook
  * 
- * Returns simulated subscription data for UI testing.
- * Falls back to real data if available in production mode.
+ * Returns simulated subscription data from MockSystemContext.
+ * Allows switching between different subscription scenarios for testing.
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
-import { 
-  getCurrentMockSubscription, 
-  MOCK_SUBSCRIPTIONS,
-  type MockSubscription 
-} from '@/data/mockSimulationData';
+import { useMockSystem, type SubscriptionScenario } from '@/contexts/MockSystemContext';
 import { PLAN_DETAILS, type SubscriptionPlan, type UserSubscription } from '@/hooks/useSubscription';
 
-const SIMULATION_MODE = true; // Toggle for simulation vs real data
-
 export function useSimulatedSubscription() {
-  const { user } = useAuth();
-  const [subscription, setSubscription] = useState<UserSubscription | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { state, setSubscriptionScenario } = useMockSystem();
+  const { subscription, currentScenarios } = state;
 
-  const fetchSubscription = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+  // Convert MockSubscriptionState to UserSubscription format
+  const userSubscription: UserSubscription = {
+    id: subscription.id,
+    user_id: 'mock-user',
+    plan: subscription.plan,
+    status: subscription.status,
+    billing_period: subscription.billing_period,
+    current_period_start: null,
+    current_period_end: subscription.current_period_end,
+    stripe_customer_id: null,
+    stripe_subscription_id: null,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
 
-    try {
-      // Try to fetch real data first
-      if (user?.id && !SIMULATION_MODE) {
-        const { data, error: fetchError } = await supabase
-          .from('user_subscriptions')
-          .select('*')
-          .eq('user_id', user.id)
-          .maybeSingle();
-
-        if (!fetchError && data) {
-          setSubscription(data as UserSubscription);
-          setLoading(false);
-          return;
-        }
-      }
-
-      // Fall back to simulation data
-      const mockSub = getCurrentMockSubscription();
-      setSubscription({
-        id: mockSub.id,
-        user_id: user?.id || 'mock-user',
-        plan: mockSub.plan,
-        status: mockSub.status,
-        billing_period: mockSub.billing_period,
-        current_period_start: mockSub.current_period_start,
-        current_period_end: mockSub.current_period_end,
-        stripe_customer_id: mockSub.stripe_customer_id,
-        stripe_subscription_id: mockSub.stripe_subscription_id,
-        created_at: mockSub.created_at,
-        updated_at: mockSub.updated_at,
-      });
-    } catch (err) {
-      console.error('Error fetching subscription:', err);
-      // On error, still provide simulation data
-      const mockSub = getCurrentMockSubscription();
-      setSubscription({
-        id: mockSub.id,
-        user_id: user?.id || 'mock-user',
-        plan: mockSub.plan,
-        status: mockSub.status,
-        billing_period: mockSub.billing_period,
-        current_period_start: mockSub.current_period_start,
-        current_period_end: mockSub.current_period_end,
-        stripe_customer_id: mockSub.stripe_customer_id,
-        stripe_subscription_id: mockSub.stripe_subscription_id,
-        created_at: mockSub.created_at,
-        updated_at: mockSub.updated_at,
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, [user?.id]);
-
-  useEffect(() => {
-    fetchSubscription();
-  }, [fetchSubscription]);
-
-  const currentPlan = subscription?.plan || 'free';
-  const isActive = subscription?.status === 'active' || subscription?.status === 'trialing';
+  const currentPlan = subscription.plan;
+  const isActive = subscription.status === 'active' || subscription.status === 'trialing';
 
   const getPlanDetails = (planId: SubscriptionPlan) => {
     return PLAN_DETAILS.find(p => p.id === planId);
@@ -102,29 +45,34 @@ export function useSimulatedSubscription() {
     return planId === 'free'; // Paid plans show "Coming soon"
   };
 
-  // Simulation helpers - get extended mock data
-  const getExtendedMockData = () => {
-    const mock = getCurrentMockSubscription();
-    return {
-      tier_colour: mock.tier_colour,
-      amount_due: mock.amount_due,
-      subscriber_count: mock.subscriber_count,
-    };
+  // Get extended mock data for billing UI
+  const mockData = {
+    tier_colour: subscription.tier_colour,
+    amount_due: subscription.amount_due,
+    subscriber_count: subscription.subscriber_count,
+  };
+
+  // Scenario switching for testing
+  const switchScenario = (scenario: SubscriptionScenario) => {
+    setSubscriptionScenario(scenario);
   };
 
   return {
-    subscription,
+    subscription: userSubscription,
     currentPlan,
     isActive,
-    loading,
-    error,
-    refresh: fetchSubscription,
+    loading: false, // Always ready in simulation mode
+    error: null,
+    refresh: () => {}, // No-op in simulation mode
     getPlanDetails,
     canUpgradeTo,
     isPlanAvailable,
     allPlans: PLAN_DETAILS,
     // Simulation extras
-    mockData: getExtendedMockData(),
-    isSimulated: SIMULATION_MODE || !user?.id,
+    mockData,
+    isSimulated: true,
+    currentScenario: currentScenarios.subscription,
+    switchScenario,
+    availableScenarios: ['free', 'creator', 'professional', 'organization', 'past_due'] as SubscriptionScenario[],
   };
 }

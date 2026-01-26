@@ -1,21 +1,13 @@
 /**
  * SIMULATION MODE: Verification Hook
  * 
- * Returns simulated verification request data for UI testing.
- * Falls back to real data if available.
+ * Returns simulated verification request data from MockSystemContext.
+ * Allows switching between different verification scenarios for testing.
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
-import { 
-  getCurrentMockVerification, 
-  MOCK_VERIFICATION_REQUESTS,
-  type MockVerificationRequest 
-} from '@/data/mockSimulationData';
+import { useCallback } from 'react';
+import { useMockSystem, type VerificationScenario } from '@/contexts/MockSystemContext';
 import { toast } from '@/hooks/use-toast';
-
-const SIMULATION_MODE = true;
 
 export type VerificationStatus = 'pending' | 'approved' | 'rejected';
 
@@ -51,176 +43,76 @@ export interface SubmitVerificationData {
 }
 
 export function useSimulatedVerification() {
-  const { user } = useAuth();
-  const [myRequest, setMyRequest] = useState<VerificationRequest | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { state, setVerificationScenario } = useMockSystem();
+  const { verification, currentScenarios } = state;
 
-  const fetchMyRequest = useCallback(async () => {
-    setIsLoading(true);
-
-    try {
-      // Try real data first
-      if (user?.id && !SIMULATION_MODE) {
-        const { data, error } = await supabase
-          .from('verification_requests')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .maybeSingle();
-
-        if (!error && data) {
-          setMyRequest({
-            id: data.id,
-            user_id: data.user_id,
-            status: data.status as VerificationStatus,
-            account_type_requested: (data as any).account_type_requested || 'professional',
-            submitted_fields: data.submitted_fields as VerificationRequest['submitted_fields'],
-            admin_notes: (data as any).admin_notes,
-            reviewed_by: data.reviewed_by || undefined,
-            reviewed_at: data.reviewed_at || undefined,
-            created_at: data.created_at || '',
-          });
-          setIsLoading(false);
-          return;
-        }
-      }
-
-      // Fall back to simulation data
-      const mockRequest = getCurrentMockVerification();
-      if (mockRequest.id) {
-        setMyRequest({
-          ...mockRequest,
-          user_id: user?.id || 'mock-user',
-        });
-      } else {
-        setMyRequest(null);
-      }
-    } catch (error) {
-      console.error('Error fetching verification request:', error);
-      // On error, use simulation data
-      const mockRequest = getCurrentMockVerification();
-      if (mockRequest.id) {
-        setMyRequest({
-          ...mockRequest,
-          user_id: user?.id || 'mock-user',
-        });
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  }, [user?.id]);
-
-  useEffect(() => {
-    fetchMyRequest();
-  }, [fetchMyRequest]);
+  // Convert MockVerificationState to VerificationRequest format
+  const myRequest: VerificationRequest | null = verification.id ? {
+    id: verification.id,
+    user_id: 'mock-user',
+    status: verification.status === 'none' ? 'pending' : verification.status as VerificationStatus,
+    account_type_requested: verification.account_type_requested,
+    submitted_fields: {
+      display_name: 'Dr. Sarah Chen',
+      country: 'Australia',
+      credentials_summary: 'Licensed Clinical Psychologist',
+      terms_accepted: true,
+    },
+    admin_notes: verification.admin_notes,
+    created_at: verification.created_at,
+  } : null;
 
   const submitRequest = useCallback(async (data: SubmitVerificationData): Promise<boolean> => {
-    if (!user?.id) {
-      toast({
-        title: 'Not authenticated',
-        description: 'Please sign in to submit a verification request.',
-        variant: 'destructive',
-      });
-      return false;
-    }
+    // Simulate submission by switching to pending scenario
+    setVerificationScenario('pending');
+    
+    toast({
+      title: 'Request submitted',
+      description: 'Your verification request is now under review.',
+    });
 
-    setIsSubmitting(true);
-
-    try {
-      if (!SIMULATION_MODE) {
-        const { error } = await supabase
-          .from('verification_requests')
-          .insert({
-            user_id: user.id,
-            status: 'pending' as const,
-            account_type_requested: data.account_type_requested,
-            submitted_fields: {
-              display_name: data.display_name,
-              country: data.country,
-              credentials_summary: data.credentials_summary,
-              registration_number: data.registration_number,
-              website: data.website,
-              proof_url: data.proof_url,
-              terms_accepted: data.terms_accepted,
-            },
-          } as any);
-
-        if (error) throw error;
-      }
-
-      // Simulation: create local pending request
-      const newRequest: VerificationRequest = {
-        id: `mock-ver-${Date.now()}`,
-        user_id: user.id,
-        status: 'pending',
-        account_type_requested: data.account_type_requested,
-        submitted_fields: {
-          display_name: data.display_name,
-          country: data.country,
-          credentials_summary: data.credentials_summary,
-          registration_number: data.registration_number,
-          website: data.website,
-          proof_url: data.proof_url,
-          terms_accepted: data.terms_accepted,
-        },
-        created_at: new Date().toISOString(),
-      };
-
-      setMyRequest(newRequest);
-
-      toast({
-        title: 'Request submitted',
-        description: 'Your verification request is now under review.',
-      });
-
-      return true;
-    } catch (error: any) {
-      console.error('Error submitting verification request:', error);
-      toast({
-        title: 'Submission failed',
-        description: error.message || 'Please try again later.',
-        variant: 'destructive',
-      });
-      return false;
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [user?.id]);
+    return true;
+  }, [setVerificationScenario]);
 
   // Simulation helper: manually set verification status for testing
   const setSimulatedStatus = useCallback((status: VerificationStatus) => {
-    if (myRequest) {
-      setMyRequest({
-        ...myRequest,
-        status,
-        reviewed_at: status !== 'pending' ? new Date().toISOString() : undefined,
-        reviewed_by: status !== 'pending' ? 'admin-user' : undefined,
-      });
+    const scenarioMap: Record<VerificationStatus, VerificationScenario> = {
+      pending: 'pending',
+      approved: 'approved',
+      rejected: 'rejected',
+    };
+    
+    setVerificationScenario(scenarioMap[status]);
 
-      if (status === 'approved') {
-        toast({
-          title: '🎉 Verification Approved!',
-          description: 'Congratulations! Your ERA verification has been approved.',
-        });
-      } else if (status === 'rejected') {
-        toast({
-          title: 'Verification Update',
-          description: 'Your verification request was not approved.',
-          variant: 'destructive',
-        });
-      }
+    if (status === 'approved') {
+      toast({
+        title: '🎉 Verification Approved!',
+        description: 'Congratulations! Your ERA verification has been approved.',
+      });
+    } else if (status === 'rejected') {
+      toast({
+        title: 'Verification Update',
+        description: 'Your verification request was not approved.',
+        variant: 'destructive',
+      });
     }
-  }, [myRequest]);
+  }, [setVerificationScenario]);
+
+  // Scenario switching for testing
+  const switchScenario = (scenario: VerificationScenario) => {
+    setVerificationScenario(scenario);
+  };
 
   return {
-    myRequest,
-    isLoading,
-    isSubmitting,
+    myRequest: verification.status === 'none' ? null : myRequest,
+    isLoading: false, // Always ready in simulation mode
+    isSubmitting: false,
     submitRequest,
-    refreshRequest: fetchMyRequest,
-    setSimulatedStatus, // For testing different states
-    isSimulated: SIMULATION_MODE || !user?.id,
+    refreshRequest: () => {}, // No-op in simulation mode
+    setSimulatedStatus,
+    isSimulated: true,
+    currentScenario: currentScenarios.verification,
+    switchScenario,
+    availableScenarios: ['none', 'pending', 'approved', 'rejected'] as VerificationScenario[],
   };
 }

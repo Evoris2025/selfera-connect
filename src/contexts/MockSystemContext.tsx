@@ -97,6 +97,56 @@ export interface MockUserState {
   reactions: Map<string, string>; // postId -> reactionType
 }
 
+// Simulation scenario types
+export type SubscriptionScenario = 'free' | 'creator' | 'professional' | 'organization' | 'past_due';
+export type VerificationScenario = 'none' | 'pending' | 'approved' | 'rejected';
+export type InteractionRole = 'client' | 'provider' | 'both';
+
+export interface MockInteractionRequest {
+  id: string;
+  client_user_id: string;
+  provider_user_id: string;
+  provider_tier_price: number;
+  client_base_price: number;
+  amount_due: number;
+  status: 'draft' | 'requested' | 'accepted' | 'confirmed' | 'completed' | 'cancelled' | 'declined';
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+  client?: {
+    id: string;
+    display_name: string;
+    handle: string;
+    avatar_url: string;
+  };
+  provider?: {
+    id: string;
+    display_name: string;
+    handle: string;
+    avatar_url: string;
+    is_verified: boolean;
+  };
+}
+
+export interface MockSubscriptionState {
+  id: string;
+  plan: 'free' | 'creator' | 'professional' | 'organization';
+  status: 'active' | 'past_due' | 'canceled' | 'trialing';
+  billing_period: 'monthly' | 'yearly' | null;
+  current_period_end: string | null;
+  tier_colour: 'pink' | 'green' | 'blue' | 'purple' | 'orange' | null;
+  amount_due: number;
+  subscriber_count: number;
+}
+
+export interface MockVerificationState {
+  id: string;
+  status: 'none' | 'pending' | 'approved' | 'rejected';
+  account_type_requested: string;
+  admin_notes?: string;
+  created_at: string;
+}
+
 export interface MockSystemState {
   posts: FeedPost[];
   comments: Map<string, MockComment[]>; // postId -> comments
@@ -105,6 +155,14 @@ export interface MockSystemState {
   communities: MockCommunity[];
   userState: MockUserState;
   profiles: Map<string, MockProfile>;
+  // Simulation states
+  subscription: MockSubscriptionState;
+  verification: MockVerificationState;
+  interactions: MockInteractionRequest[];
+  currentScenarios: {
+    subscription: SubscriptionScenario;
+    verification: VerificationScenario;
+  };
 }
 
 // =============================================================================
@@ -396,9 +454,185 @@ const createInitialCommunities = (): MockCommunity[] => [
   { id: 'comm-5', name: 'Gratitude Journal', handle: 'gratitudejournal', description: 'Share what you\'re grateful for', memberCount: 1100, followerCount: 2900, isJoined: false, isFollowing: false },
 ];
 
-// =============================================================================
-// CONTEXT
-// =============================================================================
+// Initial mock interactions for provider/client views
+const createInitialInteractions = (): MockInteractionRequest[] => [
+  {
+    id: 'mock-int-1',
+    client_user_id: 'mock-client-1',
+    provider_user_id: 'mock-user',
+    provider_tier_price: 54.99,
+    client_base_price: 24.99,
+    amount_due: 30.00,
+    status: 'requested',
+    notes: 'Looking for guidance on anxiety management techniques.',
+    created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    client: {
+      id: 'mock-client-1',
+      display_name: 'Alex Johnson',
+      handle: 'alexj',
+      avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop',
+    },
+  },
+  {
+    id: 'mock-int-2',
+    client_user_id: 'mock-client-2',
+    provider_user_id: 'mock-user',
+    provider_tier_price: 54.99,
+    client_base_price: 24.99,
+    amount_due: 30.00,
+    status: 'confirmed',
+    notes: 'Follow-up session for mindfulness coaching.',
+    created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+    client: {
+      id: 'mock-client-2',
+      display_name: 'Jamie Lee',
+      handle: 'jamielee',
+      avatar_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop',
+    },
+  },
+  {
+    id: 'mock-int-3',
+    client_user_id: 'mock-client-3',
+    provider_user_id: 'mock-user',
+    provider_tier_price: 54.99,
+    client_base_price: 24.99,
+    amount_due: 30.00,
+    status: 'completed',
+    notes: 'Initial consultation completed successfully.',
+    created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+    client: {
+      id: 'mock-client-3',
+      display_name: 'Morgan Taylor',
+      handle: 'morgant',
+      avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop',
+    },
+  },
+  {
+    id: 'mock-int-4',
+    client_user_id: 'mock-user',
+    provider_user_id: 'mock-provider-1',
+    provider_tier_price: 84.99,
+    client_base_price: 24.99,
+    amount_due: 60.00,
+    status: 'accepted',
+    notes: 'Career coaching session.',
+    created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    provider: {
+      id: 'mock-provider-1',
+      display_name: 'Dr. Emily Stone',
+      handle: 'dremily',
+      avatar_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop',
+      is_verified: true,
+    },
+  },
+  {
+    id: 'mock-int-5',
+    client_user_id: 'mock-client-4',
+    provider_user_id: 'mock-user',
+    provider_tier_price: 54.99,
+    client_base_price: 24.99,
+    amount_due: 30.00,
+    status: 'requested',
+    notes: 'Seeking support for work-life balance challenges.',
+    created_at: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+    client: {
+      id: 'mock-client-4',
+      display_name: 'Sam Rivera',
+      handle: 'samr',
+      avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop',
+    },
+  },
+];
+
+// Subscription scenarios mapping
+const SUBSCRIPTION_SCENARIOS: Record<SubscriptionScenario, MockSubscriptionState> = {
+  free: {
+    id: 'mock-sub-free',
+    plan: 'free',
+    status: 'active',
+    billing_period: null,
+    current_period_end: null,
+    tier_colour: null,
+    amount_due: 0,
+    subscriber_count: 0,
+  },
+  creator: {
+    id: 'mock-sub-creator',
+    plan: 'creator',
+    status: 'active',
+    billing_period: 'monthly',
+    current_period_end: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString(),
+    tier_colour: 'pink',
+    amount_due: 9,
+    subscriber_count: 150,
+  },
+  professional: {
+    id: 'mock-sub-professional',
+    plan: 'professional',
+    status: 'active',
+    billing_period: 'monthly',
+    current_period_end: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
+    tier_colour: 'green',
+    amount_due: 29,
+    subscriber_count: 2500,
+  },
+  organization: {
+    id: 'mock-sub-org',
+    plan: 'organization',
+    status: 'active',
+    billing_period: 'yearly',
+    current_period_end: new Date(Date.now() + 335 * 24 * 60 * 60 * 1000).toISOString(),
+    tier_colour: 'blue',
+    amount_due: 699,
+    subscriber_count: 125000,
+  },
+  past_due: {
+    id: 'mock-sub-past-due',
+    plan: 'professional',
+    status: 'past_due',
+    billing_period: 'monthly',
+    current_period_end: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+    tier_colour: 'green',
+    amount_due: 29,
+    subscriber_count: 500,
+  },
+};
+
+// Verification scenarios mapping
+const VERIFICATION_SCENARIOS: Record<VerificationScenario, MockVerificationState> = {
+  none: {
+    id: '',
+    status: 'none',
+    account_type_requested: '',
+    created_at: '',
+  },
+  pending: {
+    id: 'mock-ver-pending',
+    status: 'pending',
+    account_type_requested: 'professional',
+    created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  approved: {
+    id: 'mock-ver-approved',
+    status: 'approved',
+    account_type_requested: 'professional',
+    admin_notes: 'Credentials verified. Welcome to ERA Verified!',
+    created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+  rejected: {
+    id: 'mock-ver-rejected',
+    status: 'rejected',
+    account_type_requested: 'organization',
+    admin_notes: 'Unable to verify organization registration. Please provide additional documentation.',
+    created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+};
+
 
 interface MockSystemContextType {
   state: MockSystemState;
@@ -455,6 +689,13 @@ interface MockSystemContextType {
   
   // Stats derived from state
   getPostCount: () => number;
+  
+  // Simulation scenario actions
+  setSubscriptionScenario: (scenario: SubscriptionScenario) => void;
+  setVerificationScenario: (scenario: VerificationScenario) => void;
+  getInteractions: (role?: InteractionRole) => MockInteractionRequest[];
+  updateInteractionStatus: (interactionId: string, status: MockInteractionRequest['status']) => void;
+  addInteraction: (interaction: Omit<MockInteractionRequest, 'id' | 'created_at' | 'updated_at'>) => void;
 }
 
 const MockSystemContext = createContext<MockSystemContextType | null>(null);
@@ -480,6 +721,29 @@ export function MockSystemProvider({ children }: { children: ReactNode }) {
       reactions: new Map<string, string>(),
     },
     profiles: new Map<string, MockProfile>(),
+    // Initial simulation states
+    subscription: {
+      id: 'mock-sub-professional',
+      plan: 'professional',
+      status: 'active',
+      billing_period: 'monthly',
+      current_period_end: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
+      tier_colour: 'green',
+      amount_due: 29,
+      subscriber_count: 2500,
+    },
+    verification: {
+      id: 'mock-ver-approved',
+      status: 'approved',
+      account_type_requested: 'professional',
+      admin_notes: 'Credentials verified. Welcome to ERA Verified!',
+      created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+    interactions: createInitialInteractions(),
+    currentScenarios: {
+      subscription: 'professional',
+      verification: 'approved',
+    },
   }));
 
   // -------------------------------------------------------------------------
@@ -936,6 +1200,65 @@ export function MockSystemProvider({ children }: { children: ReactNode }) {
   }, [state.posts]);
 
   // -------------------------------------------------------------------------
+  // SIMULATION SCENARIO ACTIONS
+  // -------------------------------------------------------------------------
+
+  const setSubscriptionScenario = useCallback((scenario: SubscriptionScenario) => {
+    setState(prev => ({
+      ...prev,
+      subscription: SUBSCRIPTION_SCENARIOS[scenario],
+      currentScenarios: {
+        ...prev.currentScenarios,
+        subscription: scenario,
+      },
+    }));
+  }, []);
+
+  const setVerificationScenario = useCallback((scenario: VerificationScenario) => {
+    setState(prev => ({
+      ...prev,
+      verification: VERIFICATION_SCENARIOS[scenario],
+      currentScenarios: {
+        ...prev.currentScenarios,
+        verification: scenario,
+      },
+    }));
+  }, []);
+
+  const getInteractions = useCallback((role: InteractionRole = 'both') => {
+    return state.interactions.filter(int => {
+      if (role === 'client') return int.client_user_id === 'mock-user';
+      if (role === 'provider') return int.provider_user_id === 'mock-user';
+      return true;
+    });
+  }, [state.interactions]);
+
+  const updateInteractionStatus = useCallback((interactionId: string, status: MockInteractionRequest['status']) => {
+    setState(prev => ({
+      ...prev,
+      interactions: prev.interactions.map(int =>
+        int.id === interactionId
+          ? { ...int, status, updated_at: new Date().toISOString() }
+          : int
+      ),
+    }));
+  }, []);
+
+  const addInteraction = useCallback((interaction: Omit<MockInteractionRequest, 'id' | 'created_at' | 'updated_at'>) => {
+    const now = new Date().toISOString();
+    const newInteraction: MockInteractionRequest = {
+      ...interaction,
+      id: `mock-int-${Date.now()}`,
+      created_at: now,
+      updated_at: now,
+    };
+    setState(prev => ({
+      ...prev,
+      interactions: [newInteraction, ...prev.interactions],
+    }));
+  }, []);
+
+  // -------------------------------------------------------------------------
   // CONTEXT VALUE
   // -------------------------------------------------------------------------
 
@@ -974,6 +1297,11 @@ export function MockSystemProvider({ children }: { children: ReactNode }) {
     followCommunity,
     unfollowCommunity,
     getPostCount,
+    setSubscriptionScenario,
+    setVerificationScenario,
+    getInteractions,
+    updateInteractionStatus,
+    addInteraction,
   }), [
     state,
     addPost,
@@ -1009,6 +1337,11 @@ export function MockSystemProvider({ children }: { children: ReactNode }) {
     followCommunity,
     unfollowCommunity,
     getPostCount,
+    setSubscriptionScenario,
+    setVerificationScenario,
+    getInteractions,
+    updateInteractionStatus,
+    addInteraction,
   ]);
 
   return (
@@ -1045,6 +1378,13 @@ export function useMockSystem() {
           reactions: new Map(),
         },
         profiles: new Map(),
+        subscription: SUBSCRIPTION_SCENARIOS.free,
+        verification: VERIFICATION_SCENARIOS.none,
+        interactions: [],
+        currentScenarios: {
+          subscription: 'free',
+          verification: 'none',
+        },
       },
       addPost: () => {},
       updatePostLikes: () => {},
@@ -1079,6 +1419,11 @@ export function useMockSystem() {
       followCommunity: () => {},
       unfollowCommunity: () => {},
       getPostCount: () => 0,
+      setSubscriptionScenario: () => {},
+      setVerificationScenario: () => {},
+      getInteractions: () => [],
+      updateInteractionStatus: () => {},
+      addInteraction: () => {},
     };
     return fallback;
   }
