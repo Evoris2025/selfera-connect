@@ -48,7 +48,7 @@ function ImageCard({ image, index, onClick }: ImageCardProps) {
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: index * 0.03 }}
-      className="relative group cursor-pointer overflow-hidden"
+      className="relative group cursor-pointer overflow-hidden aspect-square"
       onClick={onClick}
     >
       <img 
