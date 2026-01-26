@@ -12,6 +12,7 @@ import {
   MOCK_GOVERNANCE_EVENTS,
   createDefaultTrustProfile,
 } from '@/lib/governance/mockData';
+import { MockUUIDs, generateMockUUID, getMockUUID } from '@/lib/mockUUIDs';
 
 // =============================================================================
 // TYPES
@@ -186,8 +187,8 @@ export interface MockSystemState {
 
 const createInitialMockPosts = (): FeedPost[] => [
   {
-    id: 'mock-1',
-    authorId: 'mock-author-1',
+    id: MockUUIDs.POST_1,
+    authorId: MockUUIDs.SARAH_CHEN,
     author: {
       name: 'Sarah Chen',
       handle: 'sarahc',
@@ -202,8 +203,8 @@ const createInitialMockPosts = (): FeedPost[] => [
     contentType: 'text',
   },
   {
-    id: 'mock-2',
-    authorId: 'mock-author-2',
+    id: MockUUIDs.POST_2,
+    authorId: MockUUIDs.MIND_MATTERS,
     author: {
       name: 'Mind Matters',
       handle: 'mindmatters',
@@ -222,8 +223,8 @@ const createInitialMockPosts = (): FeedPost[] => [
     contentType: 'image',
   },
   {
-    id: 'mock-video-1',
-    authorId: 'mock-author-video-1',
+    id: MockUUIDs.POST_VIDEO_1,
+    authorId: MockUUIDs.CALM_STUDIOS,
     author: {
       name: 'Calm Studios',
       handle: 'calmstudios',
@@ -243,8 +244,8 @@ const createInitialMockPosts = (): FeedPost[] => [
     contentType: 'video',
   },
   {
-    id: 'mock-3',
-    authorId: 'mock-author-3',
+    id: MockUUIDs.POST_3,
+    authorId: MockUUIDs.JAMES_WILSON,
     author: {
       name: 'James Wilson',
       handle: 'jwilson',
@@ -259,8 +260,8 @@ const createInitialMockPosts = (): FeedPost[] => [
     contentType: 'text',
   },
   {
-    id: 'mock-4',
-    authorId: 'mock-author-4',
+    id: MockUUIDs.POST_4,
+    authorId: MockUUIDs.WELLNESS_HUB,
     author: {
       name: 'Wellness Hub',
       handle: 'wellnesshub',
@@ -279,8 +280,8 @@ const createInitialMockPosts = (): FeedPost[] => [
     contentType: 'image',
   },
   {
-    id: 'mock-video-2',
-    authorId: 'mock-author-video-2',
+    id: MockUUIDs.POST_VIDEO_2,
+    authorId: MockUUIDs.NATURE_SOUNDS,
     author: {
       name: 'Nature Sounds',
       handle: 'naturesounds',
@@ -300,8 +301,8 @@ const createInitialMockPosts = (): FeedPost[] => [
     contentType: 'video',
   },
   {
-    id: 'mock-5',
-    authorId: 'mock-author-5',
+    id: MockUUIDs.POST_5,
+    authorId: MockUUIDs.EMMA_ROBERTS,
     author: {
       name: 'Emma Roberts',
       handle: 'emmar',
@@ -316,8 +317,8 @@ const createInitialMockPosts = (): FeedPost[] => [
     contentType: 'text',
   },
   {
-    id: 'mock-6',
-    authorId: 'mock-author-6',
+    id: MockUUIDs.POST_6,
+    authorId: MockUUIDs.ALEX_TURNER,
     author: {
       name: 'Alex Turner',
       handle: 'alext',
@@ -340,19 +341,19 @@ const createInitialMockPosts = (): FeedPost[] => [
 const createInitialComments = (): Map<string, MockComment[]> => {
   const map = new Map<string, MockComment[]>();
   
-  // Add some default comments
-  map.set('mock-1', [
+  // Add some default comments using stable UUIDs
+  map.set(MockUUIDs.POST_1, [
     {
-      id: 'comment-1-1',
-      postId: 'mock-1',
+      id: MockUUIDs.COMMENT_1_1,
+      postId: MockUUIDs.POST_1,
       author: { name: 'Marcus Johnson', handle: 'marcusj', avatar: '' },
       content: 'This really resonates with me. Thank you for sharing! 💙',
       createdAt: '1h',
       timestamp: new Date(Date.now() - 3600000),
     },
     {
-      id: 'comment-1-2',
-      postId: 'mock-1',
+      id: MockUUIDs.COMMENT_1_2,
+      postId: MockUUIDs.POST_1,
       author: { name: 'Jamie Lee', handle: 'jamielee', avatar: '' },
       content: 'Beautifully expressed. We all need reminders like this.',
       createdAt: '30m',
@@ -360,10 +361,10 @@ const createInitialComments = (): Map<string, MockComment[]> => {
     },
   ]);
   
-  map.set('mock-2', [
+  map.set(MockUUIDs.POST_2, [
     {
-      id: 'comment-2-1',
-      postId: 'mock-2',
+      id: MockUUIDs.COMMENT_2_1,
+      postId: MockUUIDs.POST_2,
       author: { name: 'Alex Chen', handle: 'alexchen', avatar: '' },
       content: 'What a beautiful scene! Where was this taken?',
       createdAt: '2h',
@@ -376,55 +377,55 @@ const createInitialComments = (): Map<string, MockComment[]> => {
 
 const createInitialConversations = (): MockConversation[] => [
   {
-    id: 'conv-1',
+    id: MockUUIDs.CONV_1,
     participant: {
-      id: 'user-mindmatters',
+      id: getMockUUID('authors', 'conv-participant-mindmatters'),
       name: 'Mind Matters',
       handle: 'mindmatters',
       isOnline: true,
       isVerified: true,
     },
     messages: [
-      { id: 'msg-1-1', conversationId: 'conv-1', content: 'Hey! I saw your post about managing anxiety. Really helpful!', senderId: 'other', timestamp: '10:30 AM', read: true, type: 'text', createdAt: new Date() },
-      { id: 'msg-1-2', conversationId: 'conv-1', content: 'Thank you so much! It means a lot to hear that.', senderId: 'me', timestamp: '10:32 AM', read: true, type: 'text', createdAt: new Date() },
-      { id: 'msg-1-3', conversationId: 'conv-1', content: 'Do you have any other resources you recommend?', senderId: 'other', timestamp: '10:33 AM', read: true, type: 'text', createdAt: new Date() },
-      { id: 'msg-1-4', conversationId: 'conv-1', content: 'Absolutely! I\'ll share some links with you.', senderId: 'me', timestamp: '10:35 AM', read: true, type: 'text', createdAt: new Date() },
-      { id: 'msg-1-5', conversationId: 'conv-1', content: 'Thanks for sharing that resource!', senderId: 'other', timestamp: '10:40 AM', read: true, type: 'text', createdAt: new Date() },
+      { id: generateMockUUID(), conversationId: MockUUIDs.CONV_1, content: 'Hey! I saw your post about managing anxiety. Really helpful!', senderId: 'other', timestamp: '10:30 AM', read: true, type: 'text', createdAt: new Date() },
+      { id: generateMockUUID(), conversationId: MockUUIDs.CONV_1, content: 'Thank you so much! It means a lot to hear that.', senderId: 'me', timestamp: '10:32 AM', read: true, type: 'text', createdAt: new Date() },
+      { id: generateMockUUID(), conversationId: MockUUIDs.CONV_1, content: 'Do you have any other resources you recommend?', senderId: 'other', timestamp: '10:33 AM', read: true, type: 'text', createdAt: new Date() },
+      { id: generateMockUUID(), conversationId: MockUUIDs.CONV_1, content: 'Absolutely! I\'ll share some links with you.', senderId: 'me', timestamp: '10:35 AM', read: true, type: 'text', createdAt: new Date() },
+      { id: generateMockUUID(), conversationId: MockUUIDs.CONV_1, content: 'Thanks for sharing that resource!', senderId: 'other', timestamp: '10:40 AM', read: true, type: 'text', createdAt: new Date() },
     ],
     lastMessage: 'Thanks for sharing that resource!',
     lastMessageTime: '2m',
     unread: true,
   },
   {
-    id: 'conv-2',
+    id: MockUUIDs.CONV_2,
     participant: {
-      id: 'user-drsarah',
+      id: getMockUUID('authors', 'conv-participant-drsarah'),
       name: 'Dr. Sarah',
       handle: 'drsarah',
       isOnline: true,
       isVerified: true,
     },
     messages: [
-      { id: 'msg-2-1', conversationId: 'conv-2', content: 'Looking forward to our session tomorrow!', senderId: 'other', timestamp: '1h', read: true, type: 'text', createdAt: new Date() },
-      { id: 'msg-2-2', conversationId: 'conv-2', content: '💪', senderId: 'other', timestamp: '1h', read: true, type: 'text', createdAt: new Date() },
+      { id: generateMockUUID(), conversationId: MockUUIDs.CONV_2, content: 'Looking forward to our session tomorrow!', senderId: 'other', timestamp: '1h', read: true, type: 'text', createdAt: new Date() },
+      { id: generateMockUUID(), conversationId: MockUUIDs.CONV_2, content: '💪', senderId: 'other', timestamp: '1h', read: true, type: 'text', createdAt: new Date() },
     ],
     lastMessage: '💪',
     lastMessageTime: '1h',
     unread: true,
   },
   {
-    id: 'conv-3',
+    id: MockUUIDs.CONV_3,
     participant: {
-      id: 'user-jamie',
+      id: getMockUUID('authors', 'conv-participant-jamie'),
       name: 'Jamie',
       handle: 'jamie_journey',
       isOnline: false,
       isVerified: false,
     },
     messages: [
-      { id: 'msg-3-1', conversationId: 'conv-3', content: 'Are you coming to the community meetup?', senderId: 'other', timestamp: '3h', read: true, type: 'text', createdAt: new Date() },
-      { id: 'msg-3-2', conversationId: 'conv-3', content: 'Yes! See you there!', senderId: 'me', timestamp: '3h', read: true, type: 'text', createdAt: new Date() },
-      { id: 'msg-3-3', conversationId: 'conv-3', content: 'See you at the community meetup!', senderId: 'other', timestamp: '3h', read: true, type: 'text', createdAt: new Date() },
+      { id: generateMockUUID(), conversationId: MockUUIDs.CONV_3, content: 'Are you coming to the community meetup?', senderId: 'other', timestamp: '3h', read: true, type: 'text', createdAt: new Date() },
+      { id: generateMockUUID(), conversationId: MockUUIDs.CONV_3, content: 'Yes! See you there!', senderId: 'me', timestamp: '3h', read: true, type: 'text', createdAt: new Date() },
+      { id: generateMockUUID(), conversationId: MockUUIDs.CONV_3, content: 'See you at the community meetup!', senderId: 'other', timestamp: '3h', read: true, type: 'text', createdAt: new Date() },
     ],
     lastMessage: 'See you at the community meetup!',
     lastMessageTime: '3h',
@@ -434,7 +435,7 @@ const createInitialConversations = (): MockConversation[] => [
 
 const createInitialNotifications = (): MockNotification[] => [
   {
-    id: 'notif-h1',
+    id: getMockUUID('notifications', 'notif-h1'),
     type: 'message',
     users: [{ name: 'Mind Matters', handle: 'mindmatters' }, { name: 'Dr. Sarah', handle: 'drsarah' }],
     action: 'and others sent you messages',
@@ -446,7 +447,7 @@ const createInitialNotifications = (): MockNotification[] => [
     timestamp: new Date(Date.now() - 7200000),
   },
   {
-    id: 'notif-h2',
+    id: getMockUUID('notifications', 'notif-h2'),
     type: 'reaction',
     users: [{ name: 'Jamie', handle: 'jamie_journey' }, { name: 'Alex Chen', handle: 'alexchen' }, { name: 'Wellness Hub', handle: 'wellnesshub' }],
     action: 'and 12 others liked your post',
@@ -455,18 +456,18 @@ const createInitialNotifications = (): MockNotification[] => [
     read: false,
     isHighlight: true,
     targetType: 'post',
-    targetId: 'mock-1',
+    targetId: MockUUIDs.POST_1,
     thumbnailUrl: '/placeholder.svg',
     timestamp: new Date(Date.now() - 14400000),
   },
 ];
 
 const createInitialCommunities = (): MockCommunity[] => [
-  { id: 'comm-1', name: 'Mindfulness Circle', handle: 'mindfulness', description: 'A space for mindfulness practice', memberCount: 1250, followerCount: 3400, isJoined: false, isFollowing: false },
-  { id: 'comm-2', name: 'Anxiety Support', handle: 'anxietysupport', description: 'Supporting each other through anxiety', memberCount: 890, followerCount: 2100, isJoined: false, isFollowing: false },
-  { id: 'comm-3', name: 'Self Care Club', handle: 'selfcareclub', description: 'Daily self-care tips and motivation', memberCount: 2300, followerCount: 5600, isJoined: false, isFollowing: false },
-  { id: 'comm-4', name: 'Wellness Warriors', handle: 'wellnesswarriors', description: 'Fighting for mental wellness together', memberCount: 670, followerCount: 1800, isJoined: false, isFollowing: false },
-  { id: 'comm-5', name: 'Gratitude Journal', handle: 'gratitudejournal', description: 'Share what you\'re grateful for', memberCount: 1100, followerCount: 2900, isJoined: false, isFollowing: false },
+  { id: MockUUIDs.MINDFULNESS, name: 'Mindfulness Circle', handle: 'mindfulness', description: 'A space for mindfulness practice', memberCount: 1250, followerCount: 3400, isJoined: false, isFollowing: false },
+  { id: MockUUIDs.ANXIETY_SUPPORT, name: 'Anxiety Support', handle: 'anxietysupport', description: 'Supporting each other through anxiety', memberCount: 890, followerCount: 2100, isJoined: false, isFollowing: false },
+  { id: MockUUIDs.SELF_CARE, name: 'Self Care Club', handle: 'selfcareclub', description: 'Daily self-care tips and motivation', memberCount: 2300, followerCount: 5600, isJoined: false, isFollowing: false },
+  { id: MockUUIDs.WELLNESS_WARRIORS, name: 'Wellness Warriors', handle: 'wellnesswarriors', description: 'Fighting for mental wellness together', memberCount: 670, followerCount: 1800, isJoined: false, isFollowing: false },
+  { id: MockUUIDs.GRATITUDE, name: 'Gratitude Journal', handle: 'gratitudejournal', description: 'Share what you\'re grateful for', memberCount: 1100, followerCount: 2900, isJoined: false, isFollowing: false },
 ];
 
 // Initial mock interactions for provider/client views
