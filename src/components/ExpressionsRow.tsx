@@ -1,19 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, ChevronRight } from 'lucide-react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { motion } from 'framer-motion';
 import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
 import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
 import { useFeedData } from '@/contexts/FeedDataContext';
+import { useNavbar } from '@/contexts/NavbarContext';
 import { ExpressionViewer } from '@/components/ExpressionViewer';
 import { CreatorStudio } from '@/components/creator';
 
 export function ExpressionsRow() {
   const { avatarUrl, displayName } = useCurrentUserAvatar();
   const { expressions, markExpressionSeen } = useFeedData();
+  const { hideNavbar, showNavbar } = useNavbar();
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerInitialIndex, setViewerInitialIndex] = useState(0);
   const [creatorOpen, setCreatorOpen] = useState(false);
+
+  // Hide navbar when expression viewer is open
+  useEffect(() => {
+    if (viewerOpen) {
+      hideNavbar();
+    } else {
+      showNavbar();
+    }
+  }, [viewerOpen, hideNavbar, showNavbar]);
 
   const handleExpressionClick = (index: number) => {
     setViewerInitialIndex(index);
