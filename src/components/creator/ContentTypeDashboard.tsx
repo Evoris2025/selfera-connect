@@ -95,26 +95,29 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto relative z-10 flex flex-col">
         {/* Logo Hero Section */}
-        <div className="flex flex-col items-center pt-8 pb-6 px-4">
+        <div className="flex flex-col items-center justify-center pt-10 pb-8 px-4">
           {/* Ambient glow behind logo */}
-          <div className="absolute top-12 left-1/2 -translate-x-1/2 w-80 h-24 bg-gradient-to-r from-rose-500/15 via-purple-500/15 to-orange-500/15 blur-[80px] rounded-full" />
+          <div className="absolute top-16 left-1/2 -translate-x-1/2 w-80 h-24 bg-gradient-to-r from-rose-500/15 via-purple-500/15 to-orange-500/15 blur-[80px] rounded-full" />
           
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1, type: 'spring', stiffness: 300, damping: 25 }}
-            className="relative flex flex-col items-center"
+            className="relative w-full flex flex-col items-center"
           >
-            <BrandMark className="h-12 w-[200px]" />
+            {/* Logo wrapper - center the visible content */}
+            <div className="flex justify-center w-full">
+              <BrandMark className="h-14 w-[220px]" imgClassName="origin-center" />
+            </div>
             
-            {/* ERA STUDIO Title - directly below logo */}
+            {/* ERA STUDIO Title */}
             <motion.h1
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="mt-5 text-lg font-semibold tracking-[0.25em] text-foreground/90 uppercase text-center"
+              className="mt-6 text-base font-medium tracking-[0.35em] text-muted-foreground uppercase text-center"
             >
-              ERA STUDIO
+              STUDIO
             </motion.h1>
           </motion.div>
           
@@ -122,7 +125,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
-            className="mt-3 text-sm text-muted-foreground font-medium text-center"
+            className="mt-4 text-sm text-muted-foreground/70 font-normal text-center"
           >
             What would you like to create?
           </motion.p>
@@ -133,7 +136,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
           <div className="relative h-full flex flex-col">
             {/* Vertical Timeline Line */}
             <motion.div 
-              className="absolute left-[11px] top-2 bottom-2 w-[2px] bg-gradient-to-b from-rose-500 via-blue-500 via-amber-500 to-emerald-500 rounded-full"
+              className="absolute left-[13px] top-4 bottom-4 w-[2px] bg-gradient-to-b from-rose-500 via-blue-500 via-amber-500 to-emerald-500 rounded-full opacity-60"
               initial={{ scaleY: 0 }}
               animate={{ scaleY: 1 }}
               transition={{ delay: 0.3, duration: 0.5, ease: 'easeOut' }}
@@ -154,13 +157,13 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
                     damping: 30 
                   }}
                   onClick={() => onSelect(type.id)}
-                  className="group relative flex items-center gap-5 py-4 text-left focus:outline-none"
+                  className="group relative flex items-center gap-4 py-3 text-left focus:outline-none"
                 >
                   {/* Timeline Node */}
                   <motion.div 
                     className={cn(
-                      "relative z-10 w-6 h-6 rounded-full shadow-lg flex items-center justify-center",
-                      "transition-all duration-300",
+                      "relative z-10 w-7 h-7 rounded-full shadow-lg flex items-center justify-center",
+                      "transition-all duration-300 ring-2 ring-background",
                       "group-hover:scale-110 group-hover:shadow-xl",
                       type.nodeColor
                     )}
@@ -173,12 +176,12 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
                       damping: 25 
                     }}
                   >
-                    <type.icon className="h-3 w-3 text-white" />
+                    <type.icon className="h-3.5 w-3.5 text-white" />
                   </motion.div>
                   
                   {/* Horizontal Connector */}
                   <motion.div 
-                    className="w-6 h-[2px] bg-border/40 group-hover:bg-border/60 transition-colors"
+                    className="w-8 h-[1.5px] bg-border/30 group-hover:bg-border/50 transition-colors"
                     initial={{ scaleX: 0 }}
                     animate={{ scaleX: 1 }}
                     transition={{ delay: 0.45 + index * 0.08, duration: 0.2 }}
@@ -186,19 +189,24 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
                   />
                   
                   {/* Content */}
-                  <div className="flex-1 flex flex-col gap-0.5 transition-transform duration-200 group-hover:translate-x-1">
-                    <span className="text-lg font-semibold text-foreground tracking-wide">
+                  <div className="flex-1 flex flex-col gap-1 transition-transform duration-200 group-hover:translate-x-1">
+                    <span className={cn(
+                      "text-xl font-bold tracking-tight bg-clip-text text-transparent",
+                      `bg-gradient-to-r ${type.gradient}`
+                    )}>
                       {type.title}
                     </span>
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-xs text-muted-foreground/60 font-medium uppercase tracking-wider">
                       {type.description}
                     </span>
                   </div>
                   
                   {/* Action Indicator */}
-                  <ChevronRight 
-                    className="h-5 w-5 text-muted-foreground/30 transition-all duration-200 group-hover:text-muted-foreground group-hover:translate-x-1" 
-                  />
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-secondary/30 group-hover:bg-secondary/60 transition-all duration-200">
+                    <ChevronRight 
+                      className="h-4 w-4 text-muted-foreground/50 transition-all duration-200 group-hover:text-foreground group-hover:translate-x-0.5" 
+                    />
+                  </div>
                 </motion.button>
               ))}
             </div>
