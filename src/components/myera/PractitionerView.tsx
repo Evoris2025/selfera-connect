@@ -50,13 +50,13 @@ export function PractitionerView({
     >
       {/* Practice Overview Header */}
       <motion.div
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-cyan-500/15 via-blue-500/10 to-card/40 backdrop-blur-lg border border-cyan-500/20 p-5"
+        className="relative overflow-hidden bg-gradient-to-br from-cyan-500/15 via-blue-500/10 to-card/40 backdrop-blur-lg border border-cyan-500/20 p-5"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ ...springGentle, delay: 0.25 }}
       >
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center flex-shrink-0">
+          <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center flex-shrink-0">
             <Stethoscope className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1">
@@ -84,7 +84,7 @@ export function PractitionerView({
         transition={{ ...springGentle, delay: 0.3 }}
       >
         {/* Active Clients */}
-        <div className="rounded-2xl bg-card/40 border border-white/[0.06] p-4">
+        <div className="bg-card/40 border border-white/[0.06] p-4">
           <div className="flex items-center gap-2 mb-2">
             <Users className="w-4 h-4 text-primary" />
             <span className="text-xs text-muted-foreground">Active Clients</span>
@@ -93,7 +93,7 @@ export function PractitionerView({
         </div>
 
         {/* Pending Requests */}
-        <div className="rounded-2xl bg-card/40 border border-white/[0.06] p-4 relative">
+        <div className="bg-card/40 border border-white/[0.06] p-4 relative">
           <div className="flex items-center gap-2 mb-2">
             <Clock className="w-4 h-4 text-amber-400" />
             <span className="text-xs text-muted-foreground">Pending</span>
@@ -107,7 +107,7 @@ export function PractitionerView({
 
       {/* Availability Toggle */}
       <motion.div
-        className="rounded-2xl bg-card/40 border border-white/[0.06] p-4"
+        className="bg-card/40 border border-white/[0.06] p-4"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ ...springGentle, delay: 0.35 }}
@@ -137,7 +137,7 @@ export function PractitionerView({
 
       {/* Profile Visibility */}
       <motion.div
-        className="rounded-2xl bg-card/40 border border-white/[0.06] p-4"
+        className="bg-card/40 border border-white/[0.06] p-4"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ ...springGentle, delay: 0.4 }}
@@ -167,14 +167,14 @@ export function PractitionerView({
 
       {/* Tier Info */}
       <motion.div
-        className="rounded-2xl bg-card/30 border border-white/5 p-4"
+        className="bg-card/30 border border-white/5 p-4"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ ...springGentle, delay: 0.45 }}
       >
         <div className="flex items-center gap-3">
           <div 
-            className="w-10 h-10 rounded-xl flex items-center justify-center"
+            className="w-10 h-10 flex items-center justify-center"
             style={{ backgroundColor: `${tierConfig.color}20` }}
           >
             <div 
@@ -195,7 +195,7 @@ export function PractitionerView({
 
       {/* Compliance Reminder */}
       <motion.div
-        className="rounded-2xl bg-amber-500/10 border border-amber-500/20 p-4"
+        className="bg-amber-500/10 border border-amber-500/20 p-4"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ ...springGentle, delay: 0.5 }}

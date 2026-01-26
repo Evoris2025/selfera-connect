@@ -82,7 +82,7 @@ export function RoleGateModal({ open, onOpenChange, reason }: RoleGateModalProps
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md rounded-3xl border-white/10 bg-card/95 backdrop-blur-xl p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-md border-white/10 bg-card/95 backdrop-blur-xl p-0 overflow-hidden">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -95,7 +95,7 @@ export function RoleGateModal({ open, onOpenChange, reason }: RoleGateModalProps
             <div className="relative">
               <DialogHeader className="text-center">
                 <motion.div
-                  className={`w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br ${content.iconGradient} flex items-center justify-center shadow-lg`}
+                  className={`w-16 h-16 mx-auto mb-4 bg-gradient-to-br ${content.iconGradient} flex items-center justify-center shadow-lg`}
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 15, delay: 0.1 }}

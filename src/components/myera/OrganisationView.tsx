@@ -47,13 +47,13 @@ export function OrganisationView({
     >
       {/* Organisation Overview Header */}
       <motion.div
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-500/15 via-purple-500/10 to-card/40 backdrop-blur-lg border border-violet-500/20 p-5"
+        className="relative overflow-hidden bg-gradient-to-br from-violet-500/15 via-purple-500/10 to-card/40 backdrop-blur-lg border border-violet-500/20 p-5"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ ...springGentle, delay: 0.25 }}
       >
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center flex-shrink-0">
+          <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center flex-shrink-0">
             <Building2 className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1">
@@ -81,21 +81,21 @@ export function OrganisationView({
         transition={{ ...springGentle, delay: 0.3 }}
       >
         {/* Team Members */}
-        <div className="rounded-2xl bg-card/40 border border-white/[0.06] p-4 text-center">
+        <div className="bg-card/40 border border-white/[0.06] p-4 text-center">
           <Users className="w-5 h-5 mx-auto mb-2 text-primary" />
           <p className="text-xl font-bold text-foreground">{teamMemberCount}</p>
           <p className="text-[10px] text-muted-foreground">Team</p>
         </div>
 
         {/* Active */}
-        <div className="rounded-2xl bg-card/40 border border-white/[0.06] p-4 text-center">
+        <div className="bg-card/40 border border-white/[0.06] p-4 text-center">
           <Check className="w-5 h-5 mx-auto mb-2 text-emerald-400" />
           <p className="text-xl font-bold text-foreground">{activeInteractions}</p>
           <p className="text-[10px] text-muted-foreground">Active</p>
         </div>
 
         {/* Pending */}
-        <div className="rounded-2xl bg-card/40 border border-white/[0.06] p-4 text-center relative">
+        <div className="bg-card/40 border border-white/[0.06] p-4 text-center relative">
           <Clock className="w-5 h-5 mx-auto mb-2 text-amber-400" />
           <p className="text-xl font-bold text-foreground">{pendingInteractions}</p>
           <p className="text-[10px] text-muted-foreground">Pending</p>
@@ -107,7 +107,7 @@ export function OrganisationView({
 
       {/* Team Members Placeholder */}
       <motion.div
-        className="rounded-2xl bg-card/40 border border-white/[0.06] p-5"
+        className="bg-card/40 border border-white/[0.06] p-5"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ ...springGentle, delay: 0.35 }}
@@ -140,7 +140,7 @@ export function OrganisationView({
         transition={{ ...springGentle, delay: 0.4 }}
       >
         {/* Visibility Tier */}
-        <div className="rounded-2xl bg-card/40 border border-white/[0.06] p-4">
+        <div className="bg-card/40 border border-white/[0.06] p-4">
           <div className="flex items-center gap-2 mb-2">
             <Eye className="w-4 h-4 text-muted-foreground" />
             <span className="text-xs text-muted-foreground">Tier</span>
@@ -157,7 +157,7 @@ export function OrganisationView({
         </div>
 
         {/* Directory Status */}
-        <div className="rounded-2xl bg-card/40 border border-white/[0.06] p-4">
+        <div className="bg-card/40 border border-white/[0.06] p-4">
           <div className="flex items-center gap-2 mb-2">
             <LayoutGrid className="w-4 h-4 text-muted-foreground" />
             <span className="text-xs text-muted-foreground">Directory</span>
@@ -180,14 +180,14 @@ export function OrganisationView({
 
       {/* Tier Info */}
       <motion.div
-        className="rounded-2xl bg-card/30 border border-white/5 p-4"
+        className="bg-card/30 border border-white/5 p-4"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ ...springGentle, delay: 0.45 }}
       >
         <div className="flex items-center gap-3">
           <div 
-            className="w-10 h-10 rounded-xl flex items-center justify-center"
+            className="w-10 h-10 flex items-center justify-center"
             style={{ backgroundColor: `${tierConfig.color}20` }}
           >
             <div 

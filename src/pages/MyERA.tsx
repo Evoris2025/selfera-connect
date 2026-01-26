@@ -351,7 +351,7 @@ export default function MyERA() {
           {/* Profile Card Floating Over Cover */}
           <div className="px-4 -mt-20 relative z-10">
             <motion.div
-              className="bg-card/80 backdrop-blur-xl rounded-3xl border border-white/10 p-5 shadow-2xl"
+              className="bg-card/80 backdrop-blur-xl border border-white/10 p-5 shadow-2xl"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ ...springGentle, delay: 0.1 }}
@@ -473,7 +473,7 @@ export default function MyERA() {
               {!isVerified && !hasVerificationRequest && !showIntentSelection && (
                 <motion.div
                   key="verification-cta"
-                  className="relative overflow-hidden rounded-2xl bg-card/40 backdrop-blur-lg border border-white/[0.06] min-h-[180px] flex flex-col p-5"
+                  className="relative overflow-hidden bg-card/40 backdrop-blur-lg border border-white/[0.06] min-h-[180px] flex flex-col p-5"
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -10 }}
@@ -528,7 +528,7 @@ export default function MyERA() {
               {!isVerified && verificationInProgress && (
                 <motion.div
                   key="verification-progress"
-                  className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500/20 via-orange-500/10 to-card/40 backdrop-blur-lg border border-amber-500/20 min-h-[180px] flex flex-col"
+                  className="relative overflow-hidden bg-gradient-to-br from-amber-500/20 via-orange-500/10 to-card/40 backdrop-blur-lg border border-amber-500/20 min-h-[180px] flex flex-col"
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -10 }}
@@ -539,7 +539,7 @@ export default function MyERA() {
                   <div className="relative p-5 flex flex-col flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <motion.div 
-                        className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center flex-shrink-0"
+                        className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center flex-shrink-0"
                         animate={{ scale: [1, 1.05, 1] }}
                         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                       >
@@ -609,7 +609,7 @@ export default function MyERA() {
               {!isVerified && verificationRejected && (
                 <motion.div
                   key="verification-rejected"
-                  className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-rose-500/20 via-red-500/10 to-card/40 backdrop-blur-lg border border-rose-500/20 min-h-[180px] flex flex-col"
+                  className="relative overflow-hidden bg-gradient-to-br from-rose-500/20 via-red-500/10 to-card/40 backdrop-blur-lg border border-rose-500/20 min-h-[180px] flex flex-col"
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -10 }}
@@ -617,7 +617,7 @@ export default function MyERA() {
                 >
                   <div className="relative p-5 flex flex-col flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-red-500 flex items-center justify-center">
+                      <div className="w-10 h-10 bg-gradient-to-br from-rose-500 to-red-500 flex items-center justify-center">
                         <AlertCircle className="w-5 h-5 text-white" />
                       </div>
                       <h3 className="text-sm font-semibold text-foreground">
@@ -643,7 +643,7 @@ export default function MyERA() {
               {isVerified && (
                 <motion.div
                   key="verified-status"
-                  className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500/20 via-green-500/10 to-card/40 backdrop-blur-lg border border-emerald-500/20 min-h-[180px] flex flex-col"
+                  className="relative overflow-hidden bg-gradient-to-br from-emerald-500/20 via-green-500/10 to-card/40 backdrop-blur-lg border border-emerald-500/20 min-h-[180px] flex flex-col"
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -10 }}
@@ -652,7 +652,7 @@ export default function MyERA() {
                   <div className="relative p-5 flex flex-col flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <motion.div 
-                        className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center"
+                        className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center"
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         transition={{ type: "spring", stiffness: 400, damping: 15 }}

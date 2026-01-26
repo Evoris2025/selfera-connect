@@ -42,13 +42,13 @@ export function ClientView({ interactions = [], supportNetworkCount, onFindSuppo
     >
       {/* Welcome Card - Calm and Reassuring */}
       <motion.div
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-rose-500/10 via-pink-500/5 to-card/40 backdrop-blur-lg border border-white/[0.06] p-5"
+        className="relative overflow-hidden bg-gradient-to-br from-rose-500/10 via-pink-500/5 to-card/40 backdrop-blur-lg border border-white/[0.06] p-5"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ ...springGentle, delay: 0.25 }}
       >
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+          <div className="w-12 h-12 bg-gradient-to-br from-rose-500 to-pink-500 flex items-center justify-center flex-shrink-0">
             <Heart className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1">
@@ -75,7 +75,7 @@ export function ClientView({ interactions = [], supportNetworkCount, onFindSuppo
         </h3>
 
         {upcomingInteractions.length === 0 ? (
-          <div className="rounded-2xl bg-card/30 border border-white/5 p-5 text-center">
+          <div className="bg-card/30 border border-white/5 p-5 text-center">
             <Clock className="w-8 h-8 mx-auto mb-2 text-muted-foreground/50" />
             <p className="text-sm text-muted-foreground">
               No upcoming interactions
@@ -89,7 +89,7 @@ export function ClientView({ interactions = [], supportNetworkCount, onFindSuppo
             {upcomingInteractions.map((interaction) => (
               <div
                 key={interaction.id}
-                className="flex items-center gap-3 p-3 rounded-xl bg-card/50 border border-white/5"
+                className="flex items-center gap-3 p-3 bg-card/50 border border-white/5"
               >
                 <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
                   <MessageCircle className="w-5 h-5 text-primary" />
@@ -121,7 +121,7 @@ export function ClientView({ interactions = [], supportNetworkCount, onFindSuppo
           Your Support Network
         </h3>
 
-        <div className="rounded-2xl bg-card/30 border border-white/5 p-4">
+        <div className="bg-card/30 border border-white/5 p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-2xl font-bold text-foreground">{supportNetworkCount}</p>
@@ -141,7 +141,7 @@ export function ClientView({ interactions = [], supportNetworkCount, onFindSuppo
 
       {/* Find Verified Support CTA */}
       <motion.div
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary/20 via-emerald-500/10 to-card/40 border border-primary/20 p-5"
+        className="relative overflow-hidden bg-gradient-to-r from-primary/20 via-emerald-500/10 to-card/40 border border-primary/20 p-5"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ ...springGentle, delay: 0.4 }}
@@ -149,7 +149,7 @@ export function ClientView({ interactions = [], supportNetworkCount, onFindSuppo
         whileTap={{ scale: 0.99 }}
       >
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-emerald-500 flex items-center justify-center flex-shrink-0">
+          <div className="w-12 h-12 bg-gradient-to-br from-primary to-emerald-500 flex items-center justify-center flex-shrink-0">
             <Compass className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1">
@@ -186,7 +186,7 @@ export function ClientView({ interactions = [], supportNetworkCount, onFindSuppo
             {pastInteractions.slice(0, 3).map((interaction) => (
               <div
                 key={interaction.id}
-                className="flex items-center gap-3 p-3 rounded-xl bg-card/30 border border-white/5 opacity-70"
+                className="flex items-center gap-3 p-3 bg-card/30 border border-white/5 opacity-70"
               >
                 <div className="w-8 h-8 rounded-full bg-muted/20 flex items-center justify-center">
                   <Check className="w-4 h-4 text-muted-foreground" />
