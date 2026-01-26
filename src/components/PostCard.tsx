@@ -20,10 +20,10 @@ import { CinematicAvatar } from './ui/CinematicAvatar';
 import { ImmersiveMedia } from './ui/ImmersiveMedia';
 import { ReactionButton, ReactionType } from './feed/ReactionPicker';
 import { ReportModal } from './moderation/ReportModal';
-import { useReactions } from '@/hooks/useReactions';
-import { useLibrary } from '@/hooks/useLibrary';
+import { useFeedReactions } from '@/hooks/useFeedReactions';
+import { useFeedLibrary } from '@/hooks/useFeedLibrary';
+import { useFeedSafety } from '@/hooks/useFeedSafety';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSafety } from '@/contexts/SafetyContext';
 import { cn } from '@/lib/utils';
 
 
@@ -76,13 +76,13 @@ function PostCardBase({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { blockUser, muteUser, isBlocked, isMuted } = useSafety();
+  const { isBlocked, isMuted, blockUser, muteUser } = useFeedSafety();
   const [showContent, setShowContent] = useState(!hasContentWarning);
   const [showHeartOverlay, setShowHeartOverlay] = useState(false);
   const [showCommentSheet, setShowCommentSheet] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
-  const { reactionCount, currentReaction, setReaction } = useReactions(id, likes);
-  const { inLibrary, toggleLibrary } = useLibrary(id);
+  const { reactionCount, currentReaction, setReaction } = useFeedReactions(id, likes);
+  const { inLibrary, toggleLibrary } = useFeedLibrary(id);
 
   // Don't render if author is blocked
   if (authorId && isBlocked(authorId)) {
