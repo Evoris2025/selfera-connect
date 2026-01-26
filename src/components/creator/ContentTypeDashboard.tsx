@@ -95,7 +95,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto relative z-10 flex flex-col">
         {/* Logo Hero Section */}
-        <div className="flex flex-col items-start pt-8 pb-4 px-6">
+        <div className="flex flex-col items-center pt-8 pb-4 px-4">
           {/* Ambient glow behind logo */}
           <div className="absolute top-8 left-1/2 -translate-x-1/2 w-64 h-20 bg-gradient-to-r from-rose-500/20 via-purple-500/20 to-orange-500/20 blur-[60px] rounded-full" />
           
@@ -103,7 +103,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1, type: 'spring', stiffness: 300, damping: 25 }}
-            className="relative"
+            className="relative -ml-4"
           >
             <BrandMark className="h-14 w-[240px]" />
           </motion.div>
