@@ -1,3 +1,11 @@
+/**
+ * Feed Posts Hook (Unified with FeedDataContext)
+ * 
+ * This hook provides feed post loading with infinite scroll.
+ * When FeedDataContext is available, uses simulation mode with localStorage persistence.
+ * Falls back to real Supabase queries when not in simulation mode.
+ */
+
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { FeedPost } from '@/components/feed/CrossroadFeed';
@@ -5,11 +13,18 @@ import { ContentType } from '@/hooks/useCrossroadScroll';
 
 const PAGE_SIZE = 10;
 
-// Mock posts fallback when no real posts exist
+// ============================================================================
+// SIMULATION MODE CONFIG
+// When true, uses FeedDataContext with localStorage persistence
+// When false, uses real Supabase queries
+// ============================================================================
+const SIMULATION_MODE = true;
+
+// Mock posts fallback when no real posts exist (used in both modes as fallback)
 const mockPosts: FeedPost[] = [
   {
-    id: 'mock-1',
-    authorId: 'mock-author-1',
+    id: 'post-1',
+    authorId: 'author-sarahc',
     author: {
       name: 'Sarah Chen',
       handle: 'sarahc',
@@ -24,8 +39,8 @@ const mockPosts: FeedPost[] = [
     contentType: 'text',
   },
   {
-    id: 'mock-2',
-    authorId: 'mock-author-2',
+    id: 'post-2',
+    authorId: 'author-mindmatters',
     author: {
       name: 'Mind Matters',
       handle: 'mindmatters',
@@ -44,8 +59,8 @@ const mockPosts: FeedPost[] = [
     contentType: 'image',
   },
   {
-    id: 'mock-video-1',
-    authorId: 'mock-author-video-1',
+    id: 'post-video-1',
+    authorId: 'author-calmstudios',
     author: {
       name: 'Calm Studios',
       handle: 'calmstudios',
@@ -65,8 +80,8 @@ const mockPosts: FeedPost[] = [
     contentType: 'video',
   },
   {
-    id: 'mock-3',
-    authorId: 'mock-author-3',
+    id: 'post-3',
+    authorId: 'author-jwilson',
     author: {
       name: 'James Wilson',
       handle: 'jwilson',
@@ -81,8 +96,8 @@ const mockPosts: FeedPost[] = [
     contentType: 'text',
   },
   {
-    id: 'mock-4',
-    authorId: 'mock-author-4',
+    id: 'post-4',
+    authorId: 'author-wellnesshub',
     author: {
       name: 'Wellness Hub',
       handle: 'wellnesshub',
@@ -101,8 +116,8 @@ const mockPosts: FeedPost[] = [
     contentType: 'image',
   },
   {
-    id: 'mock-video-2',
-    authorId: 'mock-author-video-2',
+    id: 'post-video-2',
+    authorId: 'author-naturesounds',
     author: {
       name: 'Nature Sounds',
       handle: 'naturesounds',
@@ -122,8 +137,8 @@ const mockPosts: FeedPost[] = [
     contentType: 'video',
   },
   {
-    id: 'mock-5',
-    authorId: 'mock-author-5',
+    id: 'post-5',
+    authorId: 'author-emmar',
     author: {
       name: 'Emma Roberts',
       handle: 'emmar',
@@ -138,8 +153,8 @@ const mockPosts: FeedPost[] = [
     contentType: 'text',
   },
   {
-    id: 'mock-6',
-    authorId: 'mock-author-6',
+    id: 'post-6',
+    authorId: 'author-alext',
     author: {
       name: 'Alex Turner',
       handle: 'alext',
@@ -161,8 +176,8 @@ const mockPosts: FeedPost[] = [
 
 interface UseFeedPostsResult {
   posts: FeedPost[];
-  loading: boolean; // Only true on initial load (shows skeletons)
-  refreshing: boolean; // True during pull-to-refresh (keeps posts visible)
+  loading: boolean;
+  refreshing: boolean;
   loadingMore: boolean;
   hasMore: boolean;
   error: string | null;
@@ -175,8 +190,6 @@ function getContentType(mediaType?: string | null): ContentType {
   if (mediaType === 'video') return 'video';
   return 'image';
 }
-
-const SIMULATION_MODE = true; // Global simulation toggle
 
 export function useFeedPosts(): UseFeedPostsResult {
   const [posts, setPosts] = useState<FeedPost[]>([]);

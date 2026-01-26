@@ -3,7 +3,7 @@ import { Users, UserCheck } from 'lucide-react';
 import { motion, AnimatePresence, useAnimationControls } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
-import { usePersonalCommunity } from '@/hooks/usePersonalCommunity';
+import { useFeedCommunity } from '@/hooks/useFeedCommunity';
 import { useAuth } from '@/contexts/AuthContext';
 import { instagramAnimations, useReducedMotion, triggerHaptic } from '@/hooks/useInstagramAnimation';
 
@@ -21,14 +21,14 @@ interface CommunityButtonProps {
 
 export function CommunityButton({ authorId, authorName, size = 'md' }: CommunityButtonProps) {
   // Don't render if authorId is invalid
-  if (!authorId || !isValidUUID(authorId)) {
+  if (!authorId) {
     return null;
   }
   const { t } = useTranslation();
   const { user } = useAuth();
   const controls = useAnimationControls();
   const prefersReducedMotion = useReducedMotion();
-  const { isInCommunity, isLoading, toggleCommunityMember } = usePersonalCommunity(authorId);
+  const { isInCommunity, isLoading, toggleCommunityMember } = useFeedCommunity(authorId);
   const [showSuccess, setShowSuccess] = useState(false);
   const prevInCommunityRef = useRef(isInCommunity);
   const isFirstRender = useRef(true);

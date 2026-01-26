@@ -18,8 +18,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
+import { useFeedComments } from '@/hooks/useFeedComments';
 import { useComments } from '@/hooks/useComments';
-import { useMockComments } from '@/hooks/useMockComments';
 import { EraVerifiedTick } from '@/components/EraVerifiedTick';
 import { EraVerifiedTooltip } from '@/components/profile/EraVerifiedTooltip';
 import { ReportModal } from '@/components/moderation/ReportModal';
@@ -41,11 +41,12 @@ export function CommentSheet({ open, onOpenChange, postId }: CommentSheetProps) 
   const { user } = useAuth();
   const isRealPost = UUID_RE.test(postId);
   
-  // Use real comments for real posts, mock for mock posts
+  // Use FeedDataContext for simulated posts, real comments for UUID posts
   const realComments = useComments(postId);
-  const mockComments = useMockComments(postId);
+  const feedComments = useFeedComments(postId);
   
-  const { comments, commentCount, addComment } = isRealPost ? realComments : mockComments;
+  // Determine which hook to use based on post ID format
+  const { comments, commentCount, addComment } = isRealPost ? realComments : feedComments;
   const [comment, setComment] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [reportingCommentId, setReportingCommentId] = useState<string | null>(null);
