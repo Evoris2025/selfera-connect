@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { Search as SearchIcon, Sparkles, Play, Image, FileText } from 'lucide-react';
@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AppLayout } from '@/components/AppLayout';
 import { Input } from '@/components/ui/input';
 import { PolishedTabBar, type TabItem } from '@/components/ui/PolishedTabBar';
+import { PullToRefresh } from '@/components/ui/PullToRefresh';
 import { 
   ExploreFilters, 
   ExploreExpressions, 
@@ -68,6 +69,14 @@ export default function Explore() {
     }));
   };
 
+  // Pull-to-refresh handler
+  const handleRefresh = useCallback(async () => {
+    setIsLoading(true);
+    // Simulate network request delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    setIsLoading(false);
+  }, []);
+
   const currentFilters = filters[activeTab];
 
   const renderTabContent = () => {
@@ -120,8 +129,8 @@ export default function Explore() {
           />
         </div>
 
-        {/* Tab Content with Fade Transition */}
-        <div className="flex-1 relative">
+        {/* Tab Content with Pull-to-Refresh and Fade Transition */}
+        <PullToRefresh onRefresh={handleRefresh} className="flex-1">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
@@ -134,7 +143,7 @@ export default function Explore() {
               {renderTabContent()}
             </motion.div>
           </AnimatePresence>
-        </div>
+        </PullToRefresh>
       </div>
     </AppLayout>
   );
