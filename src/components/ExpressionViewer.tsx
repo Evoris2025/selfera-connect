@@ -1,13 +1,16 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { X, MessageCircle, Share2, Music2, Volume2, VolumeX, ChevronUp, ChevronDown, Bookmark, Heart } from 'lucide-react';
+import { X, MessageCircle, Share2, Music2, Volume2, VolumeX, ChevronUp, ChevronDown, Bookmark, Heart, Send } from 'lucide-react';
 import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Input } from '@/components/ui/input';
 import { useFeedData } from '@/contexts/FeedDataContext';
 import { ExpressionProgressBar } from '@/components/expressions/ExpressionProgressBar';
 import { PauseOverlay } from '@/components/expressions/PauseOverlay';
 import { AddToHighlightSheet } from '@/components/expressions/AddToHighlightSheet';
+import { ExpressionReactionPicker } from '@/components/expressions/ExpressionReactionPicker';
 import { HeartButton } from '@/components/interactions/HeartButton';
 import { HashtagText } from '@/components/HashtagText';
+import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
 function formatCount(count: number): string {
@@ -30,9 +33,13 @@ export function ExpressionViewer({ isOpen, onClose, initialIndex = 0 }: Expressi
   const [liked, setLiked] = useState<Record<string, boolean>>({});
   const [showHeart, setShowHeart] = useState(false);
   const [highlightSheetOpen, setHighlightSheetOpen] = useState(false);
+  const [replyText, setReplyText] = useState('');
+  const [showReplyInput, setShowReplyInput] = useState(false);
+  const [sentReaction, setSentReaction] = useState<string | null>(null);
   const lastTapRef = useRef<number>(0);
   const holdTimerRef = useRef<NodeJS.Timeout | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const replyInputRef = useRef<HTMLInputElement>(null);
 
   const currentExpression = expressions[currentIndex];
   const expressionDuration = currentExpression?.mediaType === 'video' ? 15 : 5; // 15s for video, 5s for image
@@ -136,6 +143,21 @@ export function ExpressionViewer({ isOpen, onClose, initialIndex = 0 }: Expressi
     }));
     if (navigator.vibrate) navigator.vibrate(10);
   }, [currentExpression]);
+
+  const handleSendReply = useCallback(() => {
+    if (!replyText.trim() || !currentExpression) return;
+    toast({
+      description: `Reply sent to @${currentExpression.userName.toLowerCase().replace(/\s+/g, '_')}`,
+    });
+    setReplyText('');
+    setShowReplyInput(false);
+    if (navigator.vibrate) navigator.vibrate([10, 30, 10]);
+  }, [replyText, currentExpression]);
+
+  const handleReaction = useCallback((emoji: string) => {
+    setSentReaction(emoji);
+    setTimeout(() => setSentReaction(null), 1500);
+  }, []);
 
   // Keyboard navigation
   useEffect(() => {
@@ -311,13 +333,16 @@ export function ExpressionViewer({ isOpen, onClose, initialIndex = 0 }: Expressi
               <span className="text-white text-xs font-semibold">{formatCount(stats.shares)}</span>
             </motion.button>
 
-            {/* Save to Highlight */}
+            {/* Save to Highlight - More prominent */}
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={(e) => { e.stopPropagation(); setHighlightSheetOpen(true); }}
-              className="w-10 h-10 rounded-full bg-white/20 backdrop-blur flex items-center justify-center"
+              className="flex flex-col items-center gap-1"
             >
-              <Bookmark className="h-5 w-5 text-white" />
+              <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur flex items-center justify-center">
+                <Bookmark className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-white text-[10px] font-medium">Save</span>
             </motion.button>
 
             {/* Audio toggle */}
@@ -356,11 +381,72 @@ export function ExpressionViewer({ isOpen, onClose, initialIndex = 0 }: Expressi
             </p>
 
             {/* Audio indicator */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 mb-4">
               <Music2 className="h-4 w-4 text-white/80" />
               <span className="text-white/80 text-sm">Original Sound</span>
             </div>
+
+            {/* Emoji Reaction Picker */}
+            <div onClick={(e) => e.stopPropagation()} className="mb-4">
+              <ExpressionReactionPicker
+                expressionId={currentExpression.id}
+                authorName={currentExpression.userName}
+                onReact={handleReaction}
+              />
+            </div>
+
+            {/* Reply Input */}
+            <div 
+              onClick={(e) => e.stopPropagation()} 
+              className="flex items-center gap-2"
+            >
+              <Input
+                ref={replyInputRef}
+                value={replyText}
+                onChange={(e) => setReplyText(e.target.value)}
+                onFocus={() => {
+                  setShowReplyInput(true);
+                  setIsPaused(true);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleSendReply();
+                }}
+                placeholder={`Reply to @${currentExpression.userName.toLowerCase().replace(/\s+/g, '_')}...`}
+                className="flex-1 bg-white/10 border-white/20 text-white placeholder:text-white/50 rounded-full h-10"
+              />
+              {replyText.trim() && (
+                <motion.button
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={handleSendReply}
+                  className="p-2 rounded-full bg-primary text-primary-foreground"
+                >
+                  <Send className="h-5 w-5" />
+                </motion.button>
+              )}
+            </div>
           </div>
+
+          {/* Floating sent reaction animation */}
+          <AnimatePresence>
+            {sentReaction && (
+              <motion.div
+                initial={{ opacity: 1, scale: 1, y: 0 }}
+                animate={{ 
+                  opacity: 0, 
+                  scale: 3, 
+                  y: -200,
+                  x: 100,
+                }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1.2, ease: 'easeOut' }}
+                className="absolute bottom-40 left-1/2 -translate-x-1/2 text-6xl pointer-events-none z-50"
+              >
+                {sentReaction}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       </AnimatePresence>
 
