@@ -1,13 +1,15 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { X, MessageCircle, Share2, Music2, Volume2, VolumeX, ChevronUp, ChevronDown, Bookmark, Heart, Send } from 'lucide-react';
+import { X, MessageCircle, Share2, Music2, Volume2, VolumeX, ChevronUp, ChevronDown, Bookmark, Heart, Send, BarChart3 } from 'lucide-react';
 import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { useFeedData } from '@/contexts/FeedDataContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { ExpressionProgressBar } from '@/components/expressions/ExpressionProgressBar';
 import { PauseOverlay } from '@/components/expressions/PauseOverlay';
 import { AddToHighlightSheet } from '@/components/expressions/AddToHighlightSheet';
 import { ExpressionReactionPicker } from '@/components/expressions/ExpressionReactionPicker';
+import { ExpressionAnalyticsCard, useExpressionAnalytics } from '@/components/expressions/ExpressionAnalyticsCard';
 import { HeartButton } from '@/components/interactions/HeartButton';
 import { HashtagText } from '@/components/HashtagText';
 import { toast } from '@/hooks/use-toast';
@@ -27,6 +29,7 @@ interface ExpressionViewerProps {
 
 export function ExpressionViewer({ isOpen, onClose, initialIndex = 0 }: ExpressionViewerProps) {
   const { expressions, markExpressionSeen } = useFeedData();
+  const { user } = useAuth();
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [isMuted, setIsMuted] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
@@ -36,6 +39,7 @@ export function ExpressionViewer({ isOpen, onClose, initialIndex = 0 }: Expressi
   const [replyText, setReplyText] = useState('');
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [sentReaction, setSentReaction] = useState<string | null>(null);
+  const [showAnalytics, setShowAnalytics] = useState(false);
   const lastTapRef = useRef<number>(0);
   const holdTimerRef = useRef<NodeJS.Timeout | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -43,6 +47,13 @@ export function ExpressionViewer({ isOpen, onClose, initialIndex = 0 }: Expressi
 
   const currentExpression = expressions[currentIndex];
   const expressionDuration = currentExpression?.mediaType === 'video' ? 15 : 5; // 15s for video, 5s for image
+  
+  // Check if current user is the creator of this expression
+  const isCreator = user?.id === currentExpression?.userId || 
+    user?.email?.split('@')[0]?.toLowerCase() === currentExpression?.userName?.toLowerCase();
+  
+  // Get analytics for the current expression
+  const { analytics } = useExpressionAnalytics(currentExpression?.id || '');
 
   // Reset index when opening
   useEffect(() => {
@@ -345,6 +356,30 @@ export function ExpressionViewer({ isOpen, onClose, initialIndex = 0 }: Expressi
               <span className="text-white text-[10px] font-medium">Save</span>
             </motion.button>
 
+            {/* Analytics toggle - Only for creator */}
+            {isCreator && (
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                onClick={(e) => { 
+                  e.stopPropagation(); 
+                  setShowAnalytics(prev => !prev);
+                  setIsPaused(true);
+                }}
+                className={cn(
+                  "flex flex-col items-center gap-1",
+                  showAnalytics && "text-primary"
+                )}
+              >
+                <div className={cn(
+                  "w-10 h-10 rounded-full backdrop-blur flex items-center justify-center transition-colors",
+                  showAnalytics ? "bg-primary/30" : "bg-white/20"
+                )}>
+                  <BarChart3 className="h-5 w-5 text-white" />
+                </div>
+                <span className="text-white text-[10px] font-medium">Insights</span>
+              </motion.button>
+            )}
+
             {/* Audio toggle */}
             <motion.button
               whileTap={{ scale: 0.9 }}
@@ -358,6 +393,24 @@ export function ExpressionViewer({ isOpen, onClose, initialIndex = 0 }: Expressi
               )}
             </motion.button>
           </div>
+
+          {/* Analytics Overlay - Only for creator */}
+          <AnimatePresence>
+            {showAnalytics && isCreator && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                onClick={(e) => e.stopPropagation()}
+                className="absolute top-20 left-4 right-4 z-20"
+              >
+                <ExpressionAnalyticsCard
+                  analytics={analytics}
+                  expiresAt={currentExpression.expiresAt}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Bottom info */}
           <div className="absolute bottom-8 left-4 right-20">
