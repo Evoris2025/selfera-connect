@@ -16,6 +16,7 @@ import {
   Settings,
   Bell,
   Shield,
+  BarChart3,
   ArrowRight,
   Plus,
   MessageCircle,
@@ -51,7 +52,6 @@ import {
   CreatorView, 
   PractitionerView, 
   OrganisationView,
-  AnalyticsSection,
 } from '@/components/myera';
 import { EraAccountStatusCard } from '@/components/billing';
 import { EraTier, PlanType } from '@/lib/eraTiers';
@@ -331,6 +331,10 @@ export default function MyERA() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48 bg-popover border border-border">
+                  <DropdownMenuItem className="gap-2" onClick={() => navigate('/creator-dashboard')}>
+                    <BarChart3 className="h-4 w-4" />
+                    Analytics
+                  </DropdownMenuItem>
                   <DropdownMenuItem className="gap-2" onClick={() => navigate('/settings')}>
                     <Settings className="h-4 w-4" />
                     Settings
@@ -790,9 +794,6 @@ export default function MyERA() {
             )}
           </AnimatePresence>
         </motion.section>
-
-        {/* Analytics Section */}
-        <AnalyticsSection />
 
         {/* MyERA Network Section */}
         <motion.section
