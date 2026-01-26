@@ -398,7 +398,7 @@ export default function Profile() {
                       <MoreVertical className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-44 bg-popover border border-border">
+                <DropdownMenuContent align="end" className="w-56 bg-popover border border-border">
                     <DropdownMenuItem className="gap-2 cursor-pointer">
                       <Share2 className="h-4 w-4" />
                       Share profile
