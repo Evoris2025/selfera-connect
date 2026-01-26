@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
 import { Sparkles, Video, Image, FileText, ChevronRight, FileEdit, X, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { BrandMark } from '@/components/BrandMark';
 import { useDrafts } from './shared/DraftManager';
+import logo from '@/assets/selfera-app-logo.png';
 
 export type ContentType = 'expression' | 'video' | 'image' | 'post';
 
@@ -95,121 +95,89 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto relative z-10 flex flex-col">
         {/* Logo Hero Section */}
-        <div className="flex flex-col items-center justify-center pt-10 pb-8 px-4">
+        <div className="flex flex-col items-center justify-center pt-12 pb-10 px-4">
           {/* Ambient glow behind logo */}
-          <div className="absolute top-16 left-1/2 -translate-x-1/2 w-80 h-24 bg-gradient-to-r from-rose-500/15 via-purple-500/15 to-orange-500/15 blur-[80px] rounded-full" />
+          <div className="absolute top-20 left-1/2 -translate-x-1/2 w-80 h-32 bg-gradient-to-r from-rose-500/20 via-purple-500/20 to-orange-500/20 blur-[100px] rounded-full" />
           
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1, type: 'spring', stiffness: 300, damping: 25 }}
-            className="relative w-full flex flex-col items-center"
+            className="relative flex flex-col items-center"
           >
-            {/* Logo wrapper - center the visible content */}
-            <div className="flex justify-center w-full">
-              <BrandMark className="h-14 w-[220px]" imgClassName="origin-center" />
-            </div>
+            {/* Logo - using raw image for perfect centering */}
+            <img 
+              src={logo} 
+              alt="SelfERA" 
+              className="h-16 w-auto object-contain"
+            />
             
-            {/* ERA STUDIO Title */}
+            {/* STUDIO Title */}
             <motion.h1
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="mt-6 text-base font-medium tracking-[0.35em] text-muted-foreground uppercase text-center"
+              className="mt-8 text-sm font-medium tracking-[0.4em] text-muted-foreground/80 uppercase text-center"
             >
               STUDIO
             </motion.h1>
+            
+            <motion.p
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 }}
+              className="mt-3 text-base text-muted-foreground/60 font-normal text-center"
+            >
+              What would you like to create?
+            </motion.p>
           </motion.div>
-          
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25 }}
-            className="mt-4 text-sm text-muted-foreground/70 font-normal text-center"
-          >
-            What would you like to create?
-          </motion.p>
         </div>
 
-        {/* Editorial Timeline */}
-        <div className="flex-1 px-6 py-6">
-          <div className="relative h-full flex flex-col">
-            {/* Vertical Timeline Line */}
-            <motion.div 
-              className="absolute left-[13px] top-4 bottom-4 w-[2px] bg-gradient-to-b from-rose-500 via-blue-500 via-amber-500 to-emerald-500 rounded-full opacity-60"
-              initial={{ scaleY: 0 }}
-              animate={{ scaleY: 1 }}
-              transition={{ delay: 0.3, duration: 0.5, ease: 'easeOut' }}
-              style={{ originY: 0 }}
-            />
-            
-            {/* Timeline Items */}
-            <div className="flex flex-col flex-1 justify-evenly">
-              {contentTypes.map((type, index) => (
-                <motion.button
-                  key={type.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ 
-                    delay: 0.4 + index * 0.08, 
-                    type: 'spring', 
-                    stiffness: 400, 
-                    damping: 30 
-                  }}
-                  onClick={() => onSelect(type.id)}
-                  className="group relative flex items-center gap-4 py-3 text-left focus:outline-none"
+        {/* Content Type Selection */}
+        <div className="flex-1 px-5 py-4">
+          <div className="flex flex-col gap-3">
+            {contentTypes.map((type, index) => (
+              <motion.button
+                key={type.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ 
+                  delay: 0.3 + index * 0.08, 
+                  type: 'spring', 
+                  stiffness: 400, 
+                  damping: 30 
+                }}
+                onClick={() => onSelect(type.id)}
+                className="group relative flex items-center gap-4 p-4 bg-secondary/20 hover:bg-secondary/40 border border-border/20 hover:border-border/40 transition-all duration-200 text-left focus:outline-none"
+              >
+                {/* Icon */}
+                <div 
+                  className={cn(
+                    "flex items-center justify-center w-12 h-12 rounded-xl shadow-lg",
+                    "transition-all duration-300",
+                    "group-hover:scale-105 group-hover:shadow-xl",
+                    type.nodeColor
+                  )}
                 >
-                  {/* Timeline Node */}
-                  <motion.div 
-                    className={cn(
-                      "relative z-10 w-7 h-7 rounded-full shadow-lg flex items-center justify-center",
-                      "transition-all duration-300 ring-2 ring-background",
-                      "group-hover:scale-110 group-hover:shadow-xl",
-                      type.nodeColor
-                    )}
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ 
-                      delay: 0.35 + index * 0.08, 
-                      type: 'spring', 
-                      stiffness: 500, 
-                      damping: 25 
-                    }}
-                  >
-                    <type.icon className="h-3.5 w-3.5 text-white" />
-                  </motion.div>
-                  
-                  {/* Horizontal Connector */}
-                  <motion.div 
-                    className="w-8 h-[1.5px] bg-border/30 group-hover:bg-border/50 transition-colors"
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: 1 }}
-                    transition={{ delay: 0.45 + index * 0.08, duration: 0.2 }}
-                    style={{ originX: 0 }}
-                  />
-                  
-                  {/* Content */}
-                  <div className="flex-1 flex flex-col gap-1 transition-transform duration-200 group-hover:translate-x-1">
-                    <span className={cn(
-                      "text-xl font-bold tracking-tight bg-clip-text text-transparent",
-                      `bg-gradient-to-r ${type.gradient}`
-                    )}>
-                      {type.title}
-                    </span>
-                    <span className="text-xs text-muted-foreground/60 font-medium uppercase tracking-wider">
-                      {type.description}
-                    </span>
-                  </div>
-                  
-                  {/* Action Indicator */}
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-secondary/30 group-hover:bg-secondary/60 transition-all duration-200">
-                    <ChevronRight 
-                      className="h-4 w-4 text-muted-foreground/50 transition-all duration-200 group-hover:text-foreground group-hover:translate-x-0.5" 
-                    />
-                  </div>
-                </motion.button>
-              ))}
-            </div>
+                  <type.icon className="h-5 w-5 text-white" />
+                </div>
+                
+                {/* Content */}
+                <div className="flex-1 flex flex-col gap-0.5">
+                  <span className="text-lg font-semibold text-foreground">
+                    {type.title}
+                  </span>
+                  <span className="text-sm text-muted-foreground">
+                    {type.description}
+                  </span>
+                </div>
+                
+                {/* Action Indicator */}
+                <ChevronRight 
+                  className="h-5 w-5 text-muted-foreground/40 transition-all duration-200 group-hover:text-muted-foreground group-hover:translate-x-1" 
+                />
+              </motion.button>
+            ))}
           </div>
         </div>
       </div>
