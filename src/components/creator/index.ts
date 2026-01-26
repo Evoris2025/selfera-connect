@@ -1,7 +1,12 @@
 export { CreatorStudio } from './CreatorStudio';
-export { ContentTypeDashboard } from './ContentTypeDashboard';
+export { ContentTypeDashboard, type ContentType } from './ContentTypeDashboard';
 export { PostComposer } from './PostComposer';
 export { ImageStudio } from './ImageStudio';
 export { VideoStudio } from './VideoStudio';
 export { ExpressionCreator } from './ExpressionCreator';
 export { VisibilityInsightsCard } from './VisibilityInsightsCard';
+export { HashtagAutocomplete } from './HashtagAutocomplete';
+export { StickerPicker } from './StickerPicker';
+export { SoundPicker } from './SoundPicker';
+export { TextOverlayEditor } from './TextOverlayEditor';
+export { UserTagPicker } from './UserTagPicker';

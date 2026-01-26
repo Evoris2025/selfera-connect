@@ -458,6 +458,36 @@ export type Database = {
         }
         Relationships: []
       }
+      drafts: {
+        Row: {
+          content_type: string
+          created_at: string | null
+          draft_data: Json
+          id: string
+          title: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          content_type: string
+          created_at?: string | null
+          draft_data?: Json
+          id?: string
+          title?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          content_type?: string
+          created_at?: string | null
+          draft_data?: Json
+          id?: string
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       expression_reactions: {
         Row: {
           created_at: string
@@ -532,6 +562,41 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      expression_responses: {
+        Row: {
+          created_at: string | null
+          expression_id: string | null
+          id: string
+          response_data: Json
+          sticker_type: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          expression_id?: string | null
+          id?: string
+          response_data?: Json
+          sticker_type: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          expression_id?: string | null
+          id?: string
+          response_data?: Json
+          sticker_type?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expression_responses_expression_id_fkey"
+            columns: ["expression_id"]
+            isOneToOne: false
+            referencedRelation: "expressions"
             referencedColumns: ["id"]
           },
         ]
@@ -702,6 +767,51 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      media_user_tags: {
+        Row: {
+          created_at: string | null
+          id: string
+          media_index: number | null
+          position_x: number | null
+          position_y: number | null
+          post_id: string | null
+          tagged_user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          media_index?: number | null
+          position_x?: number | null
+          position_y?: number | null
+          post_id?: string | null
+          tagged_user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          media_index?: number | null
+          position_x?: number | null
+          position_y?: number | null
+          post_id?: string | null
+          tagged_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "media_user_tags_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "media_user_tags_tagged_user_id_fkey"
+            columns: ["tagged_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       message_reactions: {
         Row: {
@@ -916,6 +1026,136 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      playlist_items: {
+        Row: {
+          added_at: string | null
+          playlist_id: string
+          position: number
+          post_id: string
+        }
+        Insert: {
+          added_at?: string | null
+          playlist_id: string
+          position: number
+          post_id: string
+        }
+        Update: {
+          added_at?: string | null
+          playlist_id?: string
+          position?: number
+          post_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "playlist_items_playlist_id_fkey"
+            columns: ["playlist_id"]
+            isOneToOne: false
+            referencedRelation: "playlists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "playlist_items_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      playlists: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          user_id: string
+          visibility: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          user_id: string
+          visibility?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          user_id?: string
+          visibility?: string | null
+        }
+        Relationships: []
+      }
+      poll_votes: {
+        Row: {
+          option_index: number
+          poll_id: string
+          user_id: string
+          voted_at: string | null
+        }
+        Insert: {
+          option_index: number
+          poll_id: string
+          user_id: string
+          voted_at?: string | null
+        }
+        Update: {
+          option_index?: number
+          poll_id?: string
+          user_id?: string
+          voted_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "poll_votes_poll_id_fkey"
+            columns: ["poll_id"]
+            isOneToOne: false
+            referencedRelation: "polls"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      polls: {
+        Row: {
+          created_at: string | null
+          duration_hours: number | null
+          ends_at: string | null
+          id: string
+          is_anonymous: boolean | null
+          options: Json
+          post_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          duration_hours?: number | null
+          ends_at?: string | null
+          id?: string
+          is_anonymous?: boolean | null
+          options?: Json
+          post_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          duration_hours?: number | null
+          ends_at?: string | null
+          id?: string
+          is_anonymous?: boolean | null
+          options?: Json
+          post_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "polls_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
             referencedColumns: ["id"]
           },
         ]
@@ -1283,6 +1523,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      scheduled_posts: {
+        Row: {
+          created_at: string | null
+          id: string
+          post_data: Json
+          scheduled_for: string
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          post_data: Json
+          scheduled_for: string
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          post_data?: Json
+          scheduled_for?: string
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       service_directory_entries: {
         Row: {
@@ -1710,6 +1977,67 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      video_cards: {
+        Row: {
+          card_data: Json
+          card_type: string
+          id: string
+          post_id: string | null
+          timestamp_seconds: number
+        }
+        Insert: {
+          card_data?: Json
+          card_type: string
+          id?: string
+          post_id?: string | null
+          timestamp_seconds: number
+        }
+        Update: {
+          card_data?: Json
+          card_type?: string
+          id?: string
+          post_id?: string | null
+          timestamp_seconds?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_cards_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      video_chapters: {
+        Row: {
+          id: string
+          post_id: string | null
+          timestamp_seconds: number
+          title: string
+        }
+        Insert: {
+          id?: string
+          post_id?: string | null
+          timestamp_seconds: number
+          title: string
+        }
+        Update: {
+          id?: string
+          post_id?: string | null
+          timestamp_seconds?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_chapters_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
             referencedColumns: ["id"]
           },
         ]
