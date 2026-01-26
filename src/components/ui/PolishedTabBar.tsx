@@ -1,8 +1,8 @@
 /**
  * Polished Tab Bar Component
  * 
- * A clean, minimal tab bar with border highlight on active tab
- * Matches the design reference with subtle, elegant styling
+ * A clean, minimal tab bar with rectangular border highlight on active tab
+ * Matches the exact design reference: dark solid background, simple border indicator
  */
 
 import { memo } from 'react';
@@ -33,7 +33,7 @@ export const PolishedTabBar = memo(function PolishedTabBar({
   return (
     <div
       className={cn(
-        'w-full flex items-center bg-card/40 backdrop-blur-sm border border-border/30 rounded-xl p-1',
+        'w-full flex items-center bg-[hsl(240,10%,8%)] border border-border/20 rounded-lg overflow-hidden',
         className
       )}
     >
@@ -46,18 +46,18 @@ export const PolishedTabBar = memo(function PolishedTabBar({
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
             className={cn(
-              'relative flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg transition-all duration-200',
+              'relative flex-1 flex items-center justify-center gap-2 py-3 px-4 transition-colors duration-200',
               isActive
                 ? 'text-primary'
-                : 'text-muted-foreground hover:text-foreground/70'
+                : 'text-muted-foreground/60 hover:text-muted-foreground'
             )}
           >
-            {/* Active indicator border */}
+            {/* Active indicator - rectangular border */}
             {isActive && (
               <motion.div
                 layoutId="polished-tab-indicator"
-                className="absolute inset-0 rounded-lg border border-primary/50 bg-primary/5"
-                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                className="absolute inset-1 rounded-md border border-primary"
+                transition={{ type: 'spring', stiffness: 500, damping: 35 }}
               />
             )}
 
