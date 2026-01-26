@@ -388,7 +388,7 @@ function PostCardBase({
           </motion.div>
 
           {/* Bottom Content - Caption & Tags - with safe area padding for navbar */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 pb-24 z-20">
+          <div className="absolute bottom-0 left-0 right-0 p-4 z-20">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
