@@ -4,7 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Search as SearchIcon, Sparkles, Play, Image, FileText } from 'lucide-react';
 import { AppLayout } from '@/components/AppLayout';
 import { Input } from '@/components/ui/input';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { PolishedTabBar, type TabItem } from '@/components/ui/PolishedTabBar';
 import { 
   ExploreFilters, 
   ExploreExpressions, 
@@ -16,6 +16,13 @@ import {
 } from '@/components/explore';
 
 type ExploreTab = 'expressions' | 'videos' | 'images' | 'posts';
+
+const exploreTabs: TabItem[] = [
+  { id: 'expressions', icon: Sparkles },
+  { id: 'videos', icon: Play },
+  { id: 'images', icon: Image },
+  { id: 'posts', icon: FileText },
+];
 
 export default function Explore() {
   const { t } = useTranslation();
@@ -62,6 +69,21 @@ export default function Explore() {
 
   const currentFilters = filters[activeTab];
 
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'expressions':
+        return <ExploreExpressions isLoading={isLoading} />;
+      case 'videos':
+        return <ExploreVideos isLoading={isLoading} />;
+      case 'images':
+        return <ExploreImages isLoading={isLoading} />;
+      case 'posts':
+        return <ExplorePosts isLoading={isLoading} />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <AppLayout title={t('nav.explore')}>
       <div className="flex flex-col min-h-full">
@@ -86,60 +108,19 @@ export default function Explore() {
           </div>
         </div>
 
-        {/* Tabs */}
-        <Tabs 
-          value={activeTab} 
-          onValueChange={(v) => setActiveTab(v as ExploreTab)} 
-          className="flex-1 flex flex-col"
-        >
-          <TabsList className="w-full bg-transparent border-b border-border rounded-none h-12 p-0 justify-around gap-0 sticky top-[61px] z-10 bg-background/95 backdrop-blur">
-            <TabsTrigger 
-              value="expressions" 
-              className="flex-1 rounded-none h-full data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary font-medium gap-1.5 px-2"
-            >
-              <Sparkles className="h-4 w-4" />
-              <span className="hidden sm:inline text-sm">Expressions</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="videos" 
-              className="flex-1 rounded-none h-full data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary font-medium gap-1.5 px-2"
-            >
-              <Play className="h-4 w-4" />
-              <span className="hidden sm:inline text-sm">Videos</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="images" 
-              className="flex-1 rounded-none h-full data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary font-medium gap-1.5 px-2"
-            >
-              <Image className="h-4 w-4" />
-              <span className="hidden sm:inline text-sm">Images</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="posts" 
-              className="flex-1 rounded-none h-full data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary font-medium gap-1.5 px-2"
-            >
-              <FileText className="h-4 w-4" />
-              <span className="hidden sm:inline text-sm">Posts</span>
-            </TabsTrigger>
-          </TabsList>
+        {/* Polished Tab Bar */}
+        <div className="sticky top-[61px] z-10 bg-background/95 backdrop-blur px-3 py-2 border-b border-border">
+          <PolishedTabBar
+            tabs={exploreTabs}
+            activeTab={activeTab}
+            onTabChange={(tabId) => setActiveTab(tabId as ExploreTab)}
+          />
+        </div>
 
-          {/* Tab Content */}
-          <TabsContent value="expressions" className="mt-0 flex-1">
-            <ExploreExpressions isLoading={isLoading} />
-          </TabsContent>
-
-          <TabsContent value="videos" className="mt-0 flex-1">
-            <ExploreVideos isLoading={isLoading} />
-          </TabsContent>
-
-          <TabsContent value="images" className="mt-0 flex-1">
-            <ExploreImages isLoading={isLoading} />
-          </TabsContent>
-
-          <TabsContent value="posts" className="mt-0 flex-1">
-            <ExplorePosts isLoading={isLoading} />
-          </TabsContent>
-        </Tabs>
+        {/* Tab Content */}
+        <div className="flex-1">
+          {renderTabContent()}
+        </div>
       </div>
     </AppLayout>
   );
