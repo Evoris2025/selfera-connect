@@ -1,9 +1,9 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Compass, Plus, Bell, MessageCircle, User, LayoutDashboard, Heart, Settings, Shield } from 'lucide-react';
+import { Home, Compass, Plus, Bell, MessageCircle, User, LayoutDashboard, Heart, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useFounderAccess } from '@/hooks/useFounderAccess';
+
 interface NavItem {
   icon: typeof Home;
   href: string;
@@ -34,7 +34,7 @@ export function DesktopNav({
   pendingConnectionCount = 0,
 }: DesktopNavProps) {
   const location = useLocation();
-  const { isFounder } = useFounderAccess();
+  
 
   // Combine notification count with follow request count and pending connections for total badge
   const totalNotificationBadge = notificationCount + followRequestCount + pendingConnectionCount;
@@ -53,8 +53,6 @@ export function DesktopNav({
   const secondaryItems: NavItem[] = [
     { icon: Heart, href: '/crisis-support', label: 'Crisis Support', isCrisis: true },
     { icon: Settings, href: '/settings', label: 'Settings' },
-    // Admin icon - only for founder
-    ...(isFounder ? [{ icon: Shield, href: '/admin', label: 'Admin' }] : []),
   ];
 
   const isActiveRoute = (href: string) => {

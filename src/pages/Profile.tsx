@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { MoreVertical, Lock, MapPin, MessageCircle, Share2, Settings, Plus, Sparkles, User, ImageIcon, ShieldOff, VolumeX, Flag } from 'lucide-react';
+import { MoreVertical, Lock, MapPin, MessageCircle, Share2, Settings, Plus, Sparkles, User, ImageIcon, ShieldOff, VolumeX, Flag, Shield } from 'lucide-react';
 import { DiscoverRow } from '@/components/DiscoverRow';
 import { RearrangeableGrid } from '@/components/profile/RearrangeableGrid';
 import { RearrangeableTabBar } from '@/components/profile/RearrangeableTabBar';
@@ -28,6 +28,7 @@ import { useCoverPhotoUpload } from '@/hooks/useCoverPhotoUpload';
 import { useProfileStats, useUserPosts } from '@/hooks/useProfileStats';
 import { useFollow } from '@/hooks/useFollow';
 import { supabase } from '@/integrations/supabase/client';
+import { useFounderAccess } from '@/hooks/useFounderAccess';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -121,6 +122,26 @@ function renderBioWithHashtags(bio: string) {
     ) : (
       <span key={index}>{part}</span>
     )
+  );
+}
+
+// Admin button - only visible to founder
+function AdminButton() {
+  const navigate = useNavigate();
+  const { isFounder, isLoading } = useFounderAccess();
+  
+  if (isLoading || !isFounder) return null;
+  
+  return (
+    <motion.button
+      onClick={() => navigate('/admin')}
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
+      className="w-7 h-7 rounded-full bg-primary/10 hover:bg-primary/20 flex items-center justify-center transition-colors ml-1"
+      aria-label="Admin Console"
+    >
+      <Shield className="w-3.5 h-3.5 text-primary" />
+    </motion.button>
   );
 }
 
@@ -519,9 +540,9 @@ export default function Profile() {
                 )}
               </motion.div>
 
-              {/* Name + Handle + Location */}
+              {/* Name + Handle + Location + Admin Button */}
               <div className="flex flex-col justify-end min-w-0 pb-1">
-                {/* Name + Verified Badge */}
+                {/* Name + Verified Badge + Admin Button */}
                 <div className="flex items-center gap-2 flex-wrap">
                   <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground tracking-tight leading-tight">
                     {displayProfile.displayName || mockUser.name}
@@ -537,6 +558,9 @@ export default function Profile() {
                     <AccountTypeBadge type={displayProfile.userType as AccountType} size="md" />
                   )}
                   {displayProfile.isPrivate && <Lock className="h-4 w-4 text-muted-foreground" />}
+                  
+                  {/* Admin Button - Founder Only */}
+                  <AdminButton />
                 </div>
 
                 {/* Handle + Location */}
