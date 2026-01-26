@@ -165,19 +165,23 @@ export function useExpressionAnalytics(expressionId: string) {
   });
 }
 
-export function useCreatorAnalytics() {
+export function useCreatorAnalytics(dateRange: 7 | 30 | 90 = 30) {
   const { user } = useAuth();
 
   return useQuery({
-    queryKey: ['creator-analytics', user?.id],
+    queryKey: ['creator-analytics', user?.id, dateRange],
     queryFn: async (): Promise<AggregatedCreatorAnalytics> => {
       if (!user?.id) throw new Error('User not authenticated');
+
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - dateRange);
 
       // Fetch all user's expressions
       const { data: expressions, error: expressionsError } = await supabase
         .from('expressions')
         .select('id, media_url, thumbnail_url, created_at')
         .eq('user_id', user.id)
+        .gte('created_at', startDate.toISOString())
         .order('created_at', { ascending: false });
 
       if (expressionsError) throw expressionsError;
@@ -187,6 +191,7 @@ export function useCreatorAnalytics() {
         .from('posts')
         .select('id, media_url, thumbnail_url, media_type, created_at')
         .eq('author_id', user.id)
+        .gte('created_at', startDate.toISOString())
         .order('created_at', { ascending: false });
 
       if (postsError) throw postsError;
@@ -214,7 +219,8 @@ export function useCreatorAnalytics() {
         const { data: views, error: viewsError } = await supabase
           .from('expression_views')
           .select('*')
-          .in('expression_id', expressionIds);
+          .in('expression_id', expressionIds)
+          .gte('viewed_at', startDate.toISOString());
 
         if (viewsError) throw viewsError;
         allViews = views || [];
@@ -222,7 +228,8 @@ export function useCreatorAnalytics() {
         const { data: reactions, error: reactionsError } = await supabase
           .from('expression_reactions')
           .select('*')
-          .in('expression_id', expressionIds);
+          .in('expression_id', expressionIds)
+          .gte('created_at', startDate.toISOString());
 
         if (reactionsError) throw reactionsError;
         allExpressionReactions = reactions || [];
@@ -230,7 +237,8 @@ export function useCreatorAnalytics() {
         const { data: replies, error: repliesError } = await supabase
           .from('expression_replies')
           .select('*')
-          .in('expression_id', expressionIds);
+          .in('expression_id', expressionIds)
+          .gte('created_at', startDate.toISOString());
 
         if (repliesError) throw repliesError;
         allReplies = replies || [];
@@ -256,7 +264,8 @@ export function useCreatorAnalytics() {
         const { data: reactions, error: reactionsError } = await supabase
           .from('reactions')
           .select('*')
-          .in('post_id', postIds);
+          .in('post_id', postIds)
+          .gte('created_at', startDate.toISOString());
 
         if (reactionsError) throw reactionsError;
         allPostReactions = reactions || [];
@@ -266,7 +275,8 @@ export function useCreatorAnalytics() {
           .from('comments')
           .select('*')
           .in('post_id', postIds)
-          .eq('is_removed', false);
+          .eq('is_removed', false)
+          .gte('created_at', startDate.toISOString());
 
         if (commentsError) throw commentsError;
         allComments = comments || [];
@@ -274,14 +284,14 @@ export function useCreatorAnalytics() {
       }
 
       // Combined totals
-      const totalViews = totalExpressionViews; // Note: Posts don't have a view tracking table yet
+      const totalViews = totalExpressionViews;
       const totalReactions = totalExpressionReactions + totalPostReactions;
       const totalReplies = totalExpressionReplies;
 
-      // Trends (last 30 days) - combine expression views with post reactions for engagement
-      const viewsTrend = getViewsByDay(allViews, 'viewed_at', 30);
-      const reactionsTrend = getReactionsByDay([...allExpressionReactions, ...allPostReactions], 'created_at', 30);
-      const repliesTrend = getRepliesByDay([...allReplies, ...allComments], 'created_at', 30);
+      // Trends based on selected date range
+      const viewsTrend = getViewsByDay(allViews, 'viewed_at', dateRange);
+      const reactionsTrend = getReactionsByDay([...allExpressionReactions, ...allPostReactions], 'created_at', dateRange);
+      const repliesTrend = getRepliesByDay([...allReplies, ...allComments], 'created_at', dateRange);
 
       // Build top content list across all types
       const topContent: ContentItem[] = [];

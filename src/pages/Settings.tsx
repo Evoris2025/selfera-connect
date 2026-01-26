@@ -15,6 +15,7 @@ import { BlockedUsersList } from '@/components/settings/BlockedUsersList';
 import { MutedUsersList } from '@/components/settings/MutedUsersList';
 import { CloseFriendsList } from '@/components/settings/CloseFriendsList';
 import { FollowRequestsModal } from '@/components/settings/FollowRequestsModal';
+import { NotificationSettings } from '@/components/settings/NotificationSettings';
 import { BillingSettingsView } from '@/components/billing';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSafety } from '@/contexts/SafetyContext';
@@ -30,7 +31,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-type SettingsView = 'main' | 'verification' | 'blocked' | 'muted' | 'billing' | 'closeFriends';
+type SettingsView = 'main' | 'verification' | 'blocked' | 'muted' | 'billing' | 'closeFriends' | 'notifications';
 
 export default function Settings() {
   const { t } = useTranslation();
@@ -89,16 +90,6 @@ export default function Settings() {
       icon: User,
       title: t('settings.account'),
       description: 'Manage your account details',
-    },
-    {
-      icon: Bell,
-      title: t('settings.notifications'),
-      description: 'Configure notification preferences',
-    },
-    {
-      icon: Lock,
-      title: t('settings.privacy'),
-      description: 'Control your privacy settings',
     },
     {
       icon: HelpCircle,
@@ -161,6 +152,17 @@ export default function Settings() {
       <AppLayout>
         <div className="max-w-2xl mx-auto p-4">
           <CloseFriendsList onBack={() => handleViewChange('main')} />
+        </div>
+      </AppLayout>
+    );
+  }
+
+  // Notification settings view
+  if (view === 'notifications') {
+    return (
+      <AppLayout>
+        <div className="max-w-2xl mx-auto p-4">
+          <NotificationSettings onBack={() => handleViewChange('main')} />
         </div>
       </AppLayout>
     );
@@ -254,6 +256,24 @@ export default function Settings() {
                   </div>
                 </div>
                 <Switch id="private-account" />
+              </div>
+            </CardHeader>
+          </Card>
+
+          {/* Notification Settings */}
+          <Card 
+            className="cursor-pointer hover:border-primary/30 transition-colors"
+            onClick={() => handleViewChange('notifications')}
+          >
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <Bell className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <CardTitle className="text-base">{t('settings.notifications')}</CardTitle>
+                  <CardDescription>Configure notification preferences</CardDescription>
+                </div>
               </div>
             </CardHeader>
           </Card>

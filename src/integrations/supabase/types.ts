@@ -816,6 +816,56 @@ export type Database = {
           },
         ]
       }
+      notification_preferences: {
+        Row: {
+          comments_enabled: boolean
+          created_at: string
+          follows_enabled: boolean
+          id: string
+          interactions_enabled: boolean
+          mentions_enabled: boolean
+          push_enabled: boolean
+          reactions_enabled: boolean
+          replies_enabled: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          comments_enabled?: boolean
+          created_at?: string
+          follows_enabled?: boolean
+          id?: string
+          interactions_enabled?: boolean
+          mentions_enabled?: boolean
+          push_enabled?: boolean
+          reactions_enabled?: boolean
+          replies_enabled?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          comments_enabled?: boolean
+          created_at?: string
+          follows_enabled?: boolean
+          id?: string
+          interactions_enabled?: boolean
+          mentions_enabled?: boolean
+          push_enabled?: boolean
+          reactions_enabled?: boolean
+          replies_enabled?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           actor_id: string | null
@@ -896,6 +946,45 @@ export type Database = {
             columns: ["tag_id"]
             isOneToOne: false
             referencedRelation: "topic_tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_views: {
+        Row: {
+          id: string
+          post_id: string
+          view_duration_seconds: number | null
+          viewed_at: string
+          viewer_id: string
+        }
+        Insert: {
+          id?: string
+          post_id: string
+          view_duration_seconds?: number | null
+          viewed_at?: string
+          viewer_id: string
+        }
+        Update: {
+          id?: string
+          post_id?: string
+          view_duration_seconds?: number | null
+          viewed_at?: string
+          viewer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_views_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_views_viewer_id_fkey"
+            columns: ["viewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
