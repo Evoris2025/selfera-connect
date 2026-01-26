@@ -1,7 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Image, Video, Globe, Users, Lock, X, Loader2 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { 
+  ArrowLeft, 
+  Image, 
+  Video, 
+  Globe, 
+  Users, 
+  Lock, 
+  X, 
+  Loader2,
+  Link as LinkIcon,
+  MessageSquare
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -17,9 +28,25 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { TopicTagSelector } from './shared/TopicTagSelector';
 import { ContentWarningToggle } from './shared/ContentWarningToggle';
+import { 
+  PollCreator, 
+  PollData,
+  CharacterCounter,
+  FeelingActivityPicker,
+  FeelingActivity,
+  LocationPicker,
+  Location,
+  ScheduleSelector,
+  GifPicker,
+  GifData,
+  ThreadComposer,
+  ThreadItem,
+} from './post';
+import { cn } from '@/lib/utils';
 
 // Simulation mode flag - when true, uses FeedDataContext instead of Supabase
 const SIMULATION_MODE = true;
+const MAX_CHARACTERS = 500;
 
 interface PostComposerProps {
   onBack: () => void;
@@ -28,6 +55,7 @@ interface PostComposerProps {
 
 type Visibility = 'public' | 'followers' | 'private';
 type ContentWarningType = 'sensitive' | 'triggering' | 'graphic' | 'other' | null;
+type ComposerMode = 'simple' | 'thread';
 
 const visibilityOptions = [
   { value: 'public' as const, label: 'Public', icon: Globe },
@@ -39,6 +67,8 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { createPost, isSimulationMode } = useFeedData();
+  
+  // Core content state
   const [content, setContent] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [visibility, setVisibility] = useState<Visibility>('public');
@@ -47,15 +77,34 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
   const [mediaFiles, setMediaFiles] = useState<File[]>([]);
   const [mediaPreviewUrls, setMediaPreviewUrls] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // New feature states
+  const [composerMode, setComposerMode] = useState<ComposerMode>('simple');
+  const [threadItems, setThreadItems] = useState<ThreadItem[]>([
+    { id: 'thread-1', content: '' }
+  ]);
+  const [poll, setPoll] = useState<PollData | null>(null);
+  const [feeling, setFeeling] = useState<FeelingActivity | null>(null);
+  const [location, setLocation] = useState<Location | null>(null);
+  const [scheduledDate, setScheduledDate] = useState<Date | null>(null);
+  const [selectedGif, setSelectedGif] = useState<GifData | null>(null);
 
   const displayName = user?.email?.split('@')[0] || 'You';
   const userInitial = displayName.charAt(0).toUpperCase();
 
-  const canPost = (content.trim().length > 0 || mediaFiles.length > 0) && selectedTags.length > 0;
+  // Calculate if post is valid
+  const hasContent = composerMode === 'thread' 
+    ? threadItems.some(item => item.content.trim().length > 0)
+    : content.trim().length > 0 || mediaFiles.length > 0 || selectedGif !== null;
+  
+  const canPost = hasContent && selectedTags.length > 0;
 
   const handleMediaSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     if (files.length === 0) return;
+
+    // Clear GIF if selecting media
+    setSelectedGif(null);
 
     // Limit to 4 files
     const newFiles = [...mediaFiles, ...files].slice(0, 4);
@@ -73,6 +122,27 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
     setMediaPreviewUrls(newUrls);
   };
 
+  const handleGifSelect = (gif: GifData) => {
+    // Clear other media if selecting GIF
+    setMediaFiles([]);
+    setMediaPreviewUrls([]);
+    setSelectedGif(gif);
+  };
+
+  const removeGif = () => {
+    setSelectedGif(null);
+  };
+
+  const toggleThreadMode = () => {
+    if (composerMode === 'simple') {
+      setComposerMode('thread');
+      setThreadItems([{ id: 'thread-1', content: content }]);
+    } else {
+      setComposerMode('simple');
+      setContent(threadItems[0]?.content || '');
+    }
+  };
+
   const handleSubmit = async () => {
     if (!canPost) return;
 
@@ -84,15 +154,32 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         let mediaUrl: string | undefined;
         let mediaType: 'image' | 'video' | undefined;
 
-        // For simulation, use the object URL directly as the media URL
-        if (mediaFiles.length > 0 && mediaPreviewUrls.length > 0) {
+        // For simulation, use the object URL or GIF URL
+        if (selectedGif) {
+          mediaUrl = selectedGif.url;
+          mediaType = 'image'; // Treat GIF as image for feed display
+        } else if (mediaFiles.length > 0 && mediaPreviewUrls.length > 0) {
           mediaUrl = mediaPreviewUrls[0];
           mediaType = mediaFiles[0]?.type.startsWith('video') ? 'video' : 'image';
         }
 
-        const displayName = user?.email?.split('@')[0] || 'You';
+        const postContent = composerMode === 'thread'
+          ? threadItems.map(item => item.content).join('\n\n---\n\n')
+          : content.trim();
 
-        // Create post via FeedDataContext - it will appear instantly in feed
+        // Build content with feeling/location prefix
+        let enrichedContent = postContent;
+        if (feeling) {
+          const prefix = feeling.type === 'feeling' 
+            ? `${feeling.emoji} Feeling ${feeling.label}`
+            : `${feeling.emoji} ${feeling.label}`;
+          enrichedContent = `${prefix}\n\n${enrichedContent}`;
+        }
+        if (location) {
+          enrichedContent = `📍 at ${location.name}\n\n${enrichedContent}`;
+        }
+
+        // Create post via FeedDataContext
         createPost({
           authorId: user?.id || `sim-user-${Date.now()}`,
           author: {
@@ -102,16 +189,19 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
             isVerified: false,
             email: user?.email,
           },
-          content: content.trim(),
+          content: enrichedContent,
           tags: selectedTags,
           contentType: mediaType || 'text',
-          media: mediaUrl ? { type: mediaType!, url: mediaUrl } : undefined,
+          media: mediaUrl && mediaType ? { type: mediaType, url: mediaUrl } : undefined,
         });
 
-        toast({
-          title: 'Posted!',
-          description: 'Your post is now live in the feed.',
-        });
+        // Show scheduled confirmation or success
+        if (scheduledDate) {
+          toast({
+            title: 'Scheduled!',
+            description: `Your post will be published on ${scheduledDate.toLocaleDateString()} at ${scheduledDate.toLocaleTimeString()}.`,
+          });
+        }
 
         onSuccess();
         return;
@@ -141,6 +231,9 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
 
         mediaUrl = urlData.publicUrl;
         mediaType = file.type.startsWith('video') ? 'video' : 'image';
+      } else if (selectedGif) {
+        mediaUrl = selectedGif.url;
+        mediaType = 'gif';
       }
 
       // Create the post
@@ -204,14 +297,22 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
-        <h2 className="font-semibold">Create Post</h2>
+        <h2 className="font-semibold">
+          {scheduledDate ? 'Schedule Post' : 'Create Post'}
+        </h2>
         <Button
           size="sm"
           onClick={handleSubmit}
           disabled={!canPost || isSubmitting}
           className="gradient-brand text-white"
         >
-          {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Post'}
+          {isSubmitting ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : scheduledDate ? (
+            'Schedule'
+          ) : (
+            'Post'
+          )}
         </Button>
       </div>
 
@@ -247,19 +348,86 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
+          
+          {/* Character counter for simple mode */}
+          {composerMode === 'simple' && (
+            <CharacterCounter current={content.length} max={MAX_CHARACTERS} />
+          )}
         </div>
 
-        {/* Text Input */}
-        <Textarea
-          placeholder={`What's on your mind, ${displayName}?`}
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          className="min-h-[120px] resize-none border-0 bg-transparent p-0 text-base focus-visible:ring-0 placeholder:text-muted-foreground"
-        />
+        {/* Feeling/Activity & Location display */}
+        {(feeling || location) && (
+          <div className="flex flex-wrap gap-2">
+            {feeling && (
+              <FeelingActivityPicker value={feeling} onChange={setFeeling} />
+            )}
+            {location && (
+              <LocationPicker value={location} onChange={setLocation} />
+            )}
+          </div>
+        )}
+
+        {/* Scheduled indicator */}
+        {scheduledDate && (
+          <ScheduleSelector value={scheduledDate} onChange={setScheduledDate} />
+        )}
+
+        {/* Text Input - Simple or Thread mode */}
+        <AnimatePresence mode="wait">
+          {composerMode === 'simple' ? (
+            <motion.div
+              key="simple"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <Textarea
+                placeholder={`What's on your mind, ${displayName}?`}
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                maxLength={MAX_CHARACTERS}
+                className="min-h-[120px] resize-none border-0 bg-transparent p-0 text-base focus-visible:ring-0 placeholder:text-muted-foreground"
+              />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="thread"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <ThreadComposer
+                items={threadItems}
+                onItemsChange={setThreadItems}
+                maxCharacters={MAX_CHARACTERS}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* GIF Preview */}
+        {selectedGif && (
+          <div className="relative rounded-xl overflow-hidden bg-secondary">
+            <img
+              src={selectedGif.url}
+              alt={selectedGif.title}
+              className="w-full max-h-64 object-contain"
+            />
+            <button
+              onClick={removeGif}
+              className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 hover:bg-black/80 transition-colors"
+            >
+              <X className="h-4 w-4 text-white" />
+            </button>
+          </div>
+        )}
 
         {/* Media Previews */}
         {mediaPreviewUrls.length > 0 && (
-          <div className="grid grid-cols-2 gap-2">
+          <div className={cn(
+            'grid gap-2',
+            mediaPreviewUrls.length === 1 ? 'grid-cols-1' : 'grid-cols-2'
+          )}>
             {mediaPreviewUrls.map((url, index) => (
               <div key={index} className="relative aspect-square rounded-xl overflow-hidden bg-secondary">
                 {mediaFiles[index]?.type.startsWith('video') ? (
@@ -286,6 +454,9 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           </div>
         )}
 
+        {/* Poll */}
+        <PollCreator poll={poll} onPollChange={setPoll} />
+
         {/* Topic Tags */}
         <TopicTagSelector
           selectedTags={selectedTags}
@@ -301,8 +472,8 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         />
       </div>
 
-      {/* Action Bar */}
-      <div className="flex items-center gap-2 p-4 border-t border-border">
+      {/* Action Bar - Primary actions */}
+      <div className="flex items-center gap-1 px-4 py-2 border-t border-border overflow-x-auto">
         <label className="p-2 rounded-full hover:bg-secondary transition-colors cursor-pointer">
           <Image className="h-5 w-5 text-emerald-500" />
           <input
@@ -322,6 +493,35 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
             className="hidden"
           />
         </label>
+        
+        <div className="h-5 w-px bg-border mx-1" />
+        
+        <GifPicker onSelect={handleGifSelect} />
+        
+        {!feeling && (
+          <FeelingActivityPicker value={null} onChange={setFeeling} />
+        )}
+        
+        {!location && (
+          <LocationPicker value={null} onChange={setLocation} />
+        )}
+        
+        {!scheduledDate && (
+          <ScheduleSelector value={null} onChange={setScheduledDate} />
+        )}
+        
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={toggleThreadMode}
+          className={cn(
+            'gap-2 text-muted-foreground hover:text-foreground',
+            composerMode === 'thread' && 'text-primary'
+          )}
+        >
+          <MessageSquare className="h-4 w-4" />
+          Thread
+        </Button>
       </div>
     </motion.div>
   );
