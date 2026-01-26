@@ -1,4 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowUp } from 'lucide-react';
 import { PostCard } from '@/components/PostCard';
 import { PostCardSkeleton } from '@/components/SkeletonLoader';
 import type { ContentType } from '@/hooks/useCrossroadScroll';
@@ -34,6 +36,7 @@ interface CrossroadFeedProps {
   hasMore?: boolean;
   onPostClick: (postId: string) => void;
   onLoadMore?: () => void;
+  onRefresh?: () => Promise<void>;
 }
 
 export function CrossroadFeed({
@@ -44,8 +47,75 @@ export function CrossroadFeed({
   hasMore,
   onPostClick,
   onLoadMore,
+  onRefresh,
 }: CrossroadFeedProps) {
   const loadMoreRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const [pullDistance, setPullDistance] = useState(0);
+  const [isPulling, setIsPulling] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const startYRef = useRef(0);
+  const pullThreshold = 80;
+
+  // Track scroll position for back-to-top button
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      setShowBackToTop(container.scrollTop > 400);
+    };
+
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Pull-to-refresh touch handlers
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    const container = scrollContainerRef.current;
+    if (!container || container.scrollTop > 0 || isRefreshing) return;
+    
+    startYRef.current = e.touches[0].clientY;
+    setIsPulling(true);
+  }, [isRefreshing]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!isPulling || isRefreshing) return;
+    
+    const currentY = e.touches[0].clientY;
+    const diff = currentY - startYRef.current;
+    
+    if (diff > 0) {
+      // Apply resistance to pull
+      const resistance = 0.4;
+      setPullDistance(Math.min(diff * resistance, 120));
+    }
+  }, [isPulling, isRefreshing]);
+
+  const handleTouchEnd = useCallback(async () => {
+    if (!isPulling) return;
+    
+    if (pullDistance >= pullThreshold && onRefresh && !isRefreshing) {
+      setIsRefreshing(true);
+      setPullDistance(60); // Hold at indicator position
+      
+      try {
+        await onRefresh();
+      } finally {
+        setIsRefreshing(false);
+        setPullDistance(0);
+      }
+    } else {
+      setPullDistance(0);
+    }
+    
+    setIsPulling(false);
+  }, [isPulling, pullDistance, onRefresh, isRefreshing]);
+
+  const scrollToTop = useCallback(() => {
+    scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
   // Intersection Observer for infinite scroll
   useEffect(() => {
@@ -92,32 +162,120 @@ export function CrossroadFeed({
     );
   }
 
+  const pullProgress = Math.min(pullDistance / pullThreshold, 1);
+
   return (
-    <div className="flex-1 overflow-y-auto pb-20">
-      {refreshing && (
-        <div className="flex justify-center py-4">
-          <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-        </div>
-      )}
+    <div className="relative flex-1">
+      {/* Pull-to-refresh indicator */}
+      <AnimatePresence>
+        {(pullDistance > 0 || isRefreshing) && (
+          <motion.div
+            className="absolute top-0 left-0 right-0 flex justify-center z-50 pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ 
+              opacity: 1,
+              y: Math.min(pullDistance - 20, 40)
+            }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          >
+            <div className="bg-background/90 backdrop-blur-md rounded-full p-3 shadow-lg border border-border/50">
+              <motion.div
+                className="relative w-6 h-6"
+                animate={isRefreshing ? { rotate: 360 } : { rotate: pullProgress * 360 }}
+                transition={isRefreshing ? { duration: 1, repeat: Infinity, ease: 'linear' } : { duration: 0 }}
+              >
+                {/* Custom loading spinner */}
+                <svg className="w-6 h-6" viewBox="0 0 24 24">
+                  <circle
+                    className="text-muted-foreground/30"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    fill="none"
+                    strokeWidth="2.5"
+                    stroke="currentColor"
+                  />
+                  <motion.circle
+                    className="text-primary"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    fill="none"
+                    strokeWidth="2.5"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeDasharray={62.83}
+                    strokeDashoffset={isRefreshing ? 15 : 62.83 * (1 - pullProgress)}
+                  />
+                </svg>
+                {pullProgress >= 1 && !isRefreshing && (
+                  <motion.div
+                    className="absolute inset-0 flex items-center justify-center"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+                  >
+                    <ArrowUp className="w-4 h-4 text-primary" />
+                  </motion.div>
+                )}
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      <div className="space-y-4">
-        {posts.map((post) => (
-          <PostCard
-            key={post.id}
-            {...post}
-            onPostClick={onPostClick}
-          />
-        ))}
-      </div>
-
-      {/* Load more trigger */}
-      {hasMore && (
-        <div ref={loadMoreRef} className="py-8 flex justify-center">
-          {loadingMore && (
+      {/* Scrollable container */}
+      <motion.div
+        ref={scrollContainerRef}
+        className="flex-1 overflow-y-auto pb-20 h-full"
+        style={{ transform: `translateY(${pullDistance}px)` }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        {refreshing && !isRefreshing && (
+          <div className="flex justify-center py-4">
             <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          )}
+          </div>
+        )}
+
+        <div className="space-y-4">
+          {posts.map((post) => (
+            <PostCard
+              key={post.id}
+              {...post}
+              onPostClick={onPostClick}
+            />
+          ))}
         </div>
-      )}
+
+        {/* Load more trigger */}
+        {hasMore && (
+          <div ref={loadMoreRef} className="py-8 flex justify-center">
+            {loadingMore && (
+              <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+            )}
+          </div>
+        )}
+      </motion.div>
+
+      {/* Back to top button */}
+      <AnimatePresence>
+        {showBackToTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 20 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+            onClick={scrollToTop}
+            className="fixed bottom-24 right-4 z-40 w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:bg-primary/90 active:scale-95 transition-transform"
+            aria-label="Back to top"
+          >
+            <ArrowUp className="w-5 h-5" />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

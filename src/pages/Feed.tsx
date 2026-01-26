@@ -75,7 +75,7 @@ export default function Feed() {
           <ExpressionsRow />
         </div>
         
-        {/* Crossroad Feed with dual-axis scrolling */}
+        {/* Crossroad Feed */}
         <CrossroadFeed
           posts={posts}
           loading={loading}
@@ -84,6 +84,7 @@ export default function Feed() {
           hasMore={hasMore}
           onPostClick={handlePostClick}
           onLoadMore={loadMore}
+          onRefresh={refresh}
         />
       </PullToRefresh>
 
