@@ -1,9 +1,12 @@
+import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, TrendingUp, Clock, Users } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
+import { PullToRefresh } from '@/components/ui/PullToRefresh';
+import { ExploreFilters, FilterType, DateRange } from './ExploreFilters';
 import { cn } from '@/lib/utils';
 
 // Mock data for expressions
@@ -115,35 +118,60 @@ interface ExploreExpressionsProps {
 }
 
 export function ExploreExpressions({ isLoading = false }: ExploreExpressionsProps) {
+  const [activeFilter, setActiveFilter] = useState<FilterType>('trending');
+  const [dateRange, setDateRange] = useState<DateRange>('7d');
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    // Simulate refresh delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    setIsRefreshing(false);
+  }, []);
+
+  const loading = isLoading || isRefreshing;
+
   return (
-    <div className="py-4 space-y-6">
-      <ExpressionSection
-        title="For You"
-        icon={<Sparkles className="h-5 w-5 text-primary" />}
-        expressions={forYouExpressions}
-        isLoading={isLoading}
-      />
-      
-      <ExpressionSection
-        title="Trending Expressions"
-        icon={<TrendingUp className="h-5 w-5 text-rose-500" />}
-        expressions={trendingExpressions}
-        isLoading={isLoading}
-      />
-      
-      <ExpressionSection
-        title="Recent Expressions"
-        icon={<Clock className="h-5 w-5 text-accent" />}
-        expressions={recentExpressions}
-        isLoading={isLoading}
-      />
-      
-      <ExpressionSection
-        title="From Communities You Follow"
-        icon={<Users className="h-5 w-5 text-emerald-400" />}
-        expressions={communityExpressions}
-        isLoading={isLoading}
-      />
-    </div>
+    <PullToRefresh onRefresh={handleRefresh} className="h-full">
+      <div className="py-4 space-y-6">
+        {/* Filter bar */}
+        <div className="px-4">
+          <ExploreFilters
+            activeFilter={activeFilter}
+            dateRange={dateRange}
+            onFilterChange={setActiveFilter}
+            onDateRangeChange={setDateRange}
+          />
+        </div>
+
+        <ExpressionSection
+          title="For You"
+          icon={<Sparkles className="h-5 w-5 text-primary" />}
+          expressions={forYouExpressions}
+          isLoading={loading}
+        />
+        
+        <ExpressionSection
+          title="Trending Expressions"
+          icon={<TrendingUp className="h-5 w-5 text-rose-500" />}
+          expressions={trendingExpressions}
+          isLoading={loading}
+        />
+        
+        <ExpressionSection
+          title="Recent Expressions"
+          icon={<Clock className="h-5 w-5 text-accent" />}
+          expressions={recentExpressions}
+          isLoading={loading}
+        />
+        
+        <ExpressionSection
+          title="From Communities You Follow"
+          icon={<Users className="h-5 w-5 text-emerald-400" />}
+          expressions={communityExpressions}
+          isLoading={loading}
+        />
+      </div>
+    </PullToRefresh>
   );
 }
