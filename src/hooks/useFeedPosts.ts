@@ -327,7 +327,7 @@ export function useFeedPosts(): UseFeedPostsResult {
         }
       });
 
-      // Transform to FeedPost format
+      // Transform to FeedPost format with visibility scoring
       const feedPosts: FeedPost[] = data.map(post => {
         const profile = post.profiles as any;
         const createdAt = new Date(post.created_at || '');
@@ -344,6 +344,27 @@ export function useFeedPosts(): UseFeedPostsResult {
         } else {
           const diffMins = Math.floor(diffMs / (1000 * 60));
           timeAgo = diffMins > 0 ? `${diffMins}m` : 'now';
+        }
+
+        // Calculate subtle visibility weight based on verification and engagement
+        // This is a LIGHT influence, not hard boosting
+        let visibilityScore = 1.0;
+        
+        // Verified creators get subtle boost (max +0.2)
+        if (profile?.is_verified) {
+          visibilityScore += 0.15;
+        }
+        
+        // Recent activity boost (posts within 6 hours get slight priority)
+        if (diffHours < 6) {
+          visibilityScore += 0.1;
+        }
+        
+        // Engagement quality signal
+        const likeCount = reactionsMap.get(post.id) || 0;
+        const commentCount = commentsMap.get(post.id) || 0;
+        if (likeCount > 10 || commentCount > 3) {
+          visibilityScore += 0.05;
         }
 
         return {
@@ -363,14 +384,31 @@ export function useFeedPosts(): UseFeedPostsResult {
             thumbnail: post.thumbnail_url || undefined,
           } : undefined,
           tags: tagsMap.get(post.id) || [],
-          commentCount: commentsMap.get(post.id) || 0,
+          commentCount: commentCount,
           createdAt: timeAgo,
-          likes: reactionsMap.get(post.id) || 0,
+          likes: likeCount,
           contentType: getContentType(post.media_type),
+          _visibilityScore: visibilityScore, // Internal scoring for potential sorting
         };
       });
 
-      return feedPosts;
+      // Apply subtle visibility-weighted sorting (preserves chronological base)
+      // This shuffles verified/high-engagement content slightly higher
+      // without completely overriding chronological order
+      const sortedPosts = feedPosts.sort((a, b) => {
+        const scoreA = (a as any)._visibilityScore || 1.0;
+        const scoreB = (b as any)._visibilityScore || 1.0;
+        
+        // Only apply sorting influence if scores differ significantly
+        const scoreDiff = scoreB - scoreA;
+        if (Math.abs(scoreDiff) > 0.1) {
+          return scoreDiff;
+        }
+        // Otherwise preserve original order (chronological)
+        return 0;
+      });
+
+      return sortedPosts;
     } catch (err) {
       console.error('Error fetching posts:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch posts');

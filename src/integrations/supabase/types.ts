@@ -356,6 +356,108 @@ export type Database = {
         }
         Relationships: []
       }
+      creator_contribution_scores: {
+        Row: {
+          account_age_days: number
+          activity_score: number
+          ccs_score: number
+          community_participation: number
+          completion_rate: number
+          created_at: string
+          eligibility_reason: string | null
+          eligibility_updated_at: string | null
+          eligible_for_earnings: boolean
+          estimated_reach: number
+          id: string
+          interaction_views_30d: number
+          interactions_completed: number
+          interactions_declined: number
+          profile_views_30d: number
+          reports_against_others: number
+          reports_received: number
+          tier_multiplier: number
+          updated_at: string
+          user_id: string
+          visibility_weight: number
+        }
+        Insert: {
+          account_age_days?: number
+          activity_score?: number
+          ccs_score?: number
+          community_participation?: number
+          completion_rate?: number
+          created_at?: string
+          eligibility_reason?: string | null
+          eligibility_updated_at?: string | null
+          eligible_for_earnings?: boolean
+          estimated_reach?: number
+          id?: string
+          interaction_views_30d?: number
+          interactions_completed?: number
+          interactions_declined?: number
+          profile_views_30d?: number
+          reports_against_others?: number
+          reports_received?: number
+          tier_multiplier?: number
+          updated_at?: string
+          user_id: string
+          visibility_weight?: number
+        }
+        Update: {
+          account_age_days?: number
+          activity_score?: number
+          ccs_score?: number
+          community_participation?: number
+          completion_rate?: number
+          created_at?: string
+          eligibility_reason?: string | null
+          eligibility_updated_at?: string | null
+          eligible_for_earnings?: boolean
+          estimated_reach?: number
+          id?: string
+          interaction_views_30d?: number
+          interactions_completed?: number
+          interactions_declined?: number
+          profile_views_30d?: number
+          reports_against_others?: number
+          reports_received?: number
+          tier_multiplier?: number
+          updated_at?: string
+          user_id?: string
+          visibility_weight?: number
+        }
+        Relationships: []
+      }
+      creator_score_audit_logs: {
+        Row: {
+          change_type: string
+          created_at: string
+          id: string
+          new_value: Json | null
+          previous_value: Json | null
+          reason: string | null
+          user_id: string
+        }
+        Insert: {
+          change_type: string
+          created_at?: string
+          id?: string
+          new_value?: Json | null
+          previous_value?: Json | null
+          reason?: string | null
+          user_id: string
+        }
+        Update: {
+          change_type?: string
+          created_at?: string
+          id?: string
+          new_value?: Json | null
+          previous_value?: Json | null
+          reason?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       expressions: {
         Row: {
           created_at: string
@@ -1376,6 +1478,16 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      log_ccs_change: {
+        Args: {
+          p_change_type: string
+          p_new_value: Json
+          p_previous_value: Json
+          p_reason?: string
+          p_user_id: string
+        }
+        Returns: undefined
       }
     }
     Enums: {
