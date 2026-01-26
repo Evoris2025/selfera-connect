@@ -14,15 +14,23 @@ interface CreatorStudioProps {
 }
 
 export function CreatorStudio({ open, onOpenChange, initialMode }: CreatorStudioProps) {
-  const [selectedType, setSelectedType] = useState<ContentType | null>(initialMode || null);
+  const [selectedType, setSelectedType] = useState<ContentType | null>(null);
   const [step, setStep] = useState<'dashboard' | 'canvas'>('dashboard');
 
+  // Reset state when dialog opens - ALWAYS show dashboard first unless initialMode is explicitly set
   useEffect(() => {
-    if (initialMode) {
-      setSelectedType(initialMode);
-      setStep('canvas');
+    if (open) {
+      if (initialMode) {
+        // Only skip dashboard if initialMode is explicitly passed (e.g., from ExpressionsRow)
+        setSelectedType(initialMode);
+        setStep('canvas');
+      } else {
+        // Always show dashboard when no initialMode
+        setSelectedType(null);
+        setStep('dashboard');
+      }
     }
-  }, [initialMode]);
+  }, [open, initialMode]);
 
   const handleClose = () => {
     setSelectedType(null);
