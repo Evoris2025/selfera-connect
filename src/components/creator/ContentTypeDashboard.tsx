@@ -103,13 +103,13 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1, type: 'spring', stiffness: 300, damping: 25 }}
-            className="relative flex flex-col items-center"
+            className="relative flex flex-col items-center -translate-x-2"
           >
             {/* Logo - using raw image for perfect centering */}
             <img 
               src={logo} 
               alt="SelfERA" 
-              className="h-16 w-auto object-contain"
+              className="h-20 w-auto object-contain"
             />
             
             {/* STUDIO Title */}
@@ -117,7 +117,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="mt-8 text-sm font-medium tracking-[0.4em] text-muted-foreground/80 uppercase text-center"
+              className="mt-6 text-sm font-medium tracking-[0.4em] text-muted-foreground/80 uppercase text-center"
             >
               STUDIO
             </motion.h1>
@@ -126,7 +126,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25 }}
-              className="mt-3 text-base text-muted-foreground/60 font-normal text-center"
+              className="mt-2 text-base text-muted-foreground/60 font-normal text-center"
             >
               What would you like to create?
             </motion.p>
