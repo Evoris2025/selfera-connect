@@ -15,6 +15,7 @@ export interface FeedExpression {
   mediaUrl: string;
   mediaType: 'image' | 'video';
   thumbnailUrl?: string;
+  caption?: string;
   hasUnseenExpression: boolean;
   createdAt: Date;
   expiresAt: Date;
@@ -105,6 +106,7 @@ const createInitialExpressions = (): FeedExpression[] => [
     userAvatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop',
     mediaUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=700&fit=crop',
     mediaType: 'image',
+    caption: 'Morning gratitude practice ✨ Starting the day with intention',
     hasUnseenExpression: true,
     createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
     expiresAt: new Date(Date.now() + 22 * 60 * 60 * 1000),
@@ -116,6 +118,7 @@ const createInitialExpressions = (): FeedExpression[] => [
     userAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop',
     mediaUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=700&fit=crop',
     mediaType: 'image',
+    caption: 'Nature walks are my therapy 🌿 #mindfulness',
     hasUnseenExpression: true,
     createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000),
     expiresAt: new Date(Date.now() + 20 * 60 * 60 * 1000),
@@ -127,6 +130,7 @@ const createInitialExpressions = (): FeedExpression[] => [
     userAvatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop',
     mediaUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=700&fit=crop',
     mediaType: 'image',
+    caption: 'One step at a time. Progress, not perfection 💪',
     hasUnseenExpression: true,
     createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000),
     expiresAt: new Date(Date.now() + 18 * 60 * 60 * 1000),
@@ -138,6 +142,7 @@ const createInitialExpressions = (): FeedExpression[] => [
     userAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop',
     mediaUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=700&fit=crop',
     mediaType: 'image',
+    caption: 'Finding peace in the little moments',
     hasUnseenExpression: false,
     createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000),
     expiresAt: new Date(Date.now() + 12 * 60 * 60 * 1000),
@@ -149,6 +154,7 @@ const createInitialExpressions = (): FeedExpression[] => [
     userAvatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop',
     mediaUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=700&fit=crop',
     mediaType: 'image',
+    caption: 'Self-care Sunday vibes 🧘‍♀️',
     hasUnseenExpression: true,
     createdAt: new Date(Date.now() - 8 * 60 * 60 * 1000),
     expiresAt: new Date(Date.now() + 16 * 60 * 60 * 1000),
@@ -160,6 +166,7 @@ const createInitialExpressions = (): FeedExpression[] => [
     userAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop',
     mediaUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=700&fit=crop',
     mediaType: 'image',
+    caption: 'Grateful for this community 🙏 #wellbeing #support',
     hasUnseenExpression: true,
     createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000),
     expiresAt: new Date(Date.now() + 23 * 60 * 60 * 1000),

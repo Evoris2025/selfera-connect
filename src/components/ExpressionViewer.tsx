@@ -336,19 +336,26 @@ export function ExpressionViewer({ isOpen, onClose, initialIndex = 0 }: Expressi
           {/* Bottom info */}
           <div className="absolute bottom-8 left-4 right-20">
             {/* User info */}
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-1">
               <span className="font-bold text-white">@{currentExpression.userName.toLowerCase().replace(/\s+/g, '_')}</span>
             </div>
 
+            {/* Caption/Description */}
+            {currentExpression.caption && (
+              <p className="text-white text-sm mb-2 line-clamp-3">
+                {currentExpression.caption}
+              </p>
+            )}
+
             {/* Time remaining */}
-            <p className="text-white/80 text-sm mb-3">
+            <p className="text-white/70 text-xs mb-3">
               {getTimeRemaining(currentExpression.expiresAt)}
             </p>
 
             {/* Audio indicator */}
-            <div className="flex items-center gap-2 mt-3">
-              <Music2 className="h-4 w-4 text-white animate-pulse" />
-              <span className="text-white text-sm">Original Sound</span>
+            <div className="flex items-center gap-2">
+              <Music2 className="h-4 w-4 text-white/80" />
+              <span className="text-white/80 text-sm">Original Sound</span>
             </div>
           </div>
         </motion.div>
