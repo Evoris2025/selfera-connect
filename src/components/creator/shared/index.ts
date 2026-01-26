@@ -7,3 +7,6 @@ export {
   useMentionDetection, 
   type MentionUser 
 } from './UserMentionAutocomplete';
+export { ToolsRail, type ToolType } from './ToolsRail';
+export { HoldToRecordButton } from './HoldToRecordButton';
+export { StepPills, StepDots, type StepConfig } from './StepPills';

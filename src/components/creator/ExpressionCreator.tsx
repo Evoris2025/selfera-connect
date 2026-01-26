@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Camera, Image as ImageIcon, X, Loader2, Sparkles, Type, Sticker, Music, Pencil, Layers } from 'lucide-react';
+import { ArrowLeft, Camera, Image as ImageIcon, X, Loader2, Sparkles, RotateCcw, FlipHorizontal, Music } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
@@ -12,6 +12,8 @@ import { TextOverlayEditor, TextOverlay } from './TextOverlayEditor';
 import { StickerPicker, Sticker as StickerType } from './StickerPicker';
 import { SoundPicker, Sound } from './SoundPicker';
 import { HashtagAutocomplete, TrendingHashtagChips } from './HashtagAutocomplete';
+import { ToolsRail, ToolType } from './shared/ToolsRail';
+import { HoldToRecordButton } from './shared/HoldToRecordButton';
 import { 
   DrawingCanvas, 
   DrawingData,
@@ -28,7 +30,7 @@ import {
 const SIMULATION_MODE = true;
 
 type Step = 'capture' | 'preview' | 'drawing';
-type ActiveTool = 'none' | 'text' | 'stickers' | 'sounds' | 'interactive' | 'draw';
+type ActiveTool = ToolType;
 
 // Extended sticker with position for rendering
 interface PlacedSticker extends StickerType {
@@ -64,6 +66,7 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
   const [cameraActive, setCameraActive] = useState(false);
+  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
   
   // Phase 2 creation tools state
   const [activeTool, setActiveTool] = useState<ActiveTool>('none');
@@ -93,7 +96,7 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
   const startCamera = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user' },
+        video: { facingMode },
         audio: false,
       });
       setCameraStream(stream);
@@ -116,6 +119,13 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
       setCameraStream(null);
       setCameraActive(false);
     }
+  };
+
+  const flipCamera = async () => {
+    stopCamera();
+    setFacingMode(prev => prev === 'user' ? 'environment' : 'user');
+    // Restart with new facing mode
+    setTimeout(() => startCamera(), 100);
   };
 
   const capturePhoto = () => {
@@ -284,9 +294,12 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
     }
   };
 
-  const toggleTool = (tool: ActiveTool) => {
+  const handleToolSelect = (tool: ToolType) => {
     if (tool === 'draw') {
       setStep('drawing');
+    } else if (tool === 'effects') {
+      // Effects not implemented yet
+      toast({ title: 'Effects coming soon!' });
     } else {
       setActiveTool(prev => prev === tool ? 'none' : tool);
     }
@@ -318,34 +331,8 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="flex flex-col h-full max-h-[85vh]"
+      className="flex flex-col h-full bg-black"
     >
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-border">
-        <button
-          onClick={handleBack}
-          className="p-2 -ml-2 rounded-full hover:bg-secondary transition-colors"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </button>
-        <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-pink-500" />
-          <h2 className="font-semibold">Expression</h2>
-        </div>
-        {step === 'preview' ? (
-          <Button
-            size="sm"
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            className="gradient-brand text-white"
-          >
-            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Share'}
-          </Button>
-        ) : (
-          <div className="w-12" />
-        )}
-      </div>
-
       <AnimatePresence mode="wait">
         {step === 'capture' && (
           <motion.div
@@ -356,7 +343,9 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
             className="flex-1 flex flex-col"
           >
             {cameraActive ? (
+              /* Full-screen camera interface - Instagram/Snapchat style */
               <div className="flex-1 relative bg-black">
+                {/* Camera preview */}
                 <video
                   ref={videoRef}
                   autoPlay
@@ -364,24 +353,90 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                   muted
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute bottom-6 left-0 right-0 flex items-center justify-center gap-6">
+                
+                {/* Top bar - minimal */}
+                <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-4 z-10">
                   <button
-                    onClick={stopCamera}
-                    className="p-3 rounded-full bg-white/20 backdrop-blur"
+                    onClick={() => { stopCamera(); onBack(); }}
+                    className="p-2.5 rounded-full bg-black/40 backdrop-blur-sm"
                   >
-                    <X className="h-6 w-6 text-white" />
+                    <X className="h-5 w-5 text-white" />
                   </button>
+                  
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-pink-400" />
+                    <span className="text-white font-medium text-sm">Expression</span>
+                  </div>
+                  
                   <button
-                    onClick={capturePhoto}
-                    className="w-20 h-20 rounded-full border-4 border-white bg-white/30 backdrop-blur flex items-center justify-center"
+                    onClick={flipCamera}
+                    className="p-2.5 rounded-full bg-black/40 backdrop-blur-sm"
                   >
-                    <div className="w-16 h-16 rounded-full bg-white" />
+                    <FlipHorizontal className="h-5 w-5 text-white" />
                   </button>
-                  <div className="w-12" />
                 </div>
+                
+                {/* Bottom controls - Instagram style */}
+                <div className="absolute bottom-0 left-0 right-0 pb-8 pt-6 px-6">
+                  <div className="flex items-end justify-between">
+                    {/* Gallery button */}
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="p-3 rounded-xl bg-white/20 backdrop-blur-sm"
+                    >
+                      <ImageIcon className="h-6 w-6 text-white" />
+                    </button>
+                    
+                    {/* Capture button - Hold for video */}
+                    <HoldToRecordButton
+                      onCapture={capturePhoto}
+                      onRecordStart={() => {
+                        // TODO: Start video recording
+                        console.log('Start recording');
+                      }}
+                      onRecordEnd={() => {
+                        // TODO: End video recording
+                        console.log('End recording');
+                      }}
+                      size="lg"
+                    />
+                    
+                    {/* Effects placeholder */}
+                    <button
+                      onClick={() => toast({ title: 'Effects coming soon!' })}
+                      className="p-3 rounded-xl bg-white/20 backdrop-blur-sm"
+                    >
+                      <Sparkles className="h-6 w-6 text-white" />
+                    </button>
+                  </div>
+                </div>
+                
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*,video/*"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
               </div>
             ) : (
+              /* Initial state - tap to start camera */
               <div className="flex-1 flex flex-col items-center justify-center gap-6 p-8">
+                {/* Header */}
+                <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-4">
+                  <button
+                    onClick={onBack}
+                    className="p-2 -ml-2 rounded-full hover:bg-white/10 transition-colors"
+                  >
+                    <ArrowLeft className="h-5 w-5 text-white" />
+                  </button>
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-pink-500" />
+                    <h2 className="font-semibold text-white">Expression</h2>
+                  </div>
+                  <div className="w-12" />
+                </div>
+                
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -390,29 +445,31 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                   className="hidden"
                 />
                 
-                <button
+                <motion.button
                   onClick={startCamera}
-                  className="w-32 h-32 rounded-full gradient-brand flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-transform"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-32 h-32 rounded-full gradient-brand flex items-center justify-center shadow-lg"
                 >
                   <Camera className="h-12 w-12 text-white" />
-                </button>
-                <span className="text-sm text-muted-foreground">Tap to open camera</span>
+                </motion.button>
+                <span className="text-sm text-white/70">Tap to open camera</span>
 
-                <div className="flex items-center gap-4">
-                  <div className="h-px flex-1 bg-border" />
-                  <span className="text-xs text-muted-foreground">or</span>
-                  <div className="h-px flex-1 bg-border" />
+                <div className="flex items-center gap-4 w-full max-w-[200px]">
+                  <div className="h-px flex-1 bg-white/20" />
+                  <span className="text-xs text-white/50">or</span>
+                  <div className="h-px flex-1 bg-white/20" />
                 </div>
 
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex items-center gap-2 px-6 py-3 rounded-full bg-secondary hover:bg-secondary/80 transition-colors"
+                  className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white"
                 >
                   <ImageIcon className="h-5 w-5" />
                   <span>Choose from gallery</span>
                 </button>
 
-                <p className="text-xs text-muted-foreground text-center max-w-[240px]">
+                <p className="text-xs text-white/50 text-center max-w-[240px]">
                   Expressions disappear after 24 hours. Share moments that matter to you.
                 </p>
               </div>
@@ -428,12 +485,31 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
             exit={{ opacity: 0 }}
             className="flex-1 flex flex-col bg-black relative overflow-hidden"
           >
+            {/* Header */}
+            <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-4 z-20">
+              <button
+                onClick={handleBack}
+                className="p-2.5 rounded-full bg-black/40 backdrop-blur-sm"
+              >
+                <ArrowLeft className="h-5 w-5 text-white" />
+              </button>
+              
+              <Button
+                size="sm"
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className="gradient-brand text-white px-6"
+              >
+                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Share'}
+              </Button>
+            </div>
+            
             {/* Media Preview with overlays */}
-            <div className="flex-1 flex items-center justify-center p-4 relative overflow-hidden">
+            <div className="flex-1 flex items-center justify-center relative overflow-hidden">
               {isVideo ? (
                 <video
                   src={previewUrl}
-                  className="max-w-full max-h-[40vh] rounded-xl"
+                  className="w-full h-full object-contain"
                   controls
                   autoPlay
                   loop
@@ -442,7 +518,7 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                 <img
                   src={previewUrl}
                   alt="Preview"
-                  className="max-w-full max-h-[40vh] rounded-xl object-contain"
+                  className="w-full h-full object-contain"
                 />
               )}
               
@@ -518,17 +594,27 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
               
               {/* Sound indicator */}
               {selectedSound && (
-                <div className="absolute bottom-4 left-4 flex items-center gap-2 px-3 py-2 bg-black/60 backdrop-blur-sm rounded-full">
+                <div className="absolute bottom-20 left-4 flex items-center gap-2 px-3 py-2 bg-black/60 backdrop-blur-sm rounded-full">
                   <Music className="h-4 w-4 text-white" />
                   <span className="text-xs text-white truncate max-w-[120px]">
                     {selectedSound.name}
                   </span>
                 </div>
               )}
+              
+              {/* Vertical Tools Rail - Instagram style (right side) */}
+              <ToolsRail
+                activeTool={activeTool}
+                onToolSelect={handleToolSelect}
+                hasDrawing={!!drawingData}
+                hasSound={!!selectedSound}
+                hasInteractive={interactiveStickers.length > 0}
+                className="absolute right-3 top-1/2 -translate-y-1/2 z-10"
+              />
             </div>
 
             {/* Close Friends Toggle */}
-            <div className="px-4 py-2">
+            <div className="px-4 py-2 bg-black">
               <CloseFriendsToggle
                 enabled={closeFriendsOnly}
                 onChange={setCloseFriendsOnly}
@@ -559,66 +645,13 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                 </p>
               </div>
             </div>
-            
-            {/* Creative Tools Toolbar */}
-            <div className="flex items-center justify-center gap-2 p-4 bg-black/80 backdrop-blur-sm">
-              <button
-                onClick={() => toggleTool('draw')}
-                className={cn(
-                  "flex flex-col items-center gap-1 p-2.5 rounded-xl transition-all",
-                  drawingData ? "bg-green-500 text-white" : "bg-white/10 text-white hover:bg-white/20"
-                )}
-              >
-                <Pencil className="h-5 w-5" />
-                <span className="text-[10px] font-medium">Draw</span>
-              </button>
-              
-              <button
-                onClick={() => toggleTool('text')}
-                className={cn(
-                  "flex flex-col items-center gap-1 p-2.5 rounded-xl transition-all",
-                  activeTool === 'text' ? "bg-primary text-primary-foreground" : "bg-white/10 text-white hover:bg-white/20"
-                )}
-              >
-                <Type className="h-5 w-5" />
-                <span className="text-[10px] font-medium">Text</span>
-              </button>
-              
-              <button
-                onClick={() => toggleTool('stickers')}
-                className={cn(
-                  "flex flex-col items-center gap-1 p-2.5 rounded-xl transition-all",
-                  activeTool === 'stickers' ? "bg-primary text-primary-foreground" : "bg-white/10 text-white hover:bg-white/20"
-                )}
-              >
-                <Sticker className="h-5 w-5" />
-                <span className="text-[10px] font-medium">Stickers</span>
-              </button>
-              
-              <button
-                onClick={() => toggleTool('interactive')}
-                className={cn(
-                  "flex flex-col items-center gap-1 p-2.5 rounded-xl transition-all",
-                  activeTool === 'interactive' ? "bg-primary text-primary-foreground" : "bg-white/10 text-white hover:bg-white/20",
-                  interactiveStickers.length > 0 && "ring-2 ring-purple-500"
-                )}
-              >
-                <Layers className="h-5 w-5" />
-                <span className="text-[10px] font-medium">Interactive</span>
-              </button>
-              
-              <button
-                onClick={() => toggleTool('sounds')}
-                className={cn(
-                  "flex flex-col items-center gap-1 p-2.5 rounded-xl transition-all",
-                  activeTool === 'sounds' ? "bg-primary text-primary-foreground" : "bg-white/10 text-white hover:bg-white/20",
-                  selectedSound && "ring-2 ring-green-500"
-                )}
-              >
-                <Music className="h-5 w-5" />
-                <span className="text-[10px] font-medium">Sounds</span>
-              </button>
-            </div>
+
+            <p className="text-sm text-white/70 py-2 text-center bg-black">
+              {closeFriendsOnly 
+                ? '🟢 Visible to Close Friends only for 24 hours'
+                : 'This expression will be visible for 24 hours'
+              }
+            </p>
 
             {/* Tool Panels */}
             <AnimatePresence>
@@ -627,7 +660,7 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                   initial={{ opacity: 0, y: 100 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 100 }}
-                  className="absolute bottom-0 left-0 right-0 bg-background rounded-t-2xl max-h-[70%] overflow-hidden"
+                  className="absolute bottom-0 left-0 right-0 bg-background rounded-t-2xl max-h-[70%] overflow-hidden z-30"
                 >
                   <TextOverlayEditor
                     onSave={handleSaveTextOverlay}
@@ -641,7 +674,7 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                   initial={{ opacity: 0, y: 100 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 100 }}
-                  className="absolute bottom-0 left-0 right-0 bg-background rounded-t-2xl max-h-[70%] overflow-hidden"
+                  className="absolute bottom-0 left-0 right-0 bg-background rounded-t-2xl max-h-[70%] overflow-hidden z-30"
                 >
                   <StickerPicker
                     isOpen={true}
@@ -664,7 +697,7 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                   initial={{ opacity: 0, y: 100 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 100 }}
-                  className="absolute bottom-0 left-0 right-0 bg-background rounded-t-2xl max-h-[70%] overflow-hidden"
+                  className="absolute bottom-0 left-0 right-0 bg-background rounded-t-2xl max-h-[70%] overflow-hidden z-30"
                 >
                   <SoundPicker
                     isOpen={true}
@@ -675,13 +708,6 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                 </motion.div>
               )}
             </AnimatePresence>
-
-            <p className="text-sm text-white/70 py-2 text-center bg-black">
-              {closeFriendsOnly 
-                ? '🟢 Visible to Close Friends only for 24 hours'
-                : 'This expression will be visible for 24 hours'
-              }
-            </p>
           </motion.div>
         )}
       </AnimatePresence>

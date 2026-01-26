@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Upload, Loader2, ChevronRight, ChevronLeft, Check } from 'lucide-react';
+import { ArrowLeft, Upload, Loader2, ChevronRight, ChevronLeft, Check, Sparkles, Play } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,6 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { TopicTagSelector } from './shared/TopicTagSelector';
 import { ContentWarningToggle } from './shared/ContentWarningToggle';
+import { StepPills, StepDots, StepConfig } from './shared/StepPills';
 import { 
   ChapterEditor, 
   Chapter,
@@ -35,8 +36,7 @@ interface VideoStudioProps {
   onSuccess: () => void;
 }
 
-const STEPS: { id: Step; label: string }[] = [
-  { id: 'upload', label: 'Upload' },
+const STEPS: StepConfig[] = [
   { id: 'details', label: 'Details' },
   { id: 'elements', label: 'Elements' },
   { id: 'visibility', label: 'Visibility' },
@@ -48,6 +48,7 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
   const { createPost, isSimulationMode } = useFeedData();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const dropZoneRef = useRef<HTMLDivElement>(null);
 
   const [step, setStep] = useState<Step>('upload');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -56,6 +57,7 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
 
   // Details step
   const [autoThumbnails, setAutoThumbnails] = useState<string[]>([]);
@@ -86,7 +88,6 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
       const duration = video.duration;
       setVideoDuration(duration);
       const times = [duration * 0.1, duration * 0.25, duration * 0.5, duration * 0.75, duration * 0.9];
-      const generated: string[] = [];
 
       const captureFrame = (time: number): Promise<string> => {
         return new Promise((resolve) => {
@@ -111,59 +112,64 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 500 * 1024 * 1024) {
-        toast({
-          title: 'File too large',
-          description: 'Please select a video under 500MB.',
-          variant: 'destructive',
-        });
-        return;
-      }
-
-      setSelectedFile(file);
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
-      generateThumbnails(url);
-      setStep('details');
+      processVideoFile(file);
     }
+  };
+
+  const processVideoFile = (file: File) => {
+    if (file.size > 500 * 1024 * 1024) {
+      toast({
+        title: 'File too large',
+        description: 'Please select a video under 500MB.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setSelectedFile(file);
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+    generateThumbnails(url);
+    setStep('details');
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
+    setIsDragOver(false);
     const file = e.dataTransfer.files[0];
     if (file && file.type.startsWith('video/')) {
-      if (file.size > 500 * 1024 * 1024) {
-        toast({
-          title: 'File too large',
-          description: 'Please select a video under 500MB.',
-          variant: 'destructive',
-        });
-        return;
-      }
-
-      setSelectedFile(file);
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
-      generateThumbnails(url);
-      setStep('details');
+      processVideoFile(file);
     }
   };
 
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
+
   const currentStepIndex = STEPS.findIndex(s => s.id === step);
+  const completedSteps = STEPS.slice(0, currentStepIndex).map(s => s.id);
 
   const goToNextStep = () => {
-    if (currentStepIndex < STEPS.length - 1) {
-      setStep(STEPS[currentStepIndex + 1].id);
+    const allSteps: Step[] = ['upload', 'details', 'elements', 'visibility'];
+    const currentIndex = allSteps.indexOf(step);
+    if (currentIndex < allSteps.length - 1) {
+      setStep(allSteps[currentIndex + 1]);
     }
   };
 
   const goToPrevStep = () => {
-    if (currentStepIndex > 0) {
-      setStep(STEPS[currentStepIndex - 1].id);
-    } else if (step === 'upload') {
-      onBack();
+    const allSteps: Step[] = ['upload', 'details', 'elements', 'visibility'];
+    const currentIndex = allSteps.indexOf(step);
+    if (currentIndex > 0) {
+      setStep(allSteps[currentIndex - 1]);
     } else {
-      setStep('upload');
+      onBack();
     }
   };
 
@@ -324,49 +330,24 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
-        <h2 className="font-semibold">
-          {step === 'upload' ? 'Upload Video' : STEPS.find(s => s.id === step)?.label}
-        </h2>
+        <div className="flex items-center gap-2">
+          <Play className="h-5 w-5 text-red-500" />
+          <h2 className="font-semibold">
+            {step === 'upload' ? 'Upload Video' : 'Video Studio'}
+          </h2>
+        </div>
         <div className="w-12" />
       </div>
 
-      {/* Step indicator */}
+      {/* YouTube-style Step Pills */}
       {step !== 'upload' && (
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-border">
-          {STEPS.slice(1).map((s, index) => (
-            <div key={s.id} className="flex items-center flex-1">
-              <button
-                onClick={() => setStep(s.id)}
-                className={cn(
-                  "flex items-center gap-2 text-sm font-medium transition-colors",
-                  step === s.id ? "text-primary" : "text-muted-foreground"
-                )}
-              >
-                <div className={cn(
-                  "w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-colors",
-                  step === s.id 
-                    ? "bg-primary text-primary-foreground" 
-                    : currentStepIndex > index + 1 
-                      ? "bg-primary/20 text-primary" 
-                      : "bg-secondary text-muted-foreground"
-                )}>
-                  {currentStepIndex > index + 1 ? (
-                    <Check className="w-3 h-3" />
-                  ) : (
-                    index + 1
-                  )}
-                </div>
-                <span className="hidden sm:inline">{s.label}</span>
-              </button>
-              {index < STEPS.length - 2 && (
-                <div className={cn(
-                  "flex-1 h-0.5 mx-2 transition-colors",
-                  currentStepIndex > index + 1 ? "bg-primary/40" : "bg-border"
-                )} />
-              )}
-            </div>
-          ))}
-        </div>
+        <StepPills
+          steps={STEPS}
+          currentStep={step}
+          completedSteps={completedSteps}
+          onStepClick={(stepId) => setStep(stepId as Step)}
+          className="border-b border-border"
+        />
       )}
 
       <AnimatePresence mode="wait">
@@ -377,8 +358,6 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="flex-1 flex flex-col items-center justify-center p-8"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={handleDrop}
           >
             <input
               ref={fileInputRef}
@@ -387,18 +366,54 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
               onChange={handleFileSelect}
               className="hidden"
             />
-            <button
+            
+            {/* Drop zone with better visual feedback */}
+            <motion.div
+              ref={dropZoneRef}
               onClick={() => fileInputRef.current?.click()}
-              className="w-full aspect-video max-w-[320px] rounded-2xl border-2 border-dashed border-border hover:border-primary/50 transition-colors flex flex-col items-center justify-center gap-3 text-muted-foreground hover:text-foreground"
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              animate={{
+                scale: isDragOver ? 1.02 : 1,
+                borderColor: isDragOver ? 'hsl(var(--primary))' : 'hsl(var(--border))',
+              }}
+              className={cn(
+                "w-full aspect-video max-w-[360px] rounded-2xl border-2 border-dashed transition-all cursor-pointer",
+                "flex flex-col items-center justify-center gap-4",
+                isDragOver 
+                  ? "bg-primary/10 border-primary" 
+                  : "hover:border-primary/50 hover:bg-secondary/50"
+              )}
             >
-              <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center">
-                <Upload className="h-8 w-8" />
+              <motion.div 
+                className={cn(
+                  "w-20 h-20 rounded-2xl flex items-center justify-center transition-colors",
+                  isDragOver ? "bg-primary/20" : "bg-secondary"
+                )}
+                animate={{ scale: isDragOver ? 1.1 : 1 }}
+              >
+                <Upload className={cn(
+                  "h-10 w-10 transition-colors",
+                  isDragOver ? "text-primary" : "text-muted-foreground"
+                )} />
+              </motion.div>
+              
+              <div className="text-center space-y-1">
+                <p className="font-medium">
+                  {isDragOver ? 'Drop video here' : 'Drag and drop or click to upload'}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  MP4, MOV, WebM (max 500MB)
+                </p>
               </div>
-              <div className="text-center">
-                <span className="text-sm font-medium block">Drag and drop or click to upload</span>
-                <span className="text-xs text-muted-foreground">MP4, MOV, WebM (max 500MB)</span>
+
+              {/* AI thumbnail hint */}
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs">
+                <Sparkles className="h-3 w-3" />
+                <span>AI will generate thumbnails automatically</span>
               </div>
-            </button>
+            </motion.div>
           </motion.div>
         )}
 
@@ -423,8 +438,8 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
                   </div>
                 )}
 
-                {/* Video Preview */}
-                <div className="aspect-video rounded-xl overflow-hidden bg-black">
+                {/* Video Preview - Larger */}
+                <div className="aspect-video rounded-xl overflow-hidden bg-black shadow-lg">
                   <video
                     ref={videoRef}
                     src={previewUrl}
@@ -433,14 +448,23 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
                   />
                 </div>
 
-                {/* Thumbnail Selector */}
-                <ThumbnailSelector
-                  autoThumbnails={autoThumbnails}
-                  selectedIndex={selectedThumbnailIndex}
-                  customThumbnail={customThumbnail}
-                  onSelectAuto={setSelectedThumbnailIndex}
-                  onUploadCustom={setCustomThumbnail}
-                />
+                {/* Thumbnail Selector - Enhanced */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-medium">Thumbnail</label>
+                    <button className="flex items-center gap-1 text-xs text-primary hover:underline">
+                      <Sparkles className="h-3 w-3" />
+                      Generate with AI
+                    </button>
+                  </div>
+                  <ThumbnailSelector
+                    autoThumbnails={autoThumbnails}
+                    selectedIndex={selectedThumbnailIndex}
+                    customThumbnail={customThumbnail}
+                    onSelectAuto={setSelectedThumbnailIndex}
+                    onUploadCustom={setCustomThumbnail}
+                  />
+                </div>
 
                 {/* Title */}
                 <div className="space-y-2">
@@ -452,6 +476,7 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     maxLength={100}
+                    className="text-base"
                   />
                   <span className="text-xs text-muted-foreground">{title.length}/100</span>
                 </div>
@@ -509,24 +534,34 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
           >
             <ScrollArea className="flex-1 p-4">
               <div className="space-y-6">
-                {/* Chapters */}
+                {/* Video timeline preview */}
+                <div className="aspect-video rounded-xl overflow-hidden bg-black/50 relative">
+                  <video
+                    src={previewUrl}
+                    className="w-full h-full object-contain opacity-50"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <p className="text-sm text-white/70">Add chapters and end screen elements</p>
+                  </div>
+                </div>
+
+                {/* Chapters - Collapsible */}
                 <ChapterEditor
                   chapters={chapters}
-                  onChange={setChapters}
+                  onChaptersChange={setChapters}
                   videoDuration={videoDuration}
                 />
 
                 {/* End Screen */}
                 <EndScreenEditor
                   elements={endScreenElements}
-                  onChange={setEndScreenElements}
-                  videoDuration={videoDuration}
+                  onElementsChange={setEndScreenElements}
                 />
               </div>
             </ScrollArea>
 
-            {/* Navigation */}
-            <div className="p-4 border-t border-border flex gap-2">
+            {/* Navigation buttons */}
+            <div className="flex gap-3 p-4 border-t border-border">
               <Button variant="outline" onClick={goToPrevStep} className="flex-1">
                 <ChevronLeft className="w-4 h-4 mr-2" />
                 Back
@@ -548,47 +583,51 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
             className="flex-1 flex flex-col"
           >
             <ScrollArea className="flex-1 p-4">
-              <VisibilitySettings
-                visibility={visibility}
-                onChange={setVisibility}
-                scheduledDate={scheduledDate}
-                onScheduledDateChange={setScheduledDate}
-                commentsEnabled={commentsEnabled}
-                onCommentsEnabledChange={setCommentsEnabled}
-              />
+              <div className="space-y-6">
+                <VisibilitySettings
+                  visibility={visibility}
+                  onVisibilityChange={setVisibility}
+                  scheduledDate={scheduledDate}
+                  onScheduledDateChange={setScheduledDate}
+                  commentsEnabled={commentsEnabled}
+                  onCommentsEnabledChange={setCommentsEnabled}
+                />
+              </div>
             </ScrollArea>
 
-            {/* Publish */}
-            <div className="p-4 border-t border-border space-y-3">
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={goToPrevStep} className="flex-1">
-                  <ChevronLeft className="w-4 h-4 mr-2" />
-                  Back
-                </Button>
-                <Button
-                  onClick={handleSubmit}
-                  disabled={!canProceed() || isSubmitting}
-                  className="flex-1 gradient-brand text-white"
-                >
-                  {isSubmitting ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : visibility === 'scheduled' ? (
-                    'Schedule'
-                  ) : (
-                    'Publish'
-                  )}
-                </Button>
-              </div>
-              
-              {visibility === 'scheduled' && scheduledDate && (
-                <p className="text-xs text-center text-muted-foreground">
-                  Will be published on {new Date(scheduledDate).toLocaleString()}
-                </p>
-              )}
+            {/* Publish button */}
+            <div className="flex gap-3 p-4 border-t border-border">
+              <Button variant="outline" onClick={goToPrevStep} className="flex-1">
+                <ChevronLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
+              <Button
+                onClick={handleSubmit}
+                disabled={!canProceed() || isSubmitting}
+                className="flex-1 gradient-brand"
+              >
+                {isSubmitting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : visibility === 'scheduled' ? (
+                  <>Schedule</>
+                ) : (
+                  <>
+                    <Check className="w-4 h-4 mr-2" />
+                    Publish
+                  </>
+                )}
+              </Button>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Mobile step indicator */}
+      {step !== 'upload' && (
+        <div className="sm:hidden py-3 border-t border-border">
+          <StepDots steps={STEPS} currentStep={step} />
+        </div>
+      )}
     </motion.div>
   );
 }
