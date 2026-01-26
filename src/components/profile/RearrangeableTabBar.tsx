@@ -140,10 +140,10 @@ const DraggableTab = memo(function DraggableTab({
       }}
       transition={{ type: 'spring', stiffness: 400, damping: 30 }}
       className={cn(
-        'flex-1 h-full flex items-center justify-center relative transition-colors duration-200',
+        'relative flex-1 flex items-center justify-center py-2.5 rounded-lg transition-all duration-200',
         isRearrangeMode && 'cursor-grab active:cursor-grabbing animate-jiggle',
         isDragging && 'z-50',
-        isActive && !isRearrangeMode && 'text-foreground',
+        isActive && !isRearrangeMode && 'text-primary',
         !isActive && !isRearrangeMode && 'text-muted-foreground hover:text-foreground/70'
       )}
       onClick={handleClick}
@@ -164,22 +164,24 @@ const DraggableTab = memo(function DraggableTab({
       }}
       onDragEnd={onDragEnd}
     >
+      {/* Active indicator border */}
+      {isActive && !isRearrangeMode && (
+        <motion.div
+          layoutId="polishedTabIndicator"
+          className="absolute inset-0 rounded-lg border border-primary/50 bg-primary/5"
+          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+        />
+      )}
+      
       {isRearrangeMode ? (
-        <div className="flex flex-col items-center gap-0.5">
+        <div className="relative z-10 flex flex-col items-center gap-0.5">
           <GripVertical className="h-3 w-3 text-muted-foreground" />
           {Icon && <Icon className="h-4 w-4" />}
         </div>
       ) : (
-        <>
+        <div className="relative z-10">
           {Icon && <Icon className="h-5 w-5" />}
-          {isActive && (
-            <motion.div
-              layoutId="activeTabIndicator"
-              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[2px] bg-foreground rounded-full"
-              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-            />
-          )}
-        </>
+        </div>
       )}
     </motion.button>
   );
@@ -320,11 +322,13 @@ export const RearrangeableTabBar = memo(function RearrangeableTabBar({
         </motion.div>
       )}
 
-      {/* Minimal Tab Bar */}
+      {/* Polished Tab Bar - Clean border-highlight style */}
       <div className={cn(
-        'w-full h-11 border-t border-border/30 flex bg-background',
+        'w-full flex items-center bg-card/40 backdrop-blur-sm border border-border/30 rounded-xl p-1 mx-4',
         isRearrangeMode && 'bg-muted/20'
-      )}>
+      )}
+        style={{ width: 'calc(100% - 2rem)' }}
+      >
         {orderedTabs.map((tab, index) => (
           <DraggableTab
             key={tab.id}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Eye, 
@@ -15,7 +15,8 @@ import {
   Bell,
   BellOff,
   Loader2,
-  ArrowLeft
+  ArrowLeft,
+  RefreshCw
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/AppLayout';
@@ -25,6 +26,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { useCreatorAnalytics, ContentItem } from '@/hooks/useExpressionAnalytics';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
+import { useRealtimeAnalytics } from '@/hooks/useRealtimeAnalytics';
 import { 
   LineChart, 
   Line, 
@@ -56,9 +58,18 @@ const contentTypeColors: Record<string, string> = {
 export default function CreatorDashboard() {
   const navigate = useNavigate();
   const [dateRange, setDateRange] = useState<7 | 30 | 90>(30);
-  const { data: analytics, isLoading, error } = useCreatorAnalytics(dateRange);
+  const { data: analytics, isLoading, error, refetch } = useCreatorAnalytics(dateRange);
   const { isSupported, subscribe, unsubscribe, isSubscribed } = usePushNotifications();
+  const { invalidateAnalytics } = useRealtimeAnalytics(); // Enable real-time updates
   const [activeTab, setActiveTab] = useState('overview');
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Manual refresh handler
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await refetch();
+    setIsRefreshing(false);
+  };
 
   const handleToggleNotifications = async () => {
     if (isSubscribed) {
@@ -173,23 +184,36 @@ export default function CreatorDashboard() {
             </p>
           </div>
           
-          {isSupported && (
+          <div className="flex items-center gap-2">
+            {/* Refresh button */}
             <Button
               variant="outline"
               size="sm"
-              onClick={handleToggleNotifications}
-              disabled={subscribe.isPending || unsubscribe.isPending}
+              onClick={handleRefresh}
+              disabled={isRefreshing}
               className="gap-2"
             >
-              {subscribe.isPending || unsubscribe.isPending ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : isSubscribed ? (
-                <Bell className="w-4 h-4" />
-              ) : (
-                <BellOff className="w-4 h-4" />
-              )}
+              <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
             </Button>
-          )}
+            
+            {isSupported && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleToggleNotifications}
+                disabled={subscribe.isPending || unsubscribe.isPending}
+                className="gap-2"
+              >
+                {subscribe.isPending || unsubscribe.isPending ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : isSubscribed ? (
+                  <Bell className="w-4 h-4" />
+                ) : (
+                  <BellOff className="w-4 h-4" />
+                )}
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Date Range Filter */}

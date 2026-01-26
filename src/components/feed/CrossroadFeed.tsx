@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUp } from 'lucide-react';
 import { PostCard } from '@/components/PostCard';
 import { PostCardSkeleton } from '@/components/SkeletonLoader';
+import { useViewTracking } from '@/hooks/useViewTracking';
 import type { ContentType } from '@/hooks/useCrossroadScroll';
 
 export interface FeedPost {
@@ -57,6 +58,9 @@ export function CrossroadFeed({
   const [isRefreshing, setIsRefreshing] = useState(false);
   const startYRef = useRef(0);
   const pullThreshold = 80;
+  
+  // View tracking for analytics
+  const { getPostRef } = useViewTracking({ threshold: 0.5, minVisibleTime: 1000 });
 
   // Track scroll position for back-to-top button
   useEffect(() => {
@@ -242,11 +246,15 @@ export function CrossroadFeed({
 
         <div className="space-y-4">
           {posts.map((post) => (
-            <PostCard
-              key={post.id}
-              {...post}
-              onPostClick={onPostClick}
-            />
+            <div 
+              key={post.id} 
+              ref={getPostRef(post.id)}
+            >
+              <PostCard
+                {...post}
+                onPostClick={onPostClick}
+              />
+            </div>
           ))}
         </div>
 

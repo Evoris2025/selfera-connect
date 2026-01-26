@@ -817,37 +817,58 @@ export default function MyERA() {
             </div>
           </div>
 
-          {/* Network Tabs - Evenly Spaced */}
-          <div className="grid grid-cols-3 gap-2 p-1.5 rounded-2xl bg-card/40 backdrop-blur-sm border border-white/[0.08] mb-5">
+          {/* Network Tabs - Polished Style */}
+          <div className="flex items-center bg-card/40 backdrop-blur-sm border border-border/30 rounded-xl p-1 mb-5">
             <button
-              className={`py-2.5 rounded-xl text-sm font-medium transition-all text-center ${
+              className={`relative flex-1 py-2.5 rounded-lg text-sm font-medium transition-all text-center ${
                 activeNetworkTab === 'discover'
-                  ? 'bg-primary text-primary-foreground shadow-md'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.06]'
+                  ? 'text-primary'
+                  : 'text-muted-foreground hover:text-foreground/70'
               }`}
               onClick={() => setActiveNetworkTab('discover')}
             >
-              Discover
+              {activeNetworkTab === 'discover' && (
+                <motion.div
+                  layoutId="networkTabIndicator"
+                  className="absolute inset-0 rounded-lg border border-primary/50 bg-primary/5"
+                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                />
+              )}
+              <span className="relative z-10">Discover</span>
             </button>
             <button
-              className={`py-2.5 rounded-xl text-sm font-medium transition-all text-center ${
+              className={`relative flex-1 py-2.5 rounded-lg text-sm font-medium transition-all text-center ${
                 activeNetworkTab === 'mylist'
-                  ? 'bg-primary text-primary-foreground shadow-md'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.06]'
+                  ? 'text-primary'
+                  : 'text-muted-foreground hover:text-foreground/70'
               }`}
               onClick={() => setActiveNetworkTab('mylist')}
             >
-              My List
+              {activeNetworkTab === 'mylist' && (
+                <motion.div
+                  layoutId="networkTabIndicator"
+                  className="absolute inset-0 rounded-lg border border-primary/50 bg-primary/5"
+                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                />
+              )}
+              <span className="relative z-10">My List</span>
             </button>
             <button
-              className={`py-2.5 rounded-xl text-sm font-medium transition-all text-center relative ${
+              className={`relative flex-1 py-2.5 rounded-lg text-sm font-medium transition-all text-center ${
                 activeNetworkTab === 'interactions'
-                  ? 'bg-primary text-primary-foreground shadow-md'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.06]'
+                  ? 'text-primary'
+                  : 'text-muted-foreground hover:text-foreground/70'
               }`}
               onClick={() => setActiveNetworkTab('interactions')}
             >
-              Interactions
+              {activeNetworkTab === 'interactions' && (
+                <motion.div
+                  layoutId="networkTabIndicator"
+                  className="absolute inset-0 rounded-lg border border-primary/50 bg-primary/5"
+                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                />
+              )}
+              <span className="relative z-10">Interactions</span>
               {activeNetworkTab !== 'interactions' && (
                 <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
               )}
