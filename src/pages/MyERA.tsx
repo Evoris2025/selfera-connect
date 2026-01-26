@@ -817,10 +817,10 @@ export default function MyERA() {
             </div>
           </div>
 
-          {/* Network Tabs - Polished Style */}
-          <div className="flex items-center bg-card/40 backdrop-blur-sm border border-border/30 rounded-xl p-1 mb-5">
+          {/* Network Tabs - Clean Square Edge Style */}
+          <div className="flex items-center bg-[hsl(240,10%,8%)] border border-border/30 mb-5">
             <button
-              className={`relative flex-1 py-2.5 rounded-lg text-sm font-medium transition-all text-center ${
+              className={`relative flex-1 py-2.5 text-sm font-medium transition-all text-center ${
                 activeNetworkTab === 'discover'
                   ? 'text-primary'
                   : 'text-muted-foreground hover:text-foreground/70'
@@ -830,14 +830,14 @@ export default function MyERA() {
               {activeNetworkTab === 'discover' && (
                 <motion.div
                   layoutId="networkTabIndicator"
-                  className="absolute inset-0 rounded-lg border border-primary/50 bg-primary/5"
+                  className="absolute inset-0 border border-primary bg-primary/5"
                   transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 />
               )}
               <span className="relative z-10">Discover</span>
             </button>
             <button
-              className={`relative flex-1 py-2.5 rounded-lg text-sm font-medium transition-all text-center ${
+              className={`relative flex-1 py-2.5 text-sm font-medium transition-all text-center ${
                 activeNetworkTab === 'mylist'
                   ? 'text-primary'
                   : 'text-muted-foreground hover:text-foreground/70'
@@ -847,14 +847,14 @@ export default function MyERA() {
               {activeNetworkTab === 'mylist' && (
                 <motion.div
                   layoutId="networkTabIndicator"
-                  className="absolute inset-0 rounded-lg border border-primary/50 bg-primary/5"
+                  className="absolute inset-0 border border-primary bg-primary/5"
                   transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 />
               )}
               <span className="relative z-10">My List</span>
             </button>
             <button
-              className={`relative flex-1 py-2.5 rounded-lg text-sm font-medium transition-all text-center ${
+              className={`relative flex-1 py-2.5 text-sm font-medium transition-all text-center ${
                 activeNetworkTab === 'interactions'
                   ? 'text-primary'
                   : 'text-muted-foreground hover:text-foreground/70'
@@ -864,7 +864,7 @@ export default function MyERA() {
               {activeNetworkTab === 'interactions' && (
                 <motion.div
                   layoutId="networkTabIndicator"
-                  className="absolute inset-0 rounded-lg border border-primary/50 bg-primary/5"
+                  className="absolute inset-0 border border-primary bg-primary/5"
                   transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 />
               )}

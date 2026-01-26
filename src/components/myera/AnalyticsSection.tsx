@@ -170,12 +170,12 @@ export function AnalyticsSection() {
             {stats.map((stat, index) => (
               <motion.div
                 key={stat.label}
-                className="rounded-xl bg-card/40 border border-white/[0.06] p-3 text-center"
+                className="bg-[hsl(240,10%,8%)] border border-border/30 p-3 text-center"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.3 + index * 0.05 }}
               >
-                <div className={`w-8 h-8 mx-auto mb-2 rounded-lg ${stat.bgColor} flex items-center justify-center`}>
+                <div className={`w-8 h-8 mx-auto mb-2 ${stat.bgColor} flex items-center justify-center`}>
                   <stat.icon className={`w-4 h-4 ${stat.color}`} />
                 </div>
                 <p className="text-lg font-bold text-foreground">{stat.value}</p>
@@ -186,7 +186,7 @@ export function AnalyticsSection() {
 
           {/* Mini Chart */}
           <motion.div
-            className="rounded-2xl bg-card/40 border border-white/[0.06] p-4"
+            className="bg-[hsl(240,10%,8%)] border border-border/30 p-4"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ ...springGentle, delay: 0.35 }}
@@ -223,7 +223,7 @@ export function AnalyticsSection() {
           {/* Top Expression Preview */}
           {analytics?.topExpressions && analytics.topExpressions.length > 0 && (
             <motion.div
-              className="rounded-2xl bg-card/40 border border-white/[0.06] p-4"
+              className="bg-[hsl(240,10%,8%)] border border-border/30 p-4"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ ...springGentle, delay: 0.4 }}
