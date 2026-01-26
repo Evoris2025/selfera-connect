@@ -9,6 +9,7 @@ import { getCurrentLanguage, getLanguageDirection } from "@/i18n";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { MockSystemProvider } from "@/contexts/MockSystemContext";
 import { FeedDataProvider } from "@/contexts/FeedDataContext";
+import { NavbarProvider } from "@/contexts/NavbarContext";
 import { SafetyProvider } from "@/contexts/SafetyContext";
 import { ViewportDebugOverlay } from "@/components/dev/ViewportDebugOverlay";
 import { usePreviewZoom } from "@/hooks/usePreviewZoom";
@@ -125,13 +126,15 @@ const App = () => {
         <SafetyProvider>
           <MockSystemProvider>
             <FeedDataProvider>
-              <TooltipProvider>
-                <Toaster />
-                <Sonner />
-                <BrowserRouter>
-                  <AppRoutes />
-                </BrowserRouter>
-              </TooltipProvider>
+              <NavbarProvider>
+                <TooltipProvider>
+                  <Toaster />
+                  <Sonner />
+                  <BrowserRouter>
+                    <AppRoutes />
+                  </BrowserRouter>
+                </TooltipProvider>
+              </NavbarProvider>
             </FeedDataProvider>
           </MockSystemProvider>
         </SafetyProvider>
