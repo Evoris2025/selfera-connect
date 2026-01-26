@@ -56,7 +56,7 @@ export function CreatorStudio({ open, onOpenChange, initialMode }: CreatorStudio
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-full sm:max-w-2xl h-[100dvh] sm:h-[90vh] p-0 gap-0 bg-background border-none sm:border sm:border-border overflow-hidden sm:rounded-2xl">
+      <DialogContent className="max-w-full sm:max-w-2xl h-[100dvh] sm:h-[90vh] p-0 gap-0 bg-background border-none sm:border sm:border-border overflow-hidden">
         <AnimatePresence mode="wait">
           {step === 'dashboard' ? (
             <ContentTypeDashboard
