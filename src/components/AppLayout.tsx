@@ -37,20 +37,21 @@ export function AppLayout({ children, title, showHeader = true, onCreatePost }: 
           {children}
         </main>
         
-        {/* Bottom Nav - visible on mobile and tablet (md), hidden on desktop (lg+) or when viewing expressions */}
-        <AnimatePresence>
-          {isNavbarVisible && (
-            <motion.div 
-              className="lg:hidden"
-              initial={{ y: 100, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 100, opacity: 0 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            >
-              <MobileNav onCreateClick={onCreatePost} followRequestCount={pendingCount} />
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* Bottom Nav - visible on mobile and tablet (md), hidden on desktop (lg+) */}
+        <div className="lg:hidden">
+          <AnimatePresence>
+            {isNavbarVisible && (
+              <motion.div 
+                initial={{ y: 100, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 100, opacity: 0 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              >
+                <MobileNav onCreateClick={onCreatePost} followRequestCount={pendingCount} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );
