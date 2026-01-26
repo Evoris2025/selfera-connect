@@ -20,6 +20,7 @@ import {
   ExternalLink,
   AlertCircle,
   Bell,
+  Handshake,
 } from 'lucide-react';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
@@ -30,8 +31,10 @@ import { VerifiedBadge } from '@/components/VerifiedBadge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DirectoryListingForm } from '@/components/directory/DirectoryListingForm';
+import { InteractionCard } from '@/components/interactions/InteractionCard';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSupportLinks } from '@/hooks/useSupportLinks';
+import { useInteractionLifecycle } from '@/hooks/useInteractionLifecycle';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { DirectoryEntry } from '@/hooks/useDirectory';
@@ -67,10 +70,24 @@ export default function ProviderDashboard() {
     loading: linksLoading,
   } = useSupportLinks();
 
+  // Interaction lifecycle hook for Phase F
+  const {
+    myInteractions,
+    fetchInteractions,
+    acceptInteraction,
+    declineInteraction,
+    completeInteraction,
+    cancelInteraction,
+    getGroupedInteractions,
+  } = useInteractionLifecycle();
+
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [directoryEntry, setDirectoryEntry] = useState<DirectoryEntry | null>(null);
   const [loading, setLoading] = useState(true);
   const [showListingForm, setShowListingForm] = useState(false);
+
+  // Grouped interactions for provider view
+  const groupedInteractions = getGroupedInteractions('provider');
 
   // Function to refetch directory entry
   const refetchDirectoryEntry = useCallback(async () => {
@@ -109,6 +126,9 @@ export default function ProviderDashboard() {
 
         // Fetch directory entry
         await refetchDirectoryEntry();
+        
+        // Fetch interactions
+        await fetchInteractions('provider');
       } catch (err) {
         console.error('Error fetching provider data:', err);
       } finally {
@@ -117,7 +137,7 @@ export default function ProviderDashboard() {
     }
 
     fetchData();
-  }, [user, refetchDirectoryEntry]);
+  }, [user, refetchDirectoryEntry, fetchInteractions]);
 
   // Real-time subscription for new connection requests
   useEffect(() => {
@@ -270,39 +290,149 @@ export default function ProviderDashboard() {
 
         {/* Stats Row */}
         <motion.div
-          className="grid grid-cols-3 gap-3 mb-6"
+          className="grid grid-cols-4 gap-3 mb-6"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...springGentle, delay: 0.05 }}
         >
           <GlassCard variant="subtle" className="p-4 text-center">
             <p className="text-2xl font-semibold text-foreground">{activeClients.length}</p>
-            <p className="text-xs text-muted-foreground">Active Connections</p>
+            <p className="text-xs text-muted-foreground">Connections</p>
           </GlassCard>
           <GlassCard variant="subtle" className="p-4 text-center">
-            <p className="text-2xl font-semibold text-foreground">{pendingClients.length}</p>
-            <p className="text-xs text-muted-foreground">Pending Requests</p>
+            <p className="text-2xl font-semibold text-foreground">{groupedInteractions.pending.length}</p>
+            <p className="text-xs text-muted-foreground">Requests</p>
+          </GlassCard>
+          <GlassCard variant="subtle" className="p-4 text-center">
+            <p className="text-2xl font-semibold text-foreground">{groupedInteractions.active.length}</p>
+            <p className="text-xs text-muted-foreground">Active</p>
           </GlassCard>
           <GlassCard variant="subtle" className="p-4 text-center">
             <p className="text-2xl font-semibold text-foreground">
               {directoryEntry ? '1' : '0'}
             </p>
-            <p className="text-xs text-muted-foreground">Directory Listings</p>
+            <p className="text-xs text-muted-foreground">Listing</p>
           </GlassCard>
         </motion.div>
 
         {/* Main Content */}
-        <Tabs defaultValue="connections" className="space-y-4">
-          <TabsList className="w-full grid grid-cols-2">
+        <Tabs defaultValue="interactions" className="space-y-4">
+          <TabsList className="w-full grid grid-cols-3">
+            <TabsTrigger value="interactions" className="gap-2">
+              <Handshake className="w-4 h-4" />
+              Interactions
+            </TabsTrigger>
             <TabsTrigger value="connections" className="gap-2">
               <Users className="w-4 h-4" />
               Connections
             </TabsTrigger>
             <TabsTrigger value="listing" className="gap-2">
               <Globe className="w-4 h-4" />
-              Directory Listing
+              Listing
             </TabsTrigger>
           </TabsList>
+
+          {/* Interactions Tab (Phase F) */}
+          <TabsContent value="interactions" className="space-y-4">
+            {/* Pending Interaction Requests */}
+            {groupedInteractions.pending.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <h3 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-amber-500" />
+                  Pending Requests ({groupedInteractions.pending.length})
+                </h3>
+                <div className="space-y-2">
+                  {groupedInteractions.pending.map((interaction) => (
+                    <InteractionCard
+                      key={interaction.id}
+                      interaction={interaction}
+                      userRole="provider"
+                      onAccept={() => acceptInteraction(interaction.id)}
+                      onDecline={() => declineInteraction(interaction.id)}
+                      onMessage={() => navigate(`/messages?user=${interaction.client_user_id}`)}
+                      onCancel={() => cancelInteraction(interaction.id)}
+                    />
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* Active Interactions */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <h3 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+                <Check className="w-4 h-4 text-emerald-500" />
+                Active Interactions ({groupedInteractions.active.length})
+              </h3>
+              
+              {groupedInteractions.active.length === 0 ? (
+                <GlassCard variant="subtle" className="p-8 text-center">
+                  <Handshake className="w-10 h-10 mx-auto mb-3 text-muted-foreground/30" />
+                  <p className="text-sm text-muted-foreground">
+                    No active interactions. Pending requests will appear here once accepted.
+                  </p>
+                </GlassCard>
+              ) : (
+                <div className="space-y-2">
+                  {groupedInteractions.active.map((interaction) => (
+                    <InteractionCard
+                      key={interaction.id}
+                      interaction={interaction}
+                      userRole="provider"
+                      onComplete={() => completeInteraction(interaction.id)}
+                      onMessage={() => navigate(`/messages?user=${interaction.client_user_id}`)}
+                      onCancel={() => cancelInteraction(interaction.id)}
+                    />
+                  ))}
+                </div>
+              )}
+            </motion.div>
+
+            {/* Completed Interactions */}
+            {groupedInteractions.completed.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
+              >
+                <h3 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  Past Interactions ({groupedInteractions.completed.length + groupedInteractions.cancelled.length})
+                </h3>
+                <div className="space-y-2">
+                  {[...groupedInteractions.completed, ...groupedInteractions.cancelled].map((interaction) => (
+                    <InteractionCard
+                      key={interaction.id}
+                      interaction={interaction}
+                      userRole="provider"
+                    />
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* Empty State */}
+            {groupedInteractions.pending.length === 0 && 
+             groupedInteractions.active.length === 0 && 
+             groupedInteractions.completed.length === 0 && (
+              <GlassCard variant="subtle" className="p-8 text-center">
+                <Handshake className="w-12 h-12 mx-auto mb-4 text-muted-foreground/30" />
+                <h3 className="text-base font-medium text-foreground mb-2">
+                  No Interactions Yet
+                </h3>
+                <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+                  When users request interactions with you, they'll appear here. 
+                  Make sure your directory listing is set up to be discoverable.
+                </p>
+              </GlassCard>
+            )}
+          </TabsContent>
 
           {/* Connections Tab */}
           <TabsContent value="connections" className="space-y-4">

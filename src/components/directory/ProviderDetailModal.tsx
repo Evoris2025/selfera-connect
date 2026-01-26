@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
@@ -13,11 +13,15 @@ import { Badge } from '@/components/ui/badge';
 import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
 import { EraVerifiedTick } from '@/components/EraVerifiedTick';
 import { GlassCard } from '@/components/ui/GlassCard';
+import { RequestInteractionModal } from '@/components/interactions/RequestInteractionModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSupportLinks } from '@/hooks/useSupportLinks';
+import { useInteractionLifecycle } from '@/hooks/useInteractionLifecycle';
+import { useSubscription } from '@/hooks/useSubscription';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import type { DirectoryEntry } from '@/hooks/useDirectory';
+import { EraTier } from '@/lib/eraTiers';
 import {
   MapPin,
   Globe,
@@ -30,6 +34,7 @@ import {
   AlertCircle,
   Loader2,
   ShieldAlert,
+  Handshake,
 } from 'lucide-react';
 
 interface ProviderDetailModalProps {
@@ -56,8 +61,32 @@ export function ProviderDetailModal({ entry, open, onOpenChange }: ProviderDetai
   const navigate = useNavigate();
   const { user } = useAuth();
   const { refresh: refreshSupportLinks } = useSupportLinks();
+  const { requestInteraction, loading: interactionLoading } = useInteractionLifecycle();
+  const { subscription } = useSubscription();
   const [connecting, setConnecting] = useState(false);
   const [connected, setConnected] = useState(false);
+  const [showInteractionModal, setShowInteractionModal] = useState(false);
+  const [providerTier, setProviderTier] = useState<EraTier>('pink');
+
+  // Fetch provider's tier when entry changes
+  useEffect(() => {
+    async function fetchProviderTier() {
+      if (!entry) return;
+      const providerId = entry.owner_profile_id || entry.owner_user_id;
+      const { data } = await supabase
+        .from('user_subscriptions')
+        .select('tier_colour')
+        .eq('user_id', providerId)
+        .maybeSingle();
+      
+      if (data?.tier_colour) {
+        setProviderTier(data.tier_colour as EraTier);
+      }
+    }
+    if (open) {
+      fetchProviderTier();
+    }
+  }, [entry, open]);
 
   if (!entry) return null;
 
@@ -116,6 +145,52 @@ export function ProviderDetailModal({ entry, open, onOpenChange }: ProviderDetai
     }
   };
 
+  const handleRequestInteraction = () => {
+    if (!user) {
+      toast.error(t('auth.required'), {
+        description: 'Please log in to request an interaction',
+      });
+      return;
+    }
+
+    // Check if user has a paid plan (any non-free plan)
+    const isPaidClient = subscription?.plan && subscription.plan !== 'free';
+    
+    if (!isPaidClient) {
+      toast.error('Upgrade required', {
+        description: 'A paid plan is required to request interactions',
+      });
+      return;
+    }
+
+    if (!entry.verified) {
+      toast.error('Verified providers only', {
+        description: 'Interactions can only be requested with verified providers',
+      });
+      return;
+    }
+
+    setShowInteractionModal(true);
+  };
+
+  const handleSubmitInteraction = async (notes: string): Promise<boolean> => {
+    const providerId = entry.owner_profile_id || entry.owner_user_id;
+    const result = await requestInteraction({
+      providerUserId: providerId,
+      providerTier,
+      notes,
+    });
+    
+    if (result) {
+      toast.success('Interaction requested', {
+        description: 'The provider will review your request',
+      });
+      onOpenChange(false);
+      return true;
+    }
+    return false;
+  };
+
   const handleMessage = () => {
     if (!user) {
       toast.error(t('auth.required'), {
@@ -137,6 +212,8 @@ export function ProviderDetailModal({ entry, open, onOpenChange }: ProviderDetai
       window.open(website, '_blank', 'noopener,noreferrer');
     }
   };
+
+  const providerId = entry.owner_profile_id || entry.owner_user_id;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -244,8 +321,19 @@ export function ProviderDetailModal({ entry, open, onOpenChange }: ProviderDetai
 
           {/* Action Buttons */}
           <div className="flex gap-2 pt-2">
+            {entry.verified && (
+              <Button
+                className="flex-1"
+                onClick={handleRequestInteraction}
+                disabled={interactionLoading}
+              >
+                <Handshake className="w-4 h-4 mr-2" />
+                Request Interaction
+              </Button>
+            )}
             <Button
-              className="flex-1"
+              variant={entry.verified ? "outline" : "default"}
+              className={entry.verified ? "" : "flex-1"}
               onClick={handleConnect}
               disabled={connecting || connected}
             >
@@ -256,11 +344,10 @@ export function ProviderDetailModal({ entry, open, onOpenChange }: ProviderDetai
               ) : (
                 <UserPlus className="w-4 h-4 mr-2" />
               )}
-              {connected ? 'Request Sent' : 'Request Connection'}
+              {connected ? 'Sent' : 'Connect'}
             </Button>
             <Button variant="outline" onClick={handleMessage}>
-              <MessageCircle className="w-4 h-4 mr-2" />
-              Message
+              <MessageCircle className="w-4 h-4" />
             </Button>
           </div>
 
@@ -293,6 +380,22 @@ export function ProviderDetailModal({ entry, open, onOpenChange }: ProviderDetai
           </GlassCard>
         </div>
       </DialogContent>
+
+      {/* Request Interaction Modal */}
+      <RequestInteractionModal
+        isOpen={showInteractionModal}
+        onClose={() => setShowInteractionModal(false)}
+        provider={{
+          id: providerId,
+          display_name: entry.name,
+          handle: entry.profile?.handle || 'provider',
+          avatar_url: entry.profile?.avatar_url || undefined,
+          is_verified: entry.verified || false,
+          tier: providerTier,
+        }}
+        onSubmit={handleSubmitInteraction}
+        isLoading={interactionLoading}
+      />
     </Dialog>
   );
 }
