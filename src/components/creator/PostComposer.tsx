@@ -12,10 +12,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
+import { useFeedData } from '@/contexts/FeedDataContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { TopicTagSelector } from './shared/TopicTagSelector';
 import { ContentWarningToggle } from './shared/ContentWarningToggle';
+
+// Simulation mode flag - when true, uses FeedDataContext instead of Supabase
+const SIMULATION_MODE = true;
 
 interface PostComposerProps {
   onBack: () => void;
@@ -36,6 +40,7 @@ const visibilityOptions = [
 export function PostComposer({ onBack, onSuccess, intent, tone }: PostComposerProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { createPost, isSimulationMode } = useFeedData();
   const [content, setContent] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [visibility, setVisibility] = useState<Visibility>('public');
@@ -45,7 +50,7 @@ export function PostComposer({ onBack, onSuccess, intent, tone }: PostComposerPr
   const [mediaPreviewUrls, setMediaPreviewUrls] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const displayName = user?.email?.split('@')[0] || 'there';
+  const displayName = user?.email?.split('@')[0] || 'You';
   const userInitial = displayName.charAt(0).toUpperCase();
 
   const canPost = (content.trim().length > 0 || mediaFiles.length > 0) && selectedTags.length > 0;
@@ -71,17 +76,58 @@ export function PostComposer({ onBack, onSuccess, intent, tone }: PostComposerPr
   };
 
   const handleSubmit = async () => {
-    if (!user || !canPost) return;
+    if (!canPost) return;
 
     setIsSubmitting(true);
 
     try {
+      // Use simulation mode via FeedDataContext
+      if (SIMULATION_MODE || isSimulationMode) {
+        let mediaUrl: string | undefined;
+        let mediaType: 'image' | 'video' | undefined;
+
+        // For simulation, use the object URL directly as the media URL
+        if (mediaFiles.length > 0 && mediaPreviewUrls.length > 0) {
+          mediaUrl = mediaPreviewUrls[0];
+          mediaType = mediaFiles[0]?.type.startsWith('video') ? 'video' : 'image';
+        }
+
+        const displayName = user?.email?.split('@')[0] || 'You';
+
+        // Create post via FeedDataContext - it will appear instantly in feed
+        createPost({
+          authorId: user?.id || `sim-user-${Date.now()}`,
+          author: {
+            name: displayName,
+            handle: displayName.toLowerCase().replace(/\s+/g, ''),
+            avatar: '',
+            isVerified: false,
+            email: user?.email,
+          },
+          content: content.trim(),
+          tags: selectedTags,
+          contentType: mediaType || 'text',
+          media: mediaUrl ? { type: mediaType!, url: mediaUrl } : undefined,
+        });
+
+        toast({
+          title: 'Posted!',
+          description: 'Your post is now live in the feed.',
+        });
+
+        onSuccess();
+        return;
+      }
+
+      // Real Supabase mode (when not in simulation)
+      if (!user) return;
+
       let mediaUrl: string | null = null;
       let mediaType: string | null = null;
 
       // Upload media if present
       if (mediaFiles.length > 0) {
-        const file = mediaFiles[0]; // For now, just upload the first file
+        const file = mediaFiles[0];
         const fileExt = file.name.split('.').pop();
         const fileName = `${user.id}/${Date.now()}.${fileExt}`;
 
@@ -127,7 +173,7 @@ export function PostComposer({ onBack, onSuccess, intent, tone }: PostComposerPr
           .from('post_tag_map')
           .insert(tagMappings);
 
-      if (tagError) throw tagError;
+        if (tagError) throw tagError;
       }
 
       onSuccess();
