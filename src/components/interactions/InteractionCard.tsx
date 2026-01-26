@@ -118,7 +118,7 @@ export function InteractionCard({
 
   return (
     <motion.div
-      className={`rounded-2xl border p-4 ${
+      className={`border p-4 ${
         isReadOnly ? 'bg-card/30 border-white/5 opacity-70' : 'bg-card/50 border-white/[0.06]'
       }`}
       initial={{ opacity: 0, y: 10 }}

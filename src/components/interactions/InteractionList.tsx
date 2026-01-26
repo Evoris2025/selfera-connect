@@ -50,7 +50,7 @@ export function InteractionList({
   if (isEmpty) {
     return (
       <motion.div
-        className="rounded-2xl bg-card/30 border border-white/5 p-8 text-center"
+        className="bg-card/30 border border-white/5 p-8 text-center"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={springGentle}

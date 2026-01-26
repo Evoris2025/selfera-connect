@@ -40,7 +40,7 @@ function ExpressionCard({ expression, index }: ExpressionCardProps) {
       transition={{ delay: index * 0.05 }}
       className="flex-shrink-0 w-32 cursor-pointer group"
     >
-      <div className="relative aspect-[9/16] rounded-2xl overflow-hidden bg-secondary">
+      <div className="relative aspect-[9/16] overflow-hidden bg-secondary">
         <img
           src={expression.thumbnail}
           alt=""
@@ -65,7 +65,7 @@ function ExpressionCard({ expression, index }: ExpressionCardProps) {
         </div>
 
         {/* Ring indicator */}
-        <div className="absolute inset-0 ring-2 ring-inset ring-primary/50 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
+        <div className="absolute inset-0 ring-2 ring-inset ring-primary/50 opacity-0 group-hover:opacity-100 transition-opacity" />
       </div>
     </motion.div>
   );
@@ -74,7 +74,7 @@ function ExpressionCard({ expression, index }: ExpressionCardProps) {
 function ExpressionCardSkeleton() {
   return (
     <div className="flex-shrink-0 w-32">
-      <Skeleton shimmer className="aspect-[9/16] rounded-2xl" />
+      <Skeleton shimmer className="aspect-[9/16]" />
     </div>
   );
 }

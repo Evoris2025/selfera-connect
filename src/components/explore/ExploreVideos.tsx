@@ -4,7 +4,6 @@ import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
-import { cn } from '@/lib/utils';
 
 // Mock video data
 const forYouVideos = [
@@ -87,20 +86,16 @@ function formatViews(views: number): string {
 interface VideoCardProps {
   video: typeof forYouVideos[0];
   index: number;
-  size?: 'large' | 'medium';
 }
 
-function VideoCard({ video, index, size = 'medium' }: VideoCardProps) {
+function VideoCard({ video, index }: VideoCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
     >
-      <Card className={cn(
-        'overflow-hidden cursor-pointer group hover:border-primary/30 transition-all flex-shrink-0',
-        size === 'large' ? 'w-[320px]' : 'w-[280px]'
-      )}>
+      <Card className="overflow-hidden cursor-pointer group hover:border-primary/30 transition-all flex-shrink-0 w-[280px]">
         <div className="relative aspect-video bg-secondary overflow-hidden">
           <img 
             src={video.thumbnail} 
@@ -108,11 +103,11 @@ function VideoCard({ video, index, size = 'medium' }: VideoCardProps) {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
           <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
-          <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-black/80 rounded text-xs text-white font-medium">
+          <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-black/80 text-xs text-white font-medium">
             {video.duration}
           </div>
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <div className="w-14 h-14 rounded-full bg-primary/90 flex items-center justify-center">
+            <div className="w-14 h-14 bg-primary/90 flex items-center justify-center">
               <Play className="h-6 w-6 text-primary-foreground fill-current ml-1" />
             </div>
           </div>
@@ -143,16 +138,13 @@ function VideoCard({ video, index, size = 'medium' }: VideoCardProps) {
   );
 }
 
-function VideoCardSkeleton({ size = 'medium' }: { size?: 'large' | 'medium' }) {
+function VideoCardSkeleton() {
   return (
-    <Card className={cn(
-      'overflow-hidden flex-shrink-0',
-      size === 'large' ? 'w-[320px]' : 'w-[280px]'
-    )}>
+    <Card className="overflow-hidden flex-shrink-0 w-[280px]">
       <Skeleton shimmer className="aspect-video" />
       <div className="p-3">
         <div className="flex gap-3">
-          <Skeleton shimmer className="h-9 w-9 rounded-full" />
+          <Skeleton shimmer className="h-9 w-9" />
           <div className="flex-1 space-y-2">
             <Skeleton shimmer className="h-4 w-full" />
             <Skeleton shimmer className="h-3 w-24" />
@@ -167,11 +159,10 @@ interface VideoSectionProps {
   title: string;
   icon: React.ReactNode;
   videos: typeof forYouVideos;
-  size?: 'large' | 'medium';
   isLoading?: boolean;
 }
 
-function VideoSection({ title, icon, videos, size = 'medium', isLoading }: VideoSectionProps) {
+function VideoSection({ title, icon, videos, isLoading }: VideoSectionProps) {
   if (!isLoading && videos.length === 0) return null;
 
   return (
@@ -189,11 +180,11 @@ function VideoSection({ title, icon, videos, size = 'medium', isLoading }: Video
       <div className="flex gap-3 overflow-x-auto px-4 pb-2 scrollbar-hide">
         {isLoading ? (
           Array.from({ length: 3 }).map((_, i) => (
-            <VideoCardSkeleton key={i} size={size} />
+            <VideoCardSkeleton key={i} />
           ))
         ) : (
           videos.map((video, index) => (
-            <VideoCard key={video.id} video={video} index={index} size={size} />
+            <VideoCard key={video.id} video={video} index={index} />
           ))
         )}
       </div>
@@ -212,7 +203,6 @@ export function ExploreVideos({ isLoading = false }: ExploreVideosProps) {
         title="For you right now"
         icon={<Compass className="h-5 w-5 text-primary" />}
         videos={forYouVideos}
-        size="large"
         isLoading={isLoading}
       />
       
@@ -227,7 +217,6 @@ export function ExploreVideos({ isLoading = false }: ExploreVideosProps) {
         title="Trending videos"
         icon={<TrendingUp className="h-5 w-5 text-rose-500" />}
         videos={trendingVideos}
-        size="large"
         isLoading={isLoading}
       />
       
