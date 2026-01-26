@@ -55,7 +55,8 @@ const contentTypeColors: Record<string, string> = {
 
 export default function CreatorDashboard() {
   const navigate = useNavigate();
-  const { data: analytics, isLoading, error } = useCreatorAnalytics();
+  const [dateRange, setDateRange] = useState<7 | 30 | 90>(30);
+  const { data: analytics, isLoading, error } = useCreatorAnalytics(dateRange);
   const { isSupported, subscribe, unsubscribe, isSubscribed } = usePushNotifications();
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -191,6 +192,24 @@ export default function CreatorDashboard() {
           )}
         </div>
 
+        {/* Date Range Filter */}
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">Time period:</span>
+          <div className="flex bg-muted rounded-lg p-1">
+            {([7, 30, 90] as const).map((range) => (
+              <Button
+                key={range}
+                variant={dateRange === range ? 'secondary' : 'ghost'}
+                size="sm"
+                className="h-7 px-3 text-xs"
+                onClick={() => setDateRange(range)}
+              >
+                {range}d
+              </Button>
+            ))}
+          </div>
+        </div>
+
         {/* Content Stats Grid */}
         <div>
           <h3 className="text-sm font-medium text-muted-foreground mb-3">Your Content</h3>
@@ -290,7 +309,7 @@ export default function CreatorDashboard() {
               <CardHeader className="pb-2">
                 <CardTitle className="text-base flex items-center gap-2">
                   <TrendingUp className="w-4 h-4" />
-                  Views Trend (30 days)
+                  Views Trend ({dateRange} days)
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -342,7 +361,7 @@ export default function CreatorDashboard() {
               <CardHeader className="pb-2">
                 <CardTitle className="text-base flex items-center gap-2">
                   <Heart className="w-4 h-4 text-rose-500" />
-                  Reactions (30 days)
+                  Reactions ({dateRange} days)
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -376,7 +395,7 @@ export default function CreatorDashboard() {
               <CardHeader className="pb-2">
                 <CardTitle className="text-base flex items-center gap-2">
                   <MessageCircle className="w-4 h-4 text-green-500" />
-                  Comments & Replies (30 days)
+                  Comments & Replies ({dateRange} days)
                 </CardTitle>
               </CardHeader>
               <CardContent>
