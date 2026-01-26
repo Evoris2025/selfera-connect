@@ -131,19 +131,19 @@ function PostCardSkeleton() {
   return (
     <Card className="p-4">
       <div className="flex items-center gap-3 mb-3">
-        <Skeleton className="h-10 w-10 rounded-full" />
+        <Skeleton shimmer className="h-10 w-10 rounded-full" />
         <div className="flex-1 space-y-2">
-          <Skeleton className="h-4 w-32" />
-          <Skeleton className="h-3 w-24" />
+          <Skeleton shimmer className="h-4 w-32" />
+          <Skeleton shimmer className="h-3 w-24" />
         </div>
       </div>
       <div className="space-y-2 mb-3">
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-3/4" />
+        <Skeleton shimmer className="h-4 w-full" />
+        <Skeleton shimmer className="h-4 w-3/4" />
       </div>
       <div className="flex gap-4">
-        <Skeleton className="h-4 w-12" />
-        <Skeleton className="h-4 w-12" />
+        <Skeleton shimmer className="h-4 w-12" />
+        <Skeleton shimmer className="h-4 w-12" />
       </div>
     </Card>
   );

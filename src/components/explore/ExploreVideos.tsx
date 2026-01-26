@@ -149,13 +149,13 @@ function VideoCardSkeleton({ size = 'medium' }: { size?: 'large' | 'medium' }) {
       'overflow-hidden flex-shrink-0',
       size === 'large' ? 'w-[320px]' : 'w-[280px]'
     )}>
-      <Skeleton className="aspect-video" />
+      <Skeleton shimmer className="aspect-video" />
       <div className="p-3">
         <div className="flex gap-3">
-          <Skeleton className="h-9 w-9 rounded-full" />
+          <Skeleton shimmer className="h-9 w-9 rounded-full" />
           <div className="flex-1 space-y-2">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-3 w-24" />
+            <Skeleton shimmer className="h-4 w-full" />
+            <Skeleton shimmer className="h-3 w-24" />
           </div>
         </div>
       </div>

@@ -74,7 +74,7 @@ function ExpressionCard({ expression, index }: ExpressionCardProps) {
 function ExpressionCardSkeleton() {
   return (
     <div className="flex-shrink-0 w-32">
-      <Skeleton className="aspect-[9/16] rounded-2xl" />
+      <Skeleton shimmer className="aspect-[9/16] rounded-2xl" />
     </div>
   );
 }
