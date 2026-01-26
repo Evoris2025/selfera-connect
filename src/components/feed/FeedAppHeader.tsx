@@ -101,10 +101,10 @@ export function FeedAppHeader({ title }: FeedAppHeaderProps) {
               {isFounder && (
                 <>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="gap-2 cursor-pointer text-primary" onClick={() => navigate('/admin')}>
-                    <Shield className="h-4 w-4" />
-                    Admin Console
-                    <Badge variant="secondary" className="ml-auto text-[10px] px-1.5 py-0 h-4 bg-primary/10 text-primary border-0">
+                  <DropdownMenuItem className="flex items-center gap-2 cursor-pointer text-primary" onClick={() => navigate('/admin')}>
+                    <Shield className="h-4 w-4 flex-shrink-0" />
+                    <span className="flex-1">Admin Console</span>
+                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-primary/10 text-primary border-0 flex-shrink-0">
                       STAFF
                     </Badge>
                   </DropdownMenuItem>

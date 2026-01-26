@@ -347,9 +347,11 @@ export const RearrangeableTabBar = memo(function RearrangeableTabBar({
 
       {/* Hint text - centered with proper spacing */}
       {isOwnProfile && !isRearrangeMode && (
-        <p className="text-[10px] text-center text-muted-foreground/50 py-2 leading-none">
-          Triple-tap to rearrange • Hold grid icon for layout
-        </p>
+        <div className="w-full flex justify-center py-2">
+          <p className="text-[10px] text-muted-foreground/50 leading-none text-center">
+            Triple-tap to rearrange • Hold grid icon for layout
+          </p>
+        </div>
       )}
 
       {/* Grid Layout Picker */}
