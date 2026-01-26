@@ -374,29 +374,29 @@ export default function Notifications() {
     <AppLayout showHeader={false}>
       <div className="flex flex-col min-h-[100dvh] bg-background">
         {/* Header */}
-      <motion.div 
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={calmSlide}
-        className="flex items-center gap-4 px-4 py-3.5 border-b border-border/60 bg-background"
-      >
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => navigate(-1)}
-          className="shrink-0 -ml-2 h-9 w-9 rounded-full hover:bg-secondary"
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={calmSlide}
+          className="flex items-center gap-3 px-4 py-3 border-b border-border/60 bg-background"
         >
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <motion.h1 
-          className="flex-1 font-bold text-xl text-foreground tracking-tight"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ ...calmFade, delay: 0.1 }}
-        >
-          Notifications
-        </motion.h1>
-      </motion.div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate(-1)}
+            className="shrink-0 h-9 w-9 rounded-full hover:bg-secondary"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <motion.h1 
+            className="flex-1 font-bold text-xl text-foreground tracking-tight"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ ...calmFade, delay: 0.1 }}
+          >
+            Notifications
+          </motion.h1>
+        </motion.div>
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto pb-nav-safe">

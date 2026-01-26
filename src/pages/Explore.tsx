@@ -92,34 +92,34 @@ export default function Explore() {
           onValueChange={(v) => setActiveTab(v as ExploreTab)} 
           className="flex-1 flex flex-col"
         >
-          <TabsList className="w-full bg-transparent border-b border-border rounded-none h-12 p-0 justify-start gap-0 sticky top-[61px] z-10 bg-background/95 backdrop-blur">
+          <TabsList className="w-full bg-transparent border-b border-border rounded-none h-12 p-0 justify-around gap-0 sticky top-[61px] z-10 bg-background/95 backdrop-blur">
             <TabsTrigger 
               value="expressions" 
-              className="flex-1 rounded-none h-full data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary font-medium gap-1.5"
+              className="flex-1 rounded-none h-full data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary font-medium gap-1.5 px-2"
             >
               <Sparkles className="h-4 w-4" />
-              <span className="hidden sm:inline">Expressions</span>
+              <span className="hidden sm:inline text-sm">Expressions</span>
             </TabsTrigger>
             <TabsTrigger 
               value="videos" 
-              className="flex-1 rounded-none h-full data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary font-medium gap-1.5"
+              className="flex-1 rounded-none h-full data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary font-medium gap-1.5 px-2"
             >
               <Play className="h-4 w-4" />
-              <span className="hidden sm:inline">Videos</span>
+              <span className="hidden sm:inline text-sm">Videos</span>
             </TabsTrigger>
             <TabsTrigger 
               value="images" 
-              className="flex-1 rounded-none h-full data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary font-medium gap-1.5"
+              className="flex-1 rounded-none h-full data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary font-medium gap-1.5 px-2"
             >
               <Image className="h-4 w-4" />
-              <span className="hidden sm:inline">Images</span>
+              <span className="hidden sm:inline text-sm">Images</span>
             </TabsTrigger>
             <TabsTrigger 
               value="posts" 
-              className="flex-1 rounded-none h-full data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary font-medium gap-1.5"
+              className="flex-1 rounded-none h-full data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary font-medium gap-1.5 px-2"
             >
               <FileText className="h-4 w-4" />
-              <span className="hidden sm:inline">Posts</span>
+              <span className="hidden sm:inline text-sm">Posts</span>
             </TabsTrigger>
           </TabsList>
 
