@@ -1,3 +1,4 @@
+// NavbarContext - controls visibility of the bottom navigation bar
 import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 
 interface NavbarContextType {
