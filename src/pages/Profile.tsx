@@ -541,25 +541,28 @@ export default function Profile() {
               </motion.div>
 
               {/* Name + Handle + Location + Admin Button */}
-              <div className="flex flex-col justify-end min-w-0 pb-1">
-                {/* Name + Verified Badge + Admin Button */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground tracking-tight leading-tight">
-                    {displayProfile.displayName || mockUser.name}
-                  </h1>
-                  {displayProfile.isVerified && (
-                    <EraVerifiedTooltip 
-                      tier={calculateVerificationTier(0, false, displayProfile.email ?? undefined)} 
-                      userEmail={displayProfile.email ?? undefined} 
-                      size="md" 
-                    />
-                  )}
-                  {displayProfile.userType && displayProfile.userType !== 'individual' && (
-                    <AccountTypeBadge type={displayProfile.userType as AccountType} size="md" />
-                  )}
-                  {displayProfile.isPrivate && <Lock className="h-4 w-4 text-muted-foreground" />}
+              <div className="flex flex-col justify-end min-w-0 pb-1 flex-1">
+                {/* Name Row with Admin Button on Right */}
+                <div className="flex items-center justify-between gap-2">
+                  {/* Name + Verified Badge */}
+                  <div className="flex items-center gap-2 flex-wrap min-w-0">
+                    <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground tracking-tight leading-tight truncate">
+                      {displayProfile.displayName || mockUser.name}
+                    </h1>
+                    {displayProfile.isVerified && (
+                      <EraVerifiedTooltip 
+                        tier={calculateVerificationTier(0, false, displayProfile.email ?? undefined)} 
+                        userEmail={displayProfile.email ?? undefined} 
+                        size="md" 
+                      />
+                    )}
+                    {displayProfile.userType && displayProfile.userType !== 'individual' && (
+                      <AccountTypeBadge type={displayProfile.userType as AccountType} size="md" />
+                    )}
+                    {displayProfile.isPrivate && <Lock className="h-4 w-4 text-muted-foreground" />}
+                  </div>
                   
-                  {/* Admin Button - Founder Only */}
+                  {/* Admin Button - Founder Only - Far Right */}
                   <AdminButton />
                 </div>
 
