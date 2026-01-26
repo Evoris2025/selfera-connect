@@ -31,7 +31,7 @@ export function FeedAppHeader({ title }: FeedAppHeaderProps) {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/50 bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80">
-      <div className="flex items-center justify-between h-14 px-4 max-w-lg mx-auto w-full">
+      <div className="flex items-center justify-between h-14 px-4 max-w-lg md:max-w-full lg:max-w-2xl mx-auto w-full">
         {/* Left: Logo + Title */}
         <Link to="/feed" className="flex items-center gap-3">
           <motion.div
@@ -69,7 +69,7 @@ export function FeedAppHeader({ title }: FeedAppHeaderProps) {
                 />
               </motion.button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 glass-card">
+            <DropdownMenuContent align="end" className="w-56 bg-popover border border-border">
               <DropdownMenuItem asChild>
                 <Link to="/profile" className="flex items-center gap-2">
                   <User className="h-4 w-4" />
