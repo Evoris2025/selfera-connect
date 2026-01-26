@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Camera, Image as ImageIcon, X, Loader2, Sparkles } from 'lucide-react';
+import { ArrowLeft, Camera, Image as ImageIcon, X, Loader2, Sparkles, Type, Sticker, Music } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
@@ -8,11 +8,23 @@ import { useFeedData } from '@/contexts/FeedDataContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { TextOverlayEditor, TextOverlay } from './TextOverlayEditor';
+import { StickerPicker, Sticker as StickerType } from './StickerPicker';
+import { SoundPicker, Sound } from './SoundPicker';
 
 // Simulation mode flag - when true, uses FeedDataContext instead of Supabase
 const SIMULATION_MODE = true;
 
 type Step = 'capture' | 'preview';
+type ActiveTool = 'none' | 'text' | 'stickers' | 'sounds';
+
+// Extended sticker with position for rendering
+interface PlacedSticker extends StickerType {
+  placedId: string;
+  position: { x: number; y: number };
+  scale: number;
+  rotation: number;
+}
 
 interface ExpressionCreatorProps {
   onBack: () => void;
@@ -33,6 +45,12 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
   const [cameraActive, setCameraActive] = useState(false);
+  
+  // Phase 2 creation tools state
+  const [activeTool, setActiveTool] = useState<ActiveTool>('none');
+  const [textOverlays, setTextOverlays] = useState<TextOverlay[]>([]);
+  const [stickers, setStickers] = useState<PlacedSticker[]>([]);
+  const [selectedSound, setSelectedSound] = useState<Sound | null>(null);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -91,6 +109,41 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
         setStep('preview');
       }
     }, 'image/jpeg', 0.9);
+  };
+
+  const handleSaveTextOverlay = (overlay: TextOverlay) => {
+    setTextOverlays(prev => [...prev, overlay]);
+    setActiveTool('none');
+    toast({
+      title: 'Text added',
+      description: 'Your text overlay has been added.',
+    });
+  };
+
+  const handleAddSticker = (sticker: StickerType) => {
+    // Add sticker at center with default position
+    const placedSticker: PlacedSticker = {
+      ...sticker,
+      placedId: `${sticker.id}-${Date.now()}`,
+      position: { x: 50, y: 50 },
+      scale: 1,
+      rotation: 0,
+    };
+    setStickers(prev => [...prev, placedSticker]);
+    setActiveTool('none');
+    toast({
+      title: 'Sticker added',
+      description: 'Drag to reposition your sticker.',
+    });
+  };
+
+  const handleSelectSound = (sound: Sound) => {
+    setSelectedSound(sound);
+    setActiveTool('none');
+    toast({
+      title: 'Sound added',
+      description: `"${sound.name}" will play with your expression.`,
+    });
   };
 
   const handleSubmit = async () => {
@@ -164,13 +217,33 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
   };
 
   const handleBack = () => {
+    if (activeTool !== 'none') {
+      setActiveTool('none');
+      return;
+    }
     if (step === 'preview') {
       setStep('capture');
       setSelectedFile(null);
       setPreviewUrl('');
+      setTextOverlays([]);
+      setStickers([]);
+      setSelectedSound(null);
     } else {
       stopCamera();
       onBack();
+    }
+  };
+
+  const toggleTool = (tool: ActiveTool) => {
+    setActiveTool(prev => prev === tool ? 'none' : tool);
+  };
+
+  // Get font size in pixels based on size name
+  const getFontSize = (size: 'small' | 'medium' | 'large') => {
+    switch (size) {
+      case 'small': return 14;
+      case 'medium': return 20;
+      case 'large': return 28;
     }
   };
 
@@ -287,25 +360,166 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex-1 flex flex-col items-center justify-center p-4 bg-black"
+            className="flex-1 flex flex-col bg-black relative"
           >
-            {isVideo ? (
-              <video
-                src={previewUrl}
-                className="max-w-full max-h-[60vh] rounded-xl"
-                controls
-                autoPlay
-                loop
-              />
-            ) : (
-              <img
-                src={previewUrl}
-                alt="Preview"
-                className="max-w-full max-h-[60vh] rounded-xl object-contain"
-              />
-            )}
+            {/* Media Preview with overlays */}
+            <div className="flex-1 flex items-center justify-center p-4 relative overflow-hidden">
+              {isVideo ? (
+                <video
+                  src={previewUrl}
+                  className="max-w-full max-h-[50vh] rounded-xl"
+                  controls
+                  autoPlay
+                  loop
+                />
+              ) : (
+                <img
+                  src={previewUrl}
+                  alt="Preview"
+                  className="max-w-full max-h-[50vh] rounded-xl object-contain"
+                />
+              )}
+              
+              {/* Render text overlays */}
+              {textOverlays.map((overlay) => (
+                <div
+                  key={overlay.id}
+                  className="absolute pointer-events-none"
+                  style={{
+                    left: `${overlay.position.x}%`,
+                    top: `${overlay.position.y}%`,
+                    transform: 'translate(-50%, -50%)',
+                  }}
+                >
+                  <span
+                    style={{
+                      fontFamily: overlay.fontFamily,
+                      fontSize: `${getFontSize(overlay.fontSize)}px`,
+                      color: overlay.color,
+                      textAlign: overlay.alignment,
+                      background: overlay.backgroundColor || undefined,
+                      padding: overlay.backgroundColor ? '4px 12px' : undefined,
+                      borderRadius: overlay.backgroundColor ? '8px' : undefined,
+                    }}
+                    className="whitespace-pre-wrap"
+                  >
+                    {overlay.text}
+                  </span>
+                </div>
+              ))}
+              
+              {/* Render stickers */}
+              {stickers.map((sticker) => (
+                <div
+                  key={sticker.placedId}
+                  className="absolute text-4xl pointer-events-none"
+                  style={{
+                    left: `${sticker.position.x}%`,
+                    top: `${sticker.position.y}%`,
+                    transform: `translate(-50%, -50%) scale(${sticker.scale}) rotate(${sticker.rotation}deg)`,
+                  }}
+                >
+                  {sticker.emoji}
+                </div>
+              ))}
+              
+              {/* Sound indicator */}
+              {selectedSound && (
+                <div className="absolute bottom-4 left-4 flex items-center gap-2 px-3 py-2 bg-black/60 backdrop-blur-sm rounded-full">
+                  <Music className="h-4 w-4 text-white" />
+                  <span className="text-xs text-white truncate max-w-[120px]">
+                    {selectedSound.name}
+                  </span>
+                </div>
+              )}
+            </div>
 
-            <p className="text-sm text-white/70 mt-4 text-center">
+            {/* Creative Tools Toolbar */}
+            <div className="flex items-center justify-center gap-3 p-4 bg-black/80 backdrop-blur-sm">
+              <button
+                onClick={() => toggleTool('text')}
+                className={cn(
+                  "flex flex-col items-center gap-1 p-3 rounded-xl transition-all",
+                  activeTool === 'text' ? "bg-primary text-primary-foreground" : "bg-white/10 text-white hover:bg-white/20"
+                )}
+              >
+                <Type className="h-5 w-5" />
+                <span className="text-[10px] font-medium">Text</span>
+              </button>
+              
+              <button
+                onClick={() => toggleTool('stickers')}
+                className={cn(
+                  "flex flex-col items-center gap-1 p-3 rounded-xl transition-all",
+                  activeTool === 'stickers' ? "bg-primary text-primary-foreground" : "bg-white/10 text-white hover:bg-white/20"
+                )}
+              >
+                <Sticker className="h-5 w-5" />
+                <span className="text-[10px] font-medium">Stickers</span>
+              </button>
+              
+              <button
+                onClick={() => toggleTool('sounds')}
+                className={cn(
+                  "flex flex-col items-center gap-1 p-3 rounded-xl transition-all",
+                  activeTool === 'sounds' ? "bg-primary text-primary-foreground" : "bg-white/10 text-white hover:bg-white/20",
+                  selectedSound && "ring-2 ring-green-500"
+                )}
+              >
+                <Music className="h-5 w-5" />
+                <span className="text-[10px] font-medium">Sounds</span>
+              </button>
+            </div>
+
+            {/* Tool Panels */}
+            <AnimatePresence>
+              {activeTool === 'text' && (
+                <motion.div
+                  initial={{ opacity: 0, y: 100 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 100 }}
+                  className="absolute bottom-0 left-0 right-0 bg-background rounded-t-2xl max-h-[70%] overflow-hidden"
+                >
+                  <TextOverlayEditor
+                    onSave={handleSaveTextOverlay}
+                    onCancel={() => setActiveTool('none')}
+                  />
+                </motion.div>
+              )}
+              
+              {activeTool === 'stickers' && (
+                <motion.div
+                  initial={{ opacity: 0, y: 100 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 100 }}
+                  className="absolute bottom-0 left-0 right-0 bg-background rounded-t-2xl max-h-[70%] overflow-hidden"
+                >
+                  <StickerPicker
+                    isOpen={true}
+                    onSelect={handleAddSticker}
+                    onClose={() => setActiveTool('none')}
+                  />
+                </motion.div>
+              )}
+              
+              {activeTool === 'sounds' && (
+                <motion.div
+                  initial={{ opacity: 0, y: 100 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 100 }}
+                  className="absolute bottom-0 left-0 right-0 bg-background rounded-t-2xl max-h-[70%] overflow-hidden"
+                >
+                  <SoundPicker
+                    isOpen={true}
+                    onSelect={handleSelectSound}
+                    onClose={() => setActiveTool('none')}
+                    selectedSound={selectedSound}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <p className="text-sm text-white/70 py-2 text-center bg-black">
               This expression will be visible for 24 hours
             </p>
           </motion.div>

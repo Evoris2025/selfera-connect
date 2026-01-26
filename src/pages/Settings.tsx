@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Palette, Globe, Eye, Bell, Lock, User, HelpCircle, BadgeCheck, Shield, ShieldOff, VolumeX, UserPlus, CreditCard } from 'lucide-react';
+import { Palette, Globe, Eye, Bell, Lock, User, HelpCircle, BadgeCheck, Shield, ShieldOff, VolumeX, UserPlus, CreditCard, Users } from 'lucide-react';
 import { AppLayout } from '@/components/AppLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
@@ -13,12 +13,14 @@ import { PreviewZoomControl } from '@/components/settings/PreviewZoomControl';
 import { VerificationRequestForm } from '@/components/settings/VerificationRequestForm';
 import { BlockedUsersList } from '@/components/settings/BlockedUsersList';
 import { MutedUsersList } from '@/components/settings/MutedUsersList';
+import { CloseFriendsList } from '@/components/settings/CloseFriendsList';
 import { FollowRequestsModal } from '@/components/settings/FollowRequestsModal';
 import { BillingSettingsView } from '@/components/billing';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSafety } from '@/contexts/SafetyContext';
 import { useFollowRequests } from '@/hooks/useFollowRequests';
 import { useSubscription } from '@/hooks/useSubscription';
+import { useCloseFriends } from '@/hooks/useCloseFriends';
 import { supabase } from '@/integrations/supabase/client';
 import {
   Select,
@@ -28,7 +30,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-type SettingsView = 'main' | 'verification' | 'blocked' | 'muted' | 'billing';
+type SettingsView = 'main' | 'verification' | 'blocked' | 'muted' | 'billing' | 'closeFriends';
 
 export default function Settings() {
   const { t } = useTranslation();
@@ -37,6 +39,7 @@ export default function Settings() {
   const { blockedUserIds, mutedUserIds } = useSafety();
   const { pendingCount } = useFollowRequests();
   const { currentPlan } = useSubscription();
+  const { count: closeFriendsCount } = useCloseFriends();
   const currentLang = getCurrentLanguage();
   
   // Initialize view from URL query param
@@ -147,6 +150,17 @@ export default function Settings() {
           </Button>
           <h1 className="text-2xl font-bold text-foreground mb-6">Plan & Billing</h1>
           <BillingSettingsView />
+        </div>
+      </AppLayout>
+    );
+  }
+
+  // Close Friends view
+  if (view === 'closeFriends') {
+    return (
+      <AppLayout>
+        <div className="max-w-2xl mx-auto p-4">
+          <CloseFriendsList onBack={() => handleViewChange('main')} />
         </div>
       </AppLayout>
     );
@@ -263,6 +277,31 @@ export default function Settings() {
                 {pendingCount > 0 && (
                   <Badge variant="default" className="rounded-full">
                     {pendingCount}
+                  </Badge>
+                )}
+              </div>
+            </CardHeader>
+          </Card>
+
+          {/* Close Friends */}
+          <Card 
+            className="cursor-pointer hover:border-green-500/30 transition-colors"
+            onClick={() => handleViewChange('closeFriends')}
+          >
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-green-500/10">
+                    <Users className="h-5 w-5 text-green-500" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-base">Close Friends</CardTitle>
+                    <CardDescription>Share expressions with select people</CardDescription>
+                  </div>
+                </div>
+                {closeFriendsCount > 0 && (
+                  <Badge variant="secondary" className="rounded-full bg-green-500/10 text-green-600">
+                    {closeFriendsCount}
                   </Badge>
                 )}
               </div>

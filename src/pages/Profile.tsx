@@ -8,6 +8,7 @@ import { RearrangeableTabBar } from '@/components/profile/RearrangeableTabBar';
 import { UserListModal, ListType } from '@/components/profile/UserListModal';
 import { BlockedProfileState } from '@/components/profile/BlockedProfileState';
 import { PrivateProfileState } from '@/components/profile/PrivateProfileState';
+import { HighlightRow } from '@/components/profile/HighlightRow';
 import { ReportModal } from '@/components/moderation/ReportModal';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { AppLayout } from '@/components/AppLayout';
@@ -28,6 +29,7 @@ import { useProfilePhotoUpload } from '@/hooks/useProfilePhotoUpload';
 import { useCoverPhotoUpload } from '@/hooks/useCoverPhotoUpload';
 import { useProfileStats, useUserPosts } from '@/hooks/useProfileStats';
 import { useFollow } from '@/hooks/useFollow';
+import { useHighlights } from '@/hooks/useHighlights';
 import { supabase } from '@/integrations/supabase/client';
 import { useFounderAccess } from '@/hooks/useFounderAccess';
 import {
@@ -216,6 +218,7 @@ export default function Profile() {
   const { profile, stats, isLoading: statsLoading } = useProfileStats(profileUserId || '');
   const { isFollowing, isPending, toggleFollow, followerCount } = useFollow(profileUserId || '');
   const { posts: userPosts, isLoading: postsLoading } = useUserPosts(profileUserId || '');
+  const { highlights, isLoading: highlightsLoading } = useHighlights(profileUserId || undefined);
   
   // Check if current user has muted this profile
   const profileIsMuted = profileUserId ? isMuted(profileUserId) : false;
@@ -647,6 +650,13 @@ export default function Profile() {
         </motion.section>
 
         {/* ========== CONTENT BELOW HERO ========== */}
+        
+        {/* Highlights Row - Instagram-style story highlights */}
+        {highlights.length > 0 && (
+          <div className="mt-2">
+            <HighlightRow highlights={highlights} isOwnProfile={isOwnProfile} />
+          </div>
+        )}
         
         {/* Discover People Row */}
         <div className="mt-2">
