@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { Search as SearchIcon, Sparkles, Play, Image, FileText } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { AppLayout } from '@/components/AppLayout';
 import { Input } from '@/components/ui/input';
 import { PolishedTabBar, type TabItem } from '@/components/ui/PolishedTabBar';
@@ -18,10 +19,10 @@ import {
 type ExploreTab = 'expressions' | 'videos' | 'images' | 'posts';
 
 const exploreTabs: TabItem[] = [
-  { id: 'expressions', icon: Sparkles },
-  { id: 'videos', icon: Play },
-  { id: 'images', icon: Image },
-  { id: 'posts', icon: FileText },
+  { id: 'expressions', label: 'Expressions', icon: Sparkles },
+  { id: 'videos', label: 'Videos', icon: Play },
+  { id: 'images', label: 'Images', icon: Image },
+  { id: 'posts', label: 'Posts', icon: FileText },
 ];
 
 export default function Explore() {
@@ -114,12 +115,25 @@ export default function Explore() {
             tabs={exploreTabs}
             activeTab={activeTab}
             onTabChange={(tabId) => setActiveTab(tabId as ExploreTab)}
+            showLabelsOnHover
+            showLabelsOnLargeScreens
           />
         </div>
 
-        {/* Tab Content */}
-        <div className="flex-1">
-          {renderTabContent()}
+        {/* Tab Content with Fade Transition */}
+        <div className="flex-1 relative">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2, ease: 'easeOut' }}
+              className="w-full"
+            >
+              {renderTabContent()}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </AppLayout>
