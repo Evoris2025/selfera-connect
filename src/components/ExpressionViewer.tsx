@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { X, Heart, MessageCircle, Share2, Music2, Volume2, VolumeX, ChevronUp, ChevronDown, Bookmark } from 'lucide-react';
+import { X, MessageCircle, Share2, Music2, Volume2, VolumeX, ChevronUp, ChevronDown, Bookmark, Heart } from 'lucide-react';
 import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useFeedData, FeedExpression } from '@/contexts/FeedDataContext';
+import { useFeedData } from '@/contexts/FeedDataContext';
 import { ExpressionProgressBar } from '@/components/expressions/ExpressionProgressBar';
 import { PauseOverlay } from '@/components/expressions/PauseOverlay';
-import { ExpressionReactionPicker } from '@/components/expressions/ExpressionReactionPicker';
 import { AddToHighlightSheet } from '@/components/expressions/AddToHighlightSheet';
+import { HeartButton } from '@/components/interactions/HeartButton';
 import { cn } from '@/lib/utils';
 
 function formatCount(count: number): string {
@@ -279,22 +279,15 @@ export function ExpressionViewer({ isOpen, onClose, initialIndex = 0 }: Expressi
               </div>
             </motion.div>
 
-            {/* Like */}
-            <motion.button
-              whileTap={{ scale: 0.8 }}
-              onClick={(e) => { e.stopPropagation(); handleLike(); }}
-              className="flex flex-col items-center gap-1"
-            >
-              <Heart className={cn(
-                'h-8 w-8 transition-all',
-                liked[currentExpression.id] 
-                  ? 'fill-rose-500 text-rose-500 animate-heart-pop' 
-                  : 'text-white'
-              )} />
-              <span className="text-white text-xs font-semibold">
-                {formatCount(stats.likes + (liked[currentExpression.id] ? 1 : 0))}
-              </span>
-            </motion.button>
+            {/* Like - Using HeartButton like feed */}
+            <div onClick={(e) => e.stopPropagation()}>
+              <HeartButton
+                count={stats.likes + (liked[currentExpression.id] ? 1 : 0)}
+                active={liked[currentExpression.id] || false}
+                onClick={handleLike}
+                size="lg"
+              />
+            </div>
 
             {/* Comment */}
             <motion.button
@@ -350,12 +343,6 @@ export function ExpressionViewer({ isOpen, onClose, initialIndex = 0 }: Expressi
             <p className="text-white/80 text-sm mb-3">
               {getTimeRemaining(currentExpression.expiresAt)}
             </p>
-
-            {/* Quick Reactions */}
-            <ExpressionReactionPicker
-              expressionId={currentExpression.id}
-              authorName={currentExpression.userName}
-            />
 
             {/* Audio indicator */}
             <div className="flex items-center gap-2 mt-3">
