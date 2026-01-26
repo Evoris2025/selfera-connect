@@ -105,7 +105,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
             transition={{ delay: 0.1, type: 'spring', stiffness: 300, damping: 25 }}
             className="relative flex flex-col items-center"
           >
-            <BrandMark className="h-12 w-auto" />
+            <BrandMark className="h-12 w-[200px]" />
             
             {/* ERA STUDIO Title - directly below logo */}
             <motion.h1
