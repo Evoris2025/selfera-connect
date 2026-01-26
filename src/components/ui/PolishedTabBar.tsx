@@ -2,11 +2,11 @@
  * Polished Tab Bar Component
  * 
  * A clean, minimal tab bar with rectangular border highlight on active tab
- * Matches the exact design reference: dark solid background, simple border indicator
+ * Supports hover labels and responsive label visibility on larger screens
  */
 
-import { memo } from 'react';
-import { motion } from 'framer-motion';
+import { memo, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 export interface TabItem {
@@ -21,6 +21,8 @@ interface PolishedTabBarProps {
   onTabChange: (tabId: string) => void;
   className?: string;
   showLabels?: boolean;
+  showLabelsOnHover?: boolean;
+  showLabelsOnLargeScreens?: boolean;
 }
 
 export const PolishedTabBar = memo(function PolishedTabBar({
@@ -29,7 +31,11 @@ export const PolishedTabBar = memo(function PolishedTabBar({
   onTabChange,
   className,
   showLabels = false,
+  showLabelsOnHover = false,
+  showLabelsOnLargeScreens = false,
 }: PolishedTabBarProps) {
+  const [hoveredTab, setHoveredTab] = useState<string | null>(null);
+
   return (
     <div
       className={cn(
@@ -39,12 +45,15 @@ export const PolishedTabBar = memo(function PolishedTabBar({
     >
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
+        const isHovered = hoveredTab === tab.id;
         const Icon = tab.icon;
 
         return (
           <button
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
+            onMouseEnter={() => setHoveredTab(tab.id)}
+            onMouseLeave={() => setHoveredTab(null)}
             className={cn(
               'relative flex-1 flex items-center justify-center gap-2 py-3 px-4 transition-colors duration-200',
               isActive
@@ -71,7 +80,7 @@ export const PolishedTabBar = memo(function PolishedTabBar({
               />
             )}
 
-            {/* Label */}
+            {/* Always visible labels */}
             {showLabels && tab.label && (
               <span
                 className={cn(
@@ -81,6 +90,37 @@ export const PolishedTabBar = memo(function PolishedTabBar({
               >
                 {tab.label}
               </span>
+            )}
+
+            {/* Labels visible on large screens */}
+            {showLabelsOnLargeScreens && !showLabels && tab.label && (
+              <span
+                className={cn(
+                  'relative z-10 text-sm font-medium transition-colors hidden lg:inline',
+                  isActive ? 'text-primary' : ''
+                )}
+              >
+                {tab.label}
+              </span>
+            )}
+
+            {/* Hover tooltip label */}
+            {showLabelsOnHover && !showLabels && tab.label && (
+              <AnimatePresence>
+                {isHovered && !isActive && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 4 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-popover border border-border rounded-md shadow-lg z-20 lg:hidden"
+                  >
+                    <span className="text-xs font-medium text-foreground whitespace-nowrap">
+                      {tab.label}
+                    </span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             )}
           </button>
         );
