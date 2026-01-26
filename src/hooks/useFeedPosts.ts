@@ -176,6 +176,8 @@ function getContentType(mediaType?: string | null): ContentType {
   return 'image';
 }
 
+const SIMULATION_MODE = true; // Global simulation toggle
+
 export function useFeedPosts(): UseFeedPostsResult {
   const [posts, setPosts] = useState<FeedPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -191,8 +193,18 @@ export function useFeedPosts(): UseFeedPostsResult {
   const [blockedIds, setBlockedIds] = useState<Set<string>>(new Set());
   const [mutedIds, setMutedIds] = useState<Set<string>>(new Set());
 
-  // Fetch current user, following list, blocks and mutes on mount
+  // In simulation mode, skip real data fetching
   useEffect(() => {
+    if (SIMULATION_MODE) {
+      // Use mock posts directly
+      setPosts(mockPosts);
+      setLoading(false);
+      setHasMore(false);
+      initialLoadDone.current = true;
+      return;
+    }
+
+    // Fetch current user, following list, blocks and mutes on mount
     const fetchUserData = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user?.id) {
@@ -418,7 +430,7 @@ export function useFeedPosts(): UseFeedPostsResult {
 
   // Initial load
   useEffect(() => {
-    if (initialLoadDone.current) return;
+    if (initialLoadDone.current || SIMULATION_MODE) return;
     
     const loadInitial = async () => {
       setLoading(true);
@@ -442,6 +454,9 @@ export function useFeedPosts(): UseFeedPostsResult {
 
   // Load more posts (with deduplication and guards)
   const loadMore = useCallback(async () => {
+    // In simulation mode, no more posts to load
+    if (SIMULATION_MODE) return;
+    
     // Guard against concurrent calls
     if (loadingMoreRef.current || !hasMore || posts.length === 0) return;
     
