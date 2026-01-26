@@ -108,7 +108,11 @@ export const PLAN_DETAILS: PlanDetails[] = [
   },
 ];
 
-export function useSubscription() {
+// Re-export from simulated version for simulation mode
+export { useSimulatedSubscription as useSubscription } from './useSimulatedSubscription';
+
+// Original hook preserved for reference when switching to production
+export function useSubscriptionReal() {
   const { user } = useAuth();
   const [subscription, setSubscription] = useState<UserSubscription | null>(null);
   const [loading, setLoading] = useState(true);
