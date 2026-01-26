@@ -29,6 +29,7 @@ import CrisisSupport from "./pages/CrisisSupport";
 import Settings from "./pages/Settings";
 import Transparency from "./pages/Transparency";
 import AdminConsole from "./pages/AdminConsole";
+import Guidelines from "./pages/Guidelines";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -103,6 +104,7 @@ function AppRoutes() {
         <Route path="/directory" element={<Directory />} />
         <Route path="/crisis" element={<CrisisSupport />} />
         <Route path="/transparency" element={<Transparency />} />
+        <Route path="/guidelines" element={<Guidelines />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

@@ -12,7 +12,8 @@ import { ReportModal } from '@/components/moderation/ReportModal';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
-import { EraVerifiedTick, VerificationTier } from '@/components/EraVerifiedTick';
+import { EraVerifiedTick, VerificationTier, calculateVerificationTier } from '@/components/EraVerifiedTick';
+import { EraVerifiedTooltip } from '@/components/profile/EraVerifiedTooltip';
 import { AccountTypeBadge, AccountType } from '@/components/AccountTypeBadge';
 import { FollowButton } from '@/components/interactions';
 import { toast } from '@/hooks/use-toast';
@@ -525,7 +526,13 @@ export default function Profile() {
                   <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground tracking-tight leading-tight">
                     {displayProfile.displayName || mockUser.name}
                   </h1>
-                  {displayProfile.isVerified && <EraVerifiedTick size="md" userEmail={displayProfile.email} />}
+                  {displayProfile.isVerified && (
+                    <EraVerifiedTooltip 
+                      tier={calculateVerificationTier(0, false, displayProfile.email ?? undefined)} 
+                      userEmail={displayProfile.email ?? undefined} 
+                      size="md" 
+                    />
+                  )}
                   {displayProfile.userType && displayProfile.userType !== 'individual' && (
                     <AccountTypeBadge type={displayProfile.userType as AccountType} size="md" />
                   )}
