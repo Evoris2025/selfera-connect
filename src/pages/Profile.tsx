@@ -12,6 +12,7 @@ import { ReportModal } from '@/components/moderation/ReportModal';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { EraVerifiedTick, VerificationTier, calculateVerificationTier } from '@/components/EraVerifiedTick';
 import { EraVerifiedTooltip } from '@/components/profile/EraVerifiedTooltip';
 import { AccountTypeBadge, AccountType } from '@/components/AccountTypeBadge';
@@ -135,9 +136,12 @@ function FounderAdminMenuItem() {
   return (
     <>
       <DropdownMenuSeparator />
-      <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate('/admin')}>
+      <DropdownMenuItem className="gap-2 cursor-pointer text-primary" onClick={() => navigate('/admin')}>
         <Shield className="h-4 w-4" />
         Admin Console
+        <Badge variant="secondary" className="ml-auto text-[10px] px-1.5 py-0 h-4 bg-primary/10 text-primary border-0">
+          STAFF
+        </Badge>
       </DropdownMenuItem>
     </>
   );

@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Settings, LogOut, User, Compass, ShieldAlert } from 'lucide-react';
+import { Settings, LogOut, User, Compass, ShieldAlert, Shield } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +13,8 @@ import { BrandMark } from '@/components/BrandMark';
 import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
 import { motion } from 'framer-motion';
 import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
+import { useFounderAccess } from '@/hooks/useFounderAccess';
+import { Badge } from '@/components/ui/badge';
 
 interface FeedAppHeaderProps {
   title?: string;
@@ -23,6 +25,7 @@ export function FeedAppHeader({ title }: FeedAppHeaderProps) {
   const { signOut } = useAuth();
   const navigate = useNavigate();
   const { avatarUrl, displayName } = useCurrentUserAvatar();
+  const { isFounder } = useFounderAccess();
 
   const handleSignOut = async () => {
     await signOut();
@@ -95,6 +98,18 @@ export function FeedAppHeader({ title }: FeedAppHeaderProps) {
                   {t('nav.settings')}
                 </Link>
               </DropdownMenuItem>
+              {isFounder && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="gap-2 cursor-pointer text-primary" onClick={() => navigate('/admin')}>
+                    <Shield className="h-4 w-4" />
+                    Admin Console
+                    <Badge variant="secondary" className="ml-auto text-[10px] px-1.5 py-0 h-4 bg-primary/10 text-primary border-0">
+                      STAFF
+                    </Badge>
+                  </DropdownMenuItem>
+                </>
+              )}
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleSignOut} className="text-destructive flex items-center gap-2">
                 <LogOut className="h-4 w-4" />
