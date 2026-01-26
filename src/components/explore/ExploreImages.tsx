@@ -48,7 +48,7 @@ function ImageCard({ image, index, onClick }: ImageCardProps) {
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: index * 0.03 }}
-      className="relative group cursor-pointer overflow-hidden rounded-xl"
+      className="relative group cursor-pointer overflow-hidden"
       onClick={onClick}
     >
       <img 
@@ -66,7 +66,7 @@ function ImageCard({ image, index, onClick }: ImageCardProps) {
 }
 
 function ImageCardSkeleton() {
-  return <Skeleton shimmer className="aspect-square rounded-xl" />;
+  return <Skeleton shimmer className="aspect-square" />;
 }
 
 interface ImageViewerProps {
@@ -103,7 +103,7 @@ function ImageViewer({ image, onClose }: ImageViewerProps) {
           exit={{ scale: 0.9, opacity: 0 }}
           src={image.url}
           alt=""
-          className="max-w-[90vw] max-h-[80vh] object-contain rounded-lg"
+          className="max-w-[90vw] max-h-[80vh] object-contain"
           onClick={(e) => e.stopPropagation()}
         />
 
