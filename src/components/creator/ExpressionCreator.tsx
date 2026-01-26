@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Camera, Image as ImageIcon, X, Loader2, Sparkles, Type, Sticker, Music } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/contexts/AuthContext';
 import { useFeedData } from '@/contexts/FeedDataContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -12,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { TextOverlayEditor, TextOverlay } from './TextOverlayEditor';
 import { StickerPicker, Sticker as StickerType } from './StickerPicker';
 import { SoundPicker, Sound } from './SoundPicker';
+import { HashtagAutocomplete, TrendingHashtagChips } from './HashtagAutocomplete';
 
 // Simulation mode flag - when true, uses FeedDataContext instead of Supabase
 const SIMULATION_MODE = true;
@@ -438,18 +438,28 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
               )}
             </div>
 
-            {/* Caption Input */}
-            <div className="px-4 py-3 bg-black/80 backdrop-blur-sm">
-              <Textarea
+            {/* Caption Input with Autocomplete */}
+            <div className="px-4 py-3 bg-black/80 backdrop-blur-sm space-y-2">
+              <HashtagAutocomplete
                 value={caption}
-                onChange={(e) => setCaption(e.target.value)}
+                onChange={setCaption}
                 placeholder="Add a caption... Use #hashtags for discovery"
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/50 resize-none min-h-[60px] max-h-[100px]"
                 maxLength={200}
               />
-              <p className="text-xs text-white/50 mt-1 text-right">
-                {caption.length}/200
-              </p>
+              <div className="flex items-center justify-between">
+                <TrendingHashtagChips
+                  currentValue={caption}
+                  onSelect={(tag) => {
+                    const newCaption = caption.trim() ? `${caption.trim()} #${tag}` : `#${tag}`;
+                    if (newCaption.length <= 200) {
+                      setCaption(newCaption);
+                    }
+                  }}
+                />
+                <p className="text-xs text-white/50 ml-2 shrink-0">
+                  {caption.length}/200
+                </p>
+              </div>
             </div>
             {/* Creative Tools Toolbar */}
             <div className="flex items-center justify-center gap-3 p-4 bg-black/80 backdrop-blur-sm">
