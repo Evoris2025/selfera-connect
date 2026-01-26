@@ -1,318 +1,569 @@
 
+# Content Studio Overhaul: Comprehensive Implementation Plan
 
-# Expressions Feature Enhancement - Complete Implementation Plan
+## Executive Summary
 
-## Overview
-
-This plan implements a comprehensive upgrade to the Expressions feature (SelfERA's equivalent of Instagram Stories/Reels) across three phases, adding essential UX improvements, creative tools, and social/discovery features.
-
----
-
-## Phase 1: Essential UX Enhancements
-
-### 1.1 Progress Bar Timer with Auto-Advance
-
-**Current State:** Static progress dots at top, no auto-advance
-**Target:** Instagram-style segmented progress bar with animated timer
-
-**Implementation:**
-- Add multi-segment progress bar to `ExpressionViewer.tsx`
-- Each expression gets 5-10 seconds of auto-play time (configurable for videos)
-- Animated fill indicator shows time remaining per segment
-- Auto-advance to next expression when timer completes
-- Visual continuity between user's expression segments
-
-**Technical Changes:**
-- Create new `ExpressionProgressBar` component
-- Add `duration` state and `useEffect` timer logic
-- Implement smooth CSS transition for progress fill
-- Handle video duration detection for variable timing
-
-### 1.2 Tap-to-Pause Functionality
-
-**Current State:** Tap only triggers double-tap detection for likes
-**Target:** Single tap pauses, hold pauses, release resumes
-
-**Implementation:**
-- Add `isPaused` state to `ExpressionViewer.tsx`
-- Single tap anywhere (not on buttons) toggles pause
-- Long press (hold) pauses while held
-- Pause indicator overlay appears when paused
-- Progress bar stops animating when paused
-- Video pauses/resumes accordingly
-
-**Technical Changes:**
-- Add `onPointerDown`, `onPointerUp` handlers
-- Implement hold detection with timeout
-- Coordinate pause state with progress timer
-- Show subtle "Paused" overlay indicator
-
-### 1.3 Smooth Segment Transitions
-
-**Current State:** Basic framer-motion slide transitions
-**Target:** Premium Instagram-like cube/slide transitions
-
-**Implementation:**
-- Enhanced `AnimatePresence` transition variants
-- Horizontal swipe for next user's expressions
-- Vertical swipe already exists for navigation
-- Cross-fade between segments of same user
-- Haptic feedback on segment change
-
-### 1.4 Story Reactions (Floating Emoji Responses)
-
-**Current State:** Only heart reaction exists
-**Target:** Quick emoji picker with floating animation
-
-**Implementation:**
-- Create `ExpressionReactionPicker` component
-- Positioned at bottom of viewer (above username)
-- 5-6 preset emoji options matching SelfERA's reaction types
-- On tap: emoji floats up with particle burst animation
-- Reaction sent to expression author (simulation mode: toast notification)
-
-**Technical Changes:**
-- New component with emoji grid
-- Framer-motion floating animation
-- Add `expressionReactions` to FeedDataContext
-- Haptic feedback on send
+This plan outlines a complete overhaul of the Content Studio ("+" button) to create a world-class content creation experience matching the leading social media platforms. The implementation will be broken into **6 phases** across **4 content types**: Expressions, Videos, Images, and Posts.
 
 ---
 
-## Phase 2: Creation Tools
+## Current State Analysis
 
-### 2.1 Text Overlay Tools
+### What Already Exists
 
-**Current State:** No text overlay capability in ExpressionCreator
-**Target:** Full text editing with fonts, colors, animations
+| Component | Status | Features |
+|-----------|--------|----------|
+| **CreatorStudio.tsx** | Implemented | Intent-based launcher (Express, Share, Teach, Reflect), tone selection, routes to content-specific studios |
+| **ExpressionCreator.tsx** | Functional | Camera capture, gallery upload, text overlays, stickers, sounds, captions with hashtags, simulation mode |
+| **VideoStudio.tsx** | Basic | Upload with drag-drop, auto-thumbnail generation (3 options), title/description, topic tags, content warnings |
+| **ImageStudio.tsx** | Basic | Gallery selection, 6 filters, brightness/contrast sliders, captions, topic tags, content warnings |
+| **PostComposer.tsx** | Basic | Text input, media attachment (up to 4), visibility settings, topic tags, content warnings |
+| **StickerPicker.tsx** | Functional | Emoji-based stickers, categories, search |
+| **SoundPicker.tsx** | Functional | Royalty-free sound library, categories, volume control |
+| **TextOverlayEditor.tsx** | Functional | 5 fonts, colors, backgrounds, alignment, sizes |
 
-**Implementation:**
-- Create `TextOverlayEditor` component for ExpressionCreator
-- Add text button to preview step toolbar
-- Features:
-  - Multiple font families (4-5 options: Sans, Serif, Script, Bold, Neon)
-  - Color picker (preset colors + gradient options)
-  - Text alignment (left, center, right)
-  - Text background styles (none, solid, gradient pill)
-  - Drag-to-position with pinch-to-resize
-  - Optional text animations (fade-in, typewriter, bounce)
+### Gap Analysis: What's Missing
 
-**Technical Changes:**
-- New `TextOverlayEditor.tsx` component
-- `TextOverlay` type added to FeedExpression
-- Canvas-based or DOM overlay rendering
-- Touch gesture handling for positioning
-- Store overlay data with expression
-
-### 2.2 Sticker/GIF Library
-
-**Current State:** None
-**Target:** Searchable sticker library with positioning
-
-**Implementation:**
-- Create `StickerPicker` component
-- Categories: Emotions, Wellness, Nature, Reactions, Custom
-- Drag-and-drop placement on media
-- Scale and rotate gestures
-- Static stickers (SVG/PNG) for MVP - no external API needed
-
-**Technical Changes:**
-- Curated sticker asset collection
-- `Sticker` type with position, scale, rotation
-- Gesture handlers for manipulation
-- Render stickers on expression canvas
-
-### 2.3 Music/Sound Library Integration
-
-**Current State:** Displays "Original Sound" indicator but no library
-**Target:** Trending sounds library with audio sync
-
-**Implementation:**
-- Create `SoundPicker` component/sheet
-- Sections: Trending, Search, Favorites, Recent
-- Preview audio clips before selection
-- Timeline sync point selection (when sound starts)
-- Volume control (original vs. added audio)
-
-**Technical Changes:**
-- Sound metadata storage in expression
-- Audio element for playback
-- For simulation mode: use royalty-free sample tracks
-- `selectedSound` field in FeedExpression type
-
-**Note:** Full music library requires licensing. MVP implementation will include:
-- 10-15 royalty-free ambient/meditation tracks
-- Sound effect library for wellness theme
-- Infrastructure ready for future integration
-
----
-
-## Phase 3: Social & Discovery Features
-
-### 3.1 Highlights Feature
-
-**Current State:** Expressions expire after 24 hours, no persistence
-**Target:** Save expressions permanently to profile collections
-
-**Implementation:**
-
-**Database Changes:**
-- New `expression_highlights` table:
-  - `id`, `user_id`, `name`, `cover_url`, `created_at`, `updated_at`
-- New `expression_highlight_items` table:
-  - `id`, `highlight_id`, `expression_id`, `media_url`, `media_type`, `order_index`, `created_at`
-- RLS policies for user ownership
-
-**UI Components:**
-- `HighlightCircle` component on profile (below bio, above grid)
-- `CreateHighlightModal` - name highlight, select cover
-- `AddToHighlightSheet` - appears when expression about to expire
-- `HighlightViewer` - similar to ExpressionViewer but for highlights
-- Horizontal scroll row of highlight circles on profile
-
-**Technical Flow:**
-1. User creates expressions (24h lifecycle)
-2. Before expiry, prompt to save to highlight
-3. User selects existing highlight or creates new
-4. Expression persists beyond 24 hours in highlight
-5. Profile shows highlight circles users can tap to view
-
-### 3.2 User Tagging/Mentions
-
-**Current State:** No tagging capability
-**Target:** Tag users in expressions with notification
-
-**Implementation:**
-- Create `UserTagPicker` component
-- Triggered by @ symbol in text overlay or dedicated button
-- Search users by name/handle
-- Position tag on media (tap to place)
-- Tagged users receive notification
-- Viewer can tap tag to view profile
-
-**Technical Changes:**
-- `tags` array in expression data structure
-- `ExpressionTag` type: `{ userId, userName, position: {x, y} }`
-- Integration with notification system
-- Tap handler in viewer to navigate to profile
-
-### 3.3 Close Friends Privacy Logic
-
-**Current State:** All expressions public to followers
-**Target:** Private expressions visible only to Close Friends list
-
-**Implementation:**
-
-**Database Changes:**
-- New `close_friends` table:
-  - `user_id`, `friend_user_id`, `created_at`
-- Add `visibility` field to expressions: `'public' | 'close_friends'`
-- RLS policy updates for visibility filtering
-
-**UI Components:**
-- `CloseFriendsList` management in Settings
-- Green ring indicator for Close Friends expressions (Instagram-style)
-- Toggle in ExpressionCreator: "Share to Close Friends only"
-- Badge on expression row for Close Friends content
-
-**Technical Flow:**
-1. User manages Close Friends list in settings
-2. When creating expression, toggle privacy option
-3. Close Friends expressions show green ring
-4. Non-Close Friends see public expressions only
-5. Expression queries filter by visibility + close friends status
-
----
-
-## File Changes Summary
-
-### New Files to Create:
-
-**Phase 1:**
-- `src/components/expressions/ExpressionProgressBar.tsx`
-- `src/components/expressions/ExpressionReactionPicker.tsx`
-- `src/components/expressions/PauseOverlay.tsx`
-
-**Phase 2:**
-- `src/components/creator/TextOverlayEditor.tsx`
-- `src/components/creator/StickerPicker.tsx`
-- `src/components/creator/SoundPicker.tsx`
-- `src/components/creator/shared/DraggableOverlay.tsx`
-- `src/data/stickerLibrary.ts`
-- `src/data/soundLibrary.ts`
-
-**Phase 3:**
-- `src/components/profile/HighlightCircle.tsx`
-- `src/components/profile/HighlightRow.tsx`
-- `src/components/expressions/CreateHighlightModal.tsx`
-- `src/components/expressions/AddToHighlightSheet.tsx`
-- `src/components/expressions/HighlightViewer.tsx`
-- `src/components/creator/UserTagPicker.tsx`
-- `src/components/settings/CloseFriendsList.tsx`
-- `src/hooks/useHighlights.ts`
-- `src/hooks/useCloseFriends.ts`
-
-### Files to Modify:
-
-**Phase 1:**
-- `src/components/ExpressionViewer.tsx` - Major updates for timer, pause, reactions
-- `src/contexts/FeedDataContext.tsx` - Add expression reactions
-
-**Phase 2:**
-- `src/components/creator/ExpressionCreator.tsx` - Add overlay tools
-- `src/contexts/FeedDataContext.tsx` - Update FeedExpression type
-
-**Phase 3:**
-- `src/pages/Profile.tsx` - Add highlights row
-- `src/components/ExpressionsRow.tsx` - Close Friends indicator
-- `src/pages/Settings.tsx` - Close Friends management link
-- Database migrations for highlights and close_friends tables
-
----
-
-## Database Migrations
-
-### Migration 1: Highlights Tables
 ```text
-- expression_highlights (id, user_id, name, cover_url, timestamps)
-- expression_highlight_items (id, highlight_id, expression_id, media_url, media_type, order_index)
-- RLS: Users can CRUD their own highlights
-```
-
-### Migration 2: Close Friends Table
-```text
-- close_friends (user_id, friend_user_id, created_at)
-- Add visibility column to expressions table
-- RLS: Users manage their own close friends
-- Update expressions RLS for visibility filtering
-```
-
-### Migration 3: Expression Tags
-```text
-- Add tags JSONB column to expressions table
-- Or create expression_tags join table
++-------------------------+------------------+--------------------+--------------------+--------------------+
+| Feature Area            | Your App         | YouTube            | Instagram          | Facebook/Twitter   |
++-------------------------+------------------+--------------------+--------------------+--------------------+
+| EXPRESSIONS/STORIES                                                                                      |
++-------------------------+------------------+--------------------+--------------------+--------------------+
+| Draw/sketch tools       | Missing          | N/A                | Yes                | N/A                |
+| AR effects/face filters | Missing          | N/A                | Yes                | N/A                |
+| Polls/Questions         | Missing          | N/A                | Yes                | N/A                |
+| Countdown stickers      | Missing          | N/A                | Yes                | N/A                |
+| Link stickers           | Missing          | N/A                | Yes (verified)     | N/A                |
+| Location tagging        | Missing          | N/A                | Yes                | N/A                |
+| User mentions (@)       | Missing          | N/A                | Yes                | N/A                |
+| Close Friends sharing   | Partial          | N/A                | Yes                | N/A                |
+| Highlights saving       | Missing          | N/A                | Yes                | N/A                |
++-------------------------+------------------+--------------------+--------------------+--------------------+
+| VIDEOS                                                                                                   |
++-------------------------+------------------+--------------------+--------------------+--------------------+
+| AI-generated thumbnails | Missing          | Yes                | N/A                | N/A                |
+| Custom thumbnail upload | Missing          | Yes                | N/A                | N/A                |
+| Playlists               | Missing          | Yes                | N/A                | N/A                |
+| Audience settings       | Missing          | Yes (Made for Kids)| N/A                | N/A                |
+| Age restriction         | Missing          | Yes                | N/A                | N/A                |
+| Tags (keyword)          | Missing          | Yes                | N/A                | N/A                |
+| Categories              | Missing          | Yes                | N/A                | N/A                |
+| Language selection      | Missing          | Yes                | N/A                | N/A                |
+| License selection       | Missing          | Yes                | N/A                | N/A                |
+| Comments settings       | Missing          | Yes                | N/A                | N/A                |
+| End screens             | Missing          | Yes                | N/A                | N/A                |
+| Cards (mid-roll links)  | Missing          | Yes                | N/A                | N/A                |
+| Chapters/timestamps     | Missing          | Yes                | N/A                | N/A                |
+| Scheduling              | Missing          | Yes                | Yes                | Yes                |
+| Premiere mode           | Missing          | Yes                | N/A                | N/A                |
+| Processing status       | Basic            | Yes                | N/A                | N/A                |
++-------------------------+------------------+--------------------+--------------------+--------------------+
+| IMAGES                                                                                                   |
++-------------------------+------------------+--------------------+--------------------+--------------------+
+| Multi-image carousel    | Missing          | N/A                | Yes (up to 20)     | Yes                |
+| Crop/aspect ratio       | Missing          | N/A                | Yes (1:1, 4:5, 16:9)| N/A               |
+| Advanced adjustments    | Partial          | N/A                | Yes (10+ sliders)  | N/A                |
+| More filters            | Basic (6)        | N/A                | Yes (40+)          | N/A                |
+| User tagging in photo   | Missing          | N/A                | Yes                | Yes                |
+| Location tagging        | Missing          | N/A                | Yes                | Yes                |
+| Alt text accessibility  | Missing          | N/A                | Yes                | Yes                |
+| Reorder images          | Missing          | N/A                | Yes                | Yes                |
+| Music for carousels     | Missing          | N/A                | Yes                | N/A                |
++-------------------------+------------------+--------------------+--------------------+--------------------+
+| POSTS                                                                                                    |
++-------------------------+------------------+--------------------+--------------------+--------------------+
+| Polls                   | Missing          | N/A                | N/A                | Yes                |
+| Threads/multi-post      | Missing          | N/A                | N/A                | Yes (X)            |
+| Scheduling              | Missing          | N/A                | Yes                | Yes                |
+| Link previews           | Missing          | N/A                | N/A                | Yes                |
+| Feeling/activity        | Missing          | N/A                | N/A                | Yes (FB)           |
+| Check-in/location       | Missing          | N/A                | N/A                | Yes                |
+| GIF picker              | Missing          | N/A                | N/A                | Yes                |
+| Character limit display | Missing          | N/A                | N/A                | Yes (X: 280)       |
+| Quote posts             | Missing          | N/A                | N/A                | Yes                |
+| Draft saving            | Missing          | Yes                | Yes                | Yes                |
++-------------------------+------------------+--------------------+--------------------+--------------------+
 ```
 
 ---
 
-## Implementation Order
+## Phase 1: Content Studio Dashboard Redesign
 
-1. **Phase 1.1-1.3** - Progress bar, pause, transitions (core UX)
-2. **Phase 1.4** - Reactions (engagement)
-3. **Phase 2.1** - Text overlays (most impactful creation tool)
-4. **Phase 2.2** - Stickers (creation enhancement)
-5. **Phase 2.3** - Sounds (creation enhancement)
-6. **Phase 3.1** - Highlights (persistence/discovery)
-7. **Phase 3.2** - User tagging (social)
-8. **Phase 3.3** - Close Friends (privacy)
+**Goal**: Replace the intent-based launcher with a direct content-type selector
+
+### 1.1 New Dashboard Layout
+
+Create a new dashboard component that opens when the "+" button is pressed with four clear content creation options:
+
+**Visual Layout**:
+- Full-screen modal with cinematic dark background
+- 2x2 grid of large, tappable cards
+- Each card displays: Icon, Title, Description
+- Cards: Expression, Video, Image, Post
+
+**Card Definitions**:
+| Card | Icon | Title | Description |
+|------|------|-------|-------------|
+| Expression | Sparkles | Expression | Share moments that disappear in 24h |
+| Video | Video | Video | Upload and share long-form content |
+| Image | Image | Photo | Share photos with filters and edits |
+| Post | FileText | Post | Share thoughts, polls, and updates |
+
+### 1.2 Technical Implementation
+
+**Files to modify**:
+- `src/components/creator/CreatorStudio.tsx` - Replace intent selector with content-type grid
+
+**New component structure**:
+```text
+CreatorStudio
+  ContentTypeDashboard (new)
+    ExpressionCreator (existing, enhanced)
+    VideoStudio (existing, completely overhauled)
+    ImageStudio (existing, significantly enhanced)
+    PostComposer (existing, significantly enhanced)
+```
 
 ---
 
-## Technical Considerations
+## Phase 2: Expressions Enhancement (Instagram Stories Parity)
 
-- All Phase 1 & 2 features work in simulation mode via FeedDataContext
-- Phase 3 database features will create real tables but maintain simulation mode support
-- Sticker and sound libraries use bundled assets (no external API dependencies)
-- Music licensing deferred - MVP uses royalty-free wellness audio
-- Performance: Lazy load sticker/sound pickers to avoid bundle bloat
+**Goal**: Match Instagram Stories creation experience
 
+### 2.1 New Features to Add
+
+**Drawing Tools**:
+- Freehand brush with color picker
+- Multiple brush sizes (thin, medium, thick)
+- Eraser tool
+- Undo/redo functionality
+
+**Interactive Stickers** (new category in StickerPicker):
+- Poll sticker (Yes/No, custom options)
+- Question sticker (free text responses)
+- Quiz sticker (multiple choice)
+- Countdown sticker (date/time picker)
+- Location sticker (search integration)
+- Mention sticker (@username autocomplete)
+- Link sticker (URL input)
+- Slider/emoji rating sticker
+
+**Enhanced Text Tools**:
+- Typewriter animation style
+- Pop/zoom animation style
+- Gradient text colors
+- Text-to-speech audio generation (AI)
+
+**Close Friends Integration**:
+- Toggle to share with Close Friends only
+- Visual indicator (green ring) on preview
+
+**Highlights Flow**:
+- After sharing, prompt to add to Highlight
+- Create new Highlight or add to existing
+
+### 2.2 Technical Implementation
+
+**New files**:
+- `src/components/creator/DrawingCanvas.tsx`
+- `src/components/creator/InteractiveStickers.tsx`
+- `src/components/creator/HighlightSelector.tsx`
+
+**Modified files**:
+- `src/components/creator/ExpressionCreator.tsx` - Add new tool panels
+- `src/components/creator/StickerPicker.tsx` - Add interactive sticker categories
+
+---
+
+## Phase 3: Video Studio Overhaul (YouTube Parity)
+
+**Goal**: Match YouTube's video upload workflow exactly
+
+### 3.1 Multi-Step Wizard Structure
+
+**Step 1: Upload**
+- Drag-and-drop zone
+- File selection
+- Upload progress with percentage
+- Processing indicator
+
+**Step 2: Details**
+| Field | Type | Requirement |
+|-------|------|-------------|
+| Title | Text (100 chars max) | Required |
+| Description | Textarea (5000 chars) | Optional |
+| Thumbnail | Image upload OR auto-generated (3 options) OR AI-generated | Required |
+| Playlist | Multi-select or create new | Optional |
+| Audience | "Made for wellbeing" toggle | Required |
+| Age restriction | Toggle + reason | Optional |
+| Tags | Comma-separated (500 chars max) | Optional |
+| Category | Dropdown (Wellness, Recovery, Education, etc.) | Required |
+| Language | Dropdown | Optional |
+| Caption certification | None, This video has captions | Optional |
+| Recording date | Date picker | Optional |
+| Video location | Location search | Optional |
+| License | Standard, Creative Commons | Default: Standard |
+| Allow embedding | Toggle | Default: Yes |
+| Publish to feed | Toggle | Default: Yes |
+| Comments | On, Hold for review, Off | Default: On |
+| Show likes | Toggle | Default: Yes |
+
+**Step 3: Video Elements**
+| Element | Feature |
+|---------|---------|
+| End screen | Template selection, timing (last 5-20 seconds) |
+| Cards | Add at timestamps, link to other content |
+| Chapters | Auto-detect or manual timestamp entry |
+
+**Step 4: Checks**
+- Content analysis (in simulation: mock check)
+- Copyright check placeholder
+- Ad suitability indicator
+
+**Step 5: Visibility**
+| Option | Description |
+|--------|-------------|
+| Private | Only you can view |
+| Unlisted | Anyone with link |
+| Public | Everyone |
+| Schedule | Date/time picker |
+| Premiere | Live countdown mode |
+
+### 3.2 AI Thumbnail Generation
+
+**Integration with Lovable AI**:
+- Button: "Generate AI thumbnail"
+- Prompt: Based on video title, generate 3 thumbnail concepts
+- Model: google/gemini-2.5-flash-image
+- Display: 3 AI-generated options alongside auto-captured frames
+
+**Edge function required**:
+- `supabase/functions/generate-thumbnail/index.ts`
+
+### 3.3 Technical Implementation
+
+**New files**:
+- `src/components/creator/video/VideoDetailsStep.tsx`
+- `src/components/creator/video/VideoElementsStep.tsx`
+- `src/components/creator/video/VideoChecksStep.tsx`
+- `src/components/creator/video/VideoVisibilityStep.tsx`
+- `src/components/creator/video/ThumbnailSelector.tsx`
+- `src/components/creator/video/PlaylistSelector.tsx`
+- `src/components/creator/video/EndScreenEditor.tsx`
+- `src/components/creator/video/CardEditor.tsx`
+- `src/components/creator/video/ChapterEditor.tsx`
+- `supabase/functions/generate-thumbnail/index.ts`
+
+**Modified files**:
+- `src/components/creator/VideoStudio.tsx` - Complete rewrite as multi-step wizard
+
+---
+
+## Phase 4: Image Studio Enhancement (Instagram Parity)
+
+**Goal**: Match Instagram's image posting experience
+
+### 4.1 New Features
+
+**Multi-Image Carousel**:
+- Select up to 20 images
+- Drag-to-reorder
+- Individual editing per image
+- Swipe preview
+
+**Crop & Aspect Ratio**:
+- Square (1:1)
+- Portrait (4:5)
+- Landscape (16:9)
+- Original
+- Pinch-to-zoom and drag to position
+
+**Advanced Adjustments** (new sliders):
+| Adjustment | Range |
+|------------|-------|
+| Brightness | -100 to +100 |
+| Contrast | -100 to +100 |
+| Saturation | -100 to +100 |
+| Warmth | -100 to +100 |
+| Highlights | -100 to +100 |
+| Shadows | -100 to +100 |
+| Vignette | 0 to 100 |
+| Sharpen | 0 to 100 |
+| Structure | 0 to 100 |
+| Fade | 0 to 100 |
+
+**Expanded Filter Library**:
+- 20+ filters (categorized: Vintage, Modern, Mood, B&W)
+- Filter intensity slider (0-100%)
+
+**Tagging Features**:
+- Tap image to tag users
+- User search/autocomplete
+- Location tagging with search
+- Alt text input for accessibility
+
+**Music for Carousels**:
+- Integrate SoundPicker for image slideshows
+
+### 4.2 Technical Implementation
+
+**New files**:
+- `src/components/creator/image/ImageCarouselEditor.tsx`
+- `src/components/creator/image/CropTool.tsx`
+- `src/components/creator/image/AdjustmentPanel.tsx`
+- `src/components/creator/image/FilterLibrary.tsx`
+- `src/components/creator/image/UserTagOverlay.tsx`
+- `src/components/creator/image/LocationPicker.tsx`
+
+**Modified files**:
+- `src/components/creator/ImageStudio.tsx` - Complete rewrite as multi-step flow
+
+---
+
+## Phase 5: Post Composer Enhancement (Facebook/X Parity)
+
+**Goal**: Match Facebook and X (Twitter) posting experience
+
+### 5.1 New Features
+
+**Poll Creation**:
+- 2-4 options
+- Duration selector (1 day, 3 days, 1 week)
+- Anonymous results toggle
+
+**Thread Composer**:
+- "Add to thread" button
+- Multiple posts chained
+- Individual character counts
+- Reorder thread items
+
+**Character Counter**:
+- Optional character limit mode (280 for X-style, unlimited for FB-style)
+- Visual progress ring
+
+**Link Preview**:
+- Auto-detect URLs
+- Fetch metadata (title, image, description)
+- Preview card display
+
+**GIF Picker**:
+- Giphy integration via edge function
+- Trending, search, categories
+
+**Feeling/Activity**:
+- Emoji + label selector
+- "Feeling happy", "Watching...", "Listening to..."
+
+**Location Check-in**:
+- Location search
+- Display as "at [Location]"
+
+**Scheduling**:
+- Date/time picker
+- "Schedule" instead of "Post" button
+- Draft saving
+
+**Draft System**:
+- Auto-save to localStorage
+- "Drafts" tab in dashboard
+
+### 5.2 Technical Implementation
+
+**New files**:
+- `src/components/creator/post/PollCreator.tsx`
+- `src/components/creator/post/ThreadComposer.tsx`
+- `src/components/creator/post/LinkPreview.tsx`
+- `src/components/creator/post/GifPicker.tsx`
+- `src/components/creator/post/FeelingActivityPicker.tsx`
+- `src/components/creator/post/ScheduleSelector.tsx`
+- `src/components/creator/post/DraftsManager.tsx`
+- `supabase/functions/fetch-link-preview/index.ts`
+- `supabase/functions/search-gifs/index.ts`
+
+**Modified files**:
+- `src/components/creator/PostComposer.tsx` - Complete rewrite with all new features
+
+---
+
+## Phase 6: Shared Components & Integration
+
+### 6.1 Shared Components to Create
+
+**LocationPicker.tsx**:
+- Search input with autocomplete
+- Recent locations
+- Map preview (optional)
+
+**UserMentionAutocomplete.tsx**:
+- @ trigger detection
+- User search
+- Profile preview on hover
+
+**ScheduleSelector.tsx**:
+- Date picker
+- Time picker
+- Timezone display
+- Schedule confirmation
+
+**DraftManager.tsx**:
+- localStorage persistence
+- Draft list UI
+- Resume/delete drafts
+
+### 6.2 Database Schema Updates
+
+**New tables needed**:
+
+```sql
+-- Drafts table
+CREATE TABLE drafts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+  content_type TEXT NOT NULL, -- 'expression', 'video', 'image', 'post'
+  draft_data JSONB NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+-- Playlists table (for video organization)
+CREATE TABLE playlists (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  description TEXT,
+  visibility TEXT DEFAULT 'public',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+-- Playlist items
+CREATE TABLE playlist_items (
+  playlist_id UUID REFERENCES playlists(id) ON DELETE CASCADE,
+  post_id UUID REFERENCES posts(id) ON DELETE CASCADE,
+  position INTEGER NOT NULL,
+  PRIMARY KEY (playlist_id, post_id)
+);
+
+-- Polls table
+CREATE TABLE polls (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  post_id UUID REFERENCES posts(id) ON DELETE CASCADE,
+  options JSONB NOT NULL,
+  duration_hours INTEGER DEFAULT 24,
+  ends_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+-- Poll votes
+CREATE TABLE poll_votes (
+  poll_id UUID REFERENCES polls(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+  option_index INTEGER NOT NULL,
+  voted_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  PRIMARY KEY (poll_id, user_id)
+);
+
+-- Scheduled posts
+CREATE TABLE scheduled_posts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+  post_data JSONB NOT NULL,
+  scheduled_for TIMESTAMP WITH TIME ZONE NOT NULL,
+  status TEXT DEFAULT 'pending',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+-- Video chapters
+CREATE TABLE video_chapters (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  post_id UUID REFERENCES posts(id) ON DELETE CASCADE,
+  timestamp_seconds INTEGER NOT NULL,
+  title TEXT NOT NULL
+);
+
+-- Video cards
+CREATE TABLE video_cards (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  post_id UUID REFERENCES posts(id) ON DELETE CASCADE,
+  timestamp_seconds INTEGER NOT NULL,
+  card_type TEXT NOT NULL,
+  card_data JSONB NOT NULL
+);
+
+-- User tags in media
+CREATE TABLE media_user_tags (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  post_id UUID REFERENCES posts(id) ON DELETE CASCADE,
+  tagged_user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+  position_x FLOAT,
+  position_y FLOAT,
+  media_index INTEGER DEFAULT 0
+);
+
+-- Expression interactive responses (poll, question, quiz answers)
+CREATE TABLE expression_responses (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  expression_id UUID REFERENCES expressions(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+  sticker_type TEXT NOT NULL,
+  response_data JSONB NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+```
+
+### 6.3 Edge Functions to Create
+
+| Function | Purpose |
+|----------|---------|
+| `generate-thumbnail` | AI thumbnail generation using Lovable AI |
+| `fetch-link-preview` | Scrape URL metadata for link previews |
+| `search-gifs` | Giphy API integration |
+| `process-video` | Video transcoding status (placeholder) |
+| `publish-scheduled` | Cron job to publish scheduled posts |
+
+---
+
+## Implementation Priorities
+
+### Recommended Order
+
+1. **Phase 1** (Dashboard) - 1 session
+2. **Phase 5** (Posts) - 2-3 sessions (most user-facing impact)
+3. **Phase 4** (Images) - 2 sessions
+4. **Phase 2** (Expressions) - 2 sessions
+5. **Phase 3** (Videos) - 3-4 sessions (most complex)
+6. **Phase 6** (Integration) - 1-2 sessions
+
+### Dependencies
+
+```text
+Phase 1 (Dashboard)
+    |
+    +-- Phase 2 (Expressions) -- requires StickerPicker updates
+    |
+    +-- Phase 3 (Videos) -- requires AI edge function
+    |
+    +-- Phase 4 (Images) -- requires UserTagPicker
+    |
+    +-- Phase 5 (Posts) -- requires GIF/Link edge functions
+    |
+    +-- Phase 6 (Shared) -- final integration
+```
+
+---
+
+## Success Metrics
+
+After implementation, the Content Studio will support:
+
+- **4 distinct content types** with unique workflows
+- **40+ features** matching leading platforms
+- **AI-powered** thumbnail generation
+- **Interactive** story elements
+- **Multi-image** carousel support
+- **Video chapters** and end screens
+- **Polls** and threads
+- **Scheduling** and drafts
+- **Complete accessibility** (alt text, captions)
+
+This comprehensive overhaul positions SelfERA as a true competitor to mainstream social platforms while maintaining focus on mental health and wellbeing content.
