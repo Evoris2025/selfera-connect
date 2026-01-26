@@ -140,7 +140,7 @@ const DraggableTab = memo(function DraggableTab({
       }}
       transition={{ type: 'spring', stiffness: 400, damping: 30 }}
       className={cn(
-        'relative flex-1 flex items-center justify-center py-2.5 rounded-lg transition-all duration-200',
+        'relative flex-1 flex items-center justify-center py-2.5 transition-all duration-200',
         isRearrangeMode && 'cursor-grab active:cursor-grabbing animate-jiggle',
         isDragging && 'z-50',
         isActive && !isRearrangeMode && 'text-primary',
@@ -164,11 +164,11 @@ const DraggableTab = memo(function DraggableTab({
       }}
       onDragEnd={onDragEnd}
     >
-      {/* Active indicator border */}
+      {/* Active indicator - clean square border */}
       {isActive && !isRearrangeMode && (
         <motion.div
           layoutId="polishedTabIndicator"
-          className="absolute inset-0 rounded-lg border border-primary/50 bg-primary/5"
+          className="absolute inset-0 border border-primary bg-primary/5"
           transition={{ type: 'spring', stiffness: 400, damping: 30 }}
         />
       )}
@@ -322,9 +322,9 @@ export const RearrangeableTabBar = memo(function RearrangeableTabBar({
         </motion.div>
       )}
 
-      {/* Polished Tab Bar - Clean border-highlight style */}
+      {/* Polished Tab Bar - Clean square edge style */}
       <div className={cn(
-        'w-full flex items-center bg-card/40 backdrop-blur-sm border border-border/30 rounded-xl p-1 mx-4',
+        'w-full flex items-center bg-[hsl(240,10%,8%)] border border-border/30 mx-4',
         isRearrangeMode && 'bg-muted/20'
       )}
         style={{ width: 'calc(100% - 2rem)' }}

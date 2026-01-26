@@ -39,7 +39,7 @@ export const PolishedTabBar = memo(function PolishedTabBar({
   return (
     <div
       className={cn(
-        'w-full flex items-center bg-[hsl(240,10%,8%)] border border-border/20 rounded-lg overflow-hidden',
+        'w-full flex items-center bg-[hsl(240,10%,8%)] border border-border/30 overflow-hidden',
         className
       )}
     >
@@ -61,11 +61,11 @@ export const PolishedTabBar = memo(function PolishedTabBar({
                 : 'text-muted-foreground/60 hover:text-muted-foreground'
             )}
           >
-            {/* Active indicator - rectangular border */}
+            {/* Active indicator - clean square border */}
             {isActive && (
               <motion.div
                 layoutId="polished-tab-indicator"
-                className="absolute inset-1 rounded-md border border-primary"
+                className="absolute inset-0 border border-primary bg-primary/5"
                 transition={{ type: 'spring', stiffness: 500, damping: 35 }}
               />
             )}
@@ -113,7 +113,7 @@ export const PolishedTabBar = memo(function PolishedTabBar({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 4 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-popover border border-border rounded-md shadow-lg z-20 lg:hidden"
+                    className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-popover border border-border shadow-lg z-20 lg:hidden"
                   >
                     <span className="text-xs font-medium text-foreground whitespace-nowrap">
                       {tab.label}
