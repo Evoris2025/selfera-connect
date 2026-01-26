@@ -1,107 +1,58 @@
 
-# Color-Coded Billing Status for MyERA
+# Plan: Revert Feed to Traditional Scrollable Layout
 
-## Overview
-Add intelligent color-coding to the billing section that visually communicates payment status at a glance:
-- **Green** - Payment is current and up-to-date
-- **Amber/Yellow** - Payment approaching due date (within 7 days)
-- **Red** - Payment is overdue
+## Summary
+Remove the TikTok-style vertical swipe navigation from the feed and restore a traditional scrollable list layout where all posts are visible and users scroll naturally through content.
 
----
+## What Will Change
 
-## Implementation Approach
+**Before (Current - TikTok Style)**
+- Shows one post at a time in a fixed-height container
+- Requires swiping up/down to navigate between posts
+- Has progress dots, post counter (1/8), and "Swipe up for more" hints
+- Uses absolute positioning causing the empty space issue you see
 
-### 1. Create Billing Status Helper Function
-Add a utility function in `MyERA.tsx` to determine payment status based on dates:
+**After (Traditional Scroll)**
+- All posts visible in a scrollable list
+- Natural vertical scrolling like Instagram's main feed
+- No swipe hints or progress indicators
+- Content flows smoothly with infinite scroll when reaching bottom
 
-```text
-┌─────────────────────────────────────────────────────────┐
-│  getBillingStatus(nextDueDate, subscriptionStatus)      │
-├─────────────────────────────────────────────────────────┤
-│  Returns: 'current' | 'warning' | 'overdue'             │
-│                                                         │
-│  Logic:                                                 │
-│  - If status is 'past_due' → 'overdue'                 │
-│  - If nextDue < today → 'overdue'                      │
-│  - If nextDue within 7 days → 'warning'                │
-│  - Otherwise → 'current'                                │
-└─────────────────────────────────────────────────────────┘
-```
+## Technical Changes
 
-### 2. Define Color Classes
-Create a mapping object for status-to-color:
+### File: `src/components/feed/CrossroadFeed.tsx`
 
-| Status    | Amount Color      | Date Color            |
-|-----------|-------------------|-----------------------|
-| current   | `text-green-500`  | `text-green-500/70`   |
-| warning   | `text-amber-500`  | `text-amber-500/70`   |
-| overdue   | `text-red-500`    | `text-red-500/70`     |
+**Remove:**
+- `currentIndex` state and single-post-at-a-time logic
+- Framer Motion drag gestures and `AnimatePresence` for swipe navigation
+- `HeartOverlay` component (double-tap like will remain on individual PostCards)
+- `useDoubleTap` hook (PostCard already handles double-tap)
+- `triggerHaptic` utility (PostCard already has this)
+- Progress indicator dots on the right side
+- Post counter ("1 / 8") overlay
+- "Swipe up for more" hint overlay
+- Keyboard navigation (arrow keys/j/k)
+- Fixed height container with `calc(100dvh - 200px)`
 
-### 3. Update Billing Section UI
-Modify the "Next Due" section to apply dynamic colors:
-- The **amount** will use the primary status color (bold)
-- The **date** will use a slightly muted version of the same color
-- "Last Payment" section remains neutral (already paid)
+**Restore:**
+- Simple scrollable container with `flex-1 overflow-y-auto`
+- Map through all posts and render each `PostCard`
+- Intersection Observer for infinite scroll (load more when near bottom)
+- Standard padding and spacing between posts
 
-### 4. Use Real Subscription Data
-Replace hardcoded mock dates with actual data from `useSubscription`:
-- `subscription.current_period_end` for next due date
-- `subscription.current_period_start` for last payment reference
-- `subscription.status` to check for `past_due` state
+### File: `src/components/PostCard.tsx`
 
----
+**Remove:**
+- Extra bottom padding (`pb-24`) that was added for the navbar overlap fix in swipe mode
 
-## Visual Example
+The PostCard already has its own double-tap to like functionality built in, so that feature is preserved.
 
-```text
-┌──────────────────────────────────────────────────┐
-│  Last Payment    │      Next Due                 │
-│  ────────────    │      ─────────                │
-│    $14.99        │    $14.99  ← Green/Amber/Red  │
-│  Dec 25, 2025    │  Jan 25, 2026 ← Matching tint │
-└──────────────────────────────────────────────────┘
-```
+## Preserved Features
+- Pull-to-refresh functionality (handled by parent component)
+- Double-tap to like on individual posts (built into PostCard)
+- Infinite scroll loading more posts
+- All post interactions (reactions, comments, share, etc.)
+- Expressions row at the top of the feed
 
----
-
-## Files to Modify
-
-| File | Changes |
-|------|---------|
-| `src/pages/MyERA.tsx` | Add helper function, update billing UI with dynamic color classes, use real subscription dates |
-
----
-
-## Technical Details
-
-**Helper Function:**
-```typescript
-type BillingStatus = 'current' | 'warning' | 'overdue';
-
-const getBillingStatus = (
-  nextDueDate: string | null, 
-  status: SubscriptionStatus | undefined
-): BillingStatus => {
-  if (status === 'past_due') return 'overdue';
-  if (!nextDueDate) return 'current';
-  
-  const now = new Date();
-  const dueDate = new Date(nextDueDate);
-  const daysUntilDue = Math.ceil(
-    (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
-  );
-  
-  if (daysUntilDue < 0) return 'overdue';
-  if (daysUntilDue <= 7) return 'warning';
-  return 'current';
-};
-
-const statusColors = {
-  current: { amount: 'text-green-500', date: 'text-green-500/70' },
-  warning: { amount: 'text-amber-500', date: 'text-amber-500/70' },
-  overdue: { amount: 'text-red-500', date: 'text-red-500/70' },
-};
-```
-
-**Free Plan Handling:**
-For users on the free plan (no billing), the amounts will remain neutral (`text-foreground`) since there's nothing to pay.
+## Result
+The feed will display posts in a continuous, naturally scrollable list similar to Instagram's home feed, where you can scroll through multiple posts without the single-post-at-a-time constraint.
