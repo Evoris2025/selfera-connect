@@ -9,7 +9,7 @@ export interface CinematicAvatarProps {
   alt?: string;
   fallback?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
-  ring?: 'none' | 'gradient' | 'primary' | 'muted' | 'unseen';
+  ring?: 'none' | 'gradient' | 'primary' | 'muted' | 'unseen' | 'closeFriends';
   className?: string;
   interactive?: boolean;
   onClick?: () => void;
@@ -57,6 +57,7 @@ const CinematicAvatar = forwardRef<HTMLDivElement, CinematicAvatarProps>(
       primary: 'bg-primary',
       muted: 'bg-muted',
       unseen: 'gradient-brand animate-gradient-x bg-[length:200%_200%]',
+      closeFriends: 'bg-green-500',
     };
 
     const content = (

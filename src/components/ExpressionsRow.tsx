@@ -6,6 +6,7 @@ import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
 import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
 import { useFeedData } from '@/contexts/FeedDataContext';
 import { useNavbar } from '@/contexts/NavbarContext';
+import { useCloseFriends } from '@/hooks/useCloseFriends';
 import { ExpressionViewer } from '@/components/ExpressionViewer';
 import { CreatorStudio } from '@/components/creator';
 
@@ -13,9 +14,19 @@ export function ExpressionsRow() {
   const { avatarUrl, displayName } = useCurrentUserAvatar();
   const { expressions, markExpressionSeen } = useFeedData();
   const { hideNavbar, showNavbar } = useNavbar();
+  const { isCloseFriend } = useCloseFriends();
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerInitialIndex, setViewerInitialIndex] = useState(0);
   const [creatorOpen, setCreatorOpen] = useState(false);
+
+  // Determine ring type based on close friend status and seen status
+  const getRingType = (expression: typeof expressions[0]) => {
+    const isClose = isCloseFriend(expression.userId);
+    if (isClose) {
+      return 'closeFriends'; // Green ring for close friends
+    }
+    return expression.hasUnseenExpression ? 'gradient' : 'muted';
+  };
 
   // Hide navbar when expression viewer is open
   useEffect(() => {
@@ -86,7 +97,7 @@ export function ExpressionsRow() {
                   alt={expression.userName}
                   fallback={expression.userName.charAt(0)}
                   size="xl"
-                  ring={expression.hasUnseenExpression ? 'gradient' : 'muted'}
+                  ring={getRingType(expression)}
                 />
                 <span className="text-xs text-foreground/80 font-medium max-w-[72px] truncate">
                   {expression.userName}
