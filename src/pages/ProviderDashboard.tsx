@@ -21,6 +21,7 @@ import {
   AlertCircle,
   Bell,
   Handshake,
+  BarChart3,
 } from 'lucide-react';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
@@ -32,9 +33,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DirectoryListingForm } from '@/components/directory/DirectoryListingForm';
 import { InteractionCard } from '@/components/interactions/InteractionCard';
+import { VisibilityInsightsCard } from '@/components/creator/VisibilityInsightsCard';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSupportLinks } from '@/hooks/useSupportLinks';
 import { useInteractionLifecycle } from '@/hooks/useInteractionLifecycle';
+import { useCreatorScore } from '@/hooks/useCreatorScore';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { DirectoryEntry } from '@/hooks/useDirectory';
@@ -86,6 +89,15 @@ export default function ProviderDashboard() {
   const [loading, setLoading] = useState(true);
   const [showListingForm, setShowListingForm] = useState(false);
 
+  // Creator score and visibility insights - Phase H
+  const { 
+    loading: scoreLoading, 
+    getVisibilityInsights,
+    recalculateScore,
+  } = useCreatorScore();
+
+  const visibilityInsights = getVisibilityInsights();
+  
   // Grouped interactions for provider view
   const groupedInteractions = getGroupedInteractions('provider');
 
@@ -317,20 +329,71 @@ export default function ProviderDashboard() {
 
         {/* Main Content */}
         <Tabs defaultValue="interactions" className="space-y-4">
-          <TabsList className="w-full grid grid-cols-3">
+          <TabsList className="w-full grid grid-cols-4">
             <TabsTrigger value="interactions" className="gap-2">
               <Handshake className="w-4 h-4" />
-              Interactions
+              <span className="hidden sm:inline">Interactions</span>
+            </TabsTrigger>
+            <TabsTrigger value="insights" className="gap-2">
+              <BarChart3 className="w-4 h-4" />
+              <span className="hidden sm:inline">Insights</span>
             </TabsTrigger>
             <TabsTrigger value="connections" className="gap-2">
               <Users className="w-4 h-4" />
-              Connections
+              <span className="hidden sm:inline">Connections</span>
             </TabsTrigger>
             <TabsTrigger value="listing" className="gap-2">
               <Globe className="w-4 h-4" />
-              Listing
+              <span className="hidden sm:inline">Listing</span>
             </TabsTrigger>
           </TabsList>
+
+          {/* Visibility Insights Tab - Phase H */}
+          <TabsContent value="insights" className="space-y-4">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <VisibilityInsightsCard 
+                insights={visibilityInsights} 
+                loading={scoreLoading} 
+              />
+              
+              {/* Scoring Info */}
+              <GlassCard variant="subtle" className="p-4 mt-4">
+                <h4 className="text-sm font-medium text-foreground mb-2">
+                  How visibility works
+                </h4>
+                <ul className="text-xs text-muted-foreground space-y-1.5">
+                  <li className="flex items-start gap-2">
+                    <Check className="w-3 h-3 text-emerald-500 mt-0.5 shrink-0" />
+                    Complete interactions to build your contribution score
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-3 h-3 text-emerald-500 mt-0.5 shrink-0" />
+                    Higher tiers receive subtle visibility boosts in discovery
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-3 h-3 text-emerald-500 mt-0.5 shrink-0" />
+                    Maintain a clean safety record for best results
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-3 h-3 text-emerald-500 mt-0.5 shrink-0" />
+                    Stay active in the community to increase reach
+                  </li>
+                </ul>
+              </GlassCard>
+
+              {/* Ethical Note */}
+              <div className="mt-4 p-3 rounded-xl bg-primary/5 border border-primary/10">
+                <p className="text-[11px] text-muted-foreground leading-relaxed">
+                  <strong className="text-foreground">Our commitment:</strong> SelfERA never uses "pay-to-be-seen" algorithms. 
+                  Visibility is earned through genuine contribution, not purchased. 
+                  All providers have fair access to discovery regardless of subscription tier.
+                </p>
+              </div>
+            </motion.div>
+          </TabsContent>
 
           {/* Interactions Tab (Phase F) */}
           <TabsContent value="interactions" className="space-y-4">

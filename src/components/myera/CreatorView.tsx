@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -13,6 +14,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { EraTier, ERA_TIER_CONFIG } from '@/lib/eraTiers';
+import { VisibilityInsightsCard } from '@/components/creator/VisibilityInsightsCard';
+import { useCreatorScore } from '@/hooks/useCreatorScore';
 
 const springGentle = { type: "spring" as const, stiffness: 260, damping: 28 };
 
@@ -33,6 +36,23 @@ export function CreatorView({
 }: CreatorViewProps) {
   const navigate = useNavigate();
   const tierConfig = tierColour ? ERA_TIER_CONFIG[tierColour] : ERA_TIER_CONFIG.green;
+  
+  // Creator score and visibility insights
+  const { 
+    score, 
+    loading: scoreLoading, 
+    recalculateScore, 
+    getVisibilityInsights 
+  } = useCreatorScore();
+
+  // Recalculate score when tier changes
+  useEffect(() => {
+    if (tierColour && score) {
+      recalculateScore(tierColour);
+    }
+  }, [tierColour, recalculateScore, score]);
+
+  const insights = getVisibilityInsights();
 
   return (
     <motion.section
@@ -159,12 +179,18 @@ export function CreatorView({
         </Button>
       </motion.div>
 
+      {/* Visibility Insights - Phase H */}
+      <VisibilityInsightsCard 
+        insights={insights} 
+        loading={scoreLoading} 
+      />
+
       {/* Tier Info */}
       <motion.div
         className="rounded-2xl bg-card/30 border border-white/5 p-4"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ ...springGentle, delay: 0.45 }}
+        transition={{ ...springGentle, delay: 0.5 }}
       >
         <div className="flex items-center gap-3">
           <div 
