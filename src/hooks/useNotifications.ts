@@ -1,3 +1,16 @@
+/**
+ * SIMULATION MODE: Notifications Hook
+ * Re-exports simulated notifications for global simulation mode.
+ * Original real-data hook preserved below as useNotificationsReal.
+ */
+
+// Re-export simulated version as the default
+export { useSimulatedNotifications as useNotifications } from './useSimulatedNotifications';
+
+// ============================================================================
+// ORIGINAL HOOK (preserved for future real-data mode)
+// ============================================================================
+
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -76,7 +89,7 @@ function getActionText(type: string): string {
   }
 }
 
-export function useNotifications(): UseNotificationsResult {
+export function useNotificationsReal(): UseNotificationsResult {
   const { user } = useAuth();
   const { shouldHideUser } = useSafety();
   const [allNotifications, setAllNotifications] = useState<Notification[]>([]);

@@ -1,3 +1,15 @@
+/**
+ * SIMULATION MODE: Profile Stats Hook
+ * Re-exports simulated profile stats for global simulation mode.
+ */
+
+// Re-export simulated versions as the defaults
+export { useSimulatedProfileStats as useProfileStats, useSimulatedUserPosts as useUserPosts } from './useSimulatedProfileStats';
+
+// ============================================================================
+// ORIGINAL HOOK (preserved for future real-data mode)
+// ============================================================================
+
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -33,7 +45,7 @@ interface UseProfileResult {
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const isUuid = (value: string) => UUID_RE.test(value);
 
-export function useProfileStats(userId: string): UseProfileResult {
+export function useProfileStatsReal(userId: string): UseProfileResult {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [stats, setStats] = useState<ProfileStats>({
     postCount: 0,
@@ -136,7 +148,7 @@ export function useProfileStats(userId: string): UseProfileResult {
 }
 
 // Hook to fetch user's posts for profile grid
-export function useUserPosts(userId: string) {
+export function useUserPostsReal(userId: string) {
   const [posts, setPosts] = useState<Array<{
     id: string;
     thumbnail: string;

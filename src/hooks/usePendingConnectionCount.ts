@@ -1,3 +1,15 @@
+/**
+ * SIMULATION MODE: Pending Connection Count Hook
+ * Re-exports simulated count for global simulation mode.
+ */
+
+// Re-export simulated version as the default
+export { useSimulatedPendingConnectionCount as usePendingConnectionCount } from './useSimulatedPendingConnectionCount';
+
+// ============================================================================
+// ORIGINAL HOOK (preserved for future real-data mode)
+// ============================================================================
+
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -6,7 +18,7 @@ import { useAuth } from '@/contexts/AuthContext';
  * Hook to get the count of pending connection requests for a provider.
  * Subscribes to real-time updates for live badge counts.
  */
-export function usePendingConnectionCount() {
+export function usePendingConnectionCountReal() {
   const { user } = useAuth();
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
