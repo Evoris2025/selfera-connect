@@ -1,3 +1,15 @@
+/**
+ * SIMULATION MODE: Creator Score Hook
+ * Re-exports simulated creator score for global simulation mode.
+ */
+
+// Re-export simulated version as the default
+export { useSimulatedCreatorScore as useCreatorScore } from './useSimulatedCreatorScore';
+
+// ============================================================================
+// ORIGINAL HOOK (preserved for future real-data mode)
+// ============================================================================
+
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -130,7 +142,7 @@ function checkEligibility(score: Partial<CreatorScore>): { eligible: boolean; re
   return { eligible: true, reason: 'Meets all eligibility requirements' };
 }
 
-export function useCreatorScore() {
+export function useCreatorScoreReal() {
   const { user } = useAuth();
   const [score, setScore] = useState<CreatorScore | null>(null);
   const [loading, setLoading] = useState(true);

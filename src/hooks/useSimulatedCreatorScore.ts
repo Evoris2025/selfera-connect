@@ -35,16 +35,17 @@ export interface VisibilityInsights {
   profileViews: number;
   interactionViews: number;
   completionRate: number;
-  visibilityTier: 'emerging' | 'growing' | 'established' | 'prominent';
+  visibilityTier: 'low' | 'standard' | 'boosted' | 'premium';
   eligibleForEarnings: boolean;
+  eligibilityReason: string | null;
   ccsScore: number;
 }
 
 function getVisibilityTier(score: number): VisibilityInsights['visibilityTier'] {
-  if (score >= 800) return 'prominent';
-  if (score >= 500) return 'established';
-  if (score >= 200) return 'growing';
-  return 'emerging';
+  if (score >= 800) return 'premium';
+  if (score >= 500) return 'boosted';
+  if (score >= 200) return 'standard';
+  return 'low';
 }
 
 export function useSimulatedCreatorScore() {
@@ -96,6 +97,7 @@ export function useSimulatedCreatorScore() {
       completionRate: score.completion_rate,
       visibilityTier: getVisibilityTier(score.ccs_score),
       eligibleForEarnings: score.eligible_for_earnings,
+      eligibilityReason: score.eligibility_reason,
       ccsScore: score.ccs_score,
     };
   }, [score]);
@@ -130,9 +132,11 @@ export function useSimulatedCreatorScore() {
   return {
     score,
     isLoading,
+    loading: isLoading, // Alias for compatibility
     visibilityInsights,
+    getVisibilityInsights: () => visibilityInsights,
     incrementActivity,
-    recalculateScore,
+    recalculateScore: (_tier?: any) => recalculateScore(),
     refetch: fetchScore,
     isSimulated: SIMULATION_MODE || !user?.id,
   };

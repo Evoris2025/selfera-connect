@@ -1,8 +1,21 @@
+/**
+ * SIMULATION MODE: Support Links Hook
+ * Re-exports simulated support links for global simulation mode.
+ */
+
+// Re-export simulated version as the default
+export { useSimulatedSupportLinks as useSupportLinks } from './useSimulatedSupportLinks';
+export type { SupportLinkStatus } from './useSimulatedSupportLinks';
+
+// ============================================================================
+// ORIGINAL HOOK (preserved for future real-data mode)
+// ============================================================================
+
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
-export type SupportLinkStatus = 'pending' | 'active' | 'inactive' | 'ended';
+type SupportLinkStatusInternal = 'pending' | 'active' | 'inactive' | 'ended';
 
 interface SupportLink {
   id: string;
@@ -10,7 +23,7 @@ interface SupportLink {
   provider_user_id: string;
   provider_role: string;
   organization_name: string | null;
-  status: SupportLinkStatus;
+  status: SupportLinkStatusInternal;
   created_at: string;
   updated_at: string;
   provider?: {
@@ -27,7 +40,7 @@ interface SupportLink {
 interface ConnectedClient {
   id: string;
   user_id: string;
-  status: SupportLinkStatus;
+  status: SupportLinkStatusInternal;
   created_at: string;
   client?: {
     id: string;
@@ -37,7 +50,7 @@ interface ConnectedClient {
   };
 }
 
-export function useSupportLinks() {
+export function useSupportLinksReal() {
   const { user } = useAuth();
   const [supportLinks, setSupportLinks] = useState<SupportLink[]>([]);
   const [connectedClients, setConnectedClients] = useState<ConnectedClient[]>([]);
@@ -110,7 +123,7 @@ export function useSupportLinks() {
       // Step 5: Merge provider profiles into support links
       const typedLinks = (clientLinks || []).map(link => ({
         ...link,
-        status: link.status as SupportLinkStatus,
+        status: link.status as SupportLinkStatusInternal,
         provider: providerProfiles[link.provider_user_id] || {
           id: link.provider_user_id,
           display_name: null,
@@ -123,7 +136,7 @@ export function useSupportLinks() {
       // Step 6: Merge client profiles into connected clients
       const typedClients = (providerLinks || []).map(link => ({
         ...link,
-        status: link.status as SupportLinkStatus,
+        status: link.status as SupportLinkStatusInternal,
         client: clientProfiles[link.user_id] || {
           id: link.user_id,
           display_name: null,
