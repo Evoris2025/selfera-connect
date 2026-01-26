@@ -51,6 +51,7 @@ import {
   CreatorView, 
   PractitionerView, 
   OrganisationView,
+  AnalyticsSection,
 } from '@/components/myera';
 import { EraAccountStatusCard } from '@/components/billing';
 import { EraTier, PlanType } from '@/lib/eraTiers';
@@ -789,6 +790,9 @@ export default function MyERA() {
             )}
           </AnimatePresence>
         </motion.section>
+
+        {/* Analytics Section */}
+        <AnalyticsSection />
 
         {/* MyERA Network Section */}
         <motion.section
