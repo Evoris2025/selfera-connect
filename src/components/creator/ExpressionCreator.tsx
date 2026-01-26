@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Camera, Image as ImageIcon, X, Loader2, Sparkles, Type, Sticker, Music } from 'lucide-react';
+import { ArrowLeft, Camera, Image as ImageIcon, X, Loader2, Sparkles, Type, Sticker, Music, Pencil, Layers } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
@@ -12,12 +12,23 @@ import { TextOverlayEditor, TextOverlay } from './TextOverlayEditor';
 import { StickerPicker, Sticker as StickerType } from './StickerPicker';
 import { SoundPicker, Sound } from './SoundPicker';
 import { HashtagAutocomplete, TrendingHashtagChips } from './HashtagAutocomplete';
+import { 
+  DrawingCanvas, 
+  DrawingData,
+  InteractiveStickerPicker,
+  InteractiveStickerDisplay,
+  InteractiveSticker,
+  CloseFriendsToggle,
+  HighlightSelector,
+  AddToHighlightPrompt,
+  Highlight,
+} from './expressions';
 
 // Simulation mode flag - when true, uses FeedDataContext instead of Supabase
 const SIMULATION_MODE = true;
 
-type Step = 'capture' | 'preview';
-type ActiveTool = 'none' | 'text' | 'stickers' | 'sounds';
+type Step = 'capture' | 'preview' | 'drawing';
+type ActiveTool = 'none' | 'text' | 'stickers' | 'sounds' | 'interactive' | 'draw';
 
 // Extended sticker with position for rendering
 interface PlacedSticker extends StickerType {
@@ -31,6 +42,13 @@ interface ExpressionCreatorProps {
   onBack: () => void;
   onSuccess: () => void;
 }
+
+// Mock highlights for demo
+const mockHighlights: Highlight[] = [
+  { id: 'h1', name: 'Travel', expressionCount: 12 },
+  { id: 'h2', name: 'Wellness', expressionCount: 8 },
+  { id: 'h3', name: 'Gratitude', expressionCount: 5 },
+];
 
 export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps) {
   const { t } = useTranslation();
@@ -51,8 +69,16 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
   const [activeTool, setActiveTool] = useState<ActiveTool>('none');
   const [textOverlays, setTextOverlays] = useState<TextOverlay[]>([]);
   const [stickers, setStickers] = useState<PlacedSticker[]>([]);
+  const [interactiveStickers, setInteractiveStickers] = useState<InteractiveSticker[]>([]);
   const [selectedSound, setSelectedSound] = useState<Sound | null>(null);
   const [caption, setCaption] = useState('');
+  const [drawingData, setDrawingData] = useState<DrawingData | null>(null);
+  
+  // Close Friends & Highlights
+  const [closeFriendsOnly, setCloseFriendsOnly] = useState(false);
+  const [showHighlightSelector, setShowHighlightSelector] = useState(false);
+  const [showHighlightPrompt, setShowHighlightPrompt] = useState(false);
+  const [highlights] = useState<Highlight[]>(mockHighlights);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -116,14 +142,9 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
   const handleSaveTextOverlay = (overlay: TextOverlay) => {
     setTextOverlays(prev => [...prev, overlay]);
     setActiveTool('none');
-    toast({
-      title: 'Text added',
-      description: 'Your text overlay has been added.',
-    });
   };
 
   const handleAddSticker = (sticker: StickerType) => {
-    // Add sticker at center with default position
     const placedSticker: PlacedSticker = {
       ...sticker,
       placedId: `${sticker.id}-${Date.now()}`,
@@ -133,19 +154,24 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
     };
     setStickers(prev => [...prev, placedSticker]);
     setActiveTool('none');
-    toast({
-      title: 'Sticker added',
-      description: 'Drag to reposition your sticker.',
-    });
+  };
+
+  const handleAddInteractiveSticker = (sticker: InteractiveSticker) => {
+    setInteractiveStickers(prev => [...prev, sticker]);
+  };
+
+  const handleRemoveInteractiveSticker = (id: string) => {
+    setInteractiveStickers(prev => prev.filter(s => s.id !== id));
   };
 
   const handleSelectSound = (sound: Sound) => {
     setSelectedSound(sound);
     setActiveTool('none');
-    toast({
-      title: 'Sound added',
-      description: `"${sound.name}" will play with your expression.`,
-    });
+  };
+
+  const handleSaveDrawing = (data: DrawingData) => {
+    setDrawingData(data);
+    setStep('preview');
   };
 
   const handleSubmit = async () => {
@@ -169,12 +195,8 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
           hasUnseenExpression: true,
         });
 
-        toast({
-          title: 'Expression shared!',
-          description: 'Your expression is now visible for 24 hours.',
-        });
-
-        onSuccess();
+        // Show highlight prompt after sharing
+        setShowHighlightPrompt(true);
         return;
       }
 
@@ -206,7 +228,8 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
 
       if (expressionError) throw expressionError;
 
-      onSuccess();
+      // Show highlight prompt
+      setShowHighlightPrompt(true);
     } catch (error) {
       console.error('Error creating expression:', error);
       toast({
@@ -219,9 +242,29 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
     }
   };
 
+  const handleAddToHighlight = (highlightId: string) => {
+    toast({
+      title: 'Added to highlight!',
+      description: 'Your expression will be saved permanently.',
+    });
+    onSuccess();
+  };
+
+  const handleCreateHighlight = (name: string) => {
+    toast({
+      title: 'Highlight created!',
+      description: `"${name}" has been added to your profile.`,
+    });
+    onSuccess();
+  };
+
   const handleBack = () => {
     if (activeTool !== 'none') {
       setActiveTool('none');
+      return;
+    }
+    if (step === 'drawing') {
+      setStep('preview');
       return;
     }
     if (step === 'preview') {
@@ -230,8 +273,11 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
       setPreviewUrl('');
       setTextOverlays([]);
       setStickers([]);
+      setInteractiveStickers([]);
       setSelectedSound(null);
       setCaption('');
+      setDrawingData(null);
+      setCloseFriendsOnly(false);
     } else {
       stopCamera();
       onBack();
@@ -239,7 +285,11 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
   };
 
   const toggleTool = (tool: ActiveTool) => {
-    setActiveTool(prev => prev === tool ? 'none' : tool);
+    if (tool === 'draw') {
+      setStep('drawing');
+    } else {
+      setActiveTool(prev => prev === tool ? 'none' : tool);
+    }
   };
 
   // Get font size in pixels based on size name
@@ -250,6 +300,18 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
       case 'large': return 28;
     }
   };
+
+  // Drawing mode
+  if (step === 'drawing') {
+    return (
+      <DrawingCanvas
+        width={1080}
+        height={1920}
+        onSave={handleSaveDrawing}
+        onCancel={() => setStep('preview')}
+      />
+    );
+  }
 
   return (
     <motion.div
@@ -364,14 +426,14 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex-1 flex flex-col bg-black relative"
+            className="flex-1 flex flex-col bg-black relative overflow-hidden"
           >
             {/* Media Preview with overlays */}
             <div className="flex-1 flex items-center justify-center p-4 relative overflow-hidden">
               {isVideo ? (
                 <video
                   src={previewUrl}
-                  className="max-w-full max-h-[50vh] rounded-xl"
+                  className="max-w-full max-h-[40vh] rounded-xl"
                   controls
                   autoPlay
                   loop
@@ -380,7 +442,16 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                 <img
                   src={previewUrl}
                   alt="Preview"
-                  className="max-w-full max-h-[50vh] rounded-xl object-contain"
+                  className="max-w-full max-h-[40vh] rounded-xl object-contain"
+                />
+              )}
+              
+              {/* Drawing overlay */}
+              {drawingData && (
+                <img
+                  src={drawingData.dataUrl}
+                  alt="Drawing"
+                  className="absolute inset-0 w-full h-full object-contain pointer-events-none"
                 />
               )}
               
@@ -427,6 +498,24 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                 </div>
               ))}
               
+              {/* Render interactive stickers */}
+              {interactiveStickers.map((sticker) => (
+                <div
+                  key={sticker.id}
+                  className="absolute"
+                  style={{
+                    left: `${sticker.position.x}%`,
+                    top: `${sticker.position.y}%`,
+                    transform: 'translate(-50%, -50%)',
+                  }}
+                >
+                  <InteractiveStickerDisplay
+                    sticker={sticker}
+                    onRemove={() => handleRemoveInteractiveSticker(sticker.id)}
+                  />
+                </div>
+              ))}
+              
               {/* Sound indicator */}
               {selectedSound && (
                 <div className="absolute bottom-4 left-4 flex items-center gap-2 px-3 py-2 bg-black/60 backdrop-blur-sm rounded-full">
@@ -436,6 +525,15 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                   </span>
                 </div>
               )}
+            </div>
+
+            {/* Close Friends Toggle */}
+            <div className="px-4 py-2">
+              <CloseFriendsToggle
+                enabled={closeFriendsOnly}
+                onChange={setCloseFriendsOnly}
+                closeFriendsCount={12}
+              />
             </div>
 
             {/* Caption Input with Autocomplete */}
@@ -461,12 +559,24 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                 </p>
               </div>
             </div>
+            
             {/* Creative Tools Toolbar */}
-            <div className="flex items-center justify-center gap-3 p-4 bg-black/80 backdrop-blur-sm">
+            <div className="flex items-center justify-center gap-2 p-4 bg-black/80 backdrop-blur-sm">
+              <button
+                onClick={() => toggleTool('draw')}
+                className={cn(
+                  "flex flex-col items-center gap-1 p-2.5 rounded-xl transition-all",
+                  drawingData ? "bg-green-500 text-white" : "bg-white/10 text-white hover:bg-white/20"
+                )}
+              >
+                <Pencil className="h-5 w-5" />
+                <span className="text-[10px] font-medium">Draw</span>
+              </button>
+              
               <button
                 onClick={() => toggleTool('text')}
                 className={cn(
-                  "flex flex-col items-center gap-1 p-3 rounded-xl transition-all",
+                  "flex flex-col items-center gap-1 p-2.5 rounded-xl transition-all",
                   activeTool === 'text' ? "bg-primary text-primary-foreground" : "bg-white/10 text-white hover:bg-white/20"
                 )}
               >
@@ -477,7 +587,7 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
               <button
                 onClick={() => toggleTool('stickers')}
                 className={cn(
-                  "flex flex-col items-center gap-1 p-3 rounded-xl transition-all",
+                  "flex flex-col items-center gap-1 p-2.5 rounded-xl transition-all",
                   activeTool === 'stickers' ? "bg-primary text-primary-foreground" : "bg-white/10 text-white hover:bg-white/20"
                 )}
               >
@@ -486,9 +596,21 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
               </button>
               
               <button
+                onClick={() => toggleTool('interactive')}
+                className={cn(
+                  "flex flex-col items-center gap-1 p-2.5 rounded-xl transition-all",
+                  activeTool === 'interactive' ? "bg-primary text-primary-foreground" : "bg-white/10 text-white hover:bg-white/20",
+                  interactiveStickers.length > 0 && "ring-2 ring-purple-500"
+                )}
+              >
+                <Layers className="h-5 w-5" />
+                <span className="text-[10px] font-medium">Interactive</span>
+              </button>
+              
+              <button
                 onClick={() => toggleTool('sounds')}
                 className={cn(
-                  "flex flex-col items-center gap-1 p-3 rounded-xl transition-all",
+                  "flex flex-col items-center gap-1 p-2.5 rounded-xl transition-all",
                   activeTool === 'sounds' ? "bg-primary text-primary-foreground" : "bg-white/10 text-white hover:bg-white/20",
                   selectedSound && "ring-2 ring-green-500"
                 )}
@@ -529,6 +651,14 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                 </motion.div>
               )}
               
+              {activeTool === 'interactive' && (
+                <InteractiveStickerPicker
+                  isOpen={true}
+                  onAdd={handleAddInteractiveSticker}
+                  onClose={() => setActiveTool('none')}
+                />
+              )}
+              
               {activeTool === 'sounds' && (
                 <motion.div
                   initial={{ opacity: 0, y: 100 }}
@@ -547,11 +677,43 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
             </AnimatePresence>
 
             <p className="text-sm text-white/70 py-2 text-center bg-black">
-              This expression will be visible for 24 hours
+              {closeFriendsOnly 
+                ? '🟢 Visible to Close Friends only for 24 hours'
+                : 'This expression will be visible for 24 hours'
+              }
             </p>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Highlight Prompt after sharing */}
+      <AddToHighlightPrompt
+        isOpen={showHighlightPrompt}
+        onClose={() => {
+          setShowHighlightPrompt(false);
+          onSuccess();
+        }}
+        onAddToHighlight={() => {
+          setShowHighlightPrompt(false);
+          setShowHighlightSelector(true);
+        }}
+        onSkip={() => {
+          setShowHighlightPrompt(false);
+          onSuccess();
+        }}
+      />
+
+      {/* Highlight Selector */}
+      <HighlightSelector
+        isOpen={showHighlightSelector}
+        onClose={() => {
+          setShowHighlightSelector(false);
+          onSuccess();
+        }}
+        onAddToHighlight={handleAddToHighlight}
+        onCreateNew={handleCreateHighlight}
+        existingHighlights={highlights}
+      />
     </motion.div>
   );
 }
