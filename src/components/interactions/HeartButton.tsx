@@ -9,6 +9,7 @@ interface HeartButtonProps {
   active: boolean;
   onClick: () => void;
   size?: 'sm' | 'md' | 'lg';
+  layout?: 'horizontal' | 'vertical';
 }
 
 interface Particle {
@@ -17,7 +18,7 @@ interface Particle {
   scale: number;
 }
 
-export function HeartButton({ count, active, onClick, size = 'md' }: HeartButtonProps) {
+export function HeartButton({ count, active, onClick, size = 'md', layout = 'horizontal' }: HeartButtonProps) {
   const controls = useAnimationControls();
   const countControls = useAnimationControls();
   const prefersReducedMotion = useReducedMotion();
@@ -89,7 +90,10 @@ export function HeartButton({ count, active, onClick, size = 'md' }: HeartButton
     <motion.button
       animate={controls}
       onPointerDown={handlePointerDown}
-      className="flex items-center gap-1.5 relative touch-none select-none p-1"
+      className={cn(
+        "flex items-center relative touch-none select-none p-1",
+        layout === 'vertical' ? 'flex-col gap-1' : 'gap-1.5'
+      )}
       aria-label={active ? 'Unlike' : 'Like'}
       aria-pressed={active}
     >
