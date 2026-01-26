@@ -7,6 +7,7 @@ import { ExpressionProgressBar } from '@/components/expressions/ExpressionProgre
 import { PauseOverlay } from '@/components/expressions/PauseOverlay';
 import { AddToHighlightSheet } from '@/components/expressions/AddToHighlightSheet';
 import { HeartButton } from '@/components/interactions/HeartButton';
+import { HashtagText } from '@/components/HashtagText';
 import { cn } from '@/lib/utils';
 
 function formatCount(count: number): string {
@@ -340,11 +341,13 @@ export function ExpressionViewer({ isOpen, onClose, initialIndex = 0 }: Expressi
               <span className="font-bold text-white">@{currentExpression.userName.toLowerCase().replace(/\s+/g, '_')}</span>
             </div>
 
-            {/* Caption/Description */}
+            {/* Caption/Description with clickable hashtags */}
             {currentExpression.caption && (
-              <p className="text-white text-sm mb-2 line-clamp-3">
-                {currentExpression.caption}
-              </p>
+              <HashtagText
+                text={currentExpression.caption}
+                className="text-white text-sm mb-2 line-clamp-3 block"
+                hashtagClassName="text-primary font-medium"
+              />
             )}
 
             {/* Time remaining */}

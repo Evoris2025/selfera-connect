@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Camera, Image as ImageIcon, X, Loader2, Sparkles, Type, Sticker, Music } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/contexts/AuthContext';
 import { useFeedData } from '@/contexts/FeedDataContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -51,6 +52,7 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
   const [textOverlays, setTextOverlays] = useState<TextOverlay[]>([]);
   const [stickers, setStickers] = useState<PlacedSticker[]>([]);
   const [selectedSound, setSelectedSound] = useState<Sound | null>(null);
+  const [caption, setCaption] = useState('');
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -163,6 +165,7 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
           userAvatar: '',
           mediaUrl: previewUrl,
           mediaType: isVideo ? 'video' : 'image',
+          caption: caption.trim() || undefined,
           hasUnseenExpression: true,
         });
 
@@ -228,6 +231,7 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
       setTextOverlays([]);
       setStickers([]);
       setSelectedSound(null);
+      setCaption('');
     } else {
       stopCamera();
       onBack();
@@ -434,6 +438,19 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
               )}
             </div>
 
+            {/* Caption Input */}
+            <div className="px-4 py-3 bg-black/80 backdrop-blur-sm">
+              <Textarea
+                value={caption}
+                onChange={(e) => setCaption(e.target.value)}
+                placeholder="Add a caption... Use #hashtags for discovery"
+                className="bg-white/10 border-white/20 text-white placeholder:text-white/50 resize-none min-h-[60px] max-h-[100px]"
+                maxLength={200}
+              />
+              <p className="text-xs text-white/50 mt-1 text-right">
+                {caption.length}/200
+              </p>
+            </div>
             {/* Creative Tools Toolbar */}
             <div className="flex items-center justify-center gap-3 p-4 bg-black/80 backdrop-blur-sm">
               <button
