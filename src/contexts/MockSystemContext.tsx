@@ -1,5 +1,17 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react';
 import type { FeedPost } from '@/components/feed/CrossroadFeed';
+import type { TrustProfile, GovernanceEvent, TrustFlag, EscalationLevel } from '@/lib/governance';
+import { 
+  calculateTrustScore, 
+  determineEscalationLevel, 
+  determineFlags,
+  TIER_TRUST_MULTIPLIERS,
+} from '@/lib/governance';
+import { 
+  MOCK_TRUST_PROFILES, 
+  MOCK_GOVERNANCE_EVENTS,
+  createDefaultTrustProfile,
+} from '@/lib/governance/mockData';
 
 // =============================================================================
 // TYPES
@@ -163,6 +175,9 @@ export interface MockSystemState {
     subscription: SubscriptionScenario;
     verification: VerificationScenario;
   };
+  // Phase J: Governance
+  trustProfiles: Map<string, TrustProfile>;
+  governanceEvents: GovernanceEvent[];
 }
 
 // =============================================================================
@@ -744,6 +759,9 @@ export function MockSystemProvider({ children }: { children: ReactNode }) {
       subscription: 'professional',
       verification: 'approved',
     },
+    // Phase J: Governance
+    trustProfiles: new Map(Object.entries(MOCK_TRUST_PROFILES)),
+    governanceEvents: [...MOCK_GOVERNANCE_EVENTS],
   }));
 
   // -------------------------------------------------------------------------
@@ -1385,6 +1403,8 @@ export function useMockSystem() {
           subscription: 'free',
           verification: 'none',
         },
+        trustProfiles: new Map(),
+        governanceEvents: [],
       },
       addPost: () => {},
       updatePostLikes: () => {},
