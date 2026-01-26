@@ -243,8 +243,11 @@ export function CrossroadFeed({
   return (
     <div 
       ref={containerRef}
-      className="relative flex-1 overflow-hidden touch-none pb-20"
-      style={{ height: 'calc(100dvh - 280px)' }}
+      className="relative flex-1 overflow-hidden touch-none"
+      style={{ 
+        height: 'calc(100dvh - 200px)',
+        marginBottom: 'calc(4.5rem + env(safe-area-inset-bottom, 0px))'
+      }}
     >
       {refreshing && (
         <div className="absolute top-2 left-1/2 -translate-x-1/2 z-50">
@@ -308,18 +311,18 @@ export function CrossroadFeed({
         })}
       </div>
 
-      {/* Post counter */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-40">
+      {/* Post counter - positioned above navbar */}
+      <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-40">
         <div className="bg-background/80 backdrop-blur-sm px-3 py-1 rounded-full text-xs text-muted-foreground">
           {currentIndex + 1} / {posts.length}
           {loadingMore && ' • Loading...'}
         </div>
       </div>
 
-      {/* Swipe hints */}
+      {/* Swipe hints - positioned above navbar */}
       {currentIndex === 0 && posts.length > 1 && (
         <motion.div
-          className="absolute bottom-16 left-1/2 -translate-x-1/2 z-40 text-muted-foreground/50 text-xs"
+          className="absolute bottom-32 left-1/2 -translate-x-1/2 z-40 text-muted-foreground/50 text-xs"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1, duration: 0.5 }}
