@@ -15,6 +15,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
+import { FlagInteractionButton } from './FlagInteractionButton';
 import { formatPrice } from '@/lib/eraTiers';
 import type { Interaction, InteractionStatus } from '@/hooks/useInteractionLifecycle';
 
@@ -233,15 +234,31 @@ export function InteractionCard({
         )}
       </div>
 
-      {/* Cancel option - shown subtly */}
+      {/* Cancel and Flag options - shown subtly */}
       {showCancel && (
-        <div className="mt-3 pt-3 border-t border-white/5">
+        <div className="mt-3 pt-3 border-t border-white/5 flex items-center justify-between">
           <button
             className="text-xs text-muted-foreground hover:text-destructive transition-colors"
             onClick={onCancel}
           >
             Cancel interaction
           </button>
+          <FlagInteractionButton 
+            interactionId={interaction.id} 
+            variant="ghost" 
+            size="sm" 
+          />
+        </div>
+      )}
+
+      {/* Flag only for read-only states */}
+      {isReadOnly && (
+        <div className="mt-3 pt-3 border-t border-white/5 flex justify-end">
+          <FlagInteractionButton 
+            interactionId={interaction.id} 
+            variant="ghost" 
+            size="sm" 
+          />
         </div>
       )}
     </motion.div>

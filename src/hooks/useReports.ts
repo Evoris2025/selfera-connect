@@ -4,16 +4,22 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { useAuditLog } from '@/hooks/useAuditLog';
 
-export type ReportTargetType = 'post' | 'comment' | 'profile' | 'message';
+export type ReportTargetType = 'post' | 'comment' | 'profile' | 'message' | 'interaction';
 export type ReportReason = 
   | 'harassment'
   | 'hate_speech'
   | 'spam'
   | 'self_harm'
+  | 'sexual_content'
   | 'misinformation'
   | 'inappropriate_content'
   | 'impersonation'
+  | 'scam'
   | 'other';
+
+// Rate limiting for abuse prevention
+const REPORT_COOLDOWN_MS = 30000; // 30 seconds between reports
+let lastReportTime = 0;
 
 export interface Report {
   id: string;
@@ -31,6 +37,11 @@ export interface Report {
   };
 }
 
+export interface ReportResult {
+  success: boolean;
+  isSelfHarm: boolean;
+}
+
 interface UseReportsResult {
   reports: Report[];
   isLoading: boolean;
@@ -40,7 +51,7 @@ interface UseReportsResult {
     targetId: string,
     reason: ReportReason,
     details?: string
-  ) => Promise<boolean>;
+  ) => Promise<ReportResult>;
   // Admin functions
   fetchAllReports: () => Promise<void>;
   updateReportStatus: (reportId: string, status: Report['status'], internalNotes?: string) => Promise<boolean>;
@@ -58,14 +69,25 @@ export function useReports(): UseReportsResult {
     targetId: string,
     reason: ReportReason,
     details?: string
-  ): Promise<boolean> => {
+  ): Promise<{ success: boolean; isSelfHarm: boolean }> => {
     if (!user?.id) {
       toast({
         title: 'Sign in required',
         description: 'Please sign in to report content.',
         variant: 'destructive',
       });
-      return false;
+      return { success: false, isSelfHarm: false };
+    }
+
+    // Abuse prevention: rate limit reports
+    const now = Date.now();
+    if (now - lastReportTime < REPORT_COOLDOWN_MS) {
+      toast({
+        title: 'Please wait',
+        description: 'You can submit another report in a moment.',
+        variant: 'destructive',
+      });
+      return { success: false, isSelfHarm: false };
     }
 
     setIsSubmitting(true);
@@ -84,12 +106,12 @@ export function useReports(): UseReportsResult {
 
       if (error) throw error;
 
-      toast({
-        title: 'Thanks for reporting',
-        description: 'We\'ll review this content and take appropriate action.',
-      });
+      lastReportTime = Date.now();
 
-      return true;
+      // Check if this is a self-harm report - return flag for crisis banner
+      const isSelfHarm = reason === 'self_harm';
+
+      return { success: true, isSelfHarm };
     } catch (error) {
       console.error('Error submitting report:', error);
       toast({
@@ -97,7 +119,7 @@ export function useReports(): UseReportsResult {
         description: 'Please try again.',
         variant: 'destructive',
       });
-      return false;
+      return { success: false, isSelfHarm: false };
     } finally {
       setIsSubmitting(false);
     }

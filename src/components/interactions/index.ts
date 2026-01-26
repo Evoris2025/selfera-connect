@@ -11,3 +11,6 @@ export { FollowButton } from './FollowButton';
 export { InteractionCard } from './InteractionCard';
 export { InteractionList } from './InteractionList';
 export { RequestInteractionModal } from './RequestInteractionModal';
+
+// Phase G - Safety & Moderation
+export { FlagInteractionButton } from './FlagInteractionButton';

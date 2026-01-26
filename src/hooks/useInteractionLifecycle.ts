@@ -1,11 +1,15 @@
 // Phase F - Interaction Lifecycle Management
 // Handles the full lifecycle: Request → Accept/Decline → Confirm → Complete/Cancel
+// Phase G - Added rate limiting for abuse prevention
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { calculateInteractionAmountDue, getTierPriceCap, EraTier, CLIENT_BASE_PRICE } from '@/lib/eraTiers';
 import { toast } from 'sonner';
+
+// Rate limiting for abuse prevention
+const REQUEST_COOLDOWN_MS = 60000; // 1 minute between interaction requests to same provider
 
 export type InteractionStatus = 
   | 'draft' 
@@ -53,6 +57,9 @@ export function useInteractionLifecycle() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [myInteractions, setMyInteractions] = useState<Interaction[]>([]);
+  
+  // Track recent requests for rate limiting
+  const recentRequests = useRef<Map<string, number>>(new Map());
 
   // Fetch interactions and enrich with profile data
   const fetchInteractions = useCallback(async (
@@ -157,6 +164,17 @@ export function useInteractionLifecycle() {
       return null;
     }
 
+    // Rate limiting: check if we recently requested from this provider
+    const lastRequestTime = recentRequests.current.get(providerUserId);
+    const now = Date.now();
+    if (lastRequestTime && now - lastRequestTime < REQUEST_COOLDOWN_MS) {
+      const remainingSecs = Math.ceil((REQUEST_COOLDOWN_MS - (now - lastRequestTime)) / 1000);
+      toast.error('Please wait', {
+        description: `You can send another request in ${remainingSecs} seconds`,
+      });
+      return null;
+    }
+
     try {
       setLoading(true);
       setError(null);
@@ -179,6 +197,9 @@ export function useInteractionLifecycle() {
         .single();
 
       if (insertError) throw insertError;
+      
+      // Track this request for rate limiting
+      recentRequests.current.set(providerUserId, Date.now());
       
       await fetchInteractions();
       return data as Interaction;

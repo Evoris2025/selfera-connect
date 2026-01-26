@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Flag, X, AlertTriangle, MessageSquare, Users, FileText, Shield } from 'lucide-react';
+import { Flag, X, AlertTriangle, MessageSquare, Users, FileText, Shield, Heart, Phone } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -29,27 +30,27 @@ const reportReasons: { value: ReportReason; label: string; icon: React.ReactNode
   },
   { 
     value: 'hate_speech', 
-    label: 'Hate speech', 
+    label: 'Hate or discrimination', 
     icon: <Shield className="h-4 w-4" />,
     description: 'Attacks based on identity'
   },
   { 
-    value: 'self_harm', 
-    label: 'Self-harm or suicide', 
-    icon: <AlertTriangle className="h-4 w-4" />,
-    description: 'Promoting or encouraging self-harm'
-  },
-  { 
-    value: 'misinformation', 
-    label: 'Health misinformation', 
-    icon: <FileText className="h-4 w-4" />,
-    description: 'False or misleading health claims'
-  },
-  { 
-    value: 'inappropriate_content', 
-    label: 'Inappropriate content', 
+    value: 'sexual_content', 
+    label: 'Sexual content', 
     icon: <Flag className="h-4 w-4" />,
-    description: 'Content that violates community guidelines'
+    description: 'Inappropriate sexual material'
+  },
+  { 
+    value: 'self_harm', 
+    label: 'Self-harm content', 
+    icon: <AlertTriangle className="h-4 w-4" />,
+    description: 'Content related to self-harm or suicide'
+  },
+  { 
+    value: 'scam', 
+    label: 'Scam or impersonation', 
+    icon: <Users className="h-4 w-4" />,
+    description: 'Pretending to be someone else or fraud'
   },
   { 
     value: 'spam', 
@@ -58,10 +59,10 @@ const reportReasons: { value: ReportReason; label: string; icon: React.ReactNode
     description: 'Repetitive or irrelevant content'
   },
   { 
-    value: 'impersonation', 
-    label: 'Impersonation', 
-    icon: <Users className="h-4 w-4" />,
-    description: 'Pretending to be someone else'
+    value: 'misinformation', 
+    label: 'Health misinformation', 
+    icon: <FileText className="h-4 w-4" />,
+    description: 'False or misleading health claims'
   },
   { 
     value: 'other', 
@@ -81,15 +82,20 @@ export function ReportModal({
   const { submitReport, isSubmitting } = useReports();
   const [selectedReason, setSelectedReason] = useState<ReportReason | null>(null);
   const [details, setDetails] = useState('');
-  const [step, setStep] = useState<'reason' | 'details' | 'success'>('reason');
+  const [step, setStep] = useState<'reason' | 'details' | 'success' | 'crisis'>('reason');
 
   const handleSubmit = async () => {
     if (!selectedReason) return;
 
-    const success = await submitReport(targetType, targetId, selectedReason, details);
+    const result = await submitReport(targetType, targetId, selectedReason, details);
     
-    if (success) {
-      setStep('success');
+    if (result.success) {
+      // Show crisis support banner for self-harm reports
+      if (result.isSelfHarm) {
+        setStep('crisis');
+      } else {
+        setStep('success');
+      }
     }
   };
 
@@ -108,6 +114,7 @@ export function ReportModal({
     comment: 'comment',
     profile: 'user',
     message: 'message',
+    interaction: 'interaction',
   }[targetType];
 
   return (
@@ -221,11 +228,53 @@ export function ReportModal({
                 <Flag className="h-8 w-8 text-primary" />
               </div>
               <h3 className="text-lg font-semibold mb-2">Thanks for reporting</h3>
-              <p className="text-sm text-muted-foreground mb-6">
-                We'll review this and take action if it violates our community guidelines. 
-                Your report helps keep SelfERA safe.
+              <p className="text-sm text-muted-foreground mb-4">
+                Reported content is reviewed by our safety team. Your report helps keep SelfERA safe.
               </p>
+              <Link 
+                to="/transparency" 
+                className="text-xs text-muted-foreground hover:text-foreground underline mb-6 block"
+              >
+                Community Guidelines
+              </Link>
               <Button onClick={handleClose}>
+                Done
+              </Button>
+            </motion.div>
+          )}
+
+          {step === 'crisis' && (
+            <motion.div
+              key="crisis"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center py-6"
+            >
+              <div className="w-16 h-16 rounded-full bg-crisis/10 flex items-center justify-center mx-auto mb-4">
+                <Heart className="h-8 w-8 text-crisis" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Thanks for reporting</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Reported content is reviewed by our safety team.
+              </p>
+              
+              {/* Passive crisis support banner */}
+              <div className="bg-crisis/5 border border-crisis/20 rounded-lg p-4 mb-6">
+                <p className="text-sm font-medium text-foreground mb-2">
+                  You're not alone. Support is available.
+                </p>
+                <p className="text-xs text-muted-foreground mb-3">
+                  If you or someone you know needs help, crisis support resources are available.
+                </p>
+                <Button variant="crisis" size="sm" asChild>
+                  <Link to="/crisis">
+                    <Phone className="h-4 w-4 mr-2" />
+                    Crisis Support
+                  </Link>
+                </Button>
+              </div>
+
+              <Button onClick={handleClose} variant="outline">
                 Done
               </Button>
             </motion.div>
