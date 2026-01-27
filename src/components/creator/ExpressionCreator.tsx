@@ -355,7 +355,8 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                 />
                 
                 {/* Top bar - minimal */}
-                <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-4 z-10">
+                <div className="absolute top-0 left-0 right-0 z-10">
+                  <div className="flex items-center justify-between p-4 lg:mx-auto lg:max-w-2xl">
                   <button
                     onClick={() => { stopCamera(); handleBack(); }}
                     className="p-2.5 rounded-full bg-black/40 backdrop-blur-sm"
@@ -381,6 +382,7 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                     >
                       <X className="h-6 w-6 text-white" />
                     </button>
+                  </div>
                   </div>
                 </div>
                 
@@ -431,7 +433,8 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
               /* Initial state - tap to start camera */
               <div className="flex-1 flex flex-col items-center justify-center gap-6 p-8">
                 {/* Header */}
-                <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-4">
+                <div className="absolute top-0 left-0 right-0 z-10">
+                  <div className="flex items-center justify-between p-4 lg:mx-auto lg:max-w-2xl">
                   <button
                     onClick={onBack}
                     className="p-2 -ml-2 rounded-full hover:bg-white/10 transition-colors"
@@ -448,6 +451,7 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                   >
                     <X className="h-6 w-6 text-white" />
                   </button>
+                  </div>
                 </div>
                 
                 <input
@@ -499,7 +503,8 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
             className="flex-1 flex flex-col bg-black relative overflow-hidden"
           >
             {/* Header */}
-            <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-4 z-20">
+            <div className="absolute top-0 left-0 right-0 z-20">
+              <div className="flex items-center justify-between p-4 lg:mx-auto lg:max-w-2xl">
               <button
                 onClick={handleBack}
                 className="p-2.5 rounded-full bg-black/40 backdrop-blur-sm"
@@ -522,6 +527,7 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                 >
                   <X className="h-6 w-6 text-white" />
                 </button>
+              </div>
               </div>
             </div>
             
