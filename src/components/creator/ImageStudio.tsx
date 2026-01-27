@@ -694,17 +694,9 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                   onRedo={handleRedo}
                   historyLength={historyLength}
                 />
-                <div className="flex items-center gap-2">
-                  <MagikButton
-                    onClick={handleMagikEnhance}
-                    isLoading={isEnhancing}
-                    isSuccess={magikSuccess}
-                    disabled={!currentImage}
-                  />
-                  <span className="text-xs text-muted-foreground hidden sm:inline">
-                    Ctrl+Z / Ctrl+Shift+Z
-                  </span>
-                </div>
+                <span className="text-xs text-muted-foreground hidden sm:inline">
+                  Ctrl+Z / Ctrl+Shift+Z
+                </span>
               </div>
               
               <EnhancedCarouselEditor
@@ -739,28 +731,36 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
               </TabsList>
 
               <TabsContent value="filters" className="space-y-4">
-                {/* Preset Manager */}
-                <PresetManager
-                  presets={presets}
-                  currentFilter={currentImage.filter}
-                  currentFilterIntensity={currentImage.filterIntensity}
-                  currentAdjustments={{
-                    brightness: currentImage.brightness,
-                    contrast: currentImage.contrast,
-                    saturation: currentImage.saturation,
-                    warmth: currentImage.warmth,
-                    highlights: currentImage.highlights,
-                    shadows: currentImage.shadows,
-                    vignette: currentImage.vignette,
-                    sharpen: currentImage.sharpen,
-                    structure: currentImage.structure,
-                    fade: currentImage.fade,
-                  }}
-                  onSavePreset={handleSavePreset}
-                  onApplyPreset={handleApplyPreset}
-                  onDeletePreset={deletePreset}
-                  onRenamePreset={renamePreset}
-                />
+                {/* Magik AI Enhancement + Preset Manager */}
+                <div className="flex items-center justify-between gap-2">
+                  <MagikButton
+                    onClick={handleMagikEnhance}
+                    isLoading={isEnhancing}
+                    isSuccess={magikSuccess}
+                    disabled={!currentImage}
+                  />
+                  <PresetManager
+                    presets={presets}
+                    currentFilter={currentImage.filter}
+                    currentFilterIntensity={currentImage.filterIntensity}
+                    currentAdjustments={{
+                      brightness: currentImage.brightness,
+                      contrast: currentImage.contrast,
+                      saturation: currentImage.saturation,
+                      warmth: currentImage.warmth,
+                      highlights: currentImage.highlights,
+                      shadows: currentImage.shadows,
+                      vignette: currentImage.vignette,
+                      sharpen: currentImage.sharpen,
+                      structure: currentImage.structure,
+                      fade: currentImage.fade,
+                    }}
+                    onSavePreset={handleSavePreset}
+                    onApplyPreset={handleApplyPreset}
+                    onDeletePreset={deletePreset}
+                    onRenamePreset={renamePreset}
+                  />
+                </div>
                 
                 <EnhancedFilterLibrary
                   selectedFilter={currentImage.filter}
