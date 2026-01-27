@@ -727,7 +727,17 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                   <ImageIcon className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline">Effects</span>
                 </TabsTrigger>
-                <TabsTrigger value="crop" className="gap-1 text-xs">
+                <TabsTrigger 
+                  value="crop" 
+                  className="gap-1 text-xs"
+                  onClick={(e) => {
+                    // Toggle crop mode off if already active
+                    if (editTab === 'crop') {
+                      e.preventDefault();
+                      setEditTab('filters');
+                    }
+                  }}
+                >
                   <Crop className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline">Crop</span>
                 </TabsTrigger>
