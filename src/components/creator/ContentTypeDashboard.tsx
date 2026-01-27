@@ -221,16 +221,16 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
                       {/* Vertical line from current card */}
                       <div 
                         className={cn(
-                          "absolute top-0 w-px h-2 bg-border/40",
+                          "absolute top-0 w-[2px] h-2 bg-gradient-to-b from-blue-500 to-purple-500",
                           isEven ? "left-6" : "right-6"
                         )} 
                       />
                       {/* Horizontal line crossing */}
-                      <div className="absolute top-2 left-6 right-6 h-px bg-border/40" />
+                      <div className="absolute top-2 left-6 right-6 h-[2px] bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500" />
                       {/* Vertical line to next card */}
                       <div 
                         className={cn(
-                          "absolute top-2 w-px h-3 bg-border/40",
+                          "absolute top-2 w-[2px] h-3 bg-gradient-to-b from-orange-500 to-purple-500",
                           isEven ? "right-6" : "left-6"
                         )} 
                       />
