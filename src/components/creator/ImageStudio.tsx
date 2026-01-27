@@ -712,9 +712,9 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
               />
             </div>
 
-            {/* Editing Tabs - fixed at bottom */}
-            <Tabs value={editTab} onValueChange={(v) => setEditTab(v as EditTab)} className="shrink-0 px-4 py-2">
-              <TabsList className="grid w-full grid-cols-5 mb-4">
+            {/* Editing Tabs - fixed at bottom with consistent height */}
+            <Tabs value={editTab} onValueChange={(v) => setEditTab(v as EditTab)} className="shrink-0 px-4 pt-2 pb-4">
+              <TabsList className="grid w-full grid-cols-5 mb-3">
                 <TabsTrigger value="filters" className="gap-1 text-xs">
                   <Palette className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline">Filters</span>
@@ -755,7 +755,7 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                 </button>
               </TabsList>
 
-              <TabsContent value="filters" className="space-y-4">
+              <TabsContent value="filters" className="space-y-4 max-h-[180px] overflow-y-auto">
                 {/* Preset Manager */}
                 <PresetManager
                   presets={presets}
@@ -791,7 +791,7 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                 />
               </TabsContent>
 
-              <TabsContent value="adjust">
+              <TabsContent value="adjust" className="max-h-[180px] overflow-y-auto">
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     {/* Using inline adjustment sliders with history */}
@@ -851,7 +851,7 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                 </div>
               </TabsContent>
 
-              <TabsContent value="effects" className="space-y-6">
+              <TabsContent value="effects" className="space-y-6 max-h-[180px] overflow-y-auto">
                 {/* Tilt-Shift Blur */}
                 <BlurControl
                   blur={currentImage.blur || DEFAULT_BLUR}
@@ -865,7 +865,7 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                 />
               </TabsContent>
 
-              <TabsContent value="crop">
+              <TabsContent value="crop" className="max-h-[180px] overflow-y-auto">
                 <CropControls
                   cropData={currentImage.cropData}
                   onCropChange={(cropData) => updateCurrentImageWithHistory('crop', { 
