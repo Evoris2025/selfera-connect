@@ -5,17 +5,24 @@ import { cn } from '@/lib/utils';
 interface BeforeAfterSliderProps {
   beforeSrc: string;
   afterSrc: string;
+  beforeClassName?: string;
+  beforeStyle?: React.CSSProperties;
   afterClassName?: string;
   afterStyle?: React.CSSProperties;
   className?: string;
+  /** Use object-cover to match normal/crop mode */
+  objectFit?: 'contain' | 'cover';
 }
 
 export function BeforeAfterSlider({
   beforeSrc,
   afterSrc,
+  beforeClassName,
+  beforeStyle,
   afterClassName,
   afterStyle,
   className,
+  objectFit = 'cover',
 }: BeforeAfterSliderProps) {
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
@@ -63,6 +70,8 @@ export function BeforeAfterSlider({
     };
   }, [isDragging, handleMove]);
 
+  const imgObjectFit = objectFit === 'cover' ? 'object-cover' : 'object-contain';
+
   return (
     <div
       ref={containerRef}
@@ -77,7 +86,8 @@ export function BeforeAfterSlider({
       <img
         src={beforeSrc}
         alt="Before"
-        className="absolute inset-0 w-full h-full object-contain"
+        className={cn('absolute inset-0 w-full h-full', imgObjectFit, beforeClassName)}
+        style={beforeStyle}
         draggable={false}
       />
 
@@ -89,7 +99,7 @@ export function BeforeAfterSlider({
         <img
           src={afterSrc}
           alt="After"
-          className={cn('w-full h-full object-contain', afterClassName)}
+          className={cn('w-full h-full', imgObjectFit, afterClassName)}
           style={afterStyle}
           draggable={false}
         />

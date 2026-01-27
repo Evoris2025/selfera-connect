@@ -1,12 +1,13 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo, useDragControls } from 'framer-motion';
-import { X, Plus, GripVertical, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Loader2, Check, SplitSquareVertical, Trash2 } from 'lucide-react';
+import { motion, AnimatePresence, Reorder } from 'framer-motion';
+import { X, Plus, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Loader2, Check, SplitSquareVertical, Trash2, ArrowUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import type { CarouselImage } from './types';
+import type { CarouselImage, CropData, AspectRatio } from './types';
 import { filters } from './FilterLibrary';
 import { getAdjustmentStyles } from './AdjustmentPanel';
 import { BeforeAfterSlider } from './BeforeAfterSlider';
+
 interface EnhancedCarouselEditorProps {
   images: CarouselImage[];
   selectedIndex: number;
@@ -19,9 +20,9 @@ interface EnhancedCarouselEditorProps {
   // Crop mode
   isCropMode?: boolean;
   onCropChange?: (cropData: CropData) => void;
+  // Fill available height
+  className?: string;
 }
-
-import type { CropData, AspectRatio } from './types';
 
 export function EnhancedCarouselEditor({
   images,
@@ -34,19 +35,16 @@ export function EnhancedCarouselEditor({
   onToggleBeforeAfter,
   isCropMode = false,
   onCropChange,
+  className,
 }: EnhancedCarouselEditorProps) {
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [holdingIndex, setHoldingIndex] = useState<number | null>(null);
   const [holdProgress, setHoldProgress] = useState(0);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<number | null>(null);
+  const [isReorderMode, setIsReorderMode] = useState(false);
   const holdTimerRef = useRef<NodeJS.Timeout | null>(null);
   const holdStartRef = useRef<number>(0);
   const holdPointerStartRef = useRef<{ x: number; y: number } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  
-  // Swipe gesture handling
-  const x = useMotionValue(0);
-  const [isDragging, setIsDragging] = useState(false);
   
   // Crop mode state
   const [isCropDragging, setIsCropDragging] = useState(false);
@@ -74,7 +72,7 @@ export function EnhancedCarouselEditor({
   };
 
   const handleHoldStart = (index: number, e: React.PointerEvent) => {
-    if (images.length <= 1) return; // Can't delete if only one image
+    if (images.length <= 1 || isReorderMode) return; // Can't delete if only one image or in reorder mode
     
     holdPointerStartRef.current = { x: e.clientX, y: e.clientY };
     holdStartRef.current = Date.now();
@@ -111,48 +109,28 @@ export function EnhancedCarouselEditor({
   };
 
   const handleThumbnailClick = (index: number) => {
-    if (showDeleteConfirm === index) {
-      // If delete confirm is showing, clicking outside dismisses it
-      return;
-    }
+    if (showDeleteConfirm === index) return;
+    if (isReorderMode) return; // Don't select during reorder
     onSelectImage(index);
   };
 
-  const handleDragStart = (index: number) => {
-    setDraggedIndex(index);
-  };
-
-  const handleDragEnd = (e: any, info: PanInfo, index: number) => {
-    if (!containerRef.current) return;
+  // Reorder handler for Framer Motion Reorder
+  const handleReorder = (newOrder: CarouselImage[]) => {
+    const currentImageId = images[selectedIndex]?.id;
+    onImagesChange(newOrder);
     
-    const thumbnailHeight = 72; // h-16 + gap (vertical now)
-    const dragDistance = info.offset.y;
-    const draggedPositions = Math.round(dragDistance / thumbnailHeight);
-    
-    if (draggedPositions !== 0) {
-      const newIndex = Math.max(0, Math.min(images.length - 1, index + draggedPositions));
-      if (newIndex !== index) {
-        const newImages = [...images];
-        const [removed] = newImages.splice(index, 1);
-        newImages.splice(newIndex, 0, removed);
-        onImagesChange(newImages);
-        
-        // Update selected index if needed
-        if (selectedIndex === index) {
-          onSelectImage(newIndex);
-        } else if (selectedIndex > index && selectedIndex <= newIndex) {
-          onSelectImage(selectedIndex - 1);
-        } else if (selectedIndex < index && selectedIndex >= newIndex) {
-          onSelectImage(selectedIndex + 1);
-        }
+    // Keep selection on the same image
+    if (currentImageId) {
+      const newIndex = newOrder.findIndex(img => img.id === currentImageId);
+      if (newIndex !== -1 && newIndex !== selectedIndex) {
+        onSelectImage(newIndex);
       }
     }
-    
-    setDraggedIndex(null);
   };
 
   // Main preview swipe navigation
-  const handlePanEnd = (e: any, info: PanInfo) => {
+  const handlePanEnd = (e: any, info: any) => {
+    if (showBeforeAfter) return; // Disable swipe in compare mode
     const threshold = 50;
     
     if (info.offset.x > threshold && selectedIndex > 0) {
@@ -255,16 +233,6 @@ export function EnhancedCarouselEditor({
     setInitialPinchDistance(null);
   }, []);
 
-  const getAspectClass = () => {
-    if (!currentImage) return '';
-    switch (currentImage.cropData.aspectRatio) {
-      case 'square': return 'aspect-square';
-      case 'portrait': return 'aspect-[4/5]';
-      case 'landscape': return 'aspect-video';
-      default: return '';
-    }
-  };
-
   if (!currentImage) return null;
 
   // Get filter class
@@ -286,6 +254,9 @@ export function EnhancedCarouselEditor({
 
   // Combine filter intensity
   const filterOpacity = currentImage.filterIntensity / 100;
+  
+  // Image transform for crop
+  const imageTransform = `scale(${currentImage.cropData.scale}) translate(${currentImage.cropData.translateX / currentImage.cropData.scale}%, ${currentImage.cropData.translateY / currentImage.cropData.scale}%) rotate(${currentImage.cropData.rotation || 0}deg)`;
 
   // Thumbnail slider navigation
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -322,6 +293,7 @@ export function EnhancedCarouselEditor({
 
   // Scroll selected thumbnail into view
   useEffect(() => {
+    if (isReorderMode) return; // Don't auto-scroll during reorder
     const container = scrollContainerRef.current;
     if (container && images.length > 0) {
       const thumbnailHeight = 72;
@@ -335,144 +307,38 @@ export function EnhancedCarouselEditor({
         });
       }
     }
-  }, [selectedIndex, images.length]);
-
-  const ThumbnailItem = ({ image, index }: { image: CarouselImage; index: number }) => {
-    const dragControls = useDragControls();
-    const isSelected = index === selectedIndex;
-
-    return (
-      <motion.div
-        key={image.id}
-        layout
-        drag={showDeleteConfirm === null ? 'y' : false}
-        dragListener={false}
-        dragControls={dragControls}
-        dragConstraints={containerRef}
-        dragElastic={0.1}
-        onDragStart={() => handleDragStart(index)}
-        onDragEnd={(e, info) => handleDragEnd(e, info, index)}
-        whileDrag={{ scale: 1.08, zIndex: 20, boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}
-        className="relative flex-shrink-0"
-      >
-        <button
-          onClick={() => handleThumbnailClick(index)}
-          onPointerDown={(e) => handleHoldStart(index, e)}
-          onPointerMove={(e) => {
-            if (holdingIndex !== index || !holdPointerStartRef.current) return;
-            const dx = Math.abs(e.clientX - holdPointerStartRef.current.x);
-            const dy = Math.abs(e.clientY - holdPointerStartRef.current.y);
-            // If the user is scrolling, cancel the hold-to-delete
-            if (dx + dy > 10) handleHoldEnd();
-          }}
-          onPointerUp={handleHoldEnd}
-          onPointerLeave={handleHoldEnd}
-          onPointerCancel={handleHoldEnd}
-          onContextMenu={(e) => e.preventDefault()}
-          className={cn(
-            'w-16 h-16 rounded-lg overflow-hidden border-2 transition-all relative select-none touch-pan-y',
-            isSelected ? 'border-primary ring-2 ring-primary/30' : 'border-transparent hover:border-border',
-            draggedIndex === index && 'opacity-50',
-            holdingIndex === index && 'scale-95'
-          )}
-        >
-          <img
-            src={image.previewUrl}
-            alt={`Thumbnail ${index + 1}`}
-            className={cn('w-full h-full object-cover', image.filter > 0 && filters[image.filter]?.class)}
-            draggable={false}
-          />
-
-          {/* Hold progress overlay */}
-          {holdingIndex === index && images.length > 1 && (
-            <motion.div
-              className="absolute inset-0 bg-destructive/40 flex items-center justify-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: holdProgress }}
-            >
-              <div
-                className="absolute inset-0 bg-destructive/60"
-                style={{
-                  clipPath: `inset(${(1 - holdProgress) * 100}% 0 0 0)`,
-                }}
-              />
-              <Trash2 className="h-4 w-4 text-white relative z-10" />
-            </motion.div>
-          )}
-        </button>
-
-        {/* Delete confirmation overlay */}
-        <AnimatePresence>
-          {showDeleteConfirm === index && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              className="absolute inset-0 z-20"
-            >
-              <button
-                type="button"
-                className="absolute inset-0 bg-black/60 rounded-lg"
-                onPointerDown={(e) => {
-                  e.stopPropagation();
-                  setShowDeleteConfirm(null);
-                }}
-              />
-              <motion.button
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: 'spring', stiffness: 500, damping: 25 }}
-                onPointerDown={(e) => {
-                  e.stopPropagation();
-                  handleRemove(index);
-                }}
-                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-destructive text-destructive-foreground shadow-lg"
-              >
-                <Trash2 className="h-4 w-4" />
-              </motion.button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Drag Handle (only) */}
-        <button
-          type="button"
-          className="absolute bottom-0.5 left-1/2 -translate-x-1/2 opacity-40 touch-none"
-          onPointerDown={(e) => {
-            e.stopPropagation();
-            // Only allow reordering when not in delete-confirm state
-            if (showDeleteConfirm === null) dragControls.start(e.nativeEvent);
-          }}
-          aria-label="Reorder"
-        >
-          <GripVertical className="h-3 w-3 rotate-90" />
-        </button>
-
-        {/* Selected checkmark */}
-        {isSelected && showDeleteConfirm !== index && (
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            className="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-primary flex items-center justify-center"
-          >
-            <Check className="h-2.5 w-2.5 text-primary-foreground" />
-          </motion.div>
-        )}
-      </motion.div>
-    );
-  };
+  }, [selectedIndex, images.length, isReorderMode]);
 
   return (
-    <div className="flex gap-4">
+    <div className={cn("flex gap-4", className)}>
       {/* Left Side: Thumbnails and Counter */}
       <div className="flex flex-col gap-2 w-20 flex-shrink-0">
-        {/* Image Counter */}
-        <div className="px-2.5 py-1 rounded-full bg-muted text-xs font-medium text-center">
-          {selectedIndex + 1} / {images.length}
+        {/* Image Counter + Reorder Toggle */}
+        <div className="flex items-center gap-1">
+          <div className="px-2 py-1 rounded-full bg-muted text-xs font-medium flex-1 text-center">
+            {selectedIndex + 1}/{images.length}
+          </div>
+          {images.length > 1 && (
+            <button
+              onClick={() => {
+                setIsReorderMode(!isReorderMode);
+                setShowDeleteConfirm(null);
+              }}
+              className={cn(
+                'p-1.5 rounded-full transition-colors',
+                isReorderMode 
+                  ? 'bg-primary text-primary-foreground' 
+                  : 'bg-muted hover:bg-muted/80 text-muted-foreground'
+              )}
+              title={isReorderMode ? 'Done reordering' : 'Reorder photos'}
+            >
+              {isReorderMode ? <Check className="h-3.5 w-3.5" /> : <ArrowUpDown className="h-3.5 w-3.5" />}
+            </button>
+          )}
         </div>
         
         {/* Scroll Up Button */}
-        {images.length > 5 && (
+        {images.length > 5 && !isReorderMode && (
           <button
             onClick={() => scrollThumbnails('up')}
             disabled={!canScrollUp}
@@ -486,22 +352,153 @@ export function EnhancedCarouselEditor({
             <ChevronUp className="h-4 w-4" />
           </button>
         )}
-        
-        {/* Thumbnail Strip with Slider */}
-        <div 
-          ref={(el) => {
-            scrollContainerRef.current = el;
-            if (containerRef) containerRef.current = el;
-          }} 
-          className="flex flex-col gap-2 overflow-y-auto max-h-[320px] scrollbar-hide scroll-smooth touch-pan-y"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
-        >
-          {images.map((image, index) => (
-            <ThumbnailItem key={image.id} image={image} index={index} />
-          ))}
 
-          {/* Add More Button */}
-          {images.length < maxImages && (
+        {/* Thumbnails Container */}
+        <div
+          ref={scrollContainerRef}
+          className={cn(
+            "flex flex-col gap-2 overflow-y-auto scrollbar-hide scroll-smooth",
+            isReorderMode ? 'overflow-visible' : 'touch-pan-y'
+          )}
+          style={{ 
+            maxHeight: isReorderMode ? 'none' : '320px',
+            WebkitOverflowScrolling: 'touch' 
+          }}
+        >
+          {isReorderMode ? (
+            // Reorder Mode: Use Framer Motion Reorder
+            <Reorder.Group 
+              axis="y" 
+              values={images} 
+              onReorder={handleReorder}
+              className="flex flex-col gap-2"
+            >
+              {images.map((image, index) => (
+                <Reorder.Item
+                  key={image.id}
+                  value={image}
+                  className={cn(
+                    'relative w-16 h-16 rounded-lg overflow-hidden border-2 cursor-grab active:cursor-grabbing select-none',
+                    index === selectedIndex ? 'border-primary ring-2 ring-primary/30' : 'border-border',
+                    'animate-[jiggle_0.15s_ease-in-out_infinite]'
+                  )}
+                  whileDrag={{ scale: 1.1, boxShadow: '0 4px 20px rgba(0,0,0,0.3)', zIndex: 20 }}
+                >
+                  <img
+                    src={image.previewUrl}
+                    alt={`Thumbnail ${index + 1}`}
+                    className={cn('w-full h-full object-cover', image.filter > 0 && filters[image.filter]?.class)}
+                    draggable={false}
+                  />
+                  {/* Reorder indicator */}
+                  <div className="absolute inset-0 bg-primary/10 pointer-events-none" />
+                </Reorder.Item>
+              ))}
+            </Reorder.Group>
+          ) : (
+            // Normal Mode: Regular thumbnails with hold-to-delete
+            <>
+              {images.map((image, index) => (
+                <div key={image.id} className="relative flex-shrink-0">
+                  <button
+                    onClick={() => handleThumbnailClick(index)}
+                    onPointerDown={(e) => handleHoldStart(index, e)}
+                    onPointerMove={(e) => {
+                      if (holdingIndex !== index || !holdPointerStartRef.current) return;
+                      const dx = Math.abs(e.clientX - holdPointerStartRef.current.x);
+                      const dy = Math.abs(e.clientY - holdPointerStartRef.current.y);
+                      if (dx + dy > 10) handleHoldEnd();
+                    }}
+                    onPointerUp={handleHoldEnd}
+                    onPointerLeave={handleHoldEnd}
+                    onPointerCancel={handleHoldEnd}
+                    onContextMenu={(e) => e.preventDefault()}
+                    className={cn(
+                      'w-16 h-16 rounded-lg overflow-hidden border-2 transition-all relative select-none touch-pan-y',
+                      index === selectedIndex ? 'border-primary ring-2 ring-primary/30' : 'border-transparent hover:border-border',
+                      holdingIndex === index && 'scale-95'
+                    )}
+                  >
+                    <img
+                      src={image.previewUrl}
+                      alt={`Thumbnail ${index + 1}`}
+                      className={cn('w-full h-full object-cover', image.filter > 0 && filters[image.filter]?.class)}
+                      draggable={false}
+                    />
+
+                    {/* Hold progress overlay */}
+                    {holdingIndex === index && images.length > 1 && (
+                      <motion.div
+                        className="absolute inset-0 bg-destructive/40 flex items-center justify-center"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: holdProgress }}
+                      >
+                        <div
+                          className="absolute inset-0 bg-destructive/60"
+                          style={{
+                            clipPath: `inset(${(1 - holdProgress) * 100}% 0 0 0)`,
+                          }}
+                        />
+                        <Trash2 className="h-4 w-4 text-white relative z-10" />
+                      </motion.div>
+                    )}
+                  </button>
+
+                  {/* Delete confirmation overlay - FIXED CENTERING */}
+                  <AnimatePresence>
+                    {showDeleteConfirm === index && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="absolute inset-0 z-20"
+                      >
+                        {/* Dismiss backdrop */}
+                        <button
+                          type="button"
+                          className="absolute inset-0 bg-black/60 rounded-lg"
+                          onPointerDown={(e) => {
+                            e.stopPropagation();
+                            setShowDeleteConfirm(null);
+                          }}
+                        />
+                        {/* Centered delete button using flex - NOT translate */}
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                          <motion.button
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            exit={{ scale: 0 }}
+                            transition={{ type: 'spring', stiffness: 500, damping: 25 }}
+                            onPointerDown={(e) => {
+                              e.stopPropagation();
+                              handleRemove(index);
+                            }}
+                            className="p-2 rounded-full bg-destructive text-destructive-foreground shadow-lg pointer-events-auto"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </motion.button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {/* Selected checkmark */}
+                  {index === selectedIndex && showDeleteConfirm !== index && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-primary flex items-center justify-center"
+                    >
+                      <Check className="h-2.5 w-2.5 text-primary-foreground" />
+                    </motion.div>
+                  )}
+                </div>
+              ))}
+            </>
+          )}
+
+          {/* Add More Button - only show when not reordering */}
+          {images.length < maxImages && !isReorderMode && (
             <button
               onClick={onAddImages}
               className="flex-shrink-0 w-16 h-16 rounded-lg border-2 border-dashed border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
@@ -512,7 +509,7 @@ export function EnhancedCarouselEditor({
         </div>
         
         {/* Scroll Down Button */}
-        {images.length > 5 && (
+        {images.length > 5 && !isReorderMode && (
           <button
             onClick={() => scrollThumbnails('down')}
             disabled={!canScrollDown}
@@ -529,33 +526,36 @@ export function EnhancedCarouselEditor({
       </div>
 
       {/* Right Side: Main Preview - FIXED SIZE Container */}
-      <div className="flex-1 relative">
+      <div className="flex-1 relative flex flex-col min-h-0">
         {/* Fixed size container that never changes */}
-        <div className="w-full aspect-square md:aspect-[4/5] lg:aspect-square bg-black/50 rounded-xl overflow-hidden flex items-center justify-center">
+        <div className="flex-1 min-h-0 bg-black/50 rounded-xl overflow-hidden flex items-center justify-center">
           {showBeforeAfter ? (
-            /* Before/After Comparison Mode - contained within fixed size */
+            /* Before/After Comparison Mode - same viewport as normal */
             <div className="w-full h-full">
               <BeforeAfterSlider
                 beforeSrc={currentImage.previewUrl}
                 afterSrc={currentImage.previewUrl}
+                beforeStyle={{
+                  transform: imageTransform,
+                  transformOrigin: 'center',
+                }}
                 afterClassName={filterClass}
                 afterStyle={{
                   ...adjustmentStyles,
                   ...(currentImage.filter > 0 ? { opacity: filterOpacity } : {}),
+                  transform: imageTransform,
+                  transformOrigin: 'center',
                 }}
+                objectFit="cover"
               />
             </div>
           ) : isCropMode ? (
-            /* Crop Mode - image scales within fixed container */
+            /* Crop Mode - full viewport with grid overlay */
             <div
               className={cn(
-                'relative overflow-hidden bg-black flex items-center justify-center',
+                'w-full h-full relative overflow-hidden bg-black flex items-center justify-center',
                 isCropDragging ? 'cursor-grabbing' : currentImage.cropData.scale > 1 ? 'cursor-grab' : 'cursor-default'
               )}
-              style={{
-                width: '100%',
-                height: '100%',
-              }}
               onMouseDown={handleCropMouseDown}
               onMouseMove={handleCropMouseMove}
               onMouseUp={handleCropMouseUp}
@@ -564,39 +564,26 @@ export function EnhancedCarouselEditor({
               onTouchMove={handleCropTouchMove}
               onTouchEnd={handleCropTouchEnd}
             >
-              {/* Inner crop frame based on aspect ratio */}
-              <div 
-                className={cn(
-                  'relative overflow-hidden',
-                  getAspectClass() || 'aspect-square'
-                )}
+              <img
+                src={currentImage.previewUrl}
+                alt="Crop preview"
+                className="w-full h-full object-cover select-none"
                 style={{
-                  width: currentImage.cropData.aspectRatio === 'landscape' ? '100%' : 
-                         currentImage.cropData.aspectRatio === 'portrait' ? '75%' : '85%',
-                  maxHeight: '100%',
+                  transform: imageTransform,
+                  transformOrigin: 'center',
+                  transition: isCropDragging ? 'none' : 'transform 0.1s ease-out',
+                  ...adjustmentStyles,
                 }}
-              >
-                <img
-                  src={currentImage.previewUrl}
-                  alt="Crop preview"
-                  className="w-full h-full object-cover select-none"
-                  style={{
-                    transform: `scale(${currentImage.cropData.scale}) translate(${currentImage.cropData.translateX / currentImage.cropData.scale}%, ${currentImage.cropData.translateY / currentImage.cropData.scale}%) rotate(${currentImage.cropData.rotation || 0}deg)`,
-                    transformOrigin: 'center',
-                    transition: isCropDragging ? 'none' : 'transform 0.1s ease-out',
-                    ...adjustmentStyles,
-                  }}
-                  draggable={false}
-                  onContextMenu={(e) => e.preventDefault()}
-                />
-                
-                {/* Grid Overlay */}
-                <div className="absolute inset-0 pointer-events-none">
-                  <div className="w-full h-full grid grid-cols-3 grid-rows-3">
-                    {Array.from({ length: 9 }).map((_, i) => (
-                      <div key={i} className="border border-white/30" />
-                    ))}
-                  </div>
+                draggable={false}
+                onContextMenu={(e) => e.preventDefault()}
+              />
+              
+              {/* Grid Overlay */}
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="w-full h-full grid grid-cols-3 grid-rows-3">
+                  {Array.from({ length: 9 }).map((_, i) => (
+                    <div key={i} className="border border-white/30" />
+                  ))}
                 </div>
               </div>
               
@@ -608,7 +595,7 @@ export function EnhancedCarouselEditor({
               )}
             </div>
           ) : (
-            /* Normal Preview Mode - image displayed within fixed container */
+            /* Normal Preview Mode - full viewport */
             <motion.div
               className="w-full h-full touch-pan-y flex items-center justify-center bg-black"
               onPanEnd={handlePanEnd}
@@ -620,20 +607,7 @@ export function EnhancedCarouselEditor({
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.15 }}
-                  className={cn(
-                    "relative overflow-hidden",
-                    // Apply aspect ratio from crop
-                    currentImage.cropData.aspectRatio === 'square' && 'aspect-square',
-                    currentImage.cropData.aspectRatio === 'portrait' && 'aspect-[4/5]',
-                    currentImage.cropData.aspectRatio === 'landscape' && 'aspect-video',
-                    currentImage.cropData.aspectRatio === 'original' && 'w-full h-full'
-                  )}
-                  style={{
-                    width: currentImage.cropData.aspectRatio === 'original' ? '100%' : 
-                           currentImage.cropData.aspectRatio === 'landscape' ? '100%' : 
-                           currentImage.cropData.aspectRatio === 'portrait' ? '75%' : '85%',
-                    maxHeight: '100%',
-                  }}
+                  className="w-full h-full relative overflow-hidden"
                 >
                   {/* Base image with crop transforms applied */}
                   <img
@@ -642,7 +616,7 @@ export function EnhancedCarouselEditor({
                     className="w-full h-full object-cover select-none"
                     style={{
                       ...adjustmentStyles,
-                      transform: `scale(${currentImage.cropData.scale}) translate(${currentImage.cropData.translateX / currentImage.cropData.scale}%, ${currentImage.cropData.translateY / currentImage.cropData.scale}%) rotate(${currentImage.cropData.rotation || 0}deg)`,
+                      transform: imageTransform,
                       transformOrigin: 'center',
                     }}
                     draggable={false}
@@ -659,7 +633,7 @@ export function EnhancedCarouselEditor({
                         ...adjustmentStyles,
                         opacity: filterOpacity,
                         mixBlendMode: 'normal',
-                        transform: `scale(${currentImage.cropData.scale}) translate(${currentImage.cropData.translateX / currentImage.cropData.scale}%, ${currentImage.cropData.translateY / currentImage.cropData.scale}%) rotate(${currentImage.cropData.rotation || 0}deg)`,
+                        transform: imageTransform,
                         transformOrigin: 'center',
                       }}
                       draggable={false}
@@ -673,7 +647,7 @@ export function EnhancedCarouselEditor({
         </div>
 
         {/* Navigation Arrows (Desktop) */}
-        {images.length > 1 && (
+        {images.length > 1 && !showBeforeAfter && (
           <>
             <button
               onClick={() => onSelectImage(Math.max(0, selectedIndex - 1))}
