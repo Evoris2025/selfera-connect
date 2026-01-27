@@ -22,6 +22,7 @@ export { GalleryFirstSelector } from './GalleryFirstSelector';
 export { EnhancedCarouselEditor } from './EnhancedCarouselEditor';
 export { EnhancedFilterLibrary, filters, getFilterClass, type ImageFilter, type FilterCategory } from './EnhancedFilterLibrary';
 export { EnhancedCropTool, getAspectRatioClass } from './EnhancedCropTool';
+export { CropControls } from './CropControls';
 export { PerImageUserTags } from './PerImageUserTags';
 export { PerImageAltText } from './PerImageAltText';
 export { UnsavedChangesDialog } from './UnsavedChangesDialog';

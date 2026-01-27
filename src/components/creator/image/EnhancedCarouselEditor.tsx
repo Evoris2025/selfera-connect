@@ -17,7 +17,12 @@ interface EnhancedCarouselEditorProps {
   maxImages?: number;
   showBeforeAfter?: boolean;
   onToggleBeforeAfter?: () => void;
+  // Crop mode
+  isCropMode?: boolean;
+  onCropChange?: (cropData: CropData) => void;
 }
+
+import type { CropData, AspectRatio } from './types';
 
 export function EnhancedCarouselEditor({
   images,
@@ -28,6 +33,8 @@ export function EnhancedCarouselEditor({
   maxImages = 20,
   showBeforeAfter = false,
   onToggleBeforeAfter,
+  isCropMode = false,
+  onCropChange,
 }: EnhancedCarouselEditorProps) {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [holdingIndex, setHoldingIndex] = useState<number | null>(null);
@@ -40,6 +47,13 @@ export function EnhancedCarouselEditor({
   // Swipe gesture handling
   const x = useMotionValue(0);
   const [isDragging, setIsDragging] = useState(false);
+  
+  // Crop mode state
+  const [isCropDragging, setIsCropDragging] = useState(false);
+  const [cropDragStart, setCropDragStart] = useState({ x: 0, y: 0 });
+  const [initialCropTranslate, setInitialCropTranslate] = useState({ x: 0, y: 0 });
+  const [initialPinchDistance, setInitialPinchDistance] = useState<number | null>(null);
+  const [initialPinchScale, setInitialPinchScale] = useState(1);
 
   const HOLD_DURATION = 600; // ms to trigger delete mode
 
@@ -147,6 +161,108 @@ export function EnhancedCarouselEditor({
   };
 
   const currentImage = images[selectedIndex];
+
+  // Crop mode handlers
+  const handleCropMouseDown = useCallback((e: React.MouseEvent) => {
+    const img = images[selectedIndex];
+    if (!isCropMode || !img) return;
+    if (img.cropData.scale <= 1) return;
+    
+    setIsCropDragging(true);
+    setCropDragStart({ x: e.clientX, y: e.clientY });
+    setInitialCropTranslate({ 
+      x: img.cropData.translateX, 
+      y: img.cropData.translateY 
+    });
+  }, [isCropMode, images, selectedIndex]);
+
+  const handleCropMouseMove = useCallback((e: React.MouseEvent) => {
+    const img = images[selectedIndex];
+    if (!isCropDragging || !img || !onCropChange) return;
+    
+    const deltaX = (e.clientX - cropDragStart.x) / 2;
+    const deltaY = (e.clientY - cropDragStart.y) / 2;
+    
+    const maxTranslate = (img.cropData.scale - 1) * 50;
+    
+    onCropChange({
+      ...img.cropData,
+      translateX: Math.max(-maxTranslate, Math.min(maxTranslate, initialCropTranslate.x + deltaX)),
+      translateY: Math.max(-maxTranslate, Math.min(maxTranslate, initialCropTranslate.y + deltaY)),
+    });
+  }, [isCropDragging, cropDragStart, initialCropTranslate, images, selectedIndex, onCropChange]);
+
+  const handleCropMouseUp = useCallback(() => {
+    setIsCropDragging(false);
+  }, []);
+
+  // Crop touch handlers for pinch-to-zoom
+  const handleCropTouchStart = useCallback((e: React.TouchEvent) => {
+    const img = images[selectedIndex];
+    if (!isCropMode || !img) return;
+    
+    if (e.touches.length === 2) {
+      const distance = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      setInitialPinchDistance(distance);
+      setInitialPinchScale(img.cropData.scale);
+    } else if (e.touches.length === 1 && img.cropData.scale > 1) {
+      setIsCropDragging(true);
+      setCropDragStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+      setInitialCropTranslate({ 
+        x: img.cropData.translateX, 
+        y: img.cropData.translateY 
+      });
+    }
+  }, [isCropMode, images, selectedIndex]);
+
+  const handleCropTouchMove = useCallback((e: React.TouchEvent) => {
+    const img = images[selectedIndex];
+    if (!isCropMode || !img || !onCropChange) return;
+    
+    if (e.touches.length === 2 && initialPinchDistance !== null) {
+      const distance = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      const scaleChange = distance / initialPinchDistance;
+      const newScale = Math.max(1, Math.min(3, initialPinchScale * scaleChange));
+      
+      onCropChange({
+        ...img.cropData,
+        scale: newScale,
+      });
+    } else if (isCropDragging && e.touches.length === 1) {
+      const deltaX = (e.touches[0].clientX - cropDragStart.x) / 2;
+      const deltaY = (e.touches[0].clientY - cropDragStart.y) / 2;
+      
+      const maxTranslate = (img.cropData.scale - 1) * 50;
+      
+      onCropChange({
+        ...img.cropData,
+        translateX: Math.max(-maxTranslate, Math.min(maxTranslate, initialCropTranslate.x + deltaX)),
+        translateY: Math.max(-maxTranslate, Math.min(maxTranslate, initialCropTranslate.y + deltaY)),
+      });
+    }
+  }, [isCropMode, isCropDragging, cropDragStart, initialCropTranslate, initialPinchDistance, initialPinchScale, images, selectedIndex, onCropChange]);
+
+  const handleCropTouchEnd = useCallback(() => {
+    setIsCropDragging(false);
+    setInitialPinchDistance(null);
+  }, []);
+
+  const getAspectClass = () => {
+    if (!currentImage) return '';
+    switch (currentImage.cropData.aspectRatio) {
+      case 'square': return 'aspect-square';
+      case 'portrait': return 'aspect-[4/5]';
+      case 'landscape': return 'aspect-video';
+      default: return '';
+    }
+  };
+
   if (!currentImage) return null;
 
   // Get filter class
@@ -291,9 +407,11 @@ export function EnhancedCarouselEditor({
 
       {/* Right Side: Main Preview - Larger */}
       <div className="flex-1 relative">
-        <motion.div
-          className="w-full h-full min-h-[400px] md:min-h-[500px] bg-black/50 rounded-xl overflow-hidden touch-pan-y"
-          onPanEnd={!showBeforeAfter ? handlePanEnd : undefined}
+        <div
+          className={cn(
+            "w-full h-full min-h-[400px] md:min-h-[500px] bg-black/50 rounded-xl overflow-hidden",
+            isCropMode && "flex items-center justify-center"
+          )}
         >
           {showBeforeAfter ? (
             /* Before/After Comparison Mode */
@@ -306,46 +424,101 @@ export function EnhancedCarouselEditor({
                 ...(currentImage.filter > 0 ? { opacity: filterOpacity } : {}),
               }}
             />
+          ) : isCropMode ? (
+            /* Crop Mode */
+            <div
+              className={cn(
+                'relative overflow-hidden bg-black/50 max-w-full max-h-full',
+                getAspectClass() || 'aspect-square',
+                isCropDragging ? 'cursor-grabbing' : currentImage.cropData.scale > 1 ? 'cursor-grab' : 'cursor-default'
+              )}
+              style={{
+                width: '100%',
+                maxWidth: getAspectClass() === 'aspect-video' ? '100%' : getAspectClass() === 'aspect-[4/5]' ? '80%' : '85%',
+              }}
+              onMouseDown={handleCropMouseDown}
+              onMouseMove={handleCropMouseMove}
+              onMouseUp={handleCropMouseUp}
+              onMouseLeave={handleCropMouseUp}
+              onTouchStart={handleCropTouchStart}
+              onTouchMove={handleCropTouchMove}
+              onTouchEnd={handleCropTouchEnd}
+            >
+              <img
+                src={currentImage.previewUrl}
+                alt="Crop preview"
+                className="w-full h-full object-cover select-none"
+                style={{
+                  transform: `scale(${currentImage.cropData.scale}) translate(${currentImage.cropData.translateX / currentImage.cropData.scale}%, ${currentImage.cropData.translateY / currentImage.cropData.scale}%) rotate(${currentImage.cropData.rotation || 0}deg)`,
+                  transformOrigin: 'center',
+                  transition: isCropDragging ? 'none' : 'transform 0.1s ease-out',
+                  ...adjustmentStyles,
+                }}
+                draggable={false}
+                onContextMenu={(e) => e.preventDefault()}
+              />
+              
+              {/* Grid Overlay */}
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="w-full h-full grid grid-cols-3 grid-rows-3">
+                  {Array.from({ length: 9 }).map((_, i) => (
+                    <div key={i} className="border border-white/30" />
+                  ))}
+                </div>
+              </div>
+              
+              {/* Pinch hint on mobile */}
+              {currentImage.cropData.scale === 1 && (currentImage.cropData.rotation || 0) === 0 && (
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-full bg-black/60 text-white text-xs md:hidden">
+                  Pinch to zoom
+                </div>
+              )}
+            </div>
           ) : (
             /* Normal Preview Mode */
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentImage.id}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.15 }}
-                className="w-full h-full relative"
-              >
-                {/* Base image */}
-                <img
-                  src={currentImage.previewUrl}
-                  alt={currentImage.altText || `Image ${selectedIndex + 1}`}
-                  className="w-full h-full object-contain absolute inset-0 select-none"
-                  style={adjustmentStyles}
-                  draggable={false}
-                  onContextMenu={(e) => e.preventDefault()}
-                />
-                
-                {/* Filtered layer with opacity for intensity */}
-                {currentImage.filter > 0 && (
+            <motion.div
+              className="w-full h-full touch-pan-y"
+              onPanEnd={handlePanEnd}
+            >
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentImage.id}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.15 }}
+                  className="w-full h-full relative"
+                >
+                  {/* Base image */}
                   <img
                     src={currentImage.previewUrl}
-                    alt=""
-                    className={cn('w-full h-full object-contain absolute inset-0 pointer-events-none select-none', filterClass)}
-                    style={{
-                      ...adjustmentStyles,
-                      opacity: filterOpacity,
-                      mixBlendMode: 'normal',
-                    }}
+                    alt={currentImage.altText || `Image ${selectedIndex + 1}`}
+                    className="w-full h-full object-contain absolute inset-0 select-none"
+                    style={adjustmentStyles}
                     draggable={false}
                     onContextMenu={(e) => e.preventDefault()}
                   />
-                )}
-              </motion.div>
-            </AnimatePresence>
+                  
+                  {/* Filtered layer with opacity for intensity */}
+                  {currentImage.filter > 0 && (
+                    <img
+                      src={currentImage.previewUrl}
+                      alt=""
+                      className={cn('w-full h-full object-contain absolute inset-0 pointer-events-none select-none', filterClass)}
+                      style={{
+                        ...adjustmentStyles,
+                        opacity: filterOpacity,
+                        mixBlendMode: 'normal',
+                      }}
+                      draggable={false}
+                      onContextMenu={(e) => e.preventDefault()}
+                    />
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </motion.div>
           )}
-        </motion.div>
+        </div>
 
         {/* Navigation Arrows (Desktop) */}
         {images.length > 1 && (
