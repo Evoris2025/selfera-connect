@@ -1,9 +1,8 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo, useDragControls } from 'framer-motion';
 import { X, Plus, GripVertical, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Loader2, Check, SplitSquareVertical, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Slider } from '@/components/ui/slider';
 import type { CarouselImage } from './types';
 import { filters } from './FilterLibrary';
 import { getAdjustmentStyles } from './AdjustmentPanel';
@@ -42,6 +41,7 @@ export function EnhancedCarouselEditor({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<number | null>(null);
   const holdTimerRef = useRef<NodeJS.Timeout | null>(null);
   const holdStartRef = useRef<number>(0);
+  const holdPointerStartRef = useRef<{ x: number; y: number } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
   // Swipe gesture handling
@@ -73,9 +73,10 @@ export function EnhancedCarouselEditor({
     setShowDeleteConfirm(null);
   };
 
-  const handleHoldStart = (index: number) => {
+  const handleHoldStart = (index: number, e: React.PointerEvent) => {
     if (images.length <= 1) return; // Can't delete if only one image
     
+    holdPointerStartRef.current = { x: e.clientX, y: e.clientY };
     holdStartRef.current = Date.now();
     setHoldingIndex(index);
     setHoldProgress(0);
@@ -104,6 +105,7 @@ export function EnhancedCarouselEditor({
       clearTimeout(holdTimerRef.current);
       holdTimerRef.current = null;
     }
+    holdPointerStartRef.current = null;
     setHoldingIndex(null);
     setHoldProgress(0);
   };
@@ -335,6 +337,131 @@ export function EnhancedCarouselEditor({
     }
   }, [selectedIndex, images.length]);
 
+  const ThumbnailItem = ({ image, index }: { image: CarouselImage; index: number }) => {
+    const dragControls = useDragControls();
+    const isSelected = index === selectedIndex;
+
+    return (
+      <motion.div
+        key={image.id}
+        layout
+        drag={showDeleteConfirm === null ? 'y' : false}
+        dragListener={false}
+        dragControls={dragControls}
+        dragConstraints={containerRef}
+        dragElastic={0.1}
+        onDragStart={() => handleDragStart(index)}
+        onDragEnd={(e, info) => handleDragEnd(e, info, index)}
+        whileDrag={{ scale: 1.08, zIndex: 20, boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}
+        className="relative flex-shrink-0"
+      >
+        <button
+          onClick={() => handleThumbnailClick(index)}
+          onPointerDown={(e) => handleHoldStart(index, e)}
+          onPointerMove={(e) => {
+            if (holdingIndex !== index || !holdPointerStartRef.current) return;
+            const dx = Math.abs(e.clientX - holdPointerStartRef.current.x);
+            const dy = Math.abs(e.clientY - holdPointerStartRef.current.y);
+            // If the user is scrolling, cancel the hold-to-delete
+            if (dx + dy > 10) handleHoldEnd();
+          }}
+          onPointerUp={handleHoldEnd}
+          onPointerLeave={handleHoldEnd}
+          onPointerCancel={handleHoldEnd}
+          onContextMenu={(e) => e.preventDefault()}
+          className={cn(
+            'w-16 h-16 rounded-lg overflow-hidden border-2 transition-all relative select-none touch-pan-y',
+            isSelected ? 'border-primary ring-2 ring-primary/30' : 'border-transparent hover:border-border',
+            draggedIndex === index && 'opacity-50',
+            holdingIndex === index && 'scale-95'
+          )}
+        >
+          <img
+            src={image.previewUrl}
+            alt={`Thumbnail ${index + 1}`}
+            className={cn('w-full h-full object-cover', image.filter > 0 && filters[image.filter]?.class)}
+            draggable={false}
+          />
+
+          {/* Hold progress overlay */}
+          {holdingIndex === index && images.length > 1 && (
+            <motion.div
+              className="absolute inset-0 bg-destructive/40 flex items-center justify-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: holdProgress }}
+            >
+              <div
+                className="absolute inset-0 bg-destructive/60"
+                style={{
+                  clipPath: `inset(${(1 - holdProgress) * 100}% 0 0 0)`,
+                }}
+              />
+              <Trash2 className="h-4 w-4 text-white relative z-10" />
+            </motion.div>
+          )}
+        </button>
+
+        {/* Delete confirmation overlay */}
+        <AnimatePresence>
+          {showDeleteConfirm === index && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="absolute inset-0 z-20"
+            >
+              <button
+                type="button"
+                className="absolute inset-0 bg-black/60 rounded-lg"
+                onPointerDown={(e) => {
+                  e.stopPropagation();
+                  setShowDeleteConfirm(null);
+                }}
+              />
+              <motion.button
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 25 }}
+                onPointerDown={(e) => {
+                  e.stopPropagation();
+                  handleRemove(index);
+                }}
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-destructive text-destructive-foreground shadow-lg"
+              >
+                <Trash2 className="h-4 w-4" />
+              </motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Drag Handle (only) */}
+        <button
+          type="button"
+          className="absolute bottom-0.5 left-1/2 -translate-x-1/2 opacity-40 touch-none"
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            // Only allow reordering when not in delete-confirm state
+            if (showDeleteConfirm === null) dragControls.start(e.nativeEvent);
+          }}
+          aria-label="Reorder"
+        >
+          <GripVertical className="h-3 w-3 rotate-90" />
+        </button>
+
+        {/* Selected checkmark */}
+        {isSelected && showDeleteConfirm !== index && (
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-primary flex items-center justify-center"
+          >
+            <Check className="h-2.5 w-2.5 text-primary-foreground" />
+          </motion.div>
+        )}
+      </motion.div>
+    );
+  };
+
   return (
     <div className="flex gap-4">
       {/* Left Side: Thumbnails and Counter */}
@@ -366,104 +493,11 @@ export function EnhancedCarouselEditor({
             scrollContainerRef.current = el;
             if (containerRef) containerRef.current = el;
           }} 
-          className="flex flex-col gap-2 overflow-y-auto max-h-[320px] scrollbar-hide scroll-smooth"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          className="flex flex-col gap-2 overflow-y-auto max-h-[320px] scrollbar-hide scroll-smooth touch-pan-y"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
         >
           {images.map((image, index) => (
-            <motion.div
-              key={image.id}
-              layout
-              drag={showDeleteConfirm === null ? "y" : false}
-              dragConstraints={containerRef}
-              dragElastic={0.1}
-              onDragStart={() => handleDragStart(index)}
-              onDragEnd={(e, info) => handleDragEnd(e, info, index)}
-              whileDrag={{ scale: 1.08, zIndex: 20, boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}
-              className="relative flex-shrink-0"
-            >
-              <button
-                onClick={() => handleThumbnailClick(index)}
-                onPointerDown={() => handleHoldStart(index)}
-                onPointerUp={handleHoldEnd}
-                onPointerLeave={handleHoldEnd}
-                onPointerCancel={handleHoldEnd}
-                onContextMenu={(e) => e.preventDefault()}
-                className={cn(
-                  'w-16 h-16 rounded-lg overflow-hidden border-2 transition-all relative select-none',
-                  index === selectedIndex 
-                    ? 'border-primary ring-2 ring-primary/30' 
-                    : 'border-transparent hover:border-border',
-                  draggedIndex === index && 'opacity-50',
-                  holdingIndex === index && 'scale-95'
-                )}
-              >
-                <img
-                  src={image.previewUrl}
-                  alt={`Thumbnail ${index + 1}`}
-                  className={cn('w-full h-full object-cover', image.filter > 0 && filters[image.filter]?.class)}
-                  draggable={false}
-                />
-                
-                {/* Hold progress overlay */}
-                {holdingIndex === index && images.length > 1 && (
-                  <motion.div 
-                    className="absolute inset-0 bg-destructive/40 flex items-center justify-center"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: holdProgress }}
-                  >
-                    <div 
-                      className="absolute inset-0 bg-destructive/60"
-                      style={{ 
-                        clipPath: `inset(${(1 - holdProgress) * 100}% 0 0 0)` 
-                      }}
-                    />
-                    <Trash2 className="h-4 w-4 text-white relative z-10" />
-                  </motion.div>
-                )}
-              </button>
-              
-              {/* Delete confirmation overlay */}
-              <AnimatePresence>
-                {showDeleteConfirm === index && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    className="absolute inset-0 z-20 flex items-center justify-center"
-                  >
-                    <div className="absolute inset-0 bg-black/60 rounded-lg" onClick={() => setShowDeleteConfirm(null)} />
-                    <motion.button
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ type: 'spring', stiffness: 500, damping: 25 }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemove(index);
-                      }}
-                      className="relative z-10 p-2 rounded-full bg-destructive text-destructive-foreground shadow-lg"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </motion.button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Drag Handle Indicator */}
-              <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 opacity-40">
-                <GripVertical className="h-3 w-3 rotate-90" />
-              </div>
-              
-              {/* Selected checkmark */}
-              {index === selectedIndex && showDeleteConfirm !== index && (
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-primary flex items-center justify-center"
-                >
-                  <Check className="h-2.5 w-2.5 text-primary-foreground" />
-                </motion.div>
-              )}
-            </motion.div>
+            <ThumbnailItem key={image.id} image={image} index={index} />
           ))}
 
           {/* Add More Button */}
