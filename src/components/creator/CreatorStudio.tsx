@@ -57,7 +57,7 @@ export function CreatorStudio({ open, onOpenChange, initialMode }: CreatorStudio
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-full sm:max-w-2xl h-[100dvh] sm:h-[90vh] p-0 gap-0 bg-background border-none sm:border sm:border-border overflow-hidden">
+      <DialogContent className="fixed inset-0 sm:inset-auto sm:left-[50%] sm:top-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%] w-full h-full sm:w-[90vw] sm:max-w-2xl sm:h-[90vh] sm:max-h-[800px] p-0 gap-0 bg-background border-none sm:border sm:border-border overflow-hidden">
         {/* Accessibility: Hidden title for screen readers */}
         <VisuallyHidden>
           <DialogTitle>ERA Studio - Create Content</DialogTitle>
