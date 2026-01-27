@@ -1,115 +1,109 @@
 
-
-# ERA Studio Zigzag Connector Refinement
+# ERA Studio Dashboard Enhancement Plan
 
 ## Overview
-Refine the zigzag connector lines between cards with balanced positioning (left side stays, right side pulled in), slightly reduced gap, while maintaining the thick card styling.
+This plan refines the ContentTypeDashboard to align with the premium cinematic design system while fixing inconsistencies and adding polish for a more engaging user experience.
 
 ---
 
-## Changes to `src/components/creator/ContentTypeDashboard.tsx`
+## Changes
 
-### 1. Reduce Gap Between Cards
+### 1. Simplify Header Navigation
+Remove the redundant ArrowLeft button. Keep only the X close button aligned to the right for a cleaner, less cluttered header.
 
-**Line 133** - Update the gap value:
-- Change: `gap-6` to `gap-5`
+### 2. Fix Logo Centering
+Remove the `-ml-6` hack from the BrandMark container and properly center it using flexbox alignment.
 
-This gives slightly tighter vertical spacing while maintaining room for the zigzag connectors.
+### 3. Apply Square Edge Consistency
+Remove `rounded-lg` from the Drafts button to match the "clean, square, edge" aesthetic established across the app.
+
+### 4. Enhanced Card Interactions
+Add premium hover and active states:
+- Subtle scale transform on hover (`hover:scale-[1.01]`)
+- Active press state (`active:scale-[0.99]`) for mobile feedback
+- Smooth 300ms transition timing
+
+### 5. Animated Icon Hover Effect
+Add a subtle scale/glow animation to the circular icons when the card is hovered, creating that "addictive" micro-interaction feel.
+
+### 6. Strengthen Number Glow
+Increase the opacity and size of the gradient glow behind the numbers for more visual impact while remaining subtle.
+
+### 7. Add Keyboard Focus Styles
+Include visible focus rings (`focus-visible:ring-2 focus-visible:ring-primary`) for accessibility compliance.
 
 ---
 
-### 2. Add Balanced Zigzag Connectors
+## Technical Details
 
-Insert connector elements between each card (except after the last one). The connectors will use **matching left/right inset values** so both sides are equally positioned:
+### File Modified
+`src/components/creator/ContentTypeDashboard.tsx`
 
-**Connector Structure:**
-```text
-Card 01 (Expression)
-    │ ← vertical line starts at left-6
-    └──────────────┐ ← horizontal crosses to right-6
-                   │ ← vertical drops down
-Card 02 (Video)
-                   │ ← vertical starts at right-6  
-    ┌──────────────┘ ← horizontal crosses to left-6
-    │ ← vertical drops down
-Card 03 (Photo)
-... and so on
+### Key Code Changes
+
+**Header Simplification (lines 76-93):**
+```tsx
+<div className="relative z-10 flex items-center justify-end px-4 py-3 border-b border-border/30">
+  <button
+    onClick={onClose}
+    className="p-2 -mr-2 hover:bg-secondary/50 transition-colors"
+    aria-label="Close"
+  >
+    <X className="h-5 w-5 text-muted-foreground" />
+  </button>
+</div>
 ```
 
-**Positioning:**
-- Left anchor: `left-6` (consistent)
-- Right anchor: `right-6` (pulled in from edge, matching left)
-- This creates a balanced, symmetrical zigzag
-
-**Connector Code (inserted after each card except the last):**
-
+**Logo Centering Fix (line 106-107):**
 ```tsx
-{index < contentTypes.length - 1 && (
-  <div className="relative h-5 mx-4">
-    {/* Vertical line from current card */}
-    <div 
-      className={cn(
-        "absolute top-0 w-px h-2 bg-border/40",
-        isEven ? "left-6" : "right-6"
-      )} 
-    />
-    {/* Horizontal line crossing */}
-    <div className="absolute top-2 left-6 right-6 h-px bg-border/40" />
-    {/* Vertical line to next card */}
-    <div 
-      className={cn(
-        "absolute top-2 w-px h-3 bg-border/40",
-        isEven ? "right-6" : "left-6"
-      )} 
-    />
-  </div>
+<motion.div
+  className="relative"  // Remove -ml-6
+>
+```
+
+**Enhanced Card Button (lines 149-153):**
+```tsx
+className={cn(
+  "group relative flex items-center gap-4 p-4 text-left focus:outline-none w-full",
+  "bg-secondary/30 hover:bg-secondary/50 transition-all duration-300",
+  "border border-primary/40 hover:border-primary",
+  "hover:scale-[1.01] active:scale-[0.99]",
+  "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 )}
 ```
 
----
+**Icon Animation (lines 190-195):**
+```tsx
+<div className={cn(
+  "flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center",
+  "transition-transform duration-300 group-hover:scale-110",
+  type.nodeColor
+)}>
+```
 
-### 3. Keep Cards Thick
+**Number Glow Enhancement (lines 171-175):**
+```tsx
+<div 
+  className={cn(
+    "absolute inset-0 blur-3xl opacity-30 scale-150",
+    `bg-gradient-to-br ${type.gradient}`
+  )}
+/>
+```
 
-No changes to card padding - maintain the current `p-4` and all card styling as-is.
-
----
-
-## Visual Result
-
-```text
-┌─────────────────────────┐
-│   01  |  Expression     │
-└─────────────────────────┘
-   │
-   └───────────────────┐    ← right side pulled in (right-6)
-                       │
-┌──────────────────────┼──┐
-│   Video  |  02       │  │
-└──────────────────────┴──┘
-                       │
-   ┌───────────────────┘
-   │
-┌──┼──────────────────────┐
-│  │  03  |  Photo        │
-└──┴──────────────────────┘
-   │
-   └───────────────────┐
-                       │
-┌──────────────────────┼──┐
-│   Post  |  04        │  │
-└──────────────────────┴──┘
+**Square Edge Drafts Button (line 211):**
+```tsx
+className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-secondary/50 hover:bg-secondary/80 transition-colors group"
+// Remove rounded-lg
 ```
 
 ---
 
-## Summary of Changes
-
-| Aspect | Current | Updated |
-|--------|---------|---------|
-| Card gap | `gap-6` | `gap-5` |
-| Left connector position | N/A | `left-6` |
-| Right connector position | N/A | `right-6` (balanced with left) |
-| Card padding | `p-4` | **Unchanged** |
-| Card styling | Current | **Unchanged** |
-| Connector height | N/A | `h-5` container |
-
+## Visual Impact
+- Cleaner header with single close action
+- Properly centered branding
+- Consistent square-edge aesthetic throughout
+- More engaging card interactions with scale effects
+- Animated icons that respond to user intent
+- Better visual prominence for the numbered system
+- Accessible keyboard navigation
