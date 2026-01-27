@@ -215,28 +215,28 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
                     />
                   </motion.button>
                   
-                  {/* Curvy S-Connector */}
+                  {/* Serpentine S-Connector */}
                   {index < contentTypes.length - 1 && (
-                    <div className="relative h-10 mx-12">
+                    <div className="relative h-12 mx-6">
                       <svg 
                         className="absolute inset-0 w-full h-full"
-                        viewBox="0 0 100 40"
+                        viewBox="0 0 200 48"
+                        fill="none"
                         preserveAspectRatio="none"
                       >
                         <defs>
-                          <linearGradient id={`connector-gradient-${index}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor={isEven ? "#3b82f6" : "#f97316"} />
+                          <linearGradient id={`serpentine-${index}`} x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#3b82f6" />
                             <stop offset="50%" stopColor="#a855f7" />
-                            <stop offset="100%" stopColor={isEven ? "#f97316" : "#3b82f6"} />
+                            <stop offset="100%" stopColor="#f97316" />
                           </linearGradient>
                         </defs>
                         <path
                           d={isEven 
-                            ? "M 15 0 C 15 20, 50 10, 50 20 C 50 30, 85 20, 85 40"
-                            : "M 85 0 C 85 20, 50 10, 50 20 C 50 30, 15 20, 15 40"
+                            ? "M 30 0 C 30 24, 0 24, 100 24 C 200 24, 170 24, 170 48"
+                            : "M 170 0 C 170 24, 200 24, 100 24 C 0 24, 30 24, 30 48"
                           }
-                          fill="none"
-                          stroke={`url(#connector-gradient-${index})`}
+                          stroke={`url(#serpentine-${index})`}
                           strokeWidth="3"
                           strokeLinecap="round"
                           vectorEffect="non-scaling-stroke"
