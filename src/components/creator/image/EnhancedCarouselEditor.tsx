@@ -475,9 +475,9 @@ export function EnhancedCarouselEditor({
               )}
             </div>
           ) : (
-            /* Normal Preview Mode */
+            /* Normal Preview Mode - with crop applied */
             <motion.div
-              className="w-full h-full touch-pan-y"
+              className="w-full h-full touch-pan-y flex items-center justify-center"
               onPanEnd={handlePanEnd}
             >
               <AnimatePresence mode="wait">
@@ -487,14 +487,31 @@ export function EnhancedCarouselEditor({
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.15 }}
-                  className="w-full h-full relative"
+                  className={cn(
+                    "relative overflow-hidden",
+                    // Apply aspect ratio from crop
+                    currentImage.cropData.aspectRatio === 'square' && 'aspect-square',
+                    currentImage.cropData.aspectRatio === 'portrait' && 'aspect-[4/5]',
+                    currentImage.cropData.aspectRatio === 'landscape' && 'aspect-video',
+                    currentImage.cropData.aspectRatio === 'original' && 'w-full h-full'
+                  )}
+                  style={{
+                    maxWidth: currentImage.cropData.aspectRatio === 'original' ? '100%' : 
+                              currentImage.cropData.aspectRatio === 'landscape' ? '100%' : 
+                              currentImage.cropData.aspectRatio === 'portrait' ? '80%' : '85%',
+                    maxHeight: '100%',
+                  }}
                 >
-                  {/* Base image */}
+                  {/* Base image with crop transforms applied */}
                   <img
                     src={currentImage.previewUrl}
                     alt={currentImage.altText || `Image ${selectedIndex + 1}`}
-                    className="w-full h-full object-contain absolute inset-0 select-none"
-                    style={adjustmentStyles}
+                    className="w-full h-full object-cover select-none"
+                    style={{
+                      ...adjustmentStyles,
+                      transform: `scale(${currentImage.cropData.scale}) translate(${currentImage.cropData.translateX / currentImage.cropData.scale}%, ${currentImage.cropData.translateY / currentImage.cropData.scale}%) rotate(${currentImage.cropData.rotation || 0}deg)`,
+                      transformOrigin: 'center',
+                    }}
                     draggable={false}
                     onContextMenu={(e) => e.preventDefault()}
                   />
@@ -504,11 +521,13 @@ export function EnhancedCarouselEditor({
                     <img
                       src={currentImage.previewUrl}
                       alt=""
-                      className={cn('w-full h-full object-contain absolute inset-0 pointer-events-none select-none', filterClass)}
+                      className={cn('w-full h-full object-cover absolute inset-0 pointer-events-none select-none', filterClass)}
                       style={{
                         ...adjustmentStyles,
                         opacity: filterOpacity,
                         mixBlendMode: 'normal',
+                        transform: `scale(${currentImage.cropData.scale}) translate(${currentImage.cropData.translateX / currentImage.cropData.scale}%, ${currentImage.cropData.translateY / currentImage.cropData.scale}%) rotate(${currentImage.cropData.rotation || 0}deg)`,
+                        transformOrigin: 'center',
                       }}
                       draggable={false}
                       onContextMenu={(e) => e.preventDefault()}
