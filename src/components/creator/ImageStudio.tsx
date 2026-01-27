@@ -1,6 +1,6 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Loader2, Sliders, Palette, MapPin, Users, Type, Music, X } from 'lucide-react';
+import { ArrowLeft, Loader2, Sliders, Palette, Crop, MapPin, Music, X, Image as ImageIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -13,22 +13,29 @@ import { TopicTagSelector } from './shared/TopicTagSelector';
 import { ContentWarningToggle } from './shared/ContentWarningToggle';
 import { LocationPicker, type Location } from './post/LocationPicker';
 import { SoundPicker } from './SoundPicker';
-import { compressImage } from '@/lib/imageCompression';
+import { cn } from '@/lib/utils';
+
+// Enhanced imports
 import {
-  ImageCarouselEditor,
-  createCarouselImage,
-  CropTool,
-  AdjustmentPanel,
-  FilterLibrary,
-  UserTagOverlay,
-  AltTextInput,
-  getAdjustmentStyles,
-  getFilterClass,
   type CarouselImage,
   type UserTag,
   type ImageAdjustments,
+  type UploadStatus,
+  createCarouselImage,
+  DEFAULT_ADJUSTMENTS,
+  GalleryFirstSelector,
+  EnhancedCarouselEditor,
+  EnhancedFilterLibrary,
+  EnhancedCropTool,
+  PerImageUserTags,
+  PerImageAltText,
+  UnsavedChangesDialog,
+  UploadProgressOverlay,
+  useImageCompression,
+  useImageExport,
+  getAdjustmentStyles,
+  filters,
 } from './image';
-import { cn } from '@/lib/utils';
 
 // Simulation mode flag
 const SIMULATION_MODE = true;
@@ -54,87 +61,184 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [editTab, setEditTab] = useState<EditTab>('filters');
 
-  // Current image editing state
-  const [filterIntensity, setFilterIntensity] = useState(100);
-
   // Details state
   const [caption, setCaption] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [contentWarning, setContentWarning] = useState(false);
   const [contentWarningType, setContentWarningType] = useState<ContentWarningType>(null);
   const [location, setLocation] = useState<Location | null>(null);
-  const [userTags, setUserTags] = useState<UserTag[]>([]);
-  const [isTagging, setIsTagging] = useState(false);
   const [selectedSound, setSelectedSound] = useState<any>(null);
   const [showSoundPicker, setShowSoundPicker] = useState(false);
 
+  // Submission state
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState<UploadStatus>('idle');
+  const [uploadProgress, setUploadProgress] = useState<{ id: string; previewUrl: string; status: 'pending' | 'preparing' | 'uploading' | 'complete' | 'error' }[]>([]);
+
+  // Unsaved changes dialog
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState<'back' | 'close' | null>(null);
+
+  // Track if user has made changes
+  const [hasChanges, setHasChanges] = useState(false);
 
   const currentImage = images[selectedImageIndex];
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length === 0) return;
+  // Image compression hook
+  const updateImage = useCallback((id: string, updates: Partial<CarouselImage>) => {
+    setImages(prev => prev.map(img => img.id === id ? { ...img, ...updates } : img));
+    setHasChanges(true);
+  }, []);
 
-    // Limit to 20 images total
-    const availableSlots = 20 - images.length;
-    const filesToAdd = files.slice(0, availableSlots);
+  const { compressInBackground, cancelAll } = useImageCompression(updateImage);
 
-    // Compress images before adding
-    const compressedFiles = await Promise.all(
-      filesToAdd.map(file => compressImage(file, { maxWidth: 1920, maxHeight: 1920 }))
-    );
+  // Image export hook
+  const { exportAllImages } = useImageExport();
 
-    const newImages = compressedFiles.map(file => createCarouselImage(file));
-    setImages(prev => [...prev, ...newImages]);
+  // Start background compression when images are added
+  useEffect(() => {
+    images.forEach(img => {
+      if (!img.compressedFile && !img.isCompressing) {
+        compressInBackground(img);
+      }
+    });
+  }, [images, compressInBackground]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      cancelAll();
+      // Revoke object URLs
+      images.forEach(img => {
+        if (img.previewUrl) URL.revokeObjectURL(img.previewUrl);
+      });
+    };
+  }, []);
+
+  const handleImagesChange = useCallback((newImages: CarouselImage[]) => {
+    setImages(newImages);
+    setHasChanges(true);
     
-    if (images.length === 0) {
-      setStep('edit');
+    // Adjust selected index if needed
+    if (selectedImageIndex >= newImages.length) {
+      setSelectedImageIndex(Math.max(0, newImages.length - 1));
     }
-
-    // Reset file input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
+  }, [selectedImageIndex]);
 
   const updateCurrentImage = useCallback((updates: Partial<CarouselImage>) => {
-    setImages(prev => prev.map((img, i) => 
-      i === selectedImageIndex ? { ...img, ...updates } : img
-    ));
-  }, [selectedImageIndex]);
+    if (!currentImage) return;
+    updateImage(currentImage.id, updates);
+  }, [currentImage, updateImage]);
 
   const handleAdjustmentsChange = (adjustments: ImageAdjustments) => {
     updateCurrentImage(adjustments);
   };
 
-  const getImageStyles = (image: CarouselImage) => {
-    const adjustmentStyles = getAdjustmentStyles({
-      brightness: image.brightness,
-      contrast: image.contrast,
-      saturation: image.saturation,
-      warmth: image.warmth,
-      highlights: image.highlights,
-      shadows: image.shadows,
-      vignette: image.vignette,
-      sharpen: image.sharpen,
-      structure: image.structure,
-      fade: image.fade,
-    });
+  // Navigation with unsaved changes check
+  const handleBack = useCallback(() => {
+    if (step === 'select') {
+      if (images.length > 0 && hasChanges) {
+        setPendingNavigation('back');
+        setShowUnsavedDialog(true);
+      } else {
+        onBack();
+      }
+    } else if (step === 'edit') {
+      setStep('select');
+    } else {
+      setStep('edit');
+    }
+  }, [step, images.length, hasChanges, onBack]);
 
-    return adjustmentStyles;
+  const handleClose = useCallback(() => {
+    if (hasChanges && (images.length > 0 || step !== 'select')) {
+      setPendingNavigation('close');
+      setShowUnsavedDialog(true);
+    } else {
+      onBack();
+    }
+  }, [hasChanges, images.length, step, onBack]);
+
+  const handleDiscardChanges = () => {
+    setShowUnsavedDialog(false);
+    onBack();
   };
 
+  const handleKeepEditing = () => {
+    setShowUnsavedDialog(false);
+    setPendingNavigation(null);
+  };
+
+  // Proceed from select to edit (with validation)
+  const handleProceedToEdit = () => {
+    if (images.length === 0) {
+      toast({
+        title: 'No images selected',
+        description: 'Please select at least one image to continue.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    setStep('edit');
+  };
+
+  // Proceed from edit to details
+  const handleProceedToDetails = () => {
+    if (images.length === 0) {
+      setStep('select');
+      return;
+    }
+    setStep('details');
+  };
+
+  // Validate before share
+  const canShare = images.length > 0 && selectedTags.length >= 1 && selectedTags.length <= 5;
+
   const handleSubmit = async () => {
-    if (images.length === 0 || selectedTags.length === 0) return;
+    if (!canShare) {
+      if (selectedTags.length === 0) {
+        toast({
+          title: 'Topic tags required',
+          description: 'Please select at least one topic tag.',
+          variant: 'destructive',
+        });
+      } else if (selectedTags.length > 5) {
+        toast({
+          title: 'Too many tags',
+          description: 'Please select up to 5 topic tags.',
+          variant: 'destructive',
+        });
+      }
+      return;
+    }
 
     setIsSubmitting(true);
+    setUploadStatus('preparing');
+
+    // Initialize progress tracking
+    setUploadProgress(images.map(img => ({
+      id: img.id,
+      previewUrl: img.previewUrl,
+      status: 'pending',
+    })));
 
     try {
       if (SIMULATION_MODE || isSimulationMode) {
-        const displayName = user?.email?.split('@')[0] || 'You';
+        // Simulate upload progress
+        for (let i = 0; i < images.length; i++) {
+          setUploadProgress(prev => prev.map((p, idx) => 
+            idx === i ? { ...p, status: 'uploading' } : p
+          ));
+          await new Promise(r => setTimeout(r, 300));
+          setUploadProgress(prev => prev.map((p, idx) => 
+            idx === i ? { ...p, status: 'complete' } : p
+          ));
+        }
 
-        // Create post with first image
+        setUploadStatus('finalizing');
+        await new Promise(r => setTimeout(r, 200));
+
+        const displayName = user?.email?.split('@')[0] || 'You';
         const firstImageUrl = images[0]?.previewUrl || '';
         
         createPost({
@@ -152,9 +256,12 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
           media: { type: 'image', url: firstImageUrl },
         });
 
+        setUploadStatus('complete');
+        await new Promise(r => setTimeout(r, 500));
+
         toast({
           title: images.length > 1 ? 'Photos shared!' : 'Photo shared!',
-          description: 'Your photo is now live in the feed.',
+          description: 'Your post is now live in the feed.',
         });
 
         onSuccess();
@@ -164,26 +271,93 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
       // Real Supabase mode
       if (!user) return;
 
+      // Export images with all edits applied
+      setUploadStatus('preparing');
+      const exportedImages = await exportAllImages(images, {}, (current, total, status) => {
+        setUploadProgress(prev => prev.map((p, idx) => ({
+          ...p,
+          status: idx < current ? 'complete' : idx === current - 1 ? 'preparing' : 'pending',
+        })));
+      });
+
       // Upload all images
+      setUploadStatus('uploading');
       const uploadedUrls: string[] = [];
-      for (const image of images) {
-        const fileExt = image.file.name.split('.').pop();
-        const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
+      
+      for (let i = 0; i < exportedImages.length; i++) {
+        setUploadProgress(prev => prev.map((p, idx) => 
+          idx === i ? { ...p, status: 'uploading' } : p
+        ));
+
+        const { file } = exportedImages[i];
+        const now = new Date();
+        const fileName = `${user.id}/${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${Date.now()}-${Math.random().toString(36).slice(2)}.webp`;
 
         const { error: uploadError } = await supabase.storage
           .from('media')
-          .upload(fileName, image.file);
+          .upload(fileName, file);
 
-        if (uploadError) throw uploadError;
+        if (uploadError) {
+          setUploadProgress(prev => prev.map((p, idx) => 
+            idx === i ? { ...p, status: 'error' } : p
+          ));
+          throw uploadError;
+        }
 
         const { data: urlData } = supabase.storage
           .from('media')
           .getPublicUrl(fileName);
 
         uploadedUrls.push(urlData.publicUrl);
+        
+        setUploadProgress(prev => prev.map((p, idx) => 
+          idx === i ? { ...p, status: 'complete' } : p
+        ));
       }
 
       // Create post
+      setUploadStatus('finalizing');
+      
+      // Serialize media_meta to be JSON-compatible
+      const mediaMeta = {
+        images: images.map((img, i) => ({
+          url: uploadedUrls[i],
+          filter: img.filter,
+          filterIntensity: img.filterIntensity,
+          adjustments: {
+            brightness: img.brightness,
+            contrast: img.contrast,
+            saturation: img.saturation,
+            warmth: img.warmth,
+            highlights: img.highlights,
+            shadows: img.shadows,
+            vignette: img.vignette,
+            sharpen: img.sharpen,
+            structure: img.structure,
+            fade: img.fade,
+          },
+          crop: {
+            scale: img.cropData.scale,
+            translateX: img.cropData.translateX,
+            translateY: img.cropData.translateY,
+            aspectRatio: img.cropData.aspectRatio,
+          },
+          aspectRatio: img.aspectRatio,
+          altText: img.altText,
+          userTags: img.userTags.map(tag => ({
+            id: tag.id,
+            userId: tag.userId,
+            username: tag.username,
+            displayName: tag.displayName,
+            avatar: tag.avatar || null,
+            positionX: tag.positionX,
+            positionY: tag.positionY,
+          })),
+        })),
+        location: location ? { name: location.name, address: location.address || null } : null,
+        sound: selectedSound ? { id: selectedSound.id, name: selectedSound.name, artist: selectedSound.artist } : null,
+      };
+
       const { error: postError, data: post } = await supabase
         .from('posts')
         .insert([{
@@ -194,37 +368,15 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
           media_type: 'image',
           content_warning_enabled: contentWarning,
           content_warning_type: contentWarning ? contentWarningType : null,
-          media_meta: {
-            images: images.map((img, i) => ({
-              url: uploadedUrls[i],
-              filter: img.filter,
-              adjustments: {
-                brightness: img.brightness,
-                contrast: img.contrast,
-                saturation: img.saturation,
-                warmth: img.warmth,
-                highlights: img.highlights,
-                shadows: img.shadows,
-                vignette: img.vignette,
-                sharpen: img.sharpen,
-                structure: img.structure,
-                fade: img.fade,
-              },
-              aspectRatio: img.aspectRatio,
-              altText: img.altText,
-            })),
-            location: location ? { name: location.name, address: location.address || null } : null,
-            userTags: userTags.map(t => ({ id: t.id, userId: t.userId, username: t.username, positionX: t.positionX, positionY: t.positionY })),
-            sound: selectedSound ? { id: selectedSound.id, name: selectedSound.name, artist: selectedSound.artist } : null,
-          },
+          media_meta: mediaMeta,
         }])
         .select()
         .single();
 
       if (postError) throw postError;
 
-      // Add tags
-      if (post) {
+      // Add topic tags
+      if (post && selectedTags.length > 0) {
         const tagMappings = selectedTags.map((tagId) => ({
           post_id: post.id,
           tag_id: tagId,
@@ -233,17 +385,36 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
         await supabase.from('post_tag_map').insert(tagMappings);
       }
 
+      setUploadStatus('complete');
+      await new Promise(r => setTimeout(r, 500));
+
+      toast({
+        title: images.length > 1 ? 'Photos shared!' : 'Photo shared!',
+        description: 'Your post is now live in the feed.',
+      });
+
       onSuccess();
     } catch (error) {
       console.error('Error creating post:', error);
+      setUploadStatus('error');
       toast({
-        title: 'Error',
-        description: 'Failed to share photo. Please try again.',
+        title: 'Upload failed',
+        description: 'Some images failed to upload. Please retry.',
         variant: 'destructive',
       });
     } finally {
-      setIsSubmitting(false);
+      if (uploadStatus !== 'error') {
+        setIsSubmitting(false);
+      }
     }
+  };
+
+  const handleRetryUpload = (imageId: string) => {
+    // Retry logic would go here
+    toast({
+      title: 'Retry',
+      description: 'Retrying upload...',
+    });
   };
 
   return (
@@ -256,7 +427,7 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border">
         <button
-          onClick={step === 'select' ? onBack : () => setStep(step === 'details' ? 'edit' : 'select')}
+          onClick={handleBack}
           className="p-2 -ml-2 rounded-full hover:bg-secondary transition-colors"
         >
           <ArrowLeft className="h-5 w-5" />
@@ -265,25 +436,26 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
           {step === 'select' ? 'Select Photos' : step === 'edit' ? 'Edit' : 'Details'}
         </h2>
         <div className="flex items-center gap-2">
-          {step === 'edit' ? (
-            <Button size="sm" variant="ghost" onClick={() => setStep('details')}>
+          {step === 'edit' && (
+            <Button size="sm" variant="ghost" onClick={handleProceedToDetails}>
               Next
             </Button>
-          ) : step === 'details' ? (
+          )}
+          {step === 'details' && (
             <Button
               size="sm"
               onClick={handleSubmit}
-              disabled={selectedTags.length === 0 || isSubmitting}
+              disabled={!canShare || isSubmitting}
               className="bg-primary text-primary-foreground"
             >
               {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Share'}
             </Button>
-          ) : null}
+          )}
           <button
-            onClick={onBack}
-            className="p-2 hover:bg-secondary transition-colors"
+            onClick={handleClose}
+            className="p-2 rounded-full hover:bg-secondary transition-colors"
           >
-            <X className="h-6 w-6" />
+            <X className="h-5 w-5" />
           </button>
         </div>
       </div>
@@ -296,26 +468,14 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex-1 flex flex-col items-center justify-center p-8"
+            className="flex-1 flex flex-col"
           >
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleFileSelect}
-              className="hidden"
+            <GalleryFirstSelector
+              images={images}
+              onImagesChange={handleImagesChange}
+              onProceed={handleProceedToEdit}
+              maxImages={20}
             />
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="w-full aspect-square max-w-[280px] rounded-2xl border-2 border-dashed border-border hover:border-primary/50 transition-colors flex flex-col items-center justify-center gap-3 text-muted-foreground hover:text-foreground"
-            >
-              <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center">
-                <span className="text-3xl">📷</span>
-              </div>
-              <span className="text-sm font-medium">Tap to select photos</span>
-              <span className="text-xs text-muted-foreground">Select up to 20 images</span>
-            </button>
           </motion.div>
         )}
 
@@ -328,19 +488,20 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
             exit={{ opacity: 0 }}
             className="flex-1 overflow-y-auto"
           >
-            {/* Carousel Editor */}
+            {/* Enhanced Carousel Editor */}
             <div className="p-4">
-              <ImageCarouselEditor
+              <EnhancedCarouselEditor
                 images={images}
                 selectedIndex={selectedImageIndex}
-                onImagesChange={setImages}
+                onImagesChange={handleImagesChange}
                 onSelectImage={setSelectedImageIndex}
                 onAddImages={() => fileInputRef.current?.click()}
+                maxImages={20}
               />
             </div>
 
             {/* Editing Tabs */}
-            <Tabs value={editTab} onValueChange={(v) => setEditTab(v as EditTab)} className="px-4">
+            <Tabs value={editTab} onValueChange={(v) => setEditTab(v as EditTab)} className="px-4 pb-4">
               <TabsList className="grid w-full grid-cols-3 mb-4">
                 <TabsTrigger value="filters" className="gap-1.5">
                   <Palette className="h-4 w-4" />
@@ -351,43 +512,73 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                   Adjust
                 </TabsTrigger>
                 <TabsTrigger value="crop" className="gap-1.5">
-                  <Type className="h-4 w-4" />
+                  <Crop className="h-4 w-4" />
                   Crop
                 </TabsTrigger>
               </TabsList>
 
               <TabsContent value="filters" className="space-y-4">
-                <FilterLibrary
+                <EnhancedFilterLibrary
                   selectedFilter={currentImage.filter}
-                  filterIntensity={filterIntensity}
+                  filterIntensity={currentImage.filterIntensity}
                   previewUrl={currentImage.previewUrl}
                   onFilterSelect={(index) => updateCurrentImage({ filter: index })}
-                  onIntensityChange={setFilterIntensity}
+                  onIntensityChange={(intensity) => updateCurrentImage({ filterIntensity: intensity })}
                 />
               </TabsContent>
 
               <TabsContent value="adjust">
-                <AdjustmentPanel
-                  adjustments={{
-                    brightness: currentImage.brightness,
-                    contrast: currentImage.contrast,
-                    saturation: currentImage.saturation,
-                    warmth: currentImage.warmth,
-                    highlights: currentImage.highlights,
-                    shadows: currentImage.shadows,
-                    vignette: currentImage.vignette,
-                    sharpen: currentImage.sharpen,
-                    structure: currentImage.structure,
-                    fade: currentImage.fade,
-                  }}
-                  onAdjustmentsChange={handleAdjustmentsChange}
-                />
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Using inline adjustment sliders */}
+                    {Object.entries({
+                      brightness: { label: 'Brightness', min: 50, max: 150, default: 100 },
+                      contrast: { label: 'Contrast', min: 50, max: 150, default: 100 },
+                      saturation: { label: 'Saturation', min: 0, max: 200, default: 100 },
+                      warmth: { label: 'Warmth', min: -100, max: 100, default: 0 },
+                      highlights: { label: 'Highlights', min: -100, max: 100, default: 0 },
+                      shadows: { label: 'Shadows', min: -100, max: 100, default: 0 },
+                      vignette: { label: 'Vignette', min: 0, max: 100, default: 0 },
+                      fade: { label: 'Fade', min: 0, max: 100, default: 0 },
+                    }).map(([key, config]) => (
+                      <div key={key} className="space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-muted-foreground">{config.label}</span>
+                          <span className="text-xs font-medium tabular-nums">
+                            {currentImage[key as keyof CarouselImage] as number}
+                          </span>
+                        </div>
+                        <input
+                          type="range"
+                          min={config.min}
+                          max={config.max}
+                          value={currentImage[key as keyof CarouselImage] as number}
+                          onChange={(e) => updateCurrentImage({ [key]: parseInt(e.target.value) })}
+                          className="w-full h-1 bg-secondary rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:rounded-full"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => updateCurrentImage(DEFAULT_ADJUSTMENTS)}
+                    className="w-full text-xs"
+                  >
+                    Reset All Adjustments
+                  </Button>
+                </div>
               </TabsContent>
 
               <TabsContent value="crop">
-                <CropTool
-                  aspectRatio={currentImage.aspectRatio}
-                  onAspectRatioChange={(ratio) => updateCurrentImage({ aspectRatio: ratio })}
+                <EnhancedCropTool
+                  imageUrl={currentImage.previewUrl}
+                  cropData={currentImage.cropData}
+                  onCropChange={(cropData) => updateCurrentImage({ 
+                    cropData, 
+                    aspectRatio: cropData.aspectRatio 
+                  })}
                 />
               </TabsContent>
             </Tabs>
@@ -398,7 +589,16 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
               type="file"
               accept="image/*"
               multiple
-              onChange={handleFileSelect}
+              onChange={(e) => {
+                const files = Array.from(e.target.files || []);
+                if (files.length > 0) {
+                  const availableSlots = 20 - images.length;
+                  const filesToAdd = files.slice(0, availableSlots);
+                  const newImages = filesToAdd.map(f => createCarouselImage(f));
+                  handleImagesChange([...images, ...newImages]);
+                }
+                e.target.value = '';
+              }}
               className="hidden"
             />
           </motion.div>
@@ -418,49 +618,71 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
               {images.map((img, i) => (
                 <div
                   key={img.id}
-                  className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border border-border"
+                  className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border border-border relative"
                 >
                   <img
                     src={img.previewUrl}
                     alt={`Preview ${i + 1}`}
-                    className={cn('w-full h-full object-cover', getFilterClass(img.filter))}
-                    style={getImageStyles(img)}
+                    className={cn('w-full h-full object-cover', img.filter > 0 && filters[img.filter]?.class)}
+                    style={getAdjustmentStyles({
+                      brightness: img.brightness,
+                      contrast: img.contrast,
+                      saturation: img.saturation,
+                      warmth: img.warmth,
+                      highlights: img.highlights,
+                      shadows: img.shadows,
+                      vignette: img.vignette,
+                      sharpen: img.sharpen,
+                      structure: img.structure,
+                      fade: img.fade,
+                    })}
                   />
+                  <div className="absolute bottom-0.5 right-0.5 w-4 h-4 rounded-full bg-background/80 flex items-center justify-center text-[10px] font-medium">
+                    {i + 1}
+                  </div>
                 </div>
               ))}
             </div>
 
             {/* Caption */}
-            <Textarea
-              placeholder="Write a caption..."
-              value={caption}
-              onChange={(e) => setCaption(e.target.value)}
-              className="min-h-[100px] resize-none"
-            />
+            <div className="space-y-2">
+              <Textarea
+                placeholder="Write a caption..."
+                value={caption}
+                onChange={(e) => {
+                  setCaption(e.target.value);
+                  setHasChanges(true);
+                }}
+                className="min-h-[100px] resize-none"
+              />
+              <p className="text-xs text-muted-foreground text-right">
+                {caption.length} / 2,200
+              </p>
+            </div>
 
-            {/* User Tagging */}
-            <UserTagOverlay
-              tags={userTags}
-              onTagsChange={setUserTags}
-              imageUrl={images[0]?.previewUrl || ''}
-              isEditing={isTagging}
-              onEditingChange={setIsTagging}
+            {/* Per-Image User Tagging */}
+            <PerImageUserTags
+              images={images}
+              selectedImageIndex={selectedImageIndex}
+              onImageSelect={setSelectedImageIndex}
+              onTagsChange={(imageId, tags) => updateImage(imageId, { userTags: tags })}
             />
 
             {/* Location */}
             <LocationPicker
               value={location}
-              onChange={setLocation}
+              onChange={(loc) => {
+                setLocation(loc);
+                setHasChanges(true);
+              }}
             />
 
-            {/* Alt Text for first image */}
-            <AltTextInput
-              value={images[0]?.altText || ''}
-              onChange={(text) => {
-                setImages(prev => prev.map((img, i) => 
-                  i === 0 ? { ...img, altText: text } : img
-                ));
-              }}
+            {/* Per-Image Alt Text */}
+            <PerImageAltText
+              images={images}
+              selectedImageIndex={selectedImageIndex}
+              onImageSelect={setSelectedImageIndex}
+              onAltTextChange={(imageId, altText) => updateImage(imageId, { altText })}
             />
 
             {/* Music (for carousels) */}
@@ -489,6 +711,7 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                       selectedSound={selectedSound}
                       onSelect={(sound) => {
                         setSelectedSound(sound);
+                        setHasChanges(true);
                       }}
                     />
                   </div>
@@ -496,22 +719,60 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
               </div>
             )}
 
-            {/* Topic Tags */}
-            <TopicTagSelector
-              selectedTags={selectedTags}
-              onTagsChange={setSelectedTags}
-            />
+            {/* Topic Tags (Required) */}
+            <div className="space-y-2">
+              <TopicTagSelector
+                selectedTags={selectedTags}
+                onTagsChange={(tags) => {
+                  setSelectedTags(tags);
+                  setHasChanges(true);
+                }}
+              />
+              {selectedTags.length === 0 && (
+                <p className="text-xs text-destructive">At least one topic tag is required</p>
+              )}
+              {selectedTags.length > 5 && (
+                <p className="text-xs text-destructive">Maximum 5 topic tags allowed</p>
+              )}
+            </div>
 
             {/* Content Warning */}
             <ContentWarningToggle
               enabled={contentWarning}
-              onEnabledChange={setContentWarning}
+              onEnabledChange={(enabled) => {
+                setContentWarning(enabled);
+                setHasChanges(true);
+              }}
               warningType={contentWarningType}
-              onWarningTypeChange={setContentWarningType}
+              onWarningTypeChange={(type) => {
+                setContentWarningType(type);
+                setHasChanges(true);
+              }}
             />
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Unsaved Changes Dialog */}
+      <UnsavedChangesDialog
+        isOpen={showUnsavedDialog}
+        onDiscard={handleDiscardChanges}
+        onKeepEditing={handleKeepEditing}
+      />
+
+      {/* Upload Progress Overlay */}
+      <UploadProgressOverlay
+        isOpen={isSubmitting}
+        status={uploadStatus}
+        images={uploadProgress}
+        currentIndex={uploadProgress.filter(p => p.status === 'complete').length}
+        totalImages={images.length}
+        onRetry={handleRetryUpload}
+        onClose={() => {
+          setIsSubmitting(false);
+          setUploadStatus('idle');
+        }}
+      />
     </motion.div>
   );
 }
