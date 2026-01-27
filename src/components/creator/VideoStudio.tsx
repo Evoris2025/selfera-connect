@@ -326,9 +326,9 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
       <div className="flex items-center justify-between p-4 border-b border-border">
         <button
           onClick={goToPrevStep}
-          className="p-2 -ml-2 hover:bg-secondary transition-colors"
+          className="p-2 -ml-2 rounded-full hover:bg-secondary transition-colors"
         >
-          <X className="h-6 w-6" />
+          <ArrowLeft className="h-5 w-5" />
         </button>
         <div className="flex items-center gap-2">
           <Play className="h-5 w-5 text-red-500" />
@@ -336,7 +336,12 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
             {step === 'upload' ? 'Upload Video' : 'Video Studio'}
           </h2>
         </div>
-        <div className="w-12" />
+        <button
+          onClick={onBack}
+          className="p-2 hover:bg-secondary transition-colors"
+        >
+          <X className="h-6 w-6" />
+        </button>
       </div>
 
       {/* YouTube-style Step Pills */}

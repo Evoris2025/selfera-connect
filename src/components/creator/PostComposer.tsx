@@ -293,27 +293,35 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       <div className="flex items-center justify-between p-4 border-b border-border">
         <button
           onClick={onBack}
-          className="p-2 -ml-2 hover:bg-secondary transition-colors"
+          className="p-2 -ml-2 rounded-full hover:bg-secondary transition-colors"
         >
-          <X className="h-6 w-6" />
+          <ArrowLeft className="h-5 w-5" />
         </button>
         <h2 className="font-semibold">
           {scheduledDate ? 'Schedule Post' : 'Create Post'}
         </h2>
-        <Button
-          size="sm"
-          onClick={handleSubmit}
-          disabled={!canPost || isSubmitting}
-          className="gradient-brand text-white"
-        >
-          {isSubmitting ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : scheduledDate ? (
-            'Schedule'
-          ) : (
-            'Post'
-          )}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            onClick={handleSubmit}
+            disabled={!canPost || isSubmitting}
+            className="gradient-brand text-white"
+          >
+            {isSubmitting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : scheduledDate ? (
+              'Schedule'
+            ) : (
+              'Post'
+            )}
+          </Button>
+          <button
+            onClick={onBack}
+            className="p-2 hover:bg-secondary transition-colors"
+          >
+            <X className="h-6 w-6" />
+          </button>
+        </div>
       </div>
 
       {/* Content */}

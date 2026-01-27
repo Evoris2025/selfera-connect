@@ -257,29 +257,35 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
       <div className="flex items-center justify-between p-4 border-b border-border">
         <button
           onClick={step === 'select' ? onBack : () => setStep(step === 'details' ? 'edit' : 'select')}
-          className="p-2 -ml-2 hover:bg-secondary transition-colors"
+          className="p-2 -ml-2 rounded-full hover:bg-secondary transition-colors"
         >
-          <X className="h-6 w-6" />
+          <ArrowLeft className="h-5 w-5" />
         </button>
         <h2 className="font-semibold">
           {step === 'select' ? 'Select Photos' : step === 'edit' ? 'Edit' : 'Details'}
         </h2>
-        {step === 'edit' ? (
-          <Button size="sm" variant="ghost" onClick={() => setStep('details')}>
-            Next
-          </Button>
-        ) : step === 'details' ? (
-          <Button
-            size="sm"
-            onClick={handleSubmit}
-            disabled={selectedTags.length === 0 || isSubmitting}
-            className="bg-primary text-primary-foreground"
+        <div className="flex items-center gap-2">
+          {step === 'edit' ? (
+            <Button size="sm" variant="ghost" onClick={() => setStep('details')}>
+              Next
+            </Button>
+          ) : step === 'details' ? (
+            <Button
+              size="sm"
+              onClick={handleSubmit}
+              disabled={selectedTags.length === 0 || isSubmitting}
+              className="bg-primary text-primary-foreground"
+            >
+              {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Share'}
+            </Button>
+          ) : null}
+          <button
+            onClick={onBack}
+            className="p-2 hover:bg-secondary transition-colors"
           >
-            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Share'}
-          </Button>
-        ) : (
-          <div className="w-12" />
-        )}
+            <X className="h-6 w-6" />
+          </button>
+        </div>
       </div>
 
       <AnimatePresence mode="wait">
