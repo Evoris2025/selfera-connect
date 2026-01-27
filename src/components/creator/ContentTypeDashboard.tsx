@@ -128,80 +128,94 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
           </motion.p>
         </div>
 
-        {/* Editorial Timeline */}
-        <div className="flex-1 px-6 py-6">
-          <div className="relative h-full flex flex-col">
-            {/* Vertical Timeline Line */}
-            <motion.div 
-              className="absolute left-[11px] top-2 bottom-2 w-[2px] bg-gradient-to-b from-rose-500 via-blue-500 via-amber-500 to-emerald-500 rounded-full"
-              initial={{ scaleY: 0 }}
-              animate={{ scaleY: 1 }}
-              transition={{ delay: 0.3, duration: 0.5, ease: 'easeOut' }}
-              style={{ originY: 0 }}
-            />
-            
-            {/* Timeline Items */}
-            <div className="flex flex-col flex-1 justify-evenly">
-              {contentTypes.map((type, index) => (
+        {/* Editorial Numbered Grid */}
+        <div className="flex-1 px-4 py-6 overflow-y-auto">
+          <div className="flex flex-col gap-6">
+            {contentTypes.map((type, index) => {
+              const isEven = index % 2 === 0;
+              const numberStr = String(index + 1).padStart(2, '0');
+              
+              return (
                 <motion.button
                   key={type.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ 
-                    delay: 0.4 + index * 0.08, 
+                    delay: 0.3 + index * 0.1, 
                     type: 'spring', 
-                    stiffness: 400, 
-                    damping: 30 
+                    stiffness: 300, 
+                    damping: 25 
                   }}
                   onClick={() => onSelect(type.id)}
-                  className="group relative flex items-center gap-5 py-4 text-left focus:outline-none"
+                  className={cn(
+                    "group relative flex items-center gap-4 p-4 text-left focus:outline-none",
+                    "bg-secondary/30 hover:bg-secondary/50 transition-all duration-300",
+                    "border border-border/20 hover:border-border/40",
+                    isEven ? "flex-row" : "flex-row-reverse"
+                  )}
                 >
-                  {/* Timeline Node */}
-                  <motion.div 
-                    className={cn(
-                      "relative z-10 w-6 h-6 rounded-full shadow-lg flex items-center justify-center",
-                      "transition-all duration-300",
-                      "group-hover:scale-110 group-hover:shadow-xl",
-                      type.nodeColor
-                    )}
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ 
-                      delay: 0.35 + index * 0.08, 
-                      type: 'spring', 
-                      stiffness: 500, 
-                      damping: 25 
-                    }}
-                  >
-                    <type.icon className="h-3 w-3 text-white" />
-                  </motion.div>
-                  
-                  {/* Horizontal Connector */}
-                  <motion.div 
-                    className="w-6 h-[2px] bg-border/40 group-hover:bg-border/60 transition-colors"
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: 1 }}
-                    transition={{ delay: 0.45 + index * 0.08, duration: 0.2 }}
-                    style={{ originX: 0 }}
-                  />
+                  {/* Large Number with Gradient */}
+                  <div className="relative flex-shrink-0 w-20 h-20 flex items-center justify-center">
+                    <span 
+                      className={cn(
+                        "text-6xl font-black tracking-tighter",
+                        "bg-clip-text text-transparent",
+                        `bg-gradient-to-br ${type.gradient}`
+                      )}
+                      style={{ 
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent'
+                      }}
+                    >
+                      {numberStr}
+                    </span>
+                    {/* Subtle glow behind number */}
+                    <div 
+                      className={cn(
+                        "absolute inset-0 blur-2xl opacity-20",
+                        `bg-gradient-to-br ${type.gradient}`
+                      )}
+                    />
+                  </div>
                   
                   {/* Content */}
-                  <div className="flex-1 flex flex-col gap-0.5 transition-transform duration-200 group-hover:translate-x-1">
-                    <span className="text-lg font-semibold text-foreground tracking-wide">
-                      {type.title}
-                    </span>
-                    <span className="text-sm text-muted-foreground">
+                  <div className={cn(
+                    "flex-1 flex flex-col gap-1",
+                    isEven ? "text-left" : "text-right"
+                  )}>
+                    <div className={cn(
+                      "flex items-center gap-2",
+                      isEven ? "flex-row" : "flex-row-reverse"
+                    )}>
+                      <div className={cn(
+                        "w-8 h-8 flex items-center justify-center",
+                        type.nodeColor
+                      )}>
+                        <type.icon className="h-4 w-4 text-white" />
+                      </div>
+                      <span className="text-xl font-bold text-foreground tracking-wide group-hover:text-primary transition-colors">
+                        {type.title}
+                      </span>
+                    </div>
+                    <span className={cn(
+                      "text-sm text-muted-foreground",
+                      isEven ? "pl-10" : "pr-10"
+                    )}>
                       {type.description}
                     </span>
                   </div>
                   
-                  {/* Action Indicator */}
+                  {/* Arrow Indicator */}
                   <ChevronRight 
-                    className="h-5 w-5 text-muted-foreground/30 transition-all duration-200 group-hover:text-muted-foreground group-hover:translate-x-1" 
+                    className={cn(
+                      "h-5 w-5 text-muted-foreground/30 transition-all duration-200",
+                      "group-hover:text-muted-foreground group-hover:translate-x-1",
+                      !isEven && "rotate-180 group-hover:-translate-x-1 group-hover:translate-x-0"
+                    )}
                   />
                 </motion.button>
-              ))}
-            </div>
+              );
+            })}
           </div>
         </div>
       </div>
