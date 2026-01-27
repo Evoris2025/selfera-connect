@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Sparkles, Video, Image, FileText, FileEdit, X, ArrowLeft } from 'lucide-react';
+import { Sparkles, Video, Image, FileText, FileEdit, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BrandMark } from '@/components/BrandMark';
 import { useDrafts } from './shared/DraftManager';
@@ -73,19 +73,11 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
         <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-blue-500/5 rounded-full blur-[80px]" />
       </div>
 
-      {/* Minimal Header */}
-      <div className="relative z-10 flex items-center justify-between px-4 py-3 border-b border-border/30">
+      {/* Minimal Header - Single close button */}
+      <div className="relative z-10 flex items-center justify-end px-4 py-3 border-b border-border/20">
         <button
           onClick={onClose}
-          className="p-2 -ml-2 rounded-lg hover:bg-secondary/50 transition-colors"
-          aria-label="Go back"
-        >
-          <ArrowLeft className="h-5 w-5 text-muted-foreground" />
-        </button>
-        <div className="w-5" /> {/* Spacer for centering */}
-        <button
-          onClick={onClose}
-          className="p-2 -mr-2 rounded-lg hover:bg-secondary/50 transition-colors"
+          className="p-2 -mr-2 hover:bg-secondary/50 transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           aria-label="Close"
         >
           <X className="h-5 w-5 text-muted-foreground" />
@@ -103,7 +95,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1, type: 'spring', stiffness: 300, damping: 25 }}
-            className="relative -ml-6"
+            className="relative"
           >
             <BrandMark className="h-14 w-[240px]" />
           </motion.div>
@@ -147,16 +139,18 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
                   }}
                   onClick={() => onSelect(type.id)}
                   className={cn(
-                    "group relative flex items-center gap-4 p-4 text-left focus:outline-none w-full",
-                    "bg-secondary/30 hover:bg-secondary/50 transition-all duration-300",
-                    "border border-primary/40 hover:border-primary"
+                    "group relative flex items-center gap-5 p-5 text-left w-full",
+                    "bg-secondary/20 hover:bg-secondary/40 transition-all duration-300",
+                    "border border-primary/30 hover:border-primary/80",
+                    "hover:scale-[1.01] active:scale-[0.995]",
+                    "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background focus:outline-none"
                   )}
                 >
                   {/* Large Number - Always Left */}
                   <div className="relative flex-shrink-0 w-16 h-16 flex items-center justify-center">
                     <span 
                       className={cn(
-                        "text-5xl font-black tracking-tighter",
+                        "text-5xl font-black tracking-tighter relative z-10",
                         "bg-clip-text text-transparent",
                         `bg-gradient-to-br ${type.gradient}`
                       )}
@@ -167,10 +161,10 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
                     >
                       {numberStr}
                     </span>
-                    {/* Subtle glow behind number */}
+                    {/* Enhanced glow behind number */}
                     <div 
                       className={cn(
-                        "absolute inset-0 blur-2xl opacity-20",
+                        "absolute inset-0 blur-3xl opacity-25 scale-150",
                         `bg-gradient-to-br ${type.gradient}`
                       )}
                     />
@@ -196,9 +190,10 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
                     </span>
                   </div>
                   
-                  {/* Icon - Always Right, Circular, Larger */}
+                  {/* Icon - Always Right, Circular with hover animation */}
                   <div className={cn(
                     "flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center",
+                    "transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg",
                     type.nodeColor
                   )}>
                     <type.icon className="h-7 w-7 text-white" />
@@ -218,7 +213,12 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
         className="relative z-10 p-4 border-t border-border/30 bg-card/20 backdrop-blur-sm"
       >
         <button 
-          className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-secondary/50 hover:bg-secondary/80 rounded-lg transition-colors group"
+          className={cn(
+            "flex items-center justify-center gap-2.5 w-full px-4 py-3.5",
+            "bg-secondary/40 hover:bg-secondary/60 transition-all duration-200 group",
+            "border border-border/30 hover:border-border/50",
+            "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background focus:outline-none"
+          )}
         >
           <FileEdit className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
           <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
