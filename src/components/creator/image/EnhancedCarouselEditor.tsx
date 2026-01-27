@@ -311,8 +311,8 @@ export function EnhancedCarouselEditor({
 
   return (
     <div className={cn("flex gap-4", className)}>
-      {/* Left Side: Thumbnails and Counter */}
-      <div className="flex flex-col gap-2 w-20 flex-shrink-0">
+      {/* Left Side: Thumbnails and Counter - matches preview height */}
+      <div className="flex flex-col gap-2 w-20 flex-shrink-0 h-full">
         {/* Image Counter + Reorder Toggle */}
         <div className="flex items-center gap-1">
           <div className="px-2 py-1 rounded-full bg-muted text-xs font-medium flex-1 text-center">
@@ -353,15 +353,14 @@ export function EnhancedCarouselEditor({
           </button>
         )}
 
-        {/* Thumbnails Container */}
+        {/* Thumbnails Container - flex-1 to match preview height */}
         <div
           ref={scrollContainerRef}
           className={cn(
-            "flex flex-col gap-2 overflow-y-auto scrollbar-hide scroll-smooth",
+            "flex flex-col gap-2 overflow-y-auto scrollbar-hide scroll-smooth flex-1 min-h-0",
             isReorderMode ? 'overflow-visible' : 'touch-pan-y'
           )}
           style={{ 
-            maxHeight: isReorderMode ? 'none' : '320px',
             WebkitOverflowScrolling: 'touch' 
           }}
         >
@@ -525,8 +524,8 @@ export function EnhancedCarouselEditor({
         )}
       </div>
 
-      {/* Right Side: Main Preview - FIXED SIZE Container */}
-      <div className="flex-1 relative flex flex-col min-h-0">
+      {/* Right Side: Main Preview - FIXED SIZE Container matching thumbnail height */}
+      <div className="flex-1 relative flex flex-col h-full">
         {/* Fixed size container that never changes */}
         <div className="flex-1 min-h-0 bg-black/50 rounded-xl overflow-hidden flex items-center justify-center">
           {showBeforeAfter ? (
