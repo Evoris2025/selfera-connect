@@ -130,90 +130,113 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
 
         {/* Editorial Numbered Grid */}
         <div className="flex-1 px-4 py-6 overflow-y-auto">
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-5">
             {contentTypes.map((type, index) => {
               const isEven = index % 2 === 0;
               const numberStr = String(index + 1).padStart(2, '0');
               
               return (
-                <motion.button
-                  key={type.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ 
-                    delay: 0.3 + index * 0.1, 
-                    type: 'spring', 
-                    stiffness: 300, 
-                    damping: 25 
-                  }}
-                  onClick={() => onSelect(type.id)}
-                  className={cn(
-                    "group relative flex items-center gap-4 p-4 text-left focus:outline-none",
-                    "bg-secondary/30 hover:bg-secondary/50 transition-all duration-300",
-                    "border border-border/20 hover:border-border/40",
-                    isEven ? "flex-row" : "flex-row-reverse"
-                  )}
-                >
-                  {/* Large Number with Gradient */}
-                  <div className="relative flex-shrink-0 w-20 h-20 flex items-center justify-center">
-                    <span 
-                      className={cn(
-                        "text-6xl font-black tracking-tighter",
-                        "bg-clip-text text-transparent",
-                        `bg-gradient-to-br ${type.gradient}`
-                      )}
-                      style={{ 
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent'
-                      }}
-                    >
-                      {numberStr}
-                    </span>
-                    {/* Subtle glow behind number */}
-                    <div 
-                      className={cn(
-                        "absolute inset-0 blur-2xl opacity-20",
-                        `bg-gradient-to-br ${type.gradient}`
-                      )}
-                    />
-                  </div>
-                  
-                  {/* Content */}
-                  <div className={cn(
-                    "flex-1 flex flex-col gap-1",
-                    isEven ? "text-left" : "text-right"
-                  )}>
-                    <div className={cn(
-                      "flex items-center gap-2",
+                <div key={type.id}>
+                  <motion.button
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ 
+                      delay: 0.3 + index * 0.1, 
+                      type: 'spring', 
+                      stiffness: 300, 
+                      damping: 25 
+                    }}
+                    onClick={() => onSelect(type.id)}
+                    className={cn(
+                      "group relative flex items-center gap-4 p-4 text-left focus:outline-none w-full",
+                      "bg-secondary/30 hover:bg-secondary/50 transition-all duration-300",
+                      "border border-border/20 hover:border-border/40",
                       isEven ? "flex-row" : "flex-row-reverse"
+                    )}
+                  >
+                    {/* Large Number with Gradient */}
+                    <div className="relative flex-shrink-0 w-20 h-20 flex items-center justify-center">
+                      <span 
+                        className={cn(
+                          "text-6xl font-black tracking-tighter",
+                          "bg-clip-text text-transparent",
+                          `bg-gradient-to-br ${type.gradient}`
+                        )}
+                        style={{ 
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent'
+                        }}
+                      >
+                        {numberStr}
+                      </span>
+                      {/* Subtle glow behind number */}
+                      <div 
+                        className={cn(
+                          "absolute inset-0 blur-2xl opacity-20",
+                          `bg-gradient-to-br ${type.gradient}`
+                        )}
+                      />
+                    </div>
+                    
+                    {/* Content */}
+                    <div className={cn(
+                      "flex-1 flex flex-col gap-1",
+                      isEven ? "text-left" : "text-right"
                     )}>
                       <div className={cn(
-                        "w-8 h-8 flex items-center justify-center",
-                        type.nodeColor
+                        "flex items-center gap-2",
+                        isEven ? "flex-row" : "flex-row-reverse"
                       )}>
-                        <type.icon className="h-4 w-4 text-white" />
+                        <div className={cn(
+                          "w-8 h-8 flex items-center justify-center",
+                          type.nodeColor
+                        )}>
+                          <type.icon className="h-4 w-4 text-white" />
+                        </div>
+                        <span className="text-xl font-bold text-foreground tracking-wide group-hover:text-primary transition-colors">
+                          {type.title}
+                        </span>
                       </div>
-                      <span className="text-xl font-bold text-foreground tracking-wide group-hover:text-primary transition-colors">
-                        {type.title}
+                      <span className={cn(
+                        "text-sm text-muted-foreground",
+                        isEven ? "pl-10" : "pr-10"
+                      )}>
+                        {type.description}
                       </span>
                     </div>
-                    <span className={cn(
-                      "text-sm text-muted-foreground",
-                      isEven ? "pl-10" : "pr-10"
-                    )}>
-                      {type.description}
-                    </span>
-                  </div>
+                    
+                    {/* Arrow Indicator */}
+                    <ChevronRight 
+                      className={cn(
+                        "h-5 w-5 text-muted-foreground/30 transition-all duration-200",
+                        "group-hover:text-muted-foreground group-hover:translate-x-1",
+                        !isEven && "rotate-180 group-hover:-translate-x-1 group-hover:translate-x-0"
+                      )}
+                    />
+                  </motion.button>
                   
-                  {/* Arrow Indicator */}
-                  <ChevronRight 
-                    className={cn(
-                      "h-5 w-5 text-muted-foreground/30 transition-all duration-200",
-                      "group-hover:text-muted-foreground group-hover:translate-x-1",
-                      !isEven && "rotate-180 group-hover:-translate-x-1 group-hover:translate-x-0"
-                    )}
-                  />
-                </motion.button>
+                  {/* Zigzag Connector */}
+                  {index < contentTypes.length - 1 && (
+                    <div className="relative h-5 mx-4">
+                      {/* Vertical line from current card */}
+                      <div 
+                        className={cn(
+                          "absolute top-0 w-px h-2 bg-border/40",
+                          isEven ? "left-6" : "right-6"
+                        )} 
+                      />
+                      {/* Horizontal line crossing */}
+                      <div className="absolute top-2 left-6 right-6 h-px bg-border/40" />
+                      {/* Vertical line to next card */}
+                      <div 
+                        className={cn(
+                          "absolute top-2 w-px h-3 bg-border/40",
+                          isEven ? "right-6" : "left-6"
+                        )} 
+                      />
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>
