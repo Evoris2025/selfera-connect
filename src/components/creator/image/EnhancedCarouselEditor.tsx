@@ -258,16 +258,16 @@ export function EnhancedCarouselEditor({
   // Image transform for crop
   const imageTransform = `scale(${currentImage.cropData.scale}) translate(${currentImage.cropData.translateX / currentImage.cropData.scale}%, ${currentImage.cropData.translateY / currentImage.cropData.scale}%) rotate(${currentImage.cropData.rotation || 0}deg)`;
 
-  // Thumbnail slider navigation
+  // Thumbnail slider navigation (horizontal)
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [canScrollUp, setCanScrollUp] = useState(false);
-  const [canScrollDown, setCanScrollDown] = useState(false);
+  const [canScrollUp, setCanScrollUp] = useState(false); // left
+  const [canScrollDown, setCanScrollDown] = useState(false); // right
 
   const updateScrollState = useCallback(() => {
     const container = scrollContainerRef.current;
     if (container) {
-      setCanScrollUp(container.scrollTop > 0);
-      setCanScrollDown(container.scrollTop < container.scrollHeight - container.clientHeight - 1);
+      setCanScrollUp(container.scrollLeft > 0);
+      setCanScrollDown(container.scrollLeft < container.scrollWidth - container.clientWidth - 1);
     }
   }, []);
 
@@ -283,26 +283,26 @@ export function EnhancedCarouselEditor({
   const scrollThumbnails = (direction: 'up' | 'down') => {
     const container = scrollContainerRef.current;
     if (container) {
-      const scrollAmount = 72; // One thumbnail height + gap
+      const scrollAmount = 64; // One thumbnail width + gap
       container.scrollBy({
-        top: direction === 'up' ? -scrollAmount : scrollAmount,
+        left: direction === 'up' ? -scrollAmount : scrollAmount,
         behavior: 'smooth'
       });
     }
   };
 
-  // Scroll selected thumbnail into view
+  // Scroll selected thumbnail into view (horizontal)
   useEffect(() => {
     if (isReorderMode) return; // Don't auto-scroll during reorder
     const container = scrollContainerRef.current;
     if (container && images.length > 0) {
-      const thumbnailHeight = 72;
-      const targetScroll = selectedIndex * thumbnailHeight;
-      const containerHeight = container.clientHeight;
+      const thumbnailWidth = 64;
+      const targetScroll = selectedIndex * thumbnailWidth;
+      const containerWidth = container.clientWidth;
       
-      if (targetScroll < container.scrollTop || targetScroll > container.scrollTop + containerHeight - thumbnailHeight) {
+      if (targetScroll < container.scrollLeft || targetScroll > container.scrollLeft + containerWidth - thumbnailWidth) {
         container.scrollTo({
-          top: Math.max(0, targetScroll - containerHeight / 2 + thumbnailHeight / 2),
+          left: Math.max(0, targetScroll - containerWidth / 2 + thumbnailWidth / 2),
           behavior: 'smooth'
         });
       }
@@ -310,74 +310,50 @@ export function EnhancedCarouselEditor({
   }, [selectedIndex, images.length, isReorderMode]);
 
   return (
-    <div className={cn("flex gap-4", className)}>
-      {/* Left Side: Thumbnails and Counter - matches preview height */}
-      <div className="flex flex-col gap-2 w-20 flex-shrink-0 h-full">
-        {/* Image Counter + Reorder Toggle */}
-        <div className="flex items-center gap-1">
-          <div className="px-2 py-1 rounded-full bg-muted text-xs font-medium flex-1 text-center">
-            {selectedIndex + 1}/{images.length}
-          </div>
-          {images.length > 1 && (
-            <button
-              onClick={() => {
-                setIsReorderMode(!isReorderMode);
-                setShowDeleteConfirm(null);
-              }}
-              className={cn(
-                'p-1.5 rounded-full transition-colors',
-                isReorderMode 
-                  ? 'bg-primary text-primary-foreground' 
-                  : 'bg-muted hover:bg-muted/80 text-muted-foreground'
-              )}
-              title={isReorderMode ? 'Done reordering' : 'Reorder photos'}
-            >
-              {isReorderMode ? <Check className="h-3.5 w-3.5" /> : <ArrowUpDown className="h-3.5 w-3.5" />}
-            </button>
-          )}
-        </div>
-        
-        {/* Scroll Up Button */}
+    <div className={cn("flex flex-col gap-3 h-full", className)}>
+      {/* Top: Horizontal Thumbnails Slider */}
+      <div className="flex items-center gap-2 shrink-0">
+        {/* Scroll Left Button */}
         {images.length > 5 && !isReorderMode && (
           <button
             onClick={() => scrollThumbnails('up')}
             disabled={!canScrollUp}
             className={cn(
-              'w-full py-1 flex items-center justify-center rounded-md transition-all',
+              'p-1 flex items-center justify-center rounded-md transition-all shrink-0',
               canScrollUp 
                 ? 'bg-muted hover:bg-muted/80 text-foreground' 
                 : 'opacity-30 cursor-not-allowed text-muted-foreground'
             )}
           >
-            <ChevronUp className="h-4 w-4" />
+            <ChevronLeft className="h-4 w-4" />
           </button>
         )}
 
-        {/* Thumbnails Container - flex-1 to match preview height */}
+        {/* Thumbnails Container - horizontal scroll */}
         <div
           ref={scrollContainerRef}
           className={cn(
-            "flex flex-col gap-2 overflow-y-auto scrollbar-hide scroll-smooth flex-1 min-h-0",
-            isReorderMode ? 'overflow-visible' : 'touch-pan-y'
+            "flex flex-row gap-2 overflow-x-auto scrollbar-hide scroll-smooth flex-1 min-w-0",
+            isReorderMode ? 'overflow-visible' : 'touch-pan-x'
           )}
           style={{ 
             WebkitOverflowScrolling: 'touch' 
           }}
         >
           {isReorderMode ? (
-            // Reorder Mode: Use Framer Motion Reorder
+            // Reorder Mode: Use Framer Motion Reorder (horizontal)
             <Reorder.Group 
-              axis="y" 
+              axis="x" 
               values={images} 
               onReorder={handleReorder}
-              className="flex flex-col gap-2"
+              className="flex flex-row gap-2"
             >
               {images.map((image, index) => (
                 <Reorder.Item
                   key={image.id}
                   value={image}
                   className={cn(
-                    'relative w-16 h-16 rounded-lg overflow-hidden border-2 cursor-grab active:cursor-grabbing select-none',
+                    'relative w-14 h-14 rounded-lg overflow-hidden border-2 cursor-grab active:cursor-grabbing select-none shrink-0',
                     index === selectedIndex ? 'border-primary ring-2 ring-primary/30' : 'border-border',
                     'animate-[jiggle_0.15s_ease-in-out_infinite]'
                   )}
@@ -398,7 +374,7 @@ export function EnhancedCarouselEditor({
             // Normal Mode: Regular thumbnails with hold-to-delete
             <>
               {images.map((image, index) => (
-                <div key={image.id} className="relative flex-shrink-0">
+                <div key={image.id} className="relative shrink-0">
                   <button
                     onClick={() => handleThumbnailClick(index)}
                     onPointerDown={(e) => handleHoldStart(index, e)}
@@ -413,7 +389,7 @@ export function EnhancedCarouselEditor({
                     onPointerCancel={handleHoldEnd}
                     onContextMenu={(e) => e.preventDefault()}
                     className={cn(
-                      'w-16 h-16 rounded-lg overflow-hidden border-2 transition-all relative select-none touch-pan-y',
+                      'w-14 h-14 rounded-lg overflow-hidden border-2 transition-all relative select-none touch-pan-x',
                       index === selectedIndex ? 'border-primary ring-2 ring-primary/30' : 'border-transparent hover:border-border',
                       holdingIndex === index && 'scale-95'
                     )}
@@ -500,28 +476,52 @@ export function EnhancedCarouselEditor({
           {images.length < maxImages && !isReorderMode && (
             <button
               onClick={onAddImages}
-              className="flex-shrink-0 w-16 h-16 rounded-lg border-2 border-dashed border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              className="shrink-0 w-14 h-14 rounded-lg border-2 border-dashed border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
             >
               <Plus className="h-5 w-5" />
             </button>
           )}
         </div>
         
-        {/* Scroll Down Button */}
+        {/* Scroll Right Button */}
         {images.length > 5 && !isReorderMode && (
           <button
             onClick={() => scrollThumbnails('down')}
             disabled={!canScrollDown}
             className={cn(
-              'w-full py-1 flex items-center justify-center rounded-md transition-all',
+              'p-1 flex items-center justify-center rounded-md transition-all shrink-0',
               canScrollDown 
                 ? 'bg-muted hover:bg-muted/80 text-foreground' 
                 : 'opacity-30 cursor-not-allowed text-muted-foreground'
             )}
           >
-            <ChevronDown className="h-4 w-4" />
+            <ChevronRight className="h-4 w-4" />
           </button>
         )}
+
+        {/* Image Counter + Reorder Toggle */}
+        <div className="flex items-center gap-1 shrink-0">
+          <div className="px-2 py-1 rounded-full bg-muted text-xs font-medium text-center">
+            {selectedIndex + 1}/{images.length}
+          </div>
+          {images.length > 1 && (
+            <button
+              onClick={() => {
+                setIsReorderMode(!isReorderMode);
+                setShowDeleteConfirm(null);
+              }}
+              className={cn(
+                'p-1.5 rounded-full transition-colors',
+                isReorderMode 
+                  ? 'bg-primary text-primary-foreground' 
+                  : 'bg-muted hover:bg-muted/80 text-muted-foreground'
+              )}
+              title={isReorderMode ? 'Done reordering' : 'Reorder photos'}
+            >
+              {isReorderMode ? <Check className="h-3.5 w-3.5" /> : <ArrowUpDown className="h-3.5 w-3.5" />}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Right Side: Main Preview - FIXED SIZE Container matching thumbnail height */}
