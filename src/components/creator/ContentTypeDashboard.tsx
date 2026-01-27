@@ -178,7 +178,17 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
                   
                   {/* Content - Center Aligned */}
                   <div className="flex-1 flex flex-col gap-1 items-center text-center">
-                    <span className="text-lg font-bold text-foreground tracking-wide group-hover:text-primary transition-colors">
+                    <span 
+                      className={cn(
+                        "text-lg font-bold tracking-wide transition-colors",
+                        "bg-clip-text text-transparent",
+                        `bg-gradient-to-br ${type.gradient}`
+                      )}
+                      style={{ 
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent'
+                      }}
+                    >
                       {type.title}
                     </span>
                     <span className="text-sm text-muted-foreground">
