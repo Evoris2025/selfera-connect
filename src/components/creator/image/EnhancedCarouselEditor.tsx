@@ -1,13 +1,13 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from 'framer-motion';
-import { X, Plus, GripVertical, ChevronLeft, ChevronRight, Loader2, Check, SplitSquareVertical, Trash2 } from 'lucide-react';
+import { X, Plus, GripVertical, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Loader2, Check, SplitSquareVertical, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Slider } from '@/components/ui/slider';
 import type { CarouselImage } from './types';
 import { filters } from './FilterLibrary';
 import { getAdjustmentStyles } from './AdjustmentPanel';
 import { BeforeAfterSlider } from './BeforeAfterSlider';
-
 interface EnhancedCarouselEditorProps {
   images: CarouselImage[];
   selectedIndex: number;
@@ -285,6 +285,56 @@ export function EnhancedCarouselEditor({
   // Combine filter intensity
   const filterOpacity = currentImage.filterIntensity / 100;
 
+  // Thumbnail slider navigation
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [canScrollUp, setCanScrollUp] = useState(false);
+  const [canScrollDown, setCanScrollDown] = useState(false);
+
+  const updateScrollState = useCallback(() => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      setCanScrollUp(container.scrollTop > 0);
+      setCanScrollDown(container.scrollTop < container.scrollHeight - container.clientHeight - 1);
+    }
+  }, []);
+
+  useEffect(() => {
+    updateScrollState();
+    const container = scrollContainerRef.current;
+    if (container) {
+      container.addEventListener('scroll', updateScrollState);
+      return () => container.removeEventListener('scroll', updateScrollState);
+    }
+  }, [updateScrollState, images.length]);
+
+  const scrollThumbnails = (direction: 'up' | 'down') => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      const scrollAmount = 72; // One thumbnail height + gap
+      container.scrollBy({
+        top: direction === 'up' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // Scroll selected thumbnail into view
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (container && images.length > 0) {
+      const thumbnailHeight = 72;
+      const targetScroll = selectedIndex * thumbnailHeight;
+      const containerHeight = container.clientHeight;
+      
+      if (targetScroll < container.scrollTop || targetScroll > container.scrollTop + containerHeight - thumbnailHeight) {
+        container.scrollTo({
+          top: Math.max(0, targetScroll - containerHeight / 2 + thumbnailHeight / 2),
+          behavior: 'smooth'
+        });
+      }
+    }
+  }, [selectedIndex, images.length]);
+
   return (
     <div className="flex gap-4">
       {/* Left Side: Thumbnails and Counter */}
@@ -294,8 +344,31 @@ export function EnhancedCarouselEditor({
           {selectedIndex + 1} / {images.length}
         </div>
         
-        {/* Thumbnail Strip */}
-        <div ref={containerRef} className="flex flex-col gap-2 overflow-y-auto max-h-[400px] scrollbar-hide">
+        {/* Scroll Up Button */}
+        {images.length > 5 && (
+          <button
+            onClick={() => scrollThumbnails('up')}
+            disabled={!canScrollUp}
+            className={cn(
+              'w-full py-1 flex items-center justify-center rounded-md transition-all',
+              canScrollUp 
+                ? 'bg-muted hover:bg-muted/80 text-foreground' 
+                : 'opacity-30 cursor-not-allowed text-muted-foreground'
+            )}
+          >
+            <ChevronUp className="h-4 w-4" />
+          </button>
+        )}
+        
+        {/* Thumbnail Strip with Slider */}
+        <div 
+          ref={(el) => {
+            scrollContainerRef.current = el;
+            if (containerRef) containerRef.current = el;
+          }} 
+          className="flex flex-col gap-2 overflow-y-auto max-h-[320px] scrollbar-hide scroll-smooth"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
           {images.map((image, index) => (
             <motion.div
               key={image.id}
@@ -403,38 +476,51 @@ export function EnhancedCarouselEditor({
             </button>
           )}
         </div>
+        
+        {/* Scroll Down Button */}
+        {images.length > 5 && (
+          <button
+            onClick={() => scrollThumbnails('down')}
+            disabled={!canScrollDown}
+            className={cn(
+              'w-full py-1 flex items-center justify-center rounded-md transition-all',
+              canScrollDown 
+                ? 'bg-muted hover:bg-muted/80 text-foreground' 
+                : 'opacity-30 cursor-not-allowed text-muted-foreground'
+            )}
+          >
+            <ChevronDown className="h-4 w-4" />
+          </button>
+        )}
       </div>
 
-      {/* Right Side: Main Preview - Larger */}
+      {/* Right Side: Main Preview - FIXED SIZE Container */}
       <div className="flex-1 relative">
-        <div
-          className={cn(
-            "w-full h-full min-h-[400px] md:min-h-[500px] bg-black/50 rounded-xl overflow-hidden",
-            isCropMode && "flex items-center justify-center"
-          )}
-        >
+        {/* Fixed size container that never changes */}
+        <div className="w-full aspect-square md:aspect-[4/5] lg:aspect-square bg-black/50 rounded-xl overflow-hidden flex items-center justify-center">
           {showBeforeAfter ? (
-            /* Before/After Comparison Mode */
-            <BeforeAfterSlider
-              beforeSrc={currentImage.previewUrl}
-              afterSrc={currentImage.previewUrl}
-              afterClassName={filterClass}
-              afterStyle={{
-                ...adjustmentStyles,
-                ...(currentImage.filter > 0 ? { opacity: filterOpacity } : {}),
-              }}
-            />
+            /* Before/After Comparison Mode - contained within fixed size */
+            <div className="w-full h-full">
+              <BeforeAfterSlider
+                beforeSrc={currentImage.previewUrl}
+                afterSrc={currentImage.previewUrl}
+                afterClassName={filterClass}
+                afterStyle={{
+                  ...adjustmentStyles,
+                  ...(currentImage.filter > 0 ? { opacity: filterOpacity } : {}),
+                }}
+              />
+            </div>
           ) : isCropMode ? (
-            /* Crop Mode */
+            /* Crop Mode - image scales within fixed container */
             <div
               className={cn(
-                'relative overflow-hidden bg-black/50 max-w-full max-h-full',
-                getAspectClass() || 'aspect-square',
+                'relative overflow-hidden bg-black flex items-center justify-center',
                 isCropDragging ? 'cursor-grabbing' : currentImage.cropData.scale > 1 ? 'cursor-grab' : 'cursor-default'
               )}
               style={{
                 width: '100%',
-                maxWidth: getAspectClass() === 'aspect-video' ? '100%' : getAspectClass() === 'aspect-[4/5]' ? '80%' : '85%',
+                height: '100%',
               }}
               onMouseDown={handleCropMouseDown}
               onMouseMove={handleCropMouseMove}
@@ -444,26 +530,39 @@ export function EnhancedCarouselEditor({
               onTouchMove={handleCropTouchMove}
               onTouchEnd={handleCropTouchEnd}
             >
-              <img
-                src={currentImage.previewUrl}
-                alt="Crop preview"
-                className="w-full h-full object-cover select-none"
+              {/* Inner crop frame based on aspect ratio */}
+              <div 
+                className={cn(
+                  'relative overflow-hidden',
+                  getAspectClass() || 'aspect-square'
+                )}
                 style={{
-                  transform: `scale(${currentImage.cropData.scale}) translate(${currentImage.cropData.translateX / currentImage.cropData.scale}%, ${currentImage.cropData.translateY / currentImage.cropData.scale}%) rotate(${currentImage.cropData.rotation || 0}deg)`,
-                  transformOrigin: 'center',
-                  transition: isCropDragging ? 'none' : 'transform 0.1s ease-out',
-                  ...adjustmentStyles,
+                  width: currentImage.cropData.aspectRatio === 'landscape' ? '100%' : 
+                         currentImage.cropData.aspectRatio === 'portrait' ? '75%' : '85%',
+                  maxHeight: '100%',
                 }}
-                draggable={false}
-                onContextMenu={(e) => e.preventDefault()}
-              />
-              
-              {/* Grid Overlay */}
-              <div className="absolute inset-0 pointer-events-none">
-                <div className="w-full h-full grid grid-cols-3 grid-rows-3">
-                  {Array.from({ length: 9 }).map((_, i) => (
-                    <div key={i} className="border border-white/30" />
-                  ))}
+              >
+                <img
+                  src={currentImage.previewUrl}
+                  alt="Crop preview"
+                  className="w-full h-full object-cover select-none"
+                  style={{
+                    transform: `scale(${currentImage.cropData.scale}) translate(${currentImage.cropData.translateX / currentImage.cropData.scale}%, ${currentImage.cropData.translateY / currentImage.cropData.scale}%) rotate(${currentImage.cropData.rotation || 0}deg)`,
+                    transformOrigin: 'center',
+                    transition: isCropDragging ? 'none' : 'transform 0.1s ease-out',
+                    ...adjustmentStyles,
+                  }}
+                  draggable={false}
+                  onContextMenu={(e) => e.preventDefault()}
+                />
+                
+                {/* Grid Overlay */}
+                <div className="absolute inset-0 pointer-events-none">
+                  <div className="w-full h-full grid grid-cols-3 grid-rows-3">
+                    {Array.from({ length: 9 }).map((_, i) => (
+                      <div key={i} className="border border-white/30" />
+                    ))}
+                  </div>
                 </div>
               </div>
               
@@ -475,9 +574,9 @@ export function EnhancedCarouselEditor({
               )}
             </div>
           ) : (
-            /* Normal Preview Mode - with crop applied */
+            /* Normal Preview Mode - image displayed within fixed container */
             <motion.div
-              className="w-full h-full touch-pan-y flex items-center justify-center"
+              className="w-full h-full touch-pan-y flex items-center justify-center bg-black"
               onPanEnd={handlePanEnd}
             >
               <AnimatePresence mode="wait">
@@ -496,9 +595,9 @@ export function EnhancedCarouselEditor({
                     currentImage.cropData.aspectRatio === 'original' && 'w-full h-full'
                   )}
                   style={{
-                    maxWidth: currentImage.cropData.aspectRatio === 'original' ? '100%' : 
-                              currentImage.cropData.aspectRatio === 'landscape' ? '100%' : 
-                              currentImage.cropData.aspectRatio === 'portrait' ? '80%' : '85%',
+                    width: currentImage.cropData.aspectRatio === 'original' ? '100%' : 
+                           currentImage.cropData.aspectRatio === 'landscape' ? '100%' : 
+                           currentImage.cropData.aspectRatio === 'portrait' ? '75%' : '85%',
                     maxHeight: '100%',
                   }}
                 >
