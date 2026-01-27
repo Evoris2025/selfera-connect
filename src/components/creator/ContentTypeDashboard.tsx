@@ -217,9 +217,10 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
                   
                   {/* Curvy Connector */}
                   {index < contentTypes.length - 1 && (
-                    <div className="relative h-6 mx-4">
+                    <div className="relative h-8 mx-8">
                       <svg 
-                        className="absolute inset-0 w-full h-full overflow-visible"
+                        className="absolute inset-0 w-full h-full"
+                        viewBox="0 0 100 32"
                         preserveAspectRatio="none"
                       >
                         <defs>
@@ -231,13 +232,14 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
                         </defs>
                         <path
                           d={isEven 
-                            ? "M 25% 0 Q 25% 50%, 50% 50% T 75% 100%"
-                            : "M 75% 0 Q 75% 50%, 50% 50% T 25% 100%"
+                            ? "M 20 0 C 20 16, 80 16, 80 32"
+                            : "M 80 0 C 80 16, 20 16, 20 32"
                           }
                           fill="none"
                           stroke={`url(#connector-gradient-${index})`}
                           strokeWidth="2"
                           strokeLinecap="round"
+                          vectorEffect="non-scaling-stroke"
                         />
                       </svg>
                     </div>
