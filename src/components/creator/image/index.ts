@@ -40,6 +40,9 @@ export { UndoRedoControls } from './UndoRedoControls';
 // AI Enhancement
 export { MagikButton } from './MagikButton';
 
+// Before/After Comparison
+export { BeforeAfterSlider } from './BeforeAfterSlider';
+
 // Hooks
 export { useImageCompression } from './useImageCompression';
 export { useImageExport } from './useImageExport';

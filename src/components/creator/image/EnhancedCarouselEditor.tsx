@@ -1,10 +1,12 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from 'framer-motion';
-import { X, Plus, GripVertical, ChevronLeft, ChevronRight, Loader2, Check } from 'lucide-react';
+import { X, Plus, GripVertical, ChevronLeft, ChevronRight, Loader2, Check, SplitSquareVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import type { CarouselImage } from './types';
 import { filters } from './FilterLibrary';
 import { getAdjustmentStyles } from './AdjustmentPanel';
+import { BeforeAfterSlider } from './BeforeAfterSlider';
 
 interface EnhancedCarouselEditorProps {
   images: CarouselImage[];
@@ -24,6 +26,7 @@ export function EnhancedCarouselEditor({
   maxImages = 20,
 }: EnhancedCarouselEditorProps) {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [showBeforeAfter, setShowBeforeAfter] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   
   // Swipe gesture handling
@@ -111,58 +114,86 @@ export function EnhancedCarouselEditor({
       <div className="relative">
         <motion.div
           className="aspect-square bg-black/50 rounded-xl overflow-hidden touch-pan-y"
-          onPanEnd={handlePanEnd}
+          onPanEnd={!showBeforeAfter ? handlePanEnd : undefined}
         >
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentImage.id}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.15 }}
-              className="w-full h-full relative"
-            >
-              {/* Base image */}
-              <img
-                src={currentImage.previewUrl}
-                alt={currentImage.altText || `Image ${selectedIndex + 1}`}
-                className="w-full h-full object-contain absolute inset-0"
-                style={adjustmentStyles}
-                draggable={false}
-              />
-              
-              {/* Filtered layer with opacity for intensity */}
-              {currentImage.filter > 0 && (
+          {showBeforeAfter ? (
+            /* Before/After Comparison Mode */
+            <BeforeAfterSlider
+              beforeSrc={currentImage.previewUrl}
+              afterSrc={currentImage.previewUrl}
+              afterClassName={filterClass}
+              afterStyle={{
+                ...adjustmentStyles,
+                ...(currentImage.filter > 0 ? { opacity: filterOpacity } : {}),
+              }}
+            />
+          ) : (
+            /* Normal Preview Mode */
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentImage.id}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.15 }}
+                className="w-full h-full relative"
+              >
+                {/* Base image */}
                 <img
                   src={currentImage.previewUrl}
-                  alt=""
-                  className={cn('w-full h-full object-contain absolute inset-0 pointer-events-none', filterClass)}
-                  style={{
-                    ...adjustmentStyles,
-                    opacity: filterOpacity,
-                    mixBlendMode: 'normal',
-                  }}
+                  alt={currentImage.altText || `Image ${selectedIndex + 1}`}
+                  className="w-full h-full object-contain absolute inset-0"
+                  style={adjustmentStyles}
                   draggable={false}
                 />
-              )}
-              
-              {/* Compression indicator */}
-              {currentImage.isCompressing && (
-                <div className="absolute bottom-3 left-3 flex items-center gap-1.5 px-2 py-1 rounded-full bg-black/60 text-white text-xs">
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                  <span>Optimizing...</span>
-                </div>
-              )}
-              
-              {currentImage.compressedFile && !currentImage.isCompressing && (
-                <div className="absolute bottom-3 left-3 flex items-center gap-1 px-2 py-1 rounded-full bg-primary/80 text-primary-foreground text-xs">
-                  <Check className="h-3 w-3" />
-                  <span>Ready</span>
-                </div>
-              )}
-            </motion.div>
-          </AnimatePresence>
+                
+                {/* Filtered layer with opacity for intensity */}
+                {currentImage.filter > 0 && (
+                  <img
+                    src={currentImage.previewUrl}
+                    alt=""
+                    className={cn('w-full h-full object-contain absolute inset-0 pointer-events-none', filterClass)}
+                    style={{
+                      ...adjustmentStyles,
+                      opacity: filterOpacity,
+                      mixBlendMode: 'normal',
+                    }}
+                    draggable={false}
+                  />
+                )}
+                
+                {/* Compression indicator */}
+                {currentImage.isCompressing && (
+                  <div className="absolute bottom-3 left-3 flex items-center gap-1.5 px-2 py-1 rounded-full bg-black/60 text-white text-xs">
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    <span>Optimizing...</span>
+                  </div>
+                )}
+                
+                {currentImage.compressedFile && !currentImage.isCompressing && (
+                  <div className="absolute bottom-3 left-3 flex items-center gap-1 px-2 py-1 rounded-full bg-primary/80 text-primary-foreground text-xs">
+                    <Check className="h-3 w-3" />
+                    <span>Ready</span>
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          )}
         </motion.div>
+
+        {/* Before/After Toggle */}
+        <Button
+          variant={showBeforeAfter ? "default" : "outline"}
+          size="sm"
+          onClick={() => setShowBeforeAfter(!showBeforeAfter)}
+          className={cn(
+            'absolute top-3 left-3 gap-1.5 text-xs',
+            showBeforeAfter && 'bg-primary text-primary-foreground'
+          )}
+        >
+          <SplitSquareVertical className="h-3.5 w-3.5" />
+          {showBeforeAfter ? 'Editing' : 'Compare'}
+        </Button>
 
         {/* Navigation Arrows (Desktop) */}
         {images.length > 1 && (
