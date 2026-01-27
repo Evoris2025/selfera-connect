@@ -51,8 +51,6 @@ import {
   ColorGradingControl,
   // New: Draft Auto-Save
   useDraftAutoSave,
-  // AI Enhancement
-  MagikButton,
 } from './image';
 
 // Simulation mode flag
@@ -731,36 +729,28 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
               </TabsList>
 
               <TabsContent value="filters" className="space-y-4">
-                {/* Magik AI Enhancement + Preset Manager */}
-                <div className="flex items-center justify-between gap-2">
-                  <MagikButton
-                    onClick={handleMagikEnhance}
-                    isLoading={isEnhancing}
-                    isSuccess={magikSuccess}
-                    disabled={!currentImage}
-                  />
-                  <PresetManager
-                    presets={presets}
-                    currentFilter={currentImage.filter}
-                    currentFilterIntensity={currentImage.filterIntensity}
-                    currentAdjustments={{
-                      brightness: currentImage.brightness,
-                      contrast: currentImage.contrast,
-                      saturation: currentImage.saturation,
-                      warmth: currentImage.warmth,
-                      highlights: currentImage.highlights,
-                      shadows: currentImage.shadows,
-                      vignette: currentImage.vignette,
-                      sharpen: currentImage.sharpen,
-                      structure: currentImage.structure,
-                      fade: currentImage.fade,
-                    }}
-                    onSavePreset={handleSavePreset}
-                    onApplyPreset={handleApplyPreset}
-                    onDeletePreset={deletePreset}
-                    onRenamePreset={renamePreset}
-                  />
-                </div>
+                {/* Preset Manager */}
+                <PresetManager
+                  presets={presets}
+                  currentFilter={currentImage.filter}
+                  currentFilterIntensity={currentImage.filterIntensity}
+                  currentAdjustments={{
+                    brightness: currentImage.brightness,
+                    contrast: currentImage.contrast,
+                    saturation: currentImage.saturation,
+                    warmth: currentImage.warmth,
+                    highlights: currentImage.highlights,
+                    shadows: currentImage.shadows,
+                    vignette: currentImage.vignette,
+                    sharpen: currentImage.sharpen,
+                    structure: currentImage.structure,
+                    fade: currentImage.fade,
+                  }}
+                  onSavePreset={handleSavePreset}
+                  onApplyPreset={handleApplyPreset}
+                  onDeletePreset={deletePreset}
+                  onRenamePreset={renamePreset}
+                />
                 
                 <EnhancedFilterLibrary
                   selectedFilter={currentImage.filter}
@@ -768,6 +758,9 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                   previewUrl={currentImage.previewUrl}
                   onFilterSelect={(index) => updateCurrentImageWithHistory('filter', { filter: index })}
                   onIntensityChange={(intensity) => updateCurrentImageWithHistory('filter', { filterIntensity: intensity })}
+                  onMagikClick={handleMagikEnhance}
+                  isMagikLoading={isEnhancing}
+                  isMagikSuccess={magikSuccess}
                 />
               </TabsContent>
 
