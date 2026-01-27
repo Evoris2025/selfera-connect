@@ -79,6 +79,9 @@ export function EnhancedFilterLibrary({
 }: EnhancedFilterLibraryProps) {
   const [category, setCategory] = useState<FilterCategory>('all');
 
+  // Keep toolbar preview tiles consistent with the main carousel thumbnails (Compare uses w-14/h-14)
+  const tileClass = 'w-14 h-14';
+
   const filteredFilters = category === 'all' 
     ? filters 
     : filters.filter(f => f.category === category || f.name === 'Original');
@@ -115,7 +118,8 @@ export function EnhancedFilterLibrary({
           >
             <div
               className={cn(
-                'relative w-[72px] h-[72px] rounded-xl overflow-hidden border-2 transition-all',
+                'relative rounded-xl overflow-hidden border-2 transition-all',
+                tileClass,
                 'bg-gradient-to-br from-violet-500/20 via-fuchsia-500/20 to-amber-500/20',
                 isMagikSuccess
                   ? 'border-emerald-500 ring-2 ring-emerald-500/30'
@@ -146,7 +150,7 @@ export function EnhancedFilterLibrary({
                       animate={{ opacity: 1, rotate: 0 }}
                       exit={{ opacity: 0, rotate: 90 }}
                     >
-                      <Loader2 className="h-6 w-6 animate-spin text-violet-400" />
+                      <Loader2 className="h-5 w-5 animate-spin text-violet-400" />
                     </motion.div>
                   ) : isMagikSuccess ? (
                     <motion.div
@@ -155,7 +159,7 @@ export function EnhancedFilterLibrary({
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.5 }}
                     >
-                      <Check className="h-6 w-6 text-emerald-400" />
+                      <Check className="h-5 w-5 text-emerald-400" />
                     </motion.div>
                   ) : (
                     <motion.div
@@ -166,7 +170,7 @@ export function EnhancedFilterLibrary({
                       whileHover={{ rotate: [0, -10, 10, 0] }}
                       transition={{ duration: 0.3 }}
                     >
-                      <Sparkles className="h-6 w-6 text-violet-400" />
+                      <Sparkles className="h-5 w-5 text-violet-400" />
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -195,7 +199,8 @@ export function EnhancedFilterLibrary({
             >
               <div
                 className={cn(
-                  'relative w-[72px] h-[72px] rounded-xl overflow-hidden border-2 transition-all',
+                  'relative rounded-xl overflow-hidden border-2 transition-all',
+                  tileClass,
                   isSelected 
                     ? 'border-primary ring-2 ring-primary/30' 
                     : 'border-transparent hover:border-border'
@@ -225,9 +230,9 @@ export function EnhancedFilterLibrary({
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="absolute top-1 right-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center"
+                    className="absolute top-1 right-1 w-4 h-4 rounded-full bg-primary flex items-center justify-center"
                   >
-                    <svg className="w-3 h-3 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-2.5 h-2.5 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                     </svg>
                   </motion.div>
