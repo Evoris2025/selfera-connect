@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Sparkles, Video, Image, FileText, FileEdit, X, ArrowLeft } from 'lucide-react';
+import { Sparkles, Video, Image, FileText, FileEdit, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BrandMark } from '@/components/BrandMark';
 import { useDrafts } from './shared/DraftManager';
@@ -74,18 +74,10 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
       </div>
 
       {/* Minimal Header */}
-      <div className="relative z-10 flex items-center justify-between px-4 py-3 border-b border-border/30">
+      <div className="relative z-10 flex items-center justify-end px-4 py-3 border-b border-border/30">
         <button
           onClick={onClose}
-          className="p-2 -ml-2 rounded-lg hover:bg-secondary/50 transition-colors"
-          aria-label="Go back"
-        >
-          <ArrowLeft className="h-5 w-5 text-muted-foreground" />
-        </button>
-        <div className="w-5" /> {/* Spacer for centering */}
-        <button
-          onClick={onClose}
-          className="p-2 -mr-2 rounded-lg hover:bg-secondary/50 transition-colors"
+          className="p-2 -mr-2 hover:bg-secondary/50 transition-colors"
           aria-label="Close"
         >
           <X className="h-5 w-5 text-muted-foreground" />
@@ -103,7 +95,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1, type: 'spring', stiffness: 300, damping: 25 }}
-            className="relative -ml-6"
+            className="relative"
           >
             <BrandMark className="h-14 w-[240px]" />
           </motion.div>
@@ -149,7 +141,9 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
                   className={cn(
                     "group relative flex items-center gap-4 p-4 text-left focus:outline-none w-full",
                     "bg-secondary/30 hover:bg-secondary/50 transition-all duration-300",
-                    "border border-primary/40 hover:border-primary"
+                    "border border-primary/40 hover:border-primary",
+                    "hover:scale-[1.01] active:scale-[0.99]",
+                    "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   )}
                 >
                   {/* Large Number - Always Left */}
@@ -170,7 +164,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
                     {/* Subtle glow behind number */}
                     <div 
                       className={cn(
-                        "absolute inset-0 blur-2xl opacity-20",
+                        "absolute inset-0 blur-3xl opacity-30 scale-150",
                         `bg-gradient-to-br ${type.gradient}`
                       )}
                     />
@@ -189,6 +183,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
                   {/* Icon - Always Right, Circular, Larger */}
                   <div className={cn(
                     "flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center",
+                    "transition-transform duration-300 group-hover:scale-110",
                     type.nodeColor
                   )}>
                     <type.icon className="h-7 w-7 text-white" />
@@ -208,7 +203,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
         className="relative z-10 p-4 border-t border-border/30 bg-card/20 backdrop-blur-sm"
       >
         <button 
-          className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-secondary/50 hover:bg-secondary/80 rounded-lg transition-colors group"
+          className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-secondary/50 hover:bg-secondary/80 transition-colors group"
         >
           <FileEdit className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
           <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
