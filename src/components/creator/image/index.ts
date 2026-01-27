@@ -37,6 +37,9 @@ export { useEditPresets, type EditPreset } from './useEditPresets';
 export { PresetManager } from './PresetManager';
 export { UndoRedoControls } from './UndoRedoControls';
 
+// AI Enhancement
+export { MagikButton } from './MagikButton';
+
 // Hooks
 export { useImageCompression } from './useImageCompression';
 export { useImageExport } from './useImageExport';
