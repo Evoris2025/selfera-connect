@@ -95,7 +95,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1, type: 'spring', stiffness: 300, damping: 25 }}
-            className="relative"
+            className="relative -ml-6"
           >
             <BrandMark className="h-14 w-[240px]" />
           </motion.div>
