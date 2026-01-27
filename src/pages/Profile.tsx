@@ -18,7 +18,6 @@ import { EraVerifiedTick, VerificationTier, calculateVerificationTier } from '@/
 import { EraVerifiedTooltip } from '@/components/profile/EraVerifiedTooltip';
 import { AccountTypeBadge, AccountType } from '@/components/AccountTypeBadge';
 import { FollowButton } from '@/components/interactions';
-import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { GridLayoutStyle } from '@/hooks/useGridLayout';
 import { useAuth } from '@/contexts/AuthContext';
@@ -304,12 +303,8 @@ export default function Profile() {
     toggleFollow();
   };
 
-  const handleCreatePost = () => {
-    toast({
-      title: 'Create Post',
-      description: 'Opening composer...',
-    });
-  };
+  // No-op - AppLayout handles CreatorStudio internally now
+  const handleCreatePost = undefined;
 
   const handleBlockUser = async () => {
     if (!profileUserId) return;

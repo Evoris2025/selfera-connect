@@ -49,7 +49,7 @@ export function MobileNav({
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50">
+    <nav className="w-full">
       {/* Safe area spacer */}
       <div className="pb-safe">
         {/* Glass background with gradient fade */}

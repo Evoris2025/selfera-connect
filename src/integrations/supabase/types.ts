@@ -2064,6 +2064,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      user_is_conversation_participant: {
+        Args: { p_conversation_id: string; p_user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
