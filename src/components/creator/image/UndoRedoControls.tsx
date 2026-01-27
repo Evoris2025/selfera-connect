@@ -8,7 +8,6 @@ interface UndoRedoControlsProps {
   canRedo: boolean;
   onUndo: () => void;
   onRedo: () => void;
-  historyLength?: number;
   className?: string;
 }
 
@@ -17,7 +16,6 @@ export function UndoRedoControls({
   canRedo,
   onUndo,
   onRedo,
-  historyLength,
   className,
 }: UndoRedoControlsProps) {
   return (
@@ -53,12 +51,6 @@ export function UndoRedoControls({
           <Redo2 className="h-4 w-4" />
         </Button>
       </motion.div>
-      
-      {typeof historyLength === 'number' && historyLength > 0 && (
-        <span className="text-xs text-muted-foreground ml-1">
-          {historyLength}
-        </span>
-      )}
     </div>
   );
 }

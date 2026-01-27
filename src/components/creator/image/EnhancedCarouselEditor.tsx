@@ -48,9 +48,9 @@ export function EnhancedCarouselEditor({
   const handleDragEnd = (e: any, info: PanInfo, index: number) => {
     if (!containerRef.current) return;
     
-    const thumbnailWidth = 72; // w-16 + gap
-    const dragDistance = info.offset.x;
-    const draggedPositions = Math.round(dragDistance / thumbnailWidth);
+    const thumbnailHeight = 72; // h-16 + gap (vertical now)
+    const dragDistance = info.offset.y;
+    const draggedPositions = Math.round(dragDistance / thumbnailHeight);
     
     if (draggedPositions !== 0) {
       const newIndex = Math.max(0, Math.min(images.length - 1, index + draggedPositions));
@@ -109,9 +109,91 @@ export function EnhancedCarouselEditor({
   const filterOpacity = currentImage.filterIntensity / 100;
 
   return (
-    <div className="space-y-3">
-      {/* Main Preview with Swipe Navigation */}
-      <div className="relative">
+    <div className="flex gap-4">
+      {/* Left Side: Thumbnails and Counter */}
+      <div className="flex flex-col gap-2 w-20 flex-shrink-0">
+        {/* Image Counter */}
+        <div className="px-2.5 py-1 rounded-full bg-muted text-xs font-medium text-center">
+          {selectedIndex + 1} / {images.length}
+        </div>
+        
+        {/* Thumbnail Strip */}
+        <div ref={containerRef} className="flex flex-col gap-2 overflow-y-auto max-h-[400px] scrollbar-hide">
+          {images.map((image, index) => (
+            <motion.div
+              key={image.id}
+              layout
+              drag="y"
+              dragConstraints={containerRef}
+              dragElastic={0.1}
+              onDragStart={() => handleDragStart(index)}
+              onDragEnd={(e, info) => handleDragEnd(e, info, index)}
+              whileDrag={{ scale: 1.08, zIndex: 20, boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}
+              className="relative flex-shrink-0"
+            >
+              <button
+                onClick={() => onSelectImage(index)}
+                className={cn(
+                  'w-16 h-16 rounded-lg overflow-hidden border-2 transition-all',
+                  index === selectedIndex 
+                    ? 'border-primary ring-2 ring-primary/30' 
+                    : 'border-transparent hover:border-border',
+                  draggedIndex === index && 'opacity-50'
+                )}
+              >
+                <img
+                  src={image.previewUrl}
+                  alt={`Thumbnail ${index + 1}`}
+                  className={cn('w-full h-full object-cover', image.filter > 0 && filters[image.filter]?.class)}
+                  draggable={false}
+                />
+              </button>
+              
+              {/* Remove Button */}
+              {images.length > 1 && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRemove(index);
+                  }}
+                  className="absolute -top-1.5 -right-1.5 p-1 rounded-full bg-destructive text-destructive-foreground shadow-md hover:bg-destructive/90 transition-colors"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              )}
+
+              {/* Drag Handle Indicator */}
+              <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 opacity-40">
+                <GripVertical className="h-3 w-3 rotate-90" />
+              </div>
+              
+              {/* Selected checkmark */}
+              {index === selectedIndex && (
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-primary flex items-center justify-center"
+                >
+                  <Check className="h-2.5 w-2.5 text-primary-foreground" />
+                </motion.div>
+              )}
+            </motion.div>
+          ))}
+
+          {/* Add More Button */}
+          {images.length < maxImages && (
+            <button
+              onClick={onAddImages}
+              className="flex-shrink-0 w-16 h-16 rounded-lg border-2 border-dashed border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Plus className="h-5 w-5" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Right Side: Main Preview */}
+      <div className="flex-1 relative">
         <motion.div
           className="aspect-square bg-black/50 rounded-xl overflow-hidden touch-pan-y"
           onPanEnd={!showBeforeAfter ? handlePanEnd : undefined}
@@ -237,102 +319,6 @@ export function EnhancedCarouselEditor({
               />
             ))}
           </div>
-        )}
-
-        {/* Image Counter */}
-        <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-background/80 backdrop-blur-sm text-xs font-medium">
-          {selectedIndex + 1} / {images.length}
-        </div>
-        
-        {/* Swipe hint (mobile) */}
-        {images.length > 1 && (
-          <div className="md:hidden absolute top-3 left-3 px-2.5 py-1 rounded-full bg-background/80 backdrop-blur-sm text-xs text-muted-foreground">
-            Swipe to navigate
-          </div>
-        )}
-      </div>
-
-      {/* Thumbnail Strip with Reorder */}
-      <div ref={containerRef} className="relative">
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
-          {images.map((image, index) => (
-            <motion.div
-              key={image.id}
-              layout
-              drag="x"
-              dragConstraints={containerRef}
-              dragElastic={0.1}
-              onDragStart={() => handleDragStart(index)}
-              onDragEnd={(e, info) => handleDragEnd(e, info, index)}
-              whileDrag={{ scale: 1.08, zIndex: 20, boxShadow: '0 4px 20px rgba(0,0,0,0.3)' }}
-              className="relative flex-shrink-0"
-            >
-              <button
-                onClick={() => onSelectImage(index)}
-                className={cn(
-                  'w-16 h-16 rounded-lg overflow-hidden border-2 transition-all',
-                  index === selectedIndex 
-                    ? 'border-primary ring-2 ring-primary/30' 
-                    : 'border-transparent hover:border-border',
-                  draggedIndex === index && 'opacity-50'
-                )}
-              >
-                <img
-                  src={image.previewUrl}
-                  alt={`Thumbnail ${index + 1}`}
-                  className={cn('w-full h-full object-cover', image.filter > 0 && filters[image.filter]?.class)}
-                  draggable={false}
-                />
-              </button>
-              
-              {/* Remove Button */}
-              {images.length > 1 && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleRemove(index);
-                  }}
-                  className="absolute -top-1.5 -right-1.5 p-1 rounded-full bg-destructive text-destructive-foreground shadow-md hover:bg-destructive/90 transition-colors"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              )}
-
-              {/* Drag Handle Indicator */}
-              <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 opacity-40">
-                <GripVertical className="h-3 w-3" />
-              </div>
-              
-              {/* Selected checkmark */}
-              {index === selectedIndex && (
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-primary flex items-center justify-center"
-                >
-                  <Check className="h-2.5 w-2.5 text-primary-foreground" />
-                </motion.div>
-              )}
-            </motion.div>
-          ))}
-
-          {/* Add More Button */}
-          {images.length < maxImages && (
-            <button
-              onClick={onAddImages}
-              className="flex-shrink-0 w-16 h-16 rounded-lg border-2 border-dashed border-border hover:border-primary/50 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <Plus className="h-5 w-5" />
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Selection Counter & Instructions */}
-      <div className="flex items-center justify-between text-xs text-muted-foreground">
-        <span>Selected: {images.length} / {maxImages}</span>
-        {images.length > 1 && (
-          <span>Drag thumbnails to reorder</span>
         )}
       </div>
     </div>

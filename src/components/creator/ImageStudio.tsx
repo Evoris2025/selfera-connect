@@ -619,12 +619,22 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
     >
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border">
-        <button
-          onClick={handleBack}
-          className="p-2 -ml-2 rounded-full hover:bg-secondary transition-colors"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={handleBack}
+            className="p-2 -ml-2 rounded-full hover:bg-secondary transition-colors"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          {step === 'edit' && (
+            <UndoRedoControls
+              canUndo={canUndo}
+              canRedo={canRedo}
+              onUndo={handleUndo}
+              onRedo={handleRedo}
+            />
+          )}
+        </div>
         <h2 className="font-semibold">
           {step === 'select' ? 'Select Photos' : step === 'edit' ? 'Edit' : 'Details'}
         </h2>
@@ -681,21 +691,8 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
             exit={{ opacity: 0 }}
             className="flex-1 overflow-y-auto"
           >
-            {/* Undo/Redo Controls + Magik Button + Carousel Editor */}
+            {/* Carousel Editor */}
             <div className="p-4 space-y-3">
-              {/* Top Bar: Undo/Redo + Magik */}
-              <div className="flex items-center justify-between">
-                <UndoRedoControls
-                  canUndo={canUndo}
-                  canRedo={canRedo}
-                  onUndo={handleUndo}
-                  onRedo={handleRedo}
-                  historyLength={historyLength}
-                />
-                <span className="text-xs text-muted-foreground hidden sm:inline">
-                  Ctrl+Z / Ctrl+Shift+Z
-                </span>
-              </div>
               
               <EnhancedCarouselEditor
                 images={images}
