@@ -215,16 +215,16 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
                     />
                   </motion.button>
                   
-                  {/* Curvy Connector */}
+                  {/* Curvy S-Connector */}
                   {index < contentTypes.length - 1 && (
-                    <div className="relative h-8 mx-8">
+                    <div className="relative h-10 mx-12">
                       <svg 
                         className="absolute inset-0 w-full h-full"
-                        viewBox="0 0 100 32"
+                        viewBox="0 0 100 40"
                         preserveAspectRatio="none"
                       >
                         <defs>
-                          <linearGradient id={`connector-gradient-${index}`} x1="0%" y1="0%" x2="100%" y2="0%">
+                          <linearGradient id={`connector-gradient-${index}`} x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stopColor={isEven ? "#3b82f6" : "#f97316"} />
                             <stop offset="50%" stopColor="#a855f7" />
                             <stop offset="100%" stopColor={isEven ? "#f97316" : "#3b82f6"} />
@@ -232,12 +232,12 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
                         </defs>
                         <path
                           d={isEven 
-                            ? "M 20 0 C 20 16, 80 16, 80 32"
-                            : "M 80 0 C 80 16, 20 16, 20 32"
+                            ? "M 15 0 C 15 20, 50 10, 50 20 C 50 30, 85 20, 85 40"
+                            : "M 85 0 C 85 20, 50 10, 50 20 C 50 30, 15 20, 15 40"
                           }
                           fill="none"
                           stroke={`url(#connector-gradient-${index})`}
-                          strokeWidth="2"
+                          strokeWidth="3"
                           strokeLinecap="round"
                           vectorEffect="non-scaling-stroke"
                         />
