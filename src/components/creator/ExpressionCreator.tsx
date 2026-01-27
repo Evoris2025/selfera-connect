@@ -357,10 +357,10 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                 {/* Top bar - minimal */}
                 <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-4 z-10">
                   <button
-                    onClick={() => { stopCamera(); onBack(); }}
+                    onClick={() => { stopCamera(); handleBack(); }}
                     className="p-2.5 rounded-full bg-black/40 backdrop-blur-sm"
                   >
-                    <X className="h-6 w-6 text-white" />
+                    <ArrowLeft className="h-5 w-5 text-white" />
                   </button>
                   
                   <div className="flex items-center gap-2">
@@ -368,12 +368,20 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                     <span className="text-white font-medium text-sm">Expression</span>
                   </div>
                   
-                  <button
-                    onClick={flipCamera}
-                    className="p-2.5 rounded-full bg-black/40 backdrop-blur-sm"
-                  >
-                    <FlipHorizontal className="h-5 w-5 text-white" />
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={flipCamera}
+                      className="p-2.5 rounded-full bg-black/40 backdrop-blur-sm"
+                    >
+                      <FlipHorizontal className="h-5 w-5 text-white" />
+                    </button>
+                    <button
+                      onClick={() => { stopCamera(); onBack(); }}
+                      className="p-2.5 rounded-full bg-black/40 backdrop-blur-sm"
+                    >
+                      <X className="h-6 w-6 text-white" />
+                    </button>
+                  </div>
                 </div>
                 
                 {/* Bottom controls - Instagram style */}
@@ -428,13 +436,18 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                     onClick={onBack}
                     className="p-2 -ml-2 rounded-full hover:bg-white/10 transition-colors"
                   >
-                    <X className="h-6 w-6 text-white" />
+                    <ArrowLeft className="h-5 w-5 text-white" />
                   </button>
                   <div className="flex items-center gap-2">
                     <Sparkles className="h-5 w-5 text-pink-500" />
                     <h2 className="font-semibold text-white">Expression</h2>
                   </div>
-                  <div className="w-12" />
+                  <button
+                    onClick={onBack}
+                    className="p-2 rounded-full hover:bg-white/10 transition-colors"
+                  >
+                    <X className="h-6 w-6 text-white" />
+                  </button>
                 </div>
                 
                 <input
@@ -491,17 +504,25 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                 onClick={handleBack}
                 className="p-2.5 rounded-full bg-black/40 backdrop-blur-sm"
               >
-                <X className="h-6 w-6 text-white" />
+                <ArrowLeft className="h-5 w-5 text-white" />
               </button>
               
-              <Button
-                size="sm"
-                onClick={handleSubmit}
-                disabled={isSubmitting}
-                className="gradient-brand text-white px-6"
-              >
-                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Share'}
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                  className="gradient-brand text-white px-6"
+                >
+                  {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Share'}
+                </Button>
+                <button
+                  onClick={onBack}
+                  className="p-2.5 rounded-full bg-black/40 backdrop-blur-sm"
+                >
+                  <X className="h-6 w-6 text-white" />
+                </button>
+              </div>
             </div>
             
             {/* Media Preview with overlays */}
