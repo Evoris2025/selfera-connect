@@ -29,7 +29,9 @@ export const soundCategories = [
 export type SoundCategory = typeof soundCategories[number];
 
 export const soundLibrary: SoundData[] = [
-  // Ambient
+  // ============================================
+  // AMBIENT - Nature & Environmental Sounds
+  // ============================================
   { 
     id: 'amb1', 
     name: 'Ocean Waves', 
@@ -80,8 +82,83 @@ export const soundLibrary: SoundData[] = [
     duration: 30,
     tags: ['fire', 'warm', 'cozy', 'winter'],
   },
+  { 
+    id: 'amb7', 
+    name: 'Desert Night', 
+    artist: 'Ambient Journeys', 
+    category: 'Ambient', 
+    duration: 45,
+    tags: ['desert', 'night', 'crickets', 'stars'],
+  },
+  { 
+    id: 'amb8', 
+    name: 'Tropical Rainforest', 
+    artist: 'Jungle Sounds', 
+    category: 'Ambient', 
+    duration: 60,
+    tags: ['rainforest', 'jungle', 'tropical', 'exotic'],
+  },
+  { 
+    id: 'amb9', 
+    name: 'Arctic Wind', 
+    artist: 'Polar Audio', 
+    category: 'Ambient', 
+    duration: 30,
+    tags: ['arctic', 'wind', 'cold', 'winter'],
+  },
+  { 
+    id: 'amb10', 
+    name: 'Autumn Leaves', 
+    artist: 'Seasonal Sounds', 
+    category: 'Ambient', 
+    duration: 30,
+    tags: ['autumn', 'leaves', 'wind', 'fall'],
+  },
+  { 
+    id: 'amb11', 
+    name: 'Underwater World', 
+    artist: 'Deep Dive Audio', 
+    category: 'Ambient', 
+    duration: 45,
+    tags: ['underwater', 'bubbles', 'ocean', 'dive'],
+  },
+  { 
+    id: 'amb12', 
+    name: 'Cave Echoes', 
+    artist: 'Earth Sounds', 
+    category: 'Ambient', 
+    duration: 30,
+    tags: ['cave', 'echo', 'drips', 'mysterious'],
+  },
+  { 
+    id: 'amb13', 
+    name: 'Waterfall Cascade', 
+    artist: 'Natural Wonders', 
+    category: 'Ambient', 
+    duration: 45,
+    tags: ['waterfall', 'cascade', 'powerful', 'nature'],
+    isTrending: true,
+  },
+  { 
+    id: 'amb14', 
+    name: 'Morning Meadow', 
+    artist: 'Countryside Audio', 
+    category: 'Ambient', 
+    duration: 30,
+    tags: ['meadow', 'morning', 'birds', 'peaceful'],
+  },
+  { 
+    id: 'amb15', 
+    name: 'Snowfall Silence', 
+    artist: 'Winter Collection', 
+    category: 'Ambient', 
+    duration: 30,
+    tags: ['snow', 'quiet', 'winter', 'peaceful'],
+  },
   
-  // Meditation
+  // ============================================
+  // MEDITATION - Healing & Mindfulness
+  // ============================================
   { 
     id: 'med1', 
     name: 'Tibetan Bowls', 
@@ -123,8 +200,91 @@ export const soundLibrary: SoundData[] = [
     duration: 45,
     tags: ['crystal', 'healing', 'vibration', 'chakra'],
   },
+  { 
+    id: 'med6', 
+    name: 'Solfeggio 528Hz', 
+    artist: 'Frequency Healing', 
+    category: 'Meditation', 
+    duration: 60,
+    tags: ['528hz', 'solfeggio', 'dna', 'repair'],
+    isTrending: true,
+  },
+  { 
+    id: 'med7', 
+    name: 'Chakra Alignment', 
+    artist: 'Energy Healers', 
+    category: 'Meditation', 
+    duration: 90,
+    tags: ['chakra', 'energy', 'balance', 'healing'],
+  },
+  { 
+    id: 'med8', 
+    name: 'Body Scan Meditation', 
+    artist: 'Mindful Practice', 
+    category: 'Meditation', 
+    duration: 60,
+    tags: ['body scan', 'relaxation', 'awareness', 'calm'],
+  },
+  { 
+    id: 'med9', 
+    name: 'Theta Waves', 
+    artist: 'Brainwave Audio', 
+    category: 'Meditation', 
+    duration: 45,
+    tags: ['theta', 'brainwaves', 'deep', 'meditation'],
+  },
+  { 
+    id: 'med10', 
+    name: 'Zen Garden', 
+    artist: 'Japanese Wellness', 
+    category: 'Meditation', 
+    duration: 45,
+    tags: ['zen', 'garden', 'japanese', 'tranquil'],
+  },
+  { 
+    id: 'med11', 
+    name: 'Delta Sleep Waves', 
+    artist: 'Sleep Science', 
+    category: 'Meditation', 
+    duration: 60,
+    tags: ['delta', 'sleep', 'deep', 'rest'],
+  },
+  { 
+    id: 'med12', 
+    name: 'Shamanic Drums', 
+    artist: 'Ancient Rhythms', 
+    category: 'Meditation', 
+    duration: 45,
+    tags: ['drums', 'shamanic', 'tribal', 'journey'],
+  },
+  { 
+    id: 'med13', 
+    name: 'Reiki Healing', 
+    artist: 'Energy Flow', 
+    category: 'Meditation', 
+    duration: 60,
+    tags: ['reiki', 'healing', 'energy', 'wellness'],
+  },
+  { 
+    id: 'med14', 
+    name: 'Gong Bath', 
+    artist: 'Sound Healers', 
+    category: 'Meditation', 
+    duration: 45,
+    tags: ['gong', 'bath', 'vibration', 'healing'],
+  },
+  { 
+    id: 'med15', 
+    name: 'Mantra Meditation', 
+    artist: 'Sacred Chants', 
+    category: 'Meditation', 
+    duration: 60,
+    tags: ['mantra', 'chant', 'spiritual', 'repetition'],
+  },
   
-  // Lo-Fi
+  // ============================================
+  // LO-FI - Chill Beats & Study Music
+  // ============================================
   { 
     id: 'lofi1', 
     name: 'Study Beats', 
@@ -166,8 +326,67 @@ export const soundLibrary: SoundData[] = [
     duration: 30,
     tags: ['coffee', 'cafe', 'ambient', 'chatter'],
   },
+  { 
+    id: 'lofi6', 
+    name: 'Rainy Day Beats', 
+    artist: 'Lo-Fi Weather', 
+    category: 'Lo-Fi', 
+    duration: 30,
+    tags: ['rain', 'beats', 'cozy', 'relaxing'],
+    isTrending: true,
+  },
+  { 
+    id: 'lofi7', 
+    name: 'Sunset Drive', 
+    artist: 'Chill Journey', 
+    category: 'Lo-Fi', 
+    duration: 30,
+    tags: ['sunset', 'drive', 'nostalgic', 'warm'],
+  },
+  { 
+    id: 'lofi8', 
+    name: 'Vintage Vinyl', 
+    artist: 'Retro Beats', 
+    category: 'Lo-Fi', 
+    duration: 30,
+    tags: ['vinyl', 'vintage', 'crackle', 'nostalgic'],
+  },
+  { 
+    id: 'lofi9', 
+    name: 'Tokyo Nights', 
+    artist: 'City Lo-Fi', 
+    category: 'Lo-Fi', 
+    duration: 30,
+    tags: ['tokyo', 'city', 'night', 'neon'],
+  },
+  { 
+    id: 'lofi10', 
+    name: 'Sleepy Piano', 
+    artist: 'Gentle Keys', 
+    category: 'Lo-Fi', 
+    duration: 30,
+    tags: ['piano', 'sleepy', 'soft', 'gentle'],
+  },
+  { 
+    id: 'lofi11', 
+    name: 'Bookstore Vibes', 
+    artist: 'Quiet Places', 
+    category: 'Lo-Fi', 
+    duration: 30,
+    tags: ['bookstore', 'quiet', 'reading', 'peaceful'],
+  },
+  { 
+    id: 'lofi12', 
+    name: 'Sunday Morning', 
+    artist: 'Weekend Beats', 
+    category: 'Lo-Fi', 
+    duration: 30,
+    tags: ['sunday', 'morning', 'lazy', 'peaceful'],
+  },
   
-  // Uplifting
+  // ============================================
+  // UPLIFTING - Motivation & Energy
+  // ============================================
   { 
     id: 'up1', 
     name: 'Morning Motivation', 
@@ -201,8 +420,59 @@ export const soundLibrary: SoundData[] = [
     duration: 30,
     tags: ['victory', 'celebrate', 'win', 'dance'],
   },
+  { 
+    id: 'up5', 
+    name: 'Golden Hour', 
+    artist: 'Sunset Vibes', 
+    category: 'Uplifting', 
+    duration: 30,
+    tags: ['golden', 'sunset', 'warm', 'beautiful'],
+  },
+  { 
+    id: 'up6', 
+    name: 'Breakthrough', 
+    artist: 'Power Audio', 
+    category: 'Uplifting', 
+    duration: 30,
+    tags: ['breakthrough', 'powerful', 'achieve', 'success'],
+    isTrending: true,
+  },
+  { 
+    id: 'up7', 
+    name: 'Grateful Heart', 
+    artist: 'Thankful Sounds', 
+    category: 'Uplifting', 
+    duration: 30,
+    tags: ['grateful', 'thankful', 'appreciation', 'love'],
+  },
+  { 
+    id: 'up8', 
+    name: 'Adventure Awaits', 
+    artist: 'Journey Music', 
+    category: 'Uplifting', 
+    duration: 30,
+    tags: ['adventure', 'journey', 'explore', 'exciting'],
+  },
+  { 
+    id: 'up9', 
+    name: 'Sunrise Energy', 
+    artist: 'Dawn Collection', 
+    category: 'Uplifting', 
+    duration: 30,
+    tags: ['sunrise', 'energy', 'fresh', 'awakening'],
+  },
+  { 
+    id: 'up10', 
+    name: 'Joyful Spirit', 
+    artist: 'Happy Vibes', 
+    category: 'Uplifting', 
+    duration: 30,
+    tags: ['joyful', 'happy', 'spirit', 'light'],
+  },
   
-  // Nature
+  // ============================================
+  // NATURE - Pure Environmental Recordings
+  // ============================================
   { 
     id: 'nat1', 
     name: 'Thunderstorm', 
@@ -227,8 +497,107 @@ export const soundLibrary: SoundData[] = [
     duration: 45,
     tags: ['whale', 'ocean', 'deep', 'mysterious'],
   },
+  { 
+    id: 'nat4', 
+    name: 'Tropical Beach', 
+    artist: 'Island Sounds', 
+    category: 'Nature', 
+    duration: 45,
+    tags: ['beach', 'tropical', 'waves', 'palm'],
+    isTrending: true,
+  },
+  { 
+    id: 'nat5', 
+    name: 'Night Crickets', 
+    artist: 'Evening Sounds', 
+    category: 'Nature', 
+    duration: 30,
+    tags: ['crickets', 'night', 'summer', 'peaceful'],
+  },
+  { 
+    id: 'nat6', 
+    name: 'Frog Pond', 
+    artist: 'Wetland Audio', 
+    category: 'Nature', 
+    duration: 30,
+    tags: ['frogs', 'pond', 'night', 'nature'],
+  },
+  { 
+    id: 'nat7', 
+    name: 'Owl Calls', 
+    artist: 'Nocturnal Sounds', 
+    category: 'Nature', 
+    duration: 30,
+    tags: ['owl', 'night', 'forest', 'mysterious'],
+  },
+  { 
+    id: 'nat8', 
+    name: 'Bamboo Forest', 
+    artist: 'Asian Nature', 
+    category: 'Nature', 
+    duration: 45,
+    tags: ['bamboo', 'forest', 'wind', 'asian'],
+  },
+  { 
+    id: 'nat9', 
+    name: 'Rocky Shore', 
+    artist: 'Coastal Audio', 
+    category: 'Nature', 
+    duration: 30,
+    tags: ['rocks', 'shore', 'waves', 'sea'],
+  },
+  { 
+    id: 'nat10', 
+    name: 'Savanna Dawn', 
+    artist: 'African Sounds', 
+    category: 'Nature', 
+    duration: 45,
+    tags: ['savanna', 'africa', 'dawn', 'wildlife'],
+  },
+  { 
+    id: 'nat11', 
+    name: 'Spring Rain', 
+    artist: 'Seasonal Sounds', 
+    category: 'Nature', 
+    duration: 30,
+    tags: ['spring', 'rain', 'gentle', 'fresh'],
+  },
+  { 
+    id: 'nat12', 
+    name: 'Lake Loons', 
+    artist: 'Lake Sounds', 
+    category: 'Nature', 
+    duration: 30,
+    tags: ['loons', 'lake', 'calm', 'evening'],
+  },
+  { 
+    id: 'nat13', 
+    name: 'Seagulls Harbor', 
+    artist: 'Coastal Life', 
+    category: 'Nature', 
+    duration: 30,
+    tags: ['seagulls', 'harbor', 'ocean', 'coastal'],
+  },
+  { 
+    id: 'nat14', 
+    name: 'Wolf Howl', 
+    artist: 'Wild Audio', 
+    category: 'Nature', 
+    duration: 30,
+    tags: ['wolf', 'howl', 'wild', 'mysterious'],
+  },
+  { 
+    id: 'nat15', 
+    name: 'Cicada Summer', 
+    artist: 'Summer Sounds', 
+    category: 'Nature', 
+    duration: 30,
+    tags: ['cicada', 'summer', 'hot', 'afternoon'],
+  },
   
-  // Sound Effects
+  // ============================================
+  // SOUND EFFECTS - Transitions & Accents
+  // ============================================
   { 
     id: 'sfx1', 
     name: 'Whoosh Transition', 
@@ -260,6 +629,54 @@ export const soundLibrary: SoundData[] = [
     category: 'Sound Effects', 
     duration: 5,
     tags: ['heart', 'beat', 'pulse', 'dramatic'],
+  },
+  { 
+    id: 'sfx5', 
+    name: 'Camera Shutter', 
+    artist: 'SFX Library', 
+    category: 'Sound Effects', 
+    duration: 1,
+    tags: ['camera', 'shutter', 'photo', 'click'],
+  },
+  { 
+    id: 'sfx6', 
+    name: 'Bubble Pop', 
+    artist: 'SFX Library', 
+    category: 'Sound Effects', 
+    duration: 1,
+    tags: ['bubble', 'pop', 'fun', 'playful'],
+  },
+  { 
+    id: 'sfx7', 
+    name: 'Wind Gust', 
+    artist: 'SFX Library', 
+    category: 'Sound Effects', 
+    duration: 3,
+    tags: ['wind', 'gust', 'dramatic', 'nature'],
+  },
+  { 
+    id: 'sfx8', 
+    name: 'Shimmer Rise', 
+    artist: 'SFX Library', 
+    category: 'Sound Effects', 
+    duration: 2,
+    tags: ['shimmer', 'rise', 'magical', 'ascending'],
+  },
+  { 
+    id: 'sfx9', 
+    name: 'Soft Chime', 
+    artist: 'SFX Library', 
+    category: 'Sound Effects', 
+    duration: 2,
+    tags: ['chime', 'soft', 'gentle', 'notification'],
+  },
+  { 
+    id: 'sfx10', 
+    name: 'Page Turn', 
+    artist: 'SFX Library', 
+    category: 'Sound Effects', 
+    duration: 1,
+    tags: ['page', 'turn', 'book', 'paper'],
   },
 ];
 
