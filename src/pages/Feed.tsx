@@ -59,7 +59,7 @@ export default function Feed() {
   };
 
   return (
-    <AppLayout onCreatePost={handleCreatePost} title="The Feed">
+    <AppLayout title="The Feed">
       <PullToRefresh 
         onRefresh={refresh} 
         className="flex flex-col bg-cinematic min-h-dvh"

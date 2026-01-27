@@ -251,7 +251,7 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="flex flex-col h-full max-h-[85vh]"
+      className="flex flex-col h-full min-h-dvh bg-background"
     >
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border">

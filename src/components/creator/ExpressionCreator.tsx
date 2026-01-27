@@ -331,7 +331,7 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="flex flex-col h-full bg-black"
+      className="flex flex-col h-full min-h-dvh bg-black"
     >
       <AnimatePresence mode="wait">
         {step === 'capture' && (
