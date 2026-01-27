@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Loader2, Sliders, Palette, MapPin, Users, Type, Music } from 'lucide-react';
+import { ArrowLeft, Loader2, Sliders, Palette, MapPin, Users, Type, Music, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -257,9 +257,9 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
       <div className="flex items-center justify-between p-4 border-b border-border">
         <button
           onClick={step === 'select' ? onBack : () => setStep(step === 'details' ? 'edit' : 'select')}
-          className="p-2 -ml-2 rounded-full hover:bg-secondary transition-colors"
+          className="p-2 -ml-2 hover:bg-secondary transition-colors"
         >
-          <ArrowLeft className="h-5 w-5" />
+          <X className="h-6 w-6" />
         </button>
         <h2 className="font-semibold">
           {step === 'select' ? 'Select Photos' : step === 'edit' ? 'Edit' : 'Details'}

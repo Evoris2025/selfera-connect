@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Upload, Loader2, ChevronRight, ChevronLeft, Check, Sparkles, Play } from 'lucide-react';
+import { ArrowLeft, Upload, Loader2, ChevronRight, ChevronLeft, Check, Sparkles, Play, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -326,9 +326,9 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
       <div className="flex items-center justify-between p-4 border-b border-border">
         <button
           onClick={goToPrevStep}
-          className="p-2 -ml-2 rounded-full hover:bg-secondary transition-colors"
+          className="p-2 -ml-2 hover:bg-secondary transition-colors"
         >
-          <ArrowLeft className="h-5 w-5" />
+          <X className="h-6 w-6" />
         </button>
         <div className="flex items-center gap-2">
           <Play className="h-5 w-5 text-red-500" />
