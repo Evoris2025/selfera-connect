@@ -215,25 +215,31 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
                     />
                   </motion.button>
                   
-                  {/* Zigzag Connector */}
+                  {/* Curvy Connector */}
                   {index < contentTypes.length - 1 && (
-                    <div className="relative h-5 mx-4">
-                      {/* Vertical line from current card */}
-                      <div 
-                        className={cn(
-                          "absolute top-0 w-[2px] h-2 bg-gradient-to-b from-blue-500 to-purple-500",
-                          isEven ? "left-6" : "right-6"
-                        )} 
-                      />
-                      {/* Horizontal line crossing */}
-                      <div className="absolute top-2 left-6 right-6 h-[2px] bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500" />
-                      {/* Vertical line to next card */}
-                      <div 
-                        className={cn(
-                          "absolute top-2 w-[2px] h-3 bg-gradient-to-b from-orange-500 to-purple-500",
-                          isEven ? "right-6" : "left-6"
-                        )} 
-                      />
+                    <div className="relative h-6 mx-4">
+                      <svg 
+                        className="absolute inset-0 w-full h-full overflow-visible"
+                        preserveAspectRatio="none"
+                      >
+                        <defs>
+                          <linearGradient id={`connector-gradient-${index}`} x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor={isEven ? "#3b82f6" : "#f97316"} />
+                            <stop offset="50%" stopColor="#a855f7" />
+                            <stop offset="100%" stopColor={isEven ? "#f97316" : "#3b82f6"} />
+                          </linearGradient>
+                        </defs>
+                        <path
+                          d={isEven 
+                            ? "M 25% 0 Q 25% 50%, 50% 50% T 75% 100%"
+                            : "M 75% 0 Q 75% 50%, 50% 50% T 25% 100%"
+                          }
+                          fill="none"
+                          stroke={`url(#connector-gradient-${index})`}
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                        />
+                      </svg>
                     </div>
                   )}
                 </div>
