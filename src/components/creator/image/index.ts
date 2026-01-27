@@ -22,6 +22,12 @@ export { PerImageAltText } from './PerImageAltText';
 export { UnsavedChangesDialog } from './UnsavedChangesDialog';
 export { UploadProgressOverlay, type UploadStatus } from './UploadProgressOverlay';
 
+// Undo/Redo and Presets
+export { useEditHistory } from './useEditHistory';
+export { useEditPresets, type EditPreset } from './useEditPresets';
+export { PresetManager } from './PresetManager';
+export { UndoRedoControls } from './UndoRedoControls';
+
 // Hooks
 export { useImageCompression } from './useImageCompression';
 export { useImageExport } from './useImageExport';
