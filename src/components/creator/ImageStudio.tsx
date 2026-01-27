@@ -21,6 +21,7 @@ import {
   type UserTag,
   type ImageAdjustments,
   type UploadStatus,
+  type EditPreset,
   createCarouselImage,
   DEFAULT_ADJUSTMENTS,
   GalleryFirstSelector,
@@ -35,6 +36,11 @@ import {
   useImageExport,
   getAdjustmentStyles,
   filters,
+  // New: Undo/Redo and Presets
+  useEditHistory,
+  useEditPresets,
+  PresetManager,
+  UndoRedoControls,
 } from './image';
 
 // Simulation mode flag
@@ -95,6 +101,26 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
   // Image export hook
   const { exportAllImages } = useImageExport();
 
+  // Edit history hook for undo/redo (max 20 actions)
+  const { 
+    recordChange, 
+    undo, 
+    redo, 
+    canUndo, 
+    canRedo, 
+    historyLength,
+    clearHistory 
+  } = useEditHistory({ maxHistorySize: 20 });
+
+  // Presets hook
+  const { 
+    presets, 
+    savePreset, 
+    deletePreset, 
+    renamePreset, 
+    applyPreset: getPresetValues 
+  } = useEditPresets();
+
   // Start background compression when images are added
   useEffect(() => {
     images.forEach(img => {
@@ -115,6 +141,25 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
     };
   }, []);
 
+  // Keyboard shortcuts for undo/redo
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (step !== 'edit') return;
+      
+      if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
+        e.preventDefault();
+        if (e.shiftKey) {
+          handleRedo();
+        } else {
+          handleUndo();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [step, canUndo, canRedo]);
+
   const handleImagesChange = useCallback((newImages: CarouselImage[]) => {
     setImages(newImages);
     setHasChanges(true);
@@ -125,10 +170,105 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
     }
   }, [selectedImageIndex]);
 
+  // Update with history recording
+  const updateCurrentImageWithHistory = useCallback((
+    type: 'filter' | 'adjustment' | 'crop',
+    updates: Partial<CarouselImage>
+  ) => {
+    if (!currentImage) return;
+    
+    // Record previous state for undo
+    const previousState: Partial<CarouselImage> = {};
+    (Object.keys(updates) as Array<keyof CarouselImage>).forEach(key => {
+      (previousState as Record<string, unknown>)[key] = currentImage[key];
+    });
+    
+    recordChange(currentImage.id, type, previousState, updates);
+    updateImage(currentImage.id, updates);
+  }, [currentImage, updateImage, recordChange]);
+
   const updateCurrentImage = useCallback((updates: Partial<CarouselImage>) => {
     if (!currentImage) return;
     updateImage(currentImage.id, updates);
   }, [currentImage, updateImage]);
+
+  // Undo/Redo handlers
+  const handleUndo = useCallback(() => {
+    undo((imageId, state) => {
+      updateImage(imageId, state);
+    });
+  }, [undo, updateImage]);
+
+  const handleRedo = useCallback(() => {
+    redo((imageId, state) => {
+      updateImage(imageId, state);
+    });
+  }, [redo, updateImage]);
+
+  // Apply preset to current image
+  const handleApplyPreset = useCallback((preset: EditPreset) => {
+    if (!currentImage) return;
+    
+    const values = getPresetValues(preset);
+    
+    // Record for undo
+    const previousState: Partial<CarouselImage> = {
+      filter: currentImage.filter,
+      filterIntensity: currentImage.filterIntensity,
+      brightness: currentImage.brightness,
+      contrast: currentImage.contrast,
+      saturation: currentImage.saturation,
+      warmth: currentImage.warmth,
+      highlights: currentImage.highlights,
+      shadows: currentImage.shadows,
+      vignette: currentImage.vignette,
+      sharpen: currentImage.sharpen,
+      structure: currentImage.structure,
+      fade: currentImage.fade,
+    };
+    
+    const newState: Partial<CarouselImage> = {
+      filter: values.filter,
+      filterIntensity: values.filterIntensity,
+      ...values.adjustments,
+    };
+    
+    recordChange(currentImage.id, 'batch', previousState, newState);
+    updateImage(currentImage.id, newState);
+    
+    toast({
+      title: 'Preset applied',
+      description: `Applied "${preset.name}" to this image.`,
+    });
+  }, [currentImage, getPresetValues, recordChange, updateImage]);
+
+  // Save current settings as preset
+  const handleSavePreset = useCallback((name: string) => {
+    if (!currentImage) return;
+    
+    savePreset(
+      name,
+      currentImage.filter,
+      currentImage.filterIntensity,
+      {
+        brightness: currentImage.brightness,
+        contrast: currentImage.contrast,
+        saturation: currentImage.saturation,
+        warmth: currentImage.warmth,
+        highlights: currentImage.highlights,
+        shadows: currentImage.shadows,
+        vignette: currentImage.vignette,
+        sharpen: currentImage.sharpen,
+        structure: currentImage.structure,
+        fade: currentImage.fade,
+      }
+    );
+    
+    toast({
+      title: 'Preset saved',
+      description: `"${name}" has been saved to your presets.`,
+    });
+  }, [currentImage, savePreset]);
 
   const handleAdjustmentsChange = (adjustments: ImageAdjustments) => {
     updateCurrentImage(adjustments);
@@ -488,8 +628,22 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
             exit={{ opacity: 0 }}
             className="flex-1 overflow-y-auto"
           >
-            {/* Enhanced Carousel Editor */}
-            <div className="p-4">
+            {/* Undo/Redo Controls + Carousel Editor */}
+            <div className="p-4 space-y-3">
+              {/* Undo/Redo Bar */}
+              <div className="flex items-center justify-between">
+                <UndoRedoControls
+                  canUndo={canUndo}
+                  canRedo={canRedo}
+                  onUndo={handleUndo}
+                  onRedo={handleRedo}
+                  historyLength={historyLength}
+                />
+                <span className="text-xs text-muted-foreground">
+                  Ctrl+Z / Ctrl+Shift+Z
+                </span>
+              </div>
+              
               <EnhancedCarouselEditor
                 images={images}
                 selectedIndex={selectedImageIndex}
@@ -518,19 +672,42 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
               </TabsList>
 
               <TabsContent value="filters" className="space-y-4">
+                {/* Preset Manager */}
+                <PresetManager
+                  presets={presets}
+                  currentFilter={currentImage.filter}
+                  currentFilterIntensity={currentImage.filterIntensity}
+                  currentAdjustments={{
+                    brightness: currentImage.brightness,
+                    contrast: currentImage.contrast,
+                    saturation: currentImage.saturation,
+                    warmth: currentImage.warmth,
+                    highlights: currentImage.highlights,
+                    shadows: currentImage.shadows,
+                    vignette: currentImage.vignette,
+                    sharpen: currentImage.sharpen,
+                    structure: currentImage.structure,
+                    fade: currentImage.fade,
+                  }}
+                  onSavePreset={handleSavePreset}
+                  onApplyPreset={handleApplyPreset}
+                  onDeletePreset={deletePreset}
+                  onRenamePreset={renamePreset}
+                />
+                
                 <EnhancedFilterLibrary
                   selectedFilter={currentImage.filter}
                   filterIntensity={currentImage.filterIntensity}
                   previewUrl={currentImage.previewUrl}
-                  onFilterSelect={(index) => updateCurrentImage({ filter: index })}
-                  onIntensityChange={(intensity) => updateCurrentImage({ filterIntensity: intensity })}
+                  onFilterSelect={(index) => updateCurrentImageWithHistory('filter', { filter: index })}
+                  onIntensityChange={(intensity) => updateCurrentImageWithHistory('filter', { filterIntensity: intensity })}
                 />
               </TabsContent>
 
               <TabsContent value="adjust">
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
-                    {/* Using inline adjustment sliders */}
+                    {/* Using inline adjustment sliders with history */}
                     {Object.entries({
                       brightness: { label: 'Brightness', min: 50, max: 150, default: 100 },
                       contrast: { label: 'Contrast', min: 50, max: 150, default: 100 },
@@ -553,7 +730,7 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                           min={config.min}
                           max={config.max}
                           value={currentImage[key as keyof CarouselImage] as number}
-                          onChange={(e) => updateCurrentImage({ [key]: parseInt(e.target.value) })}
+                          onChange={(e) => updateCurrentImageWithHistory('adjustment', { [key]: parseInt(e.target.value) })}
                           className="w-full h-1 bg-secondary rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:rounded-full"
                         />
                       </div>
@@ -563,7 +740,23 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => updateCurrentImage(DEFAULT_ADJUSTMENTS)}
+                    onClick={() => {
+                      // Record all adjustments for undo
+                      const previousState: Partial<CarouselImage> = {
+                        brightness: currentImage.brightness,
+                        contrast: currentImage.contrast,
+                        saturation: currentImage.saturation,
+                        warmth: currentImage.warmth,
+                        highlights: currentImage.highlights,
+                        shadows: currentImage.shadows,
+                        vignette: currentImage.vignette,
+                        sharpen: currentImage.sharpen,
+                        structure: currentImage.structure,
+                        fade: currentImage.fade,
+                      };
+                      recordChange(currentImage.id, 'adjustment', previousState, DEFAULT_ADJUSTMENTS);
+                      updateImage(currentImage.id, DEFAULT_ADJUSTMENTS);
+                    }}
                     className="w-full text-xs"
                   >
                     Reset All Adjustments
@@ -575,7 +768,7 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                 <EnhancedCropTool
                   imageUrl={currentImage.previewUrl}
                   cropData={currentImage.cropData}
-                  onCropChange={(cropData) => updateCurrentImage({ 
+                  onCropChange={(cropData) => updateCurrentImageWithHistory('crop', { 
                     cropData, 
                     aspectRatio: cropData.aspectRatio 
                   })}
