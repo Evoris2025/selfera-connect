@@ -180,7 +180,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
                   <div className="flex-1 flex flex-col gap-1 items-center text-center">
                     <span 
                       className={cn(
-                        "text-lg font-bold tracking-wide transition-colors",
+                        "text-xl font-bold tracking-wide transition-colors",
                         "bg-clip-text text-transparent",
                         `bg-gradient-to-br ${type.gradient}`
                       )}
