@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Loader2, Sliders, Palette, Crop, MapPin, Music, X, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, Loader2, Sliders, Palette, Crop, MapPin, Music, X, Image as ImageIcon, SplitSquareVertical } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -76,6 +76,7 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
   const [images, setImages] = useState<CarouselImage[]>([]);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [editTab, setEditTab] = useState<EditTab>('filters');
+  const [showBeforeAfter, setShowBeforeAfter] = useState(false);
 
   // Details state
   const [caption, setCaption] = useState('');
@@ -701,28 +702,42 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                 onSelectImage={setSelectedImageIndex}
                 onAddImages={() => fileInputRef.current?.click()}
                 maxImages={20}
+                showBeforeAfter={showBeforeAfter}
+                onToggleBeforeAfter={() => setShowBeforeAfter(!showBeforeAfter)}
               />
             </div>
 
             {/* Editing Tabs */}
             <Tabs value={editTab} onValueChange={(v) => setEditTab(v as EditTab)} className="px-4 pb-4">
-              <TabsList className="grid w-full grid-cols-4 mb-4">
+              <TabsList className="grid w-full grid-cols-5 mb-4">
                 <TabsTrigger value="filters" className="gap-1 text-xs">
                   <Palette className="h-3.5 w-3.5" />
-                  Filters
+                  <span className="hidden sm:inline">Filters</span>
                 </TabsTrigger>
                 <TabsTrigger value="adjust" className="gap-1 text-xs">
                   <Sliders className="h-3.5 w-3.5" />
-                  Adjust
+                  <span className="hidden sm:inline">Adjust</span>
                 </TabsTrigger>
                 <TabsTrigger value="effects" className="gap-1 text-xs">
                   <ImageIcon className="h-3.5 w-3.5" />
-                  Effects
+                  <span className="hidden sm:inline">Effects</span>
                 </TabsTrigger>
                 <TabsTrigger value="crop" className="gap-1 text-xs">
                   <Crop className="h-3.5 w-3.5" />
-                  Crop
+                  <span className="hidden sm:inline">Crop</span>
                 </TabsTrigger>
+                <button
+                  onClick={() => setShowBeforeAfter(!showBeforeAfter)}
+                  className={cn(
+                    'inline-flex items-center justify-center gap-1 text-xs whitespace-nowrap px-3 py-1.5 font-medium transition-all',
+                    showBeforeAfter 
+                      ? 'bg-primary text-primary-foreground' 
+                      : 'text-muted-foreground hover:text-foreground'
+                  )}
+                >
+                  <SplitSquareVertical className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Compare</span>
+                </button>
               </TabsList>
 
               <TabsContent value="filters" className="space-y-4">

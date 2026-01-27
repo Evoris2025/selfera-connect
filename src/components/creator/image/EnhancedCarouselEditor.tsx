@@ -15,6 +15,8 @@ interface EnhancedCarouselEditorProps {
   onSelectImage: (index: number) => void;
   onAddImages: () => void;
   maxImages?: number;
+  showBeforeAfter?: boolean;
+  onToggleBeforeAfter?: () => void;
 }
 
 export function EnhancedCarouselEditor({
@@ -24,9 +26,10 @@ export function EnhancedCarouselEditor({
   onSelectImage,
   onAddImages,
   maxImages = 20,
+  showBeforeAfter = false,
+  onToggleBeforeAfter,
 }: EnhancedCarouselEditorProps) {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
-  const [showBeforeAfter, setShowBeforeAfter] = useState(false);
   const [holdingIndex, setHoldingIndex] = useState<number | null>(null);
   const [holdProgress, setHoldProgress] = useState(0);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<number | null>(null);
@@ -195,8 +198,9 @@ export function EnhancedCarouselEditor({
                 onPointerUp={handleHoldEnd}
                 onPointerLeave={handleHoldEnd}
                 onPointerCancel={handleHoldEnd}
+                onContextMenu={(e) => e.preventDefault()}
                 className={cn(
-                  'w-16 h-16 rounded-lg overflow-hidden border-2 transition-all relative',
+                  'w-16 h-16 rounded-lg overflow-hidden border-2 transition-all relative select-none',
                   index === selectedIndex 
                     ? 'border-primary ring-2 ring-primary/30' 
                     : 'border-transparent hover:border-border',
@@ -285,10 +289,10 @@ export function EnhancedCarouselEditor({
         </div>
       </div>
 
-      {/* Right Side: Main Preview */}
+      {/* Right Side: Main Preview - Larger */}
       <div className="flex-1 relative">
         <motion.div
-          className="aspect-square bg-black/50 rounded-xl overflow-hidden touch-pan-y"
+          className="w-full h-full min-h-[400px] md:min-h-[500px] bg-black/50 rounded-xl overflow-hidden touch-pan-y"
           onPanEnd={!showBeforeAfter ? handlePanEnd : undefined}
         >
           {showBeforeAfter ? (
@@ -317,9 +321,10 @@ export function EnhancedCarouselEditor({
                 <img
                   src={currentImage.previewUrl}
                   alt={currentImage.altText || `Image ${selectedIndex + 1}`}
-                  className="w-full h-full object-contain absolute inset-0"
+                  className="w-full h-full object-contain absolute inset-0 select-none"
                   style={adjustmentStyles}
                   draggable={false}
+                  onContextMenu={(e) => e.preventDefault()}
                 />
                 
                 {/* Filtered layer with opacity for intensity */}
@@ -327,48 +332,20 @@ export function EnhancedCarouselEditor({
                   <img
                     src={currentImage.previewUrl}
                     alt=""
-                    className={cn('w-full h-full object-contain absolute inset-0 pointer-events-none', filterClass)}
+                    className={cn('w-full h-full object-contain absolute inset-0 pointer-events-none select-none', filterClass)}
                     style={{
                       ...adjustmentStyles,
                       opacity: filterOpacity,
                       mixBlendMode: 'normal',
                     }}
                     draggable={false}
+                    onContextMenu={(e) => e.preventDefault()}
                   />
-                )}
-                
-                {/* Compression indicator */}
-                {currentImage.isCompressing && (
-                  <div className="absolute bottom-3 left-3 flex items-center gap-1.5 px-2 py-1 rounded-full bg-black/60 text-white text-xs">
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                    <span>Optimizing...</span>
-                  </div>
-                )}
-                
-                {currentImage.compressedFile && !currentImage.isCompressing && (
-                  <div className="absolute bottom-3 left-3 flex items-center gap-1 px-2 py-1 rounded-full bg-primary/80 text-primary-foreground text-xs">
-                    <Check className="h-3 w-3" />
-                    <span>Ready</span>
-                  </div>
                 )}
               </motion.div>
             </AnimatePresence>
           )}
         </motion.div>
-
-        {/* Before/After Toggle */}
-        <Button
-          variant={showBeforeAfter ? "default" : "outline"}
-          size="sm"
-          onClick={() => setShowBeforeAfter(!showBeforeAfter)}
-          className={cn(
-            'absolute top-3 left-3 gap-1.5 text-xs',
-            showBeforeAfter && 'bg-primary text-primary-foreground'
-          )}
-        >
-          <SplitSquareVertical className="h-3.5 w-3.5" />
-          {showBeforeAfter ? 'Editing' : 'Compare'}
-        </Button>
 
         {/* Navigation Arrows (Desktop) */}
         {images.length > 1 && (
@@ -394,24 +371,6 @@ export function EnhancedCarouselEditor({
               <ChevronRight className="h-5 w-5" />
             </button>
           </>
-        )}
-
-        {/* Dots Indicator */}
-        {images.length > 1 && (
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-            {images.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => onSelectImage(i)}
-                className={cn(
-                  'h-2 rounded-full transition-all',
-                  i === selectedIndex 
-                    ? 'bg-primary w-4' 
-                    : 'bg-foreground/40 hover:bg-foreground/60 w-2'
-                )}
-              />
-            ))}
-          </div>
         )}
       </div>
     </div>
