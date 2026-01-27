@@ -32,7 +32,7 @@ import {
   GalleryFirstSelector,
   EnhancedCarouselEditor,
   EnhancedFilterLibrary,
-  EnhancedCropTool,
+  CropControls,
   PerImageUserTags,
   PerImageAltText,
   UnsavedChangesDialog,
@@ -704,6 +704,11 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                 maxImages={20}
                 showBeforeAfter={showBeforeAfter}
                 onToggleBeforeAfter={() => setShowBeforeAfter(!showBeforeAfter)}
+                isCropMode={editTab === 'crop'}
+                onCropChange={(cropData) => updateCurrentImageWithHistory('crop', { 
+                  cropData, 
+                  aspectRatio: cropData.aspectRatio 
+                })}
               />
             </div>
 
@@ -851,8 +856,7 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
               </TabsContent>
 
               <TabsContent value="crop">
-                <EnhancedCropTool
-                  imageUrl={currentImage.previewUrl}
+                <CropControls
                   cropData={currentImage.cropData}
                   onCropChange={(cropData) => updateCurrentImageWithHistory('crop', { 
                     cropData, 
