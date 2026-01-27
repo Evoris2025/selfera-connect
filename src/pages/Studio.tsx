@@ -30,68 +30,70 @@ export default function Studio() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-background">
-      <AnimatePresence mode="wait">
-        {step === 'dashboard' && (
-          <motion.div
-            key="dashboard"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="h-full"
-          >
-            <ContentTypeDashboard onSelect={handleSelect} onClose={handleClose} />
-          </motion.div>
-        )}
+    <div className="min-h-dvh bg-background flex justify-center">
+      <div className="w-full max-w-lg md:max-w-full lg:max-w-2xl min-h-dvh">
+        <AnimatePresence mode="wait">
+          {step === 'dashboard' && (
+            <motion.div
+              key="dashboard"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="h-full min-h-dvh"
+            >
+              <ContentTypeDashboard onSelect={handleSelect} onClose={handleClose} />
+            </motion.div>
+          )}
 
-        {step === 'expression' && (
-          <motion.div
-            key="expression"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="h-full"
-          >
-            <ExpressionCreator onBack={handleBack} onSuccess={handleSuccess} />
-          </motion.div>
-        )}
+          {step === 'expression' && (
+            <motion.div
+              key="expression"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="h-full min-h-dvh"
+            >
+              <ExpressionCreator onBack={handleBack} onSuccess={handleSuccess} />
+            </motion.div>
+          )}
 
-        {step === 'video' && (
-          <motion.div
-            key="video"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="h-full"
-          >
-            <VideoStudio onBack={handleBack} onSuccess={handleSuccess} />
-          </motion.div>
-        )}
+          {step === 'video' && (
+            <motion.div
+              key="video"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="h-full min-h-dvh"
+            >
+              <VideoStudio onBack={handleBack} onSuccess={handleSuccess} />
+            </motion.div>
+          )}
 
-        {step === 'image' && (
-          <motion.div
-            key="image"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="h-full"
-          >
-            <ImageStudio onBack={handleBack} onSuccess={handleSuccess} />
-          </motion.div>
-        )}
+          {step === 'image' && (
+            <motion.div
+              key="image"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="h-full min-h-dvh"
+            >
+              <ImageStudio onBack={handleBack} onSuccess={handleSuccess} />
+            </motion.div>
+          )}
 
-        {step === 'post' && (
-          <motion.div
-            key="post"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="h-full"
-          >
-            <PostComposer onBack={handleBack} onSuccess={handleSuccess} />
-          </motion.div>
-        )}
-      </AnimatePresence>
+          {step === 'post' && (
+            <motion.div
+              key="post"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="h-full min-h-dvh"
+            >
+              <PostComposer onBack={handleBack} onSuccess={handleSuccess} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
