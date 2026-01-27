@@ -690,11 +690,10 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex-1 overflow-y-auto"
+            className="flex-1 flex flex-col min-h-0"
           >
-            {/* Carousel Editor */}
-            <div className="p-4 space-y-3">
-              
+            {/* Carousel Editor - fills available space above toolbar */}
+            <div className="flex-1 min-h-0 p-4 pb-0">
               <EnhancedCarouselEditor
                 images={images}
                 selectedIndex={selectedImageIndex}
@@ -709,11 +708,12 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                   cropData, 
                   aspectRatio: cropData.aspectRatio 
                 })}
+                className="h-full"
               />
             </div>
 
-            {/* Editing Tabs */}
-            <Tabs value={editTab} onValueChange={(v) => setEditTab(v as EditTab)} className="px-4 pb-4">
+            {/* Editing Tabs - fixed at bottom */}
+            <Tabs value={editTab} onValueChange={(v) => setEditTab(v as EditTab)} className="shrink-0 px-4 py-2">
               <TabsList className="grid w-full grid-cols-5 mb-4">
                 <TabsTrigger value="filters" className="gap-1 text-xs">
                   <Palette className="h-3.5 w-3.5" />
