@@ -1,6 +1,6 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, Images, Plus, X, Check } from 'lucide-react';
+import { Camera, Images, Plus, X, Check, Upload, Monitor, Smartphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { CarouselImage } from './types';
@@ -13,6 +13,20 @@ interface GalleryFirstSelectorProps {
   maxImages?: number;
 }
 
+// Detect if user is on desktop (for instruction text)
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = useState(false);
+  
+  useEffect(() => {
+    // Check for mouse/pointer capability
+    const hasPointer = window.matchMedia('(pointer: fine)').matches;
+    const isLargeScreen = window.innerWidth >= 768;
+    setIsDesktop(hasPointer && isLargeScreen);
+  }, []);
+  
+  return isDesktop;
+}
+
 export function GalleryFirstSelector({
   images,
   onImagesChange,
@@ -21,6 +35,7 @@ export function GalleryFirstSelector({
 }: GalleryFirstSelectorProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const isDesktop = useIsDesktop();
 
   const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -68,7 +83,7 @@ export function GalleryFirstSelector({
       {/* Main Preview Area */}
       <div className="flex-1 flex flex-col">
         {images.length === 0 ? (
-          /* Empty State */
+          /* Empty State - Enhanced Multi-Select UX */
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -76,13 +91,36 @@ export function GalleryFirstSelector({
           >
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="w-full aspect-square max-w-[280px] rounded-2xl border-2 border-dashed border-border hover:border-primary/50 transition-colors flex flex-col items-center justify-center gap-3 text-muted-foreground hover:text-foreground"
+              className="w-full aspect-square max-w-[320px] rounded-2xl border-2 border-dashed border-border hover:border-primary/50 transition-colors flex flex-col items-center justify-center gap-4 text-muted-foreground hover:text-foreground group"
             >
-              <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center">
-                <Camera className="h-8 w-8 text-primary" />
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <Images className="h-10 w-10 text-primary" />
               </div>
-              <span className="text-sm font-medium">Tap to select photos</span>
-              <span className="text-xs text-muted-foreground">Select up to {maxImages} images</span>
+              
+              <div className="text-center space-y-1">
+                <span className="text-base font-semibold text-foreground block">Select multiple photos</span>
+                <span className="text-sm text-muted-foreground block">Create a carousel with up to {maxImages} images</span>
+              </div>
+
+              {/* Platform-specific instructions */}
+              <div className="mt-2 px-4 py-2 rounded-lg bg-secondary/50 text-xs text-center max-w-[250px]">
+                {isDesktop ? (
+                  <div className="flex items-center justify-center gap-1.5">
+                    <Monitor className="h-3.5 w-3.5" />
+                    <span>Hold <kbd className="px-1 py-0.5 rounded bg-background border text-[10px]">Ctrl</kbd> or <kbd className="px-1 py-0.5 rounded bg-background border text-[10px]">⌘</kbd> to select multiple</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center gap-1.5">
+                    <Smartphone className="h-3.5 w-3.5" />
+                    <span>Tap multiple photos to select them</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Selection counter badge (shows 0 initially for affordance) */}
+              <div className="absolute top-4 right-4 px-2.5 py-1 rounded-full bg-secondary text-xs font-medium">
+                0 selected
+              </div>
             </button>
           </motion.div>
         ) : (
