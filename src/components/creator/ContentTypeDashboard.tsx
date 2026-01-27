@@ -64,7 +64,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="flex flex-col h-full bg-background relative overflow-hidden"
+      className="flex flex-col h-full min-h-dvh bg-background relative overflow-hidden"
     >
       {/* Ambient background effects */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">

@@ -13,7 +13,6 @@ interface NavItem {
 }
 
 interface MobileNavProps {
-  onCreateClick?: () => void;
   notificationCount?: number;
   messageCount?: number;
   followRequestCount?: number;
@@ -25,7 +24,6 @@ const springSmooth = { type: 'spring' as const, stiffness: 300, damping: 30 };
 const springGentle = { type: 'spring' as const, stiffness: 200, damping: 25 };
 
 export function MobileNav({ 
-  onCreateClick, 
   notificationCount = 0, 
   messageCount = 0, 
   followRequestCount = 0,
@@ -66,25 +64,25 @@ export function MobileNav({
             (item.href === '/notifications' && location.pathname === '/notifications') ||
             (item.href === '/messages' && location.pathname === '/messages');
           
-          // Create button - special styling
+          // Create button - navigates to /studio
           if (item.isCreate) {
             return (
-              <motion.button
-                key={index}
-                onClick={onCreateClick}
-                whileTap={{ scale: 0.9 }}
-                whileHover={{ scale: 1.05 }}
-                transition={springSmooth}
-                className="relative flex items-center justify-center w-11 h-11 rounded-xl bg-primary/10 hover:bg-primary/20 transition-colors duration-300"
-                aria-label="Create post"
-              >
+              <Link key={`create-${index}`} to="/studio">
                 <motion.div
-                  whileHover={{ rotate: 90 }}
-                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  whileTap={{ scale: 0.9 }}
+                  whileHover={{ scale: 1.05 }}
+                  transition={springSmooth}
+                  className="relative flex items-center justify-center w-11 h-11 rounded-xl bg-primary/10 hover:bg-primary/20 transition-colors duration-300"
+                  aria-label="Create post"
                 >
-                  <item.icon className="h-5 w-5 text-primary" strokeWidth={1.5} />
+                  <motion.div
+                    whileHover={{ rotate: 90 }}
+                    transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    <item.icon className="h-5 w-5 text-primary" strokeWidth={1.5} />
+                  </motion.div>
                 </motion.div>
-              </motion.button>
+              </Link>
             );
           }
 

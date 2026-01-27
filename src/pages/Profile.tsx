@@ -319,7 +319,7 @@ export default function Profile() {
   // Show blocked state if either party has blocked the other
   if (profileIsBlocked && !isOwnProfile && profileUserId) {
     return (
-      <AppLayout showHeader={false} onCreatePost={handleCreatePost}>
+      <AppLayout showHeader={false}>
         <BlockedProfileState 
           userId={profileUserId} 
           isBlockedByMe={iBlockedProfile} 
@@ -329,7 +329,7 @@ export default function Profile() {
   }
 
   return (
-    <AppLayout showHeader={false} onCreatePost={handleCreatePost}>
+    <AppLayout showHeader={false}>
       <div className="flex flex-col min-h-dvh relative">
         
         {/* ========== FULL-WIDTH PROFILE HERO ========== */}

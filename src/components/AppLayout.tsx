@@ -1,9 +1,8 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { MobileNav } from './MobileNav';
 import { DesktopNav } from './DesktopNav';
 import { AppHeader } from './AppHeader';
-import { CreatorStudio } from './creator/CreatorStudio';
 import { useFollowRequests } from '@/hooks/useFollowRequests';
 import { useNavbar } from '@/contexts/NavbarContext';
 
@@ -11,28 +10,17 @@ interface AppLayoutProps {
   children: ReactNode;
   title?: string;
   showHeader?: boolean;
-  onCreatePost?: () => void;
 }
 
-export function AppLayout({ children, title, showHeader = true, onCreatePost }: AppLayoutProps) {
+export function AppLayout({ children, title, showHeader = true }: AppLayoutProps) {
   const { pendingCount } = useFollowRequests();
   const { isNavbarVisible } = useNavbar();
-  const [creatorOpen, setCreatorOpen] = useState(false);
-
-  // Handle create click - prefer internal CreatorStudio, fallback to prop
-  const handleCreateClick = () => {
-    if (onCreatePost) {
-      onCreatePost();
-    } else {
-      setCreatorOpen(true);
-    }
-  };
 
   return (
     <div className="min-h-dvh bg-background flex w-full">
       {/* Left Nav Bar - hidden on mobile & tablet, visible on lg+ (desktop only) */}
       <div className="hidden lg:block">
-        <DesktopNav onCreateClick={handleCreateClick} followRequestCount={pendingCount} />
+        <DesktopNav followRequestCount={pendingCount} />
       </div>
       
       {/* Main content area */}
@@ -60,20 +48,12 @@ export function AppLayout({ children, title, showHeader = true, onCreatePost }: 
                 exit={{ y: 100, opacity: 0 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 35 }}
               >
-                <MobileNav onCreateClick={handleCreateClick} followRequestCount={pendingCount} />
+                <MobileNav followRequestCount={pendingCount} />
               </motion.div>
             )}
           </AnimatePresence>
         </div>
       </div>
-
-      {/* Creator Studio - available globally when no onCreatePost prop */}
-      {!onCreatePost && (
-        <CreatorStudio
-          open={creatorOpen}
-          onOpenChange={setCreatorOpen}
-        />
-      )}
     </div>
   );
 }
