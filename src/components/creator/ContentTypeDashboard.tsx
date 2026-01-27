@@ -80,7 +80,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
           className="p-2 -mr-2 hover:bg-secondary/50 transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           aria-label="Close"
         >
-          <X className="h-5 w-5 text-muted-foreground" />
+          <X className="h-6 w-6 text-muted-foreground" />
         </button>
       </div>
 

@@ -360,7 +360,7 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                     onClick={() => { stopCamera(); onBack(); }}
                     className="p-2.5 rounded-full bg-black/40 backdrop-blur-sm"
                   >
-                    <X className="h-5 w-5 text-white" />
+                    <X className="h-6 w-6 text-white" />
                   </button>
                   
                   <div className="flex items-center gap-2">
@@ -428,7 +428,7 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                     onClick={onBack}
                     className="p-2 -ml-2 rounded-full hover:bg-white/10 transition-colors"
                   >
-                    <ArrowLeft className="h-5 w-5 text-white" />
+                    <X className="h-6 w-6 text-white" />
                   </button>
                   <div className="flex items-center gap-2">
                     <Sparkles className="h-5 w-5 text-pink-500" />
@@ -491,7 +491,7 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                 onClick={handleBack}
                 className="p-2.5 rounded-full bg-black/40 backdrop-blur-sm"
               >
-                <ArrowLeft className="h-5 w-5 text-white" />
+                <X className="h-6 w-6 text-white" />
               </button>
               
               <Button
