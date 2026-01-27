@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from 'framer-motion';
-import { X, Plus, GripVertical, ChevronLeft, ChevronRight, Loader2, Check, SplitSquareVertical } from 'lucide-react';
+import { X, Plus, GripVertical, ChevronLeft, ChevronRight, Loader2, Check, SplitSquareVertical, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import type { CarouselImage } from './types';
@@ -27,11 +27,25 @@ export function EnhancedCarouselEditor({
 }: EnhancedCarouselEditorProps) {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [showBeforeAfter, setShowBeforeAfter] = useState(false);
+  const [holdingIndex, setHoldingIndex] = useState<number | null>(null);
+  const [holdProgress, setHoldProgress] = useState(0);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<number | null>(null);
+  const holdTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const holdStartRef = useRef<number>(0);
   const containerRef = useRef<HTMLDivElement>(null);
   
   // Swipe gesture handling
   const x = useMotionValue(0);
   const [isDragging, setIsDragging] = useState(false);
+
+  const HOLD_DURATION = 600; // ms to trigger delete mode
+
+  // Clean up hold timer
+  useEffect(() => {
+    return () => {
+      if (holdTimerRef.current) clearTimeout(holdTimerRef.current);
+    };
+  }, []);
 
   const handleRemove = (index: number) => {
     const newImages = images.filter((_, i) => i !== index);
@@ -39,6 +53,50 @@ export function EnhancedCarouselEditor({
     if (selectedIndex >= newImages.length) {
       onSelectImage(Math.max(0, newImages.length - 1));
     }
+    setShowDeleteConfirm(null);
+  };
+
+  const handleHoldStart = (index: number) => {
+    if (images.length <= 1) return; // Can't delete if only one image
+    
+    holdStartRef.current = Date.now();
+    setHoldingIndex(index);
+    setHoldProgress(0);
+    
+    // Animate progress
+    const animateProgress = () => {
+      const elapsed = Date.now() - holdStartRef.current;
+      const progress = Math.min(elapsed / HOLD_DURATION, 1);
+      setHoldProgress(progress);
+      
+      if (progress < 1) {
+        holdTimerRef.current = setTimeout(animateProgress, 16);
+      } else {
+        // Hold complete - show delete confirmation
+        setShowDeleteConfirm(index);
+        setHoldingIndex(null);
+        setHoldProgress(0);
+      }
+    };
+    
+    holdTimerRef.current = setTimeout(animateProgress, 16);
+  };
+
+  const handleHoldEnd = () => {
+    if (holdTimerRef.current) {
+      clearTimeout(holdTimerRef.current);
+      holdTimerRef.current = null;
+    }
+    setHoldingIndex(null);
+    setHoldProgress(0);
+  };
+
+  const handleThumbnailClick = (index: number) => {
+    if (showDeleteConfirm === index) {
+      // If delete confirm is showing, clicking outside dismisses it
+      return;
+    }
+    onSelectImage(index);
   };
 
   const handleDragStart = (index: number) => {
@@ -123,7 +181,7 @@ export function EnhancedCarouselEditor({
             <motion.div
               key={image.id}
               layout
-              drag="y"
+              drag={showDeleteConfirm === null ? "y" : false}
               dragConstraints={containerRef}
               dragElastic={0.1}
               onDragStart={() => handleDragStart(index)}
@@ -132,13 +190,18 @@ export function EnhancedCarouselEditor({
               className="relative flex-shrink-0"
             >
               <button
-                onClick={() => onSelectImage(index)}
+                onClick={() => handleThumbnailClick(index)}
+                onPointerDown={() => handleHoldStart(index)}
+                onPointerUp={handleHoldEnd}
+                onPointerLeave={handleHoldEnd}
+                onPointerCancel={handleHoldEnd}
                 className={cn(
-                  'w-16 h-16 rounded-lg overflow-hidden border-2 transition-all',
+                  'w-16 h-16 rounded-lg overflow-hidden border-2 transition-all relative',
                   index === selectedIndex 
                     ? 'border-primary ring-2 ring-primary/30' 
                     : 'border-transparent hover:border-border',
-                  draggedIndex === index && 'opacity-50'
+                  draggedIndex === index && 'opacity-50',
+                  holdingIndex === index && 'scale-95'
                 )}
               >
                 <img
@@ -147,20 +210,50 @@ export function EnhancedCarouselEditor({
                   className={cn('w-full h-full object-cover', image.filter > 0 && filters[image.filter]?.class)}
                   draggable={false}
                 />
+                
+                {/* Hold progress overlay */}
+                {holdingIndex === index && images.length > 1 && (
+                  <motion.div 
+                    className="absolute inset-0 bg-destructive/40 flex items-center justify-center"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: holdProgress }}
+                  >
+                    <div 
+                      className="absolute inset-0 bg-destructive/60"
+                      style={{ 
+                        clipPath: `inset(${(1 - holdProgress) * 100}% 0 0 0)` 
+                      }}
+                    />
+                    <Trash2 className="h-4 w-4 text-white relative z-10" />
+                  </motion.div>
+                )}
               </button>
               
-              {/* Remove Button */}
-              {images.length > 1 && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleRemove(index);
-                  }}
-                  className="absolute -top-1.5 -right-1.5 p-1 rounded-full bg-destructive text-destructive-foreground shadow-md hover:bg-destructive/90 transition-colors"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              )}
+              {/* Delete confirmation overlay */}
+              <AnimatePresence>
+                {showDeleteConfirm === index && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    className="absolute inset-0 z-20 flex items-center justify-center"
+                  >
+                    <div className="absolute inset-0 bg-black/60 rounded-lg" onClick={() => setShowDeleteConfirm(null)} />
+                    <motion.button
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: 'spring', stiffness: 500, damping: 25 }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemove(index);
+                      }}
+                      className="relative z-10 p-2 rounded-full bg-destructive text-destructive-foreground shadow-lg"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </motion.button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               {/* Drag Handle Indicator */}
               <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 opacity-40">
@@ -168,7 +261,7 @@ export function EnhancedCarouselEditor({
               </div>
               
               {/* Selected checkmark */}
-              {index === selectedIndex && (
+              {index === selectedIndex && showDeleteConfirm !== index && (
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
