@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Sparkles, Video, Image, FileText, ChevronRight, FileEdit, X, ArrowLeft } from 'lucide-react';
+import { Sparkles, Video, Image, FileText, FileEdit, X, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BrandMark } from '@/components/BrandMark';
 import { useDrafts } from './shared/DraftManager';
@@ -130,119 +130,70 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
 
         {/* Editorial Numbered Grid */}
         <div className="flex-1 px-4 py-6 overflow-y-auto">
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-4">
             {contentTypes.map((type, index) => {
-              const isEven = index % 2 === 0;
               const numberStr = String(index + 1).padStart(2, '0');
               
               return (
-                <div key={type.id}>
-                  <motion.button
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ 
-                      delay: 0.3 + index * 0.1, 
-                      type: 'spring', 
-                      stiffness: 300, 
-                      damping: 25 
-                    }}
-                    onClick={() => onSelect(type.id)}
-                    className={cn(
-                      "group relative flex items-center gap-4 p-4 text-left focus:outline-none w-full",
-                      "bg-secondary/30 hover:bg-secondary/50 transition-all duration-300",
-                      "border border-border/20 hover:border-border/40",
-                      isEven ? "flex-row" : "flex-row-reverse"
-                    )}
-                  >
-                    {/* Large Number with Gradient */}
-                    <div className="relative flex-shrink-0 w-20 h-20 flex items-center justify-center">
-                      <span 
-                        className={cn(
-                          "text-6xl font-black tracking-tighter",
-                          "bg-clip-text text-transparent",
-                          `bg-gradient-to-br ${type.gradient}`
-                        )}
-                        style={{ 
-                          WebkitBackgroundClip: 'text',
-                          WebkitTextFillColor: 'transparent'
-                        }}
-                      >
-                        {numberStr}
-                      </span>
-                      {/* Subtle glow behind number */}
-                      <div 
-                        className={cn(
-                          "absolute inset-0 blur-2xl opacity-20",
-                          `bg-gradient-to-br ${type.gradient}`
-                        )}
-                      />
-                    </div>
-                    
-                    {/* Content */}
-                    <div className={cn(
-                      "flex-1 flex flex-col gap-1",
-                      isEven ? "text-left" : "text-right"
-                    )}>
-                      <div className={cn(
-                        "flex items-center gap-2",
-                        isEven ? "flex-row" : "flex-row-reverse"
-                      )}>
-                        <div className={cn(
-                          "w-8 h-8 flex items-center justify-center",
-                          type.nodeColor
-                        )}>
-                          <type.icon className="h-4 w-4 text-white" />
-                        </div>
-                        <span className="text-xl font-bold text-foreground tracking-wide group-hover:text-primary transition-colors">
-                          {type.title}
-                        </span>
-                      </div>
-                      <span className={cn(
-                        "text-sm text-muted-foreground",
-                        isEven ? "pl-10" : "pr-10"
-                      )}>
-                        {type.description}
-                      </span>
-                    </div>
-                    
-                    {/* Arrow Indicator */}
-                    <ChevronRight 
+                <motion.button
+                  key={type.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ 
+                    delay: 0.3 + index * 0.1, 
+                    type: 'spring', 
+                    stiffness: 300, 
+                    damping: 25 
+                  }}
+                  onClick={() => onSelect(type.id)}
+                  className={cn(
+                    "group relative flex items-center gap-4 p-4 text-left focus:outline-none w-full",
+                    "bg-secondary/30 hover:bg-secondary/50 transition-all duration-300",
+                    "border border-primary/40 hover:border-primary"
+                  )}
+                >
+                  {/* Large Number - Always Left */}
+                  <div className="relative flex-shrink-0 w-16 h-16 flex items-center justify-center">
+                    <span 
                       className={cn(
-                        "h-5 w-5 text-muted-foreground/30 transition-all duration-200",
-                        "group-hover:text-muted-foreground group-hover:translate-x-1",
-                        !isEven && "rotate-180 group-hover:-translate-x-1 group-hover:translate-x-0"
+                        "text-5xl font-black tracking-tighter",
+                        "bg-clip-text text-transparent",
+                        `bg-gradient-to-br ${type.gradient}`
+                      )}
+                      style={{ 
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent'
+                      }}
+                    >
+                      {numberStr}
+                    </span>
+                    {/* Subtle glow behind number */}
+                    <div 
+                      className={cn(
+                        "absolute inset-0 blur-2xl opacity-20",
+                        `bg-gradient-to-br ${type.gradient}`
                       )}
                     />
-                  </motion.button>
+                  </div>
                   
-                  {/* Serpentine S-Connector */}
-                  {index < contentTypes.length - 1 && (
-                    <div className="relative h-14">
-                      <svg 
-                        className="absolute inset-x-0 top-0 w-full h-full"
-                        viewBox="0 0 300 56"
-                        fill="none"
-                      >
-                        <defs>
-                          <linearGradient id={`serpentine-${index}`} x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="#3b82f6" />
-                            <stop offset="50%" stopColor="#a855f7" />
-                            <stop offset="100%" stopColor="#f97316" />
-                          </linearGradient>
-                        </defs>
-                        <path
-                          d={isEven 
-                            ? "M 50 0 Q 50 28, 150 28 Q 250 28, 250 56"
-                            : "M 250 0 Q 250 28, 150 28 Q 50 28, 50 56"
-                          }
-                          stroke={`url(#serpentine-${index})`}
-                          strokeWidth="3"
-                          strokeLinecap="round"
-                        />
-                      </svg>
-                    </div>
-                  )}
-                </div>
+                  {/* Content - Center Aligned */}
+                  <div className="flex-1 flex flex-col gap-1 items-center text-center">
+                    <span className="text-lg font-bold text-foreground tracking-wide group-hover:text-primary transition-colors">
+                      {type.title}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      {type.description}
+                    </span>
+                  </div>
+                  
+                  {/* Icon - Always Right, Circular, Larger */}
+                  <div className={cn(
+                    "flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center",
+                    type.nodeColor
+                  )}>
+                    <type.icon className="h-7 w-7 text-white" />
+                  </div>
+                </motion.button>
               );
             })}
           </div>
