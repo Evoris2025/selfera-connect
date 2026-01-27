@@ -217,12 +217,11 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
                   
                   {/* Serpentine S-Connector */}
                   {index < contentTypes.length - 1 && (
-                    <div className="relative h-12 mx-6">
+                    <div className="relative h-14">
                       <svg 
-                        className="absolute inset-0 w-full h-full"
-                        viewBox="0 0 200 48"
+                        className="absolute inset-x-0 top-0 w-full h-full"
+                        viewBox="0 0 300 56"
                         fill="none"
-                        preserveAspectRatio="none"
                       >
                         <defs>
                           <linearGradient id={`serpentine-${index}`} x1="0%" y1="0%" x2="100%" y2="0%">
@@ -233,13 +232,12 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
                         </defs>
                         <path
                           d={isEven 
-                            ? "M 30 0 C 30 24, 0 24, 100 24 C 200 24, 170 24, 170 48"
-                            : "M 170 0 C 170 24, 200 24, 100 24 C 0 24, 30 24, 30 48"
+                            ? "M 50 0 Q 50 28, 150 28 Q 250 28, 250 56"
+                            : "M 250 0 Q 250 28, 150 28 Q 50 28, 50 56"
                           }
                           stroke={`url(#serpentine-${index})`}
                           strokeWidth="3"
                           strokeLinecap="round"
-                          vectorEffect="non-scaling-stroke"
                         />
                       </svg>
                     </div>
