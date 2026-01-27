@@ -14,6 +14,7 @@ import { ContentWarningToggle } from './shared/ContentWarningToggle';
 import { LocationPicker, type Location } from './post/LocationPicker';
 import { SoundPicker } from './SoundPicker';
 import { cn } from '@/lib/utils';
+import { useImageEnhance } from '@/hooks/useImageEnhance';
 
 // Enhanced imports
 import {
@@ -50,6 +51,8 @@ import {
   ColorGradingControl,
   // New: Draft Auto-Save
   useDraftAutoSave,
+  // AI Enhancement
+  MagikButton,
 } from './image';
 
 // Simulation mode flag
@@ -129,6 +132,10 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
     renamePreset, 
     applyPreset: getPresetValues 
   } = useEditPresets();
+
+  // AI Enhancement hook
+  const { enhance, isEnhancing } = useImageEnhance();
+  const [magikSuccess, setMagikSuccess] = useState(false);
 
   // Start background compression when images are added
   useEffect(() => {
@@ -282,6 +289,45 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
   const handleAdjustmentsChange = (adjustments: ImageAdjustments) => {
     updateCurrentImage(adjustments);
   };
+
+  // AI Magik enhancement handler
+  const handleMagikEnhance = useCallback(async () => {
+    if (!currentImage || isEnhancing) return;
+    
+    setMagikSuccess(false);
+    
+    const enhancements = await enhance(currentImage.previewUrl);
+    
+    if (enhancements) {
+      // Record current state for undo
+      const previousState: Partial<CarouselImage> = {
+        brightness: currentImage.brightness,
+        contrast: currentImage.contrast,
+        saturation: currentImage.saturation,
+        warmth: currentImage.warmth,
+        highlights: currentImage.highlights,
+        shadows: currentImage.shadows,
+      };
+      
+      // Apply enhancements
+      const newState: Partial<CarouselImage> = {
+        brightness: enhancements.brightness,
+        contrast: enhancements.contrast,
+        saturation: enhancements.saturation,
+        warmth: enhancements.warmth,
+        highlights: enhancements.highlights,
+        shadows: enhancements.shadows,
+      };
+      
+      recordChange(currentImage.id, 'batch', previousState, newState);
+      updateImage(currentImage.id, newState);
+      
+      setMagikSuccess(true);
+      
+      // Reset success state after animation
+      setTimeout(() => setMagikSuccess(false), 2000);
+    }
+  }, [currentImage, isEnhancing, enhance, recordChange, updateImage]);
 
   // Navigation with unsaved changes check
   const handleBack = useCallback(() => {
@@ -637,9 +683,9 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
             exit={{ opacity: 0 }}
             className="flex-1 overflow-y-auto"
           >
-            {/* Undo/Redo Controls + Carousel Editor */}
+            {/* Undo/Redo Controls + Magik Button + Carousel Editor */}
             <div className="p-4 space-y-3">
-              {/* Undo/Redo Bar */}
+              {/* Top Bar: Undo/Redo + Magik */}
               <div className="flex items-center justify-between">
                 <UndoRedoControls
                   canUndo={canUndo}
@@ -648,9 +694,17 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                   onRedo={handleRedo}
                   historyLength={historyLength}
                 />
-                <span className="text-xs text-muted-foreground">
-                  Ctrl+Z / Ctrl+Shift+Z
-                </span>
+                <div className="flex items-center gap-2">
+                  <MagikButton
+                    onClick={handleMagikEnhance}
+                    isLoading={isEnhancing}
+                    isSuccess={magikSuccess}
+                    disabled={!currentImage}
+                  />
+                  <span className="text-xs text-muted-foreground hidden sm:inline">
+                    Ctrl+Z / Ctrl+Shift+Z
+                  </span>
+                </div>
               </div>
               
               <EnhancedCarouselEditor
