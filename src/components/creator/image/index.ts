@@ -4,12 +4,17 @@ export type {
   AspectRatio, 
   CropData, 
   ImageAdjustments, 
-  UserTag 
+  UserTag,
+  BlurSettings,
+  BlurMode,
+  ColorGrading,
 } from './types';
 export { 
   createCarouselImage, 
   DEFAULT_ADJUSTMENTS, 
-  DEFAULT_CROP_DATA 
+  DEFAULT_CROP_DATA,
+  DEFAULT_BLUR,
+  DEFAULT_COLOR_GRADING,
 } from './types';
 
 // Enhanced components (Phase 1-4 upgrades)
@@ -22,6 +27,10 @@ export { PerImageAltText } from './PerImageAltText';
 export { UnsavedChangesDialog } from './UnsavedChangesDialog';
 export { UploadProgressOverlay, type UploadStatus } from './UploadProgressOverlay';
 
+// Blur and Color Grading controls
+export { BlurControl } from './BlurControl';
+export { ColorGradingControl } from './ColorGradingControl';
+
 // Undo/Redo and Presets
 export { useEditHistory } from './useEditHistory';
 export { useEditPresets, type EditPreset } from './useEditPresets';
@@ -31,6 +40,7 @@ export { UndoRedoControls } from './UndoRedoControls';
 // Hooks
 export { useImageCompression } from './useImageCompression';
 export { useImageExport } from './useImageExport';
+export { useDraftAutoSave } from './useDraftAutoSave';
 
 // Existing components (keeping for backwards compatibility)
 export { ImageCarouselEditor } from './ImageCarouselEditor';

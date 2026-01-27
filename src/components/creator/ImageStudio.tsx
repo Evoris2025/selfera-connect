@@ -22,8 +22,12 @@ import {
   type ImageAdjustments,
   type UploadStatus,
   type EditPreset,
+  type BlurSettings,
+  type ColorGrading,
   createCarouselImage,
   DEFAULT_ADJUSTMENTS,
+  DEFAULT_BLUR,
+  DEFAULT_COLOR_GRADING,
   GalleryFirstSelector,
   EnhancedCarouselEditor,
   EnhancedFilterLibrary,
@@ -36,18 +40,23 @@ import {
   useImageExport,
   getAdjustmentStyles,
   filters,
-  // New: Undo/Redo and Presets
+  // Undo/Redo and Presets
   useEditHistory,
   useEditPresets,
   PresetManager,
   UndoRedoControls,
+  // New: Blur and Color Grading
+  BlurControl,
+  ColorGradingControl,
+  // New: Draft Auto-Save
+  useDraftAutoSave,
 } from './image';
 
 // Simulation mode flag
 const SIMULATION_MODE = true;
 
 type Step = 'select' | 'edit' | 'details';
-type EditTab = 'filters' | 'adjust' | 'crop';
+type EditTab = 'filters' | 'adjust' | 'crop' | 'effects';
 type ContentWarningType = 'sensitive' | 'triggering' | 'graphic' | 'other' | null;
 
 interface ImageStudioProps {
@@ -656,17 +665,21 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
 
             {/* Editing Tabs */}
             <Tabs value={editTab} onValueChange={(v) => setEditTab(v as EditTab)} className="px-4 pb-4">
-              <TabsList className="grid w-full grid-cols-3 mb-4">
-                <TabsTrigger value="filters" className="gap-1.5">
-                  <Palette className="h-4 w-4" />
+              <TabsList className="grid w-full grid-cols-4 mb-4">
+                <TabsTrigger value="filters" className="gap-1 text-xs">
+                  <Palette className="h-3.5 w-3.5" />
                   Filters
                 </TabsTrigger>
-                <TabsTrigger value="adjust" className="gap-1.5">
-                  <Sliders className="h-4 w-4" />
+                <TabsTrigger value="adjust" className="gap-1 text-xs">
+                  <Sliders className="h-3.5 w-3.5" />
                   Adjust
                 </TabsTrigger>
-                <TabsTrigger value="crop" className="gap-1.5">
-                  <Crop className="h-4 w-4" />
+                <TabsTrigger value="effects" className="gap-1 text-xs">
+                  <ImageIcon className="h-3.5 w-3.5" />
+                  Effects
+                </TabsTrigger>
+                <TabsTrigger value="crop" className="gap-1 text-xs">
+                  <Crop className="h-3.5 w-3.5" />
                   Crop
                 </TabsTrigger>
               </TabsList>
@@ -762,6 +775,20 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                     Reset All Adjustments
                   </Button>
                 </div>
+              </TabsContent>
+
+              <TabsContent value="effects" className="space-y-6">
+                {/* Tilt-Shift Blur */}
+                <BlurControl
+                  blur={currentImage.blur || DEFAULT_BLUR}
+                  onBlurChange={(blur) => updateCurrentImageWithHistory('adjustment', { blur })}
+                />
+                
+                {/* Color Grading */}
+                <ColorGradingControl
+                  colorGrading={currentImage.colorGrading || DEFAULT_COLOR_GRADING}
+                  onColorGradingChange={(colorGrading) => updateCurrentImageWithHistory('adjustment', { colorGrading })}
+                />
               </TabsContent>
 
               <TabsContent value="crop">

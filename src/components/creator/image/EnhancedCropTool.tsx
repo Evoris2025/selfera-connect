@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Square, RectangleVertical, RectangleHorizontal, Maximize2, RotateCcw, ZoomIn, ZoomOut } from 'lucide-react';
+import { Square, RectangleVertical, RectangleHorizontal, Maximize2, RotateCcw, ZoomIn, ZoomOut, RotateCw } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -46,12 +46,20 @@ export function EnhancedCropTool({ imageUrl, cropData, onCropChange }: EnhancedC
     });
   };
 
+  const handleRotationChange = (rotation: number) => {
+    onCropChange({
+      ...cropData,
+      rotation: Math.max(-45, Math.min(45, rotation)),
+    });
+  };
+
   const handleReset = () => {
     onCropChange({
       scale: 1,
       translateX: 0,
       translateY: 0,
       aspectRatio: cropData.aspectRatio,
+      rotation: 0,
     });
   };
 
@@ -139,8 +147,9 @@ export function EnhancedCropTool({ imageUrl, cropData, onCropChange }: EnhancedC
     }
   };
 
-  const isModified = cropData.scale !== 1 || cropData.translateX !== 0 || cropData.translateY !== 0;
+  const isModified = cropData.scale !== 1 || cropData.translateX !== 0 || cropData.translateY !== 0 || (cropData.rotation || 0) !== 0;
 
+  const rotation = cropData.rotation || 0;
   return (
     <div className="space-y-4">
       {/* Crop Preview */}
@@ -164,7 +173,7 @@ export function EnhancedCropTool({ imageUrl, cropData, onCropChange }: EnhancedC
           alt="Crop preview"
           className="w-full h-full object-cover select-none"
           style={{
-            transform: `scale(${cropData.scale}) translate(${cropData.translateX / cropData.scale}%, ${cropData.translateY / cropData.scale}%)`,
+            transform: `scale(${cropData.scale}) translate(${cropData.translateX / cropData.scale}%, ${cropData.translateY / cropData.scale}%) rotate(${cropData.rotation || 0}deg)`,
             transformOrigin: 'center',
             transition: isDragging ? 'none' : 'transform 0.1s ease-out',
           }}
@@ -181,11 +190,34 @@ export function EnhancedCropTool({ imageUrl, cropData, onCropChange }: EnhancedC
         </div>
         
         {/* Pinch hint on mobile */}
-        {cropData.scale === 1 && (
+        {cropData.scale === 1 && (cropData.rotation || 0) === 0 && (
           <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/60 text-white text-xs md:hidden">
             Pinch to zoom
           </div>
         )}
+      </div>
+
+      {/* Rotation Slider */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <RotateCw className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">Straighten</span>
+          </div>
+          <span className="text-sm font-medium">{cropData.rotation || 0}°</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-muted-foreground">-45°</span>
+          <Slider
+            value={[cropData.rotation || 0]}
+            onValueChange={([v]) => handleRotationChange(v)}
+            min={-45}
+            max={45}
+            step={0.5}
+            className="flex-1"
+          />
+          <span className="text-xs text-muted-foreground">+45°</span>
+        </div>
       </div>
 
       {/* Zoom Slider (Desktop) */}
