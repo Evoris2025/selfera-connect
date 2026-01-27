@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Sparkles, Loader2, Check } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
 
@@ -60,6 +61,10 @@ interface EnhancedFilterLibraryProps {
   previewUrl: string;
   onFilterSelect: (index: number) => void;
   onIntensityChange: (intensity: number) => void;
+  // Magik AI enhancement props
+  onMagikClick?: () => void;
+  isMagikLoading?: boolean;
+  isMagikSuccess?: boolean;
 }
 
 export function EnhancedFilterLibrary({
@@ -68,6 +73,9 @@ export function EnhancedFilterLibrary({
   previewUrl,
   onFilterSelect,
   onIntensityChange,
+  onMagikClick,
+  isMagikLoading = false,
+  isMagikSuccess = false,
 }: EnhancedFilterLibraryProps) {
   const [category, setCategory] = useState<FilterCategory>('all');
 
@@ -97,6 +105,83 @@ export function EnhancedFilterLibrary({
 
       {/* Filter Grid with Accurate Previews */}
       <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+        {/* Magik AI Enhancement Button */}
+        {onMagikClick && (
+          <motion.button
+            onClick={onMagikClick}
+            disabled={isMagikLoading}
+            whileTap={{ scale: 0.95 }}
+            className="flex-shrink-0 flex flex-col items-center gap-1.5"
+          >
+            <div
+              className={cn(
+                'relative w-[72px] h-[72px] rounded-xl overflow-hidden border-2 transition-all',
+                'bg-gradient-to-br from-violet-500/20 via-fuchsia-500/20 to-amber-500/20',
+                isMagikSuccess
+                  ? 'border-emerald-500 ring-2 ring-emerald-500/30'
+                  : 'border-violet-500/50 hover:border-violet-500'
+              )}
+            >
+              {/* Shimmer effect during loading */}
+              {isMagikLoading && (
+                <motion.div
+                  initial={{ x: '-100%' }}
+                  animate={{ x: '200%' }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    duration: 1.2, 
+                    ease: 'linear' 
+                  }}
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                />
+              )}
+              
+              {/* Icon */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <AnimatePresence mode="wait">
+                  {isMagikLoading ? (
+                    <motion.div
+                      key="loading"
+                      initial={{ opacity: 0, rotate: -90 }}
+                      animate={{ opacity: 1, rotate: 0 }}
+                      exit={{ opacity: 0, rotate: 90 }}
+                    >
+                      <Loader2 className="h-6 w-6 animate-spin text-violet-400" />
+                    </motion.div>
+                  ) : isMagikSuccess ? (
+                    <motion.div
+                      key="success"
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.5 }}
+                    >
+                      <Check className="h-6 w-6 text-emerald-400" />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="sparkles"
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.5 }}
+                      whileHover={{ rotate: [0, -10, 10, 0] }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <Sparkles className="h-6 w-6 text-violet-400" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
+            
+            <span className={cn(
+              'text-xs transition-colors',
+              isMagikSuccess ? 'text-emerald-400 font-medium' : 'text-violet-400 font-medium'
+            )}>
+              {isMagikLoading ? 'Analyzing' : isMagikSuccess ? 'Applied!' : 'Magik'}
+            </span>
+          </motion.button>
+        )}
+
         {filteredFilters.map((filter) => {
           const actualIndex = filters.indexOf(filter);
           const isSelected = selectedFilter === actualIndex;
