@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { AnimatePresence, motion } from 'framer-motion';
 import { PostComposer } from './PostComposer';
 import { ImageStudio } from './ImageStudio';
@@ -57,6 +58,11 @@ export function CreatorStudio({ open, onOpenChange, initialMode }: CreatorStudio
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-full sm:max-w-2xl h-[100dvh] sm:h-[90vh] p-0 gap-0 bg-background border-none sm:border sm:border-border overflow-hidden">
+        {/* Accessibility: Hidden title for screen readers */}
+        <VisuallyHidden>
+          <DialogTitle>ERA Studio - Create Content</DialogTitle>
+        </VisuallyHidden>
+        
         <AnimatePresence mode="wait">
           {step === 'dashboard' ? (
             <ContentTypeDashboard
