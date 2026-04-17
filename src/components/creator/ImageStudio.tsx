@@ -32,6 +32,7 @@ import {
   GalleryFirstSelector,
   EnhancedCarouselEditor,
   EnhancedFilterLibrary,
+  EffectPreviewImage,
   CropControls,
   PerImageUserTags,
   PerImageAltText,
@@ -39,7 +40,6 @@ import {
   UploadProgressOverlay,
   useImageCompression,
   useImageExport,
-  getAdjustmentStyles,
   filters,
   // Undo/Redo and Presets
   useEditHistory,
@@ -797,6 +797,18 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                   selectedFilter={currentImage.filter}
                   filterIntensity={currentImage.filterIntensity}
                   previewUrl={currentImage.previewUrl}
+                  adjustments={{
+                    brightness: currentImage.brightness,
+                    contrast: currentImage.contrast,
+                    saturation: currentImage.saturation,
+                    warmth: currentImage.warmth,
+                    highlights: currentImage.highlights,
+                    shadows: currentImage.shadows,
+                    vignette: currentImage.vignette,
+                    sharpen: currentImage.sharpen,
+                    structure: currentImage.structure,
+                    fade: currentImage.fade,
+                  }}
                   onFilterSelect={(index) => updateCurrentImageWithHistory('filter', { filter: index })}
                   onIntensityChange={(intensity) => updateCurrentImageWithHistory('filter', { filterIntensity: intensity })}
                   onMagikClick={handleMagikEnhance}
@@ -929,11 +941,10 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                   key={img.id}
                   className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border border-border relative"
                 >
-                  <img
+                  <EffectPreviewImage
                     src={img.previewUrl}
                     alt={`Preview ${i + 1}`}
-                    className={cn('w-full h-full object-cover', img.filter > 0 && filters[img.filter]?.class)}
-                    style={getAdjustmentStyles({
+                    adjustments={{
                       brightness: img.brightness,
                       contrast: img.contrast,
                       saturation: img.saturation,
@@ -944,7 +955,11 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                       sharpen: img.sharpen,
                       structure: img.structure,
                       fade: img.fade,
-                    })}
+                    }}
+                    presetFilterClass={img.filter > 0 ? filters[img.filter]?.class : ''}
+                    presetIntensity={img.filterIntensity}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    draggable={false}
                   />
                   <div className="absolute bottom-0.5 right-0.5 w-4 h-4 rounded-full bg-background/80 flex items-center justify-center text-[10px] font-medium">
                     {i + 1}

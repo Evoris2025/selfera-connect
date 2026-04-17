@@ -15,6 +15,7 @@ import {
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { getAdjustmentFilterValue } from './filterUtils';
 
 export interface ImageAdjustments {
   brightness: number;
@@ -245,31 +246,7 @@ export function AdjustmentPanel({ adjustments, onAdjustmentsChange }: Adjustment
 }
 
 export function getAdjustmentStyles(adjustments: ImageAdjustments): React.CSSProperties {
-  const { brightness, contrast, saturation, warmth, fade, vignette, sharpen, structure } = adjustments;
-  
-  // Build CSS filter string
-  const filters: string[] = [];
-  
-  filters.push(`brightness(${brightness}%)`);
-  filters.push(`contrast(${contrast}%)`);
-  filters.push(`saturate(${saturation}%)`);
-  
-  // Warmth as hue-rotate (simplified approximation)
-  if (warmth !== 0) {
-    const hue = warmth > 0 ? warmth * 0.2 : warmth * 0.3; // Warm = slight orange, cool = slight blue
-    filters.push(`hue-rotate(${hue}deg)`);
-    if (warmth > 0) {
-      filters.push(`sepia(${warmth * 0.002})`);
-    }
-  }
-  
-  // Fade effect
-  if (fade > 0) {
-    const fadeAmount = 1 - (fade * 0.003);
-    filters.push(`contrast(${100 * fadeAmount}%)`);
-  }
-  
   return {
-    filter: filters.join(' '),
+    filter: getAdjustmentFilterValue(adjustments),
   };
 }

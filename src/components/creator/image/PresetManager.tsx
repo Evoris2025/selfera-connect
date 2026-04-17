@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import type { EditPreset } from './useEditPresets';
 import type { ImageAdjustments } from './types';
-import { filters } from './EnhancedFilterLibrary';
+import { filters } from './filterUtils';
 
 interface PresetManagerProps {
   presets: EditPreset[];
