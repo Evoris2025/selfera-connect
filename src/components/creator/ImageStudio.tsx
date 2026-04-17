@@ -605,28 +605,28 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
         description: 'Your post is now live in the feed.',
       });
 
+      // Successfully posted — remove the saved draft
+      await deleteDraft();
       onSuccess();
     } catch (error) {
       console.error('Error creating post:', error);
       setUploadStatus('error');
       toast({
         title: 'Upload failed',
-        description: 'Some images failed to upload. Please retry.',
+        description: error instanceof Error ? error.message : 'Some images failed to upload. Please retry.',
         variant: 'destructive',
       });
     } finally {
-      if (uploadStatus !== 'error') {
-        setIsSubmitting(false);
-      }
+      // Always release the submitting lock so the user can retry or close the overlay
+      setIsSubmitting(false);
     }
   };
 
-  const handleRetryUpload = (imageId: string) => {
-    // Retry logic would go here
-    toast({
-      title: 'Retry',
-      description: 'Retrying upload...',
-    });
+  const handleRetryUpload = (_imageId: string) => {
+    // Reset state and re-run the full submit pipeline
+    setUploadStatus('idle');
+    setUploadProgress([]);
+    handleSubmit();
   };
 
   return (
