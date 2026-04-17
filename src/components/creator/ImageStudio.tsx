@@ -476,6 +476,7 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
           description: 'Your post is now live in the feed.',
         });
 
+        await deleteDraft();
         onSuccess();
         return;
       }
