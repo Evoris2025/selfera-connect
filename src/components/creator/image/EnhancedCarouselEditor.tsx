@@ -52,6 +52,7 @@ export function EnhancedCarouselEditor({
   const [initialCropTranslate, setInitialCropTranslate] = useState({ x: 0, y: 0 });
   const [initialPinchDistance, setInitialPinchDistance] = useState<number | null>(null);
   const [initialPinchScale, setInitialPinchScale] = useState(1);
+  const [previewBounds, setPreviewBounds] = useState({ width: 0, height: 0 });
 
   const HOLD_DURATION = 600; // ms to trigger delete mode
 
