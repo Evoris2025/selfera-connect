@@ -243,15 +243,23 @@ export function EnhancedCarouselEditor({
   }, [isCropMode, images, selectedIndex, onCropChange]);
 
   useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
     const updatePreviewBounds = () => {
-      const el = containerRef.current;
-      if (!el) return;
       setPreviewBounds({ width: el.clientWidth, height: el.clientHeight });
     };
 
     updatePreviewBounds();
+
+    const resizeObserver = new ResizeObserver(updatePreviewBounds);
+    resizeObserver.observe(el);
     window.addEventListener('resize', updatePreviewBounds);
-    return () => window.removeEventListener('resize', updatePreviewBounds);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener('resize', updatePreviewBounds);
+    };
   }, [isCropMode, images.length, selectedIndex]);
 
   // Thumbnail slider navigation (horizontal) — hooks must run before any early return
