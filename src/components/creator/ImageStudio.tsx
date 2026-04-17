@@ -53,8 +53,8 @@ import {
   useDraftAutoSave,
 } from './image';
 
-// Simulation mode flag
-const SIMULATION_MODE = true;
+// Simulation mode flag — only enabled when no authenticated user
+const SIMULATION_MODE = false;
 
 type Step = 'select' | 'edit' | 'details';
 type EditTab = 'filters' | 'adjust' | 'crop' | 'effects';
@@ -136,6 +136,18 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
   const { enhance, isEnhancing } = useImageEnhance();
   const [magikSuccess, setMagikSuccess] = useState(false);
 
+  // Draft auto-save (every 30s + on unload)
+  const { lastSaved: draftLastSaved, isSaving: isDraftSaving, deleteDraft } = useDraftAutoSave(
+    images,
+    caption,
+    selectedTags,
+    location,
+    selectedSound,
+    contentWarning,
+    contentWarningType,
+    { autoSaveIntervalMs: 30000 }
+  );
+
   // Start background compression when images are added
   useEffect(() => {
     images.forEach(img => {
@@ -145,16 +157,22 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
     });
   }, [images, compressInBackground]);
 
+  // Keep latest images in a ref so unmount cleanup sees the final list (not stale empty array)
+  const imagesRef = useRef<CarouselImage[]>([]);
+  useEffect(() => {
+    imagesRef.current = images;
+  }, [images]);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
       cancelAll();
-      // Revoke object URLs
-      images.forEach(img => {
+      // Revoke object URLs for ALL images that existed at unmount time
+      imagesRef.current.forEach(img => {
         if (img.previewUrl) URL.revokeObjectURL(img.previewUrl);
       });
     };
-  }, []);
+  }, [cancelAll]);
 
   // Keyboard shortcuts for undo/redo
   useEffect(() => {
