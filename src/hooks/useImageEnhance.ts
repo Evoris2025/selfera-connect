@@ -20,8 +20,11 @@ interface UseImageEnhanceReturn {
 async function imageUrlToBase64(url: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const img = new Image();
-    img.crossOrigin = 'anonymous';
-    
+    // Only set crossOrigin for remote URLs; blob:/data: URLs fail with it set
+    if (!url.startsWith('blob:') && !url.startsWith('data:')) {
+      img.crossOrigin = 'anonymous';
+    }
+
     img.onload = () => {
       const canvas = document.createElement('canvas');
       // Resize to max 512px for faster processing
