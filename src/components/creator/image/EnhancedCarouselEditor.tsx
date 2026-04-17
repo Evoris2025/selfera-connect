@@ -557,50 +557,66 @@ export function EnhancedCarouselEditor({
               />
             </div>
           ) : isCropMode ? (
-            /* Crop Mode - full viewport with grid overlay */
-            <div
-              ref={cropPreviewRef}
-              className={cn(
-                'w-full h-full relative overflow-hidden bg-black flex items-center justify-center touch-none',
-                isCropDragging ? 'cursor-grabbing' : currentImage.cropData.scale > 1 ? 'cursor-grab' : 'cursor-zoom-in'
-              )}
-              onPointerDown={handleCropPointerDown}
-              onPointerMove={handleCropPointerMove}
-              onPointerUp={handleCropPointerUp}
-              onPointerCancel={handleCropPointerUp}
-              onPointerLeave={handleCropPointerUp}
-            >
-              <img
-                src={currentImage.previewUrl}
-                alt="Crop preview"
-                className="w-full h-full object-cover select-none"
-                style={{
-                  transform: imageTransform,
-                  transformOrigin: 'center',
-                  transition: isCropDragging ? 'none' : 'transform 0.1s ease-out',
-                  ...adjustmentStyles,
-                }}
-                draggable={false}
-                onContextMenu={(e) => e.preventDefault()}
-              />
-              
-              {/* Grid Overlay */}
-              <div className="absolute inset-0 pointer-events-none">
-                <div className="w-full h-full grid grid-cols-3 grid-rows-3">
-                  {Array.from({ length: 9 }).map((_, i) => (
-                    <div key={i} className="border border-white/30" />
-                  ))}
+            /* Crop Mode - aspect-ratio-aware frame with grid overlay */
+            (() => {
+              const ar = currentImage.cropData.aspectRatio;
+              const arClass =
+                ar === 'square' ? 'aspect-square' :
+                ar === 'portrait' ? 'aspect-[4/5]' :
+                ar === 'landscape' ? 'aspect-video' :
+                ''; // 'original' — fill container
+              const sizingClass = ar === 'original'
+                ? 'w-full h-full'
+                : 'max-w-full max-h-full w-auto h-auto';
+              return (
+                <div
+                  ref={cropPreviewRef}
+                  className={cn(
+                    'relative overflow-hidden bg-black touch-none',
+                    sizingClass,
+                    arClass,
+                    isCropDragging ? 'cursor-grabbing' : currentImage.cropData.scale > 1 ? 'cursor-grab' : 'cursor-zoom-in'
+                  )}
+                  style={ar !== 'original' ? { maxWidth: '100%', maxHeight: '100%' } : undefined}
+                  onPointerDown={handleCropPointerDown}
+                  onPointerMove={handleCropPointerMove}
+                  onPointerUp={handleCropPointerUp}
+                  onPointerCancel={handleCropPointerUp}
+                  onPointerLeave={handleCropPointerUp}
+                >
+                  <img
+                    src={currentImage.previewUrl}
+                    alt="Crop preview"
+                    className="absolute inset-0 w-full h-full object-cover select-none"
+                    style={{
+                      transform: imageTransform,
+                      transformOrigin: 'center',
+                      transition: isCropDragging ? 'none' : 'transform 0.1s ease-out',
+                      ...adjustmentStyles,
+                    }}
+                    draggable={false}
+                    onContextMenu={(e) => e.preventDefault()}
+                  />
+
+                  {/* Grid Overlay */}
+                  <div className="absolute inset-0 pointer-events-none">
+                    <div className="w-full h-full grid grid-cols-3 grid-rows-3">
+                      {Array.from({ length: 9 }).map((_, i) => (
+                        <div key={i} className="border border-white/30" />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Zoom hint */}
+                  {currentImage.cropData.scale === 1 && (currentImage.cropData.rotation || 0) === 0 && (
+                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-full bg-black/60 text-white text-xs whitespace-nowrap">
+                      <span className="md:hidden">Pinch to zoom</span>
+                      <span className="hidden md:inline">Scroll to zoom • Drag to reposition</span>
+                    </div>
+                  )}
                 </div>
-              </div>
-              
-              {/* Zoom hint — different copy for desktop vs mobile */}
-              {currentImage.cropData.scale === 1 && (currentImage.cropData.rotation || 0) === 0 && (
-                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-full bg-black/60 text-white text-xs">
-                  <span className="md:hidden">Pinch to zoom</span>
-                  <span className="hidden md:inline">Scroll to zoom • Drag to reposition</span>
-                </div>
-              )}
-            </div>
+              );
+            })()
           ) : (
             /* Normal Preview Mode - full viewport */
             <motion.div
