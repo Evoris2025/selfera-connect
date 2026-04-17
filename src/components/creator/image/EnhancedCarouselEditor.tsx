@@ -3,10 +3,10 @@ import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import { X, Plus, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Loader2, Check, SplitSquareVertical, Trash2, ArrowUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import type { CarouselImage, CropData, AspectRatio } from './types';
-import { filters } from './FilterLibrary';
-import { getAdjustmentStyles } from './AdjustmentPanel';
+import type { CarouselImage, CropData, AspectRatio, ImageAdjustments } from './types';
 import { BeforeAfterSlider } from './BeforeAfterSlider';
+import { EffectPreviewImage } from './EffectPreviewImage';
+import { filters, filterClassToCssFilter, getAdjustmentFilterValue, mergeFilterValues } from './filterUtils';
 
 interface EnhancedCarouselEditorProps {
   images: CarouselImage[];
@@ -304,22 +304,24 @@ export function EnhancedCarouselEditor({
 
   if (!currentImage) return null;
 
+  const getImageAdjustments = (image: CarouselImage): ImageAdjustments => ({
+    brightness: image.brightness,
+    contrast: image.contrast,
+    saturation: image.saturation,
+    warmth: image.warmth,
+    highlights: image.highlights,
+    shadows: image.shadows,
+    vignette: image.vignette,
+    sharpen: image.sharpen,
+    structure: image.structure,
+    fade: image.fade,
+  });
+
   // Get filter class
   const filterClass = currentImage.filter > 0 ? filters[currentImage.filter]?.class || '' : '';
-  
-  // Get adjustment styles
-  const adjustmentStyles = getAdjustmentStyles({
-    brightness: currentImage.brightness,
-    contrast: currentImage.contrast,
-    saturation: currentImage.saturation,
-    warmth: currentImage.warmth,
-    highlights: currentImage.highlights,
-    shadows: currentImage.shadows,
-    vignette: currentImage.vignette,
-    sharpen: currentImage.sharpen,
-    structure: currentImage.structure,
-    fade: currentImage.fade,
-  });
+  const currentAdjustments = getImageAdjustments(currentImage);
+  const adjustmentFilter = getAdjustmentFilterValue(currentAdjustments);
+  const combinedPreviewFilter = mergeFilterValues(filterClassToCssFilter(filterClass), adjustmentFilter);
 
   // Combine filter intensity
   const filterOpacity = currentImage.filterIntensity / 100;
@@ -388,10 +390,13 @@ export function EnhancedCarouselEditor({
                   )}
                   whileDrag={{ scale: 1.1, boxShadow: '0 4px 20px rgba(0,0,0,0.3)', zIndex: 20 }}
                 >
-                  <img
+                  <EffectPreviewImage
                     src={image.previewUrl}
                     alt={`Thumbnail ${index + 1}`}
-                    className={cn('w-full h-full object-cover', image.filter > 0 && filters[image.filter]?.class)}
+                    adjustments={getImageAdjustments(image)}
+                    presetFilterClass={image.filter > 0 ? filters[image.filter]?.class : ''}
+                    presetIntensity={image.filterIntensity}
+                    className="absolute inset-0 w-full h-full object-cover"
                     draggable={false}
                   />
                   {/* Reorder indicator */}
@@ -423,10 +428,13 @@ export function EnhancedCarouselEditor({
                       holdingIndex === index && 'scale-95'
                     )}
                   >
-                    <img
+                    <EffectPreviewImage
                       src={image.previewUrl}
                       alt={`Thumbnail ${index + 1}`}
-                      className={cn('w-full h-full object-cover', image.filter > 0 && filters[image.filter]?.class)}
+                      adjustments={getImageAdjustments(image)}
+                      presetFilterClass={image.filter > 0 ? filters[image.filter]?.class : ''}
+                      presetIntensity={image.filterIntensity}
+                      className="absolute inset-0 w-full h-full object-cover"
                       draggable={false}
                     />
 
@@ -567,9 +575,8 @@ export function EnhancedCarouselEditor({
                   transform: imageTransform,
                   transformOrigin: 'center',
                 }}
-                afterClassName={filterClass}
                 afterStyle={{
-                  ...adjustmentStyles,
+                  ...(combinedPreviewFilter ? { filter: combinedPreviewFilter } : {}),
                   ...(currentImage.filter > 0 ? { opacity: filterOpacity } : {}),
                   transform: imageTransform,
                   transformOrigin: 'center',
@@ -612,18 +619,19 @@ export function EnhancedCarouselEditor({
                     onPointerCancel={handleCropPointerUp}
                     onPointerLeave={handleCropPointerUp}
                   >
-                    <img
+                    <EffectPreviewImage
                       src={currentImage.previewUrl}
                       alt="Crop preview"
+                      adjustments={currentAdjustments}
+                      presetFilterClass={filterClass}
+                      presetIntensity={currentImage.filterIntensity}
                       className="absolute inset-0 w-full h-full object-cover select-none"
-                      style={{
+                      imageStyle={{
                         transform: imageTransform,
                         transformOrigin: 'center',
                         transition: isCropDragging ? 'none' : 'transform 0.1s ease-out',
-                        ...adjustmentStyles,
                       }}
                       draggable={false}
-                      onContextMenu={(e) => e.preventDefault()}
                     />
 
                     <div className="absolute inset-0 pointer-events-none">
@@ -660,36 +668,19 @@ export function EnhancedCarouselEditor({
                   className="w-full h-full relative overflow-hidden"
                 >
                   {/* Base image with crop transforms applied */}
-                  <img
+                  <EffectPreviewImage
                     src={currentImage.previewUrl}
                     alt={currentImage.altText || `Image ${selectedIndex + 1}`}
-                    className="w-full h-full object-cover select-none"
-                    style={{
-                      ...adjustmentStyles,
+                    adjustments={currentAdjustments}
+                    presetFilterClass={filterClass}
+                    presetIntensity={currentImage.filterIntensity}
+                    className="w-full h-full object-cover absolute inset-0 select-none"
+                    imageStyle={{
                       transform: imageTransform,
                       transformOrigin: 'center',
                     }}
                     draggable={false}
-                    onContextMenu={(e) => e.preventDefault()}
                   />
-                  
-                  {/* Filtered layer with opacity for intensity */}
-                  {currentImage.filter > 0 && (
-                    <img
-                      src={currentImage.previewUrl}
-                      alt=""
-                      className={cn('w-full h-full object-cover absolute inset-0 pointer-events-none select-none', filterClass)}
-                      style={{
-                        ...adjustmentStyles,
-                        opacity: filterOpacity,
-                        mixBlendMode: 'normal',
-                        transform: imageTransform,
-                        transformOrigin: 'center',
-                      }}
-                      draggable={false}
-                      onContextMenu={(e) => e.preventDefault()}
-                    />
-                  )}
                 </motion.div>
               </AnimatePresence>
             </motion.div>

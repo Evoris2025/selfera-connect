@@ -3,62 +3,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Loader2, Check } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
+import type { ImageAdjustments } from './types';
+import { EffectPreviewImage } from './EffectPreviewImage';
+import { categoryLabels, filters, type ImageFilter, type FilterCategory } from './filterUtils';
 
-export interface ImageFilter {
-  name: string;
-  class: string;
-  category: FilterCategory;
-}
-
-export type FilterCategory = 'all' | 'vintage' | 'modern' | 'mood' | 'bw';
-
-export const filters: ImageFilter[] = [
-  // Original
-  { name: 'Original', class: '', category: 'all' },
-  
-  // Modern
-  { name: 'Vivid', class: 'saturate-[1.4] contrast-[1.1]', category: 'modern' },
-  { name: 'Crisp', class: 'contrast-[1.15] brightness-[1.02] saturate-[1.1]', category: 'modern' },
-  { name: 'Pop', class: 'saturate-[1.5] contrast-[1.2] brightness-[1.05]', category: 'modern' },
-  { name: 'Punch', class: 'contrast-[1.25] saturate-[1.3]', category: 'modern' },
-  { name: 'Boost', class: 'saturate-[1.2] brightness-[1.08]', category: 'modern' },
-  
-  // Vintage
-  { name: 'Warm', class: 'sepia-[0.3] saturate-[1.2]', category: 'vintage' },
-  { name: 'Retro', class: 'sepia-[0.4] contrast-[1.1] brightness-[0.95]', category: 'vintage' },
-  { name: 'Faded', class: 'brightness-[1.1] contrast-[0.85] saturate-[0.8]', category: 'vintage' },
-  { name: 'Vintage', class: 'sepia-[0.25] contrast-[1.05] saturate-[0.9]', category: 'vintage' },
-  { name: 'Film', class: 'sepia-[0.15] contrast-[1.1] saturate-[1.1] brightness-[0.98]', category: 'vintage' },
-  { name: 'Analog', class: 'sepia-[0.2] saturate-[0.85] contrast-[1.05]', category: 'vintage' },
-  
-  // Mood
-  { name: 'Cool', class: 'hue-rotate-[15deg] saturate-[0.9]', category: 'mood' },
-  { name: 'Midnight', class: 'hue-rotate-[220deg] saturate-[0.7] brightness-[0.9]', category: 'mood' },
-  { name: 'Golden', class: 'sepia-[0.35] saturate-[1.3] brightness-[1.05]', category: 'mood' },
-  { name: 'Sunset', class: 'sepia-[0.25] saturate-[1.4] hue-rotate-[-10deg]', category: 'mood' },
-  { name: 'Dreamy', class: 'brightness-[1.1] contrast-[0.9] saturate-[1.15]', category: 'mood' },
-  { name: 'Moody', class: 'contrast-[1.1] brightness-[0.92] saturate-[0.85]', category: 'mood' },
-  
-  // Black & White
-  { name: 'Mono', class: 'grayscale', category: 'bw' },
-  { name: 'Noir', class: 'grayscale contrast-[1.3] brightness-[0.95]', category: 'bw' },
-  { name: 'Silver', class: 'grayscale contrast-[1.1] brightness-[1.05]', category: 'bw' },
-  { name: 'Stark', class: 'grayscale contrast-[1.5]', category: 'bw' },
-  { name: 'Soft BW', class: 'grayscale contrast-[0.9] brightness-[1.1]', category: 'bw' },
-];
-
-const categoryLabels: Record<FilterCategory, string> = {
-  all: 'All',
-  vintage: 'Vintage',
-  modern: 'Modern',
-  mood: 'Mood',
-  bw: 'B&W',
-};
+export type { ImageFilter, FilterCategory } from './filterUtils';
+export { filters } from './filterUtils';
 
 interface EnhancedFilterLibraryProps {
   selectedFilter: number;
   filterIntensity: number;
   previewUrl: string;
+  adjustments?: ImageAdjustments;
   onFilterSelect: (index: number) => void;
   onIntensityChange: (intensity: number) => void;
   // Magik AI enhancement props
@@ -71,6 +27,7 @@ export function EnhancedFilterLibrary({
   selectedFilter,
   filterIntensity,
   previewUrl,
+  adjustments,
   onFilterSelect,
   onIntensityChange,
   onMagikClick,
@@ -206,21 +163,15 @@ export function EnhancedFilterLibrary({
                     : 'border-transparent hover:border-border'
                 )}
               >
-                {/* Base image */}
-                <img
+                <EffectPreviewImage
                   src={previewUrl}
                   alt={filter.name}
+                  adjustments={adjustments}
+                  presetFilterClass={filter.class}
+                  presetIntensity={isSelected ? filterIntensity : 100}
                   className="w-full h-full object-cover absolute inset-0"
+                  draggable={false}
                 />
-                
-                {/* Filtered overlay — always full-strength so the tile shows what the filter does */}
-                {filter.class && (
-                  <img
-                    src={previewUrl}
-                    alt=""
-                    className={cn('w-full h-full object-cover absolute inset-0', filter.class)}
-                  />
-                )}
                 
                 {/* Selected indicator */}
                 {isSelected && (

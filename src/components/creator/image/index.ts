@@ -21,6 +21,7 @@ export {
 export { GalleryFirstSelector } from './GalleryFirstSelector';
 export { EnhancedCarouselEditor } from './EnhancedCarouselEditor';
 export { EnhancedFilterLibrary, filters, getFilterClass, type ImageFilter, type FilterCategory } from './EnhancedFilterLibrary';
+export { EffectPreviewImage } from './EffectPreviewImage';
 export { EnhancedCropTool, getAspectRatioClass } from './EnhancedCropTool';
 export { CropControls } from './CropControls';
 export { PerImageUserTags } from './PerImageUserTags';
