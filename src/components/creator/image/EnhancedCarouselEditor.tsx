@@ -556,7 +556,7 @@ export function EnhancedCarouselEditor({
       {/* Right Side: Main Preview - FIXED SIZE Container matching thumbnail height */}
       <div className="flex-1 relative flex flex-col h-full">
         {/* Fixed size container that never changes */}
-        <div className="flex-1 min-h-0 bg-black/50 rounded-xl overflow-hidden flex items-center justify-center">
+        <div ref={containerRef} className="flex-1 min-h-0 bg-black/50 rounded-xl overflow-hidden flex items-center justify-center">
           {showBeforeAfter ? (
             /* Before/After Comparison Mode - same viewport as normal */
             <div className="w-full h-full">
