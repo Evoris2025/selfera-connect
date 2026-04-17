@@ -233,6 +233,74 @@ export function EnhancedCarouselEditor({
     setInitialPinchDistance(null);
   }, []);
 
+  // Desktop wheel-zoom in crop mode
+  const cropPreviewRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!isCropMode) return;
+    const el = cropPreviewRef.current;
+    if (!el) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      const img = images[selectedIndex];
+      if (!img || !onCropChange) return;
+      e.preventDefault();
+      // Negative deltaY = scroll up = zoom in
+      const zoomDelta = -e.deltaY * 0.002;
+      const newScale = Math.max(1, Math.min(3, img.cropData.scale + zoomDelta));
+      // Clamp translate when zooming out
+      const maxTranslate = (newScale - 1) * 50;
+      onCropChange({
+        ...img.cropData,
+        scale: newScale,
+        translateX: Math.max(-maxTranslate, Math.min(maxTranslate, img.cropData.translateX)),
+        translateY: Math.max(-maxTranslate, Math.min(maxTranslate, img.cropData.translateY)),
+      });
+    };
+
+    el.addEventListener('wheel', handleWheel, { passive: false });
+    return () => el.removeEventListener('wheel', handleWheel);
+  }, [isCropMode, images, selectedIndex, onCropChange]);
+
+  // Thumbnail slider navigation (horizontal) — hooks must run before any early return
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [canScrollUp, setCanScrollUp] = useState(false); // left
+  const [canScrollDown, setCanScrollDown] = useState(false); // right
+
+  const updateScrollState = useCallback(() => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      setCanScrollUp(container.scrollLeft > 0);
+      setCanScrollDown(container.scrollLeft < container.scrollWidth - container.clientWidth - 1);
+    }
+  }, []);
+
+  useEffect(() => {
+    updateScrollState();
+    const container = scrollContainerRef.current;
+    if (container) {
+      container.addEventListener('scroll', updateScrollState);
+      return () => container.removeEventListener('scroll', updateScrollState);
+    }
+  }, [updateScrollState, images.length]);
+
+  // Scroll selected thumbnail into view (horizontal)
+  useEffect(() => {
+    if (isReorderMode) return; // Don't auto-scroll during reorder
+    const container = scrollContainerRef.current;
+    if (container && images.length > 0) {
+      const thumbnailWidth = 64;
+      const targetScroll = selectedIndex * thumbnailWidth;
+      const containerWidth = container.clientWidth;
+      
+      if (targetScroll < container.scrollLeft || targetScroll > container.scrollLeft + containerWidth - thumbnailWidth) {
+        container.scrollTo({
+          left: Math.max(0, targetScroll - containerWidth / 2 + thumbnailWidth / 2),
+          behavior: 'smooth'
+        });
+      }
+    }
+  }, [selectedIndex, images.length, isReorderMode]);
+
   if (!currentImage) return null;
 
   // Get filter class
@@ -258,28 +326,6 @@ export function EnhancedCarouselEditor({
   // Image transform for crop
   const imageTransform = `scale(${currentImage.cropData.scale}) translate(${currentImage.cropData.translateX / currentImage.cropData.scale}%, ${currentImage.cropData.translateY / currentImage.cropData.scale}%) rotate(${currentImage.cropData.rotation || 0}deg)`;
 
-  // Thumbnail slider navigation (horizontal)
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [canScrollUp, setCanScrollUp] = useState(false); // left
-  const [canScrollDown, setCanScrollDown] = useState(false); // right
-
-  const updateScrollState = useCallback(() => {
-    const container = scrollContainerRef.current;
-    if (container) {
-      setCanScrollUp(container.scrollLeft > 0);
-      setCanScrollDown(container.scrollLeft < container.scrollWidth - container.clientWidth - 1);
-    }
-  }, []);
-
-  useEffect(() => {
-    updateScrollState();
-    const container = scrollContainerRef.current;
-    if (container) {
-      container.addEventListener('scroll', updateScrollState);
-      return () => container.removeEventListener('scroll', updateScrollState);
-    }
-  }, [updateScrollState, images.length]);
-
   const scrollThumbnails = (direction: 'up' | 'down') => {
     const container = scrollContainerRef.current;
     if (container) {
@@ -290,24 +336,6 @@ export function EnhancedCarouselEditor({
       });
     }
   };
-
-  // Scroll selected thumbnail into view (horizontal)
-  useEffect(() => {
-    if (isReorderMode) return; // Don't auto-scroll during reorder
-    const container = scrollContainerRef.current;
-    if (container && images.length > 0) {
-      const thumbnailWidth = 64;
-      const targetScroll = selectedIndex * thumbnailWidth;
-      const containerWidth = container.clientWidth;
-      
-      if (targetScroll < container.scrollLeft || targetScroll > container.scrollLeft + containerWidth - thumbnailWidth) {
-        container.scrollTo({
-          left: Math.max(0, targetScroll - containerWidth / 2 + thumbnailWidth / 2),
-          behavior: 'smooth'
-        });
-      }
-    }
-  }, [selectedIndex, images.length, isReorderMode]);
 
   return (
     <div className={cn("flex flex-col gap-3 h-full", className)}>
@@ -551,9 +579,10 @@ export function EnhancedCarouselEditor({
           ) : isCropMode ? (
             /* Crop Mode - full viewport with grid overlay */
             <div
+              ref={cropPreviewRef}
               className={cn(
-                'w-full h-full relative overflow-hidden bg-black flex items-center justify-center',
-                isCropDragging ? 'cursor-grabbing' : currentImage.cropData.scale > 1 ? 'cursor-grab' : 'cursor-default'
+                'w-full h-full relative overflow-hidden bg-black flex items-center justify-center touch-none',
+                isCropDragging ? 'cursor-grabbing' : currentImage.cropData.scale > 1 ? 'cursor-grab' : 'cursor-zoom-in'
               )}
               onMouseDown={handleCropMouseDown}
               onMouseMove={handleCropMouseMove}
@@ -586,10 +615,11 @@ export function EnhancedCarouselEditor({
                 </div>
               </div>
               
-              {/* Pinch hint on mobile */}
+              {/* Zoom hint — different copy for desktop vs mobile */}
               {currentImage.cropData.scale === 1 && (currentImage.cropData.rotation || 0) === 0 && (
-                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-full bg-black/60 text-white text-xs md:hidden">
-                  Pinch to zoom
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-full bg-black/60 text-white text-xs">
+                  <span className="md:hidden">Pinch to zoom</span>
+                  <span className="hidden md:inline">Scroll to zoom • Drag to reposition</span>
                 </div>
               )}
             </div>

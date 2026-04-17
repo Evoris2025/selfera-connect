@@ -141,8 +141,8 @@ export function CropControls({ cropData, onCropChange }: CropControlsProps) {
       {/* Instructions */}
       <p className="text-xs text-muted-foreground text-center">
         {cropData.scale > 1 
-          ? 'Drag the image above to reposition • Use slider to zoom'
-          : 'Select aspect ratio • Zoom to crop'}
+          ? 'Drag the image above to reposition • Scroll, pinch, or use the slider to zoom'
+          : 'Select aspect ratio • Scroll on the image, pinch, or use the slider to zoom'}
       </p>
     </div>
   );
