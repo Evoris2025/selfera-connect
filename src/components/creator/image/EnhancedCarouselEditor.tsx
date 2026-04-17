@@ -261,6 +261,46 @@ export function EnhancedCarouselEditor({
     return () => el.removeEventListener('wheel', handleWheel);
   }, [isCropMode, images, selectedIndex, onCropChange]);
 
+  // Thumbnail slider navigation (horizontal) — hooks must run before any early return
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [canScrollUp, setCanScrollUp] = useState(false); // left
+  const [canScrollDown, setCanScrollDown] = useState(false); // right
+
+  const updateScrollState = useCallback(() => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      setCanScrollUp(container.scrollLeft > 0);
+      setCanScrollDown(container.scrollLeft < container.scrollWidth - container.clientWidth - 1);
+    }
+  }, []);
+
+  useEffect(() => {
+    updateScrollState();
+    const container = scrollContainerRef.current;
+    if (container) {
+      container.addEventListener('scroll', updateScrollState);
+      return () => container.removeEventListener('scroll', updateScrollState);
+    }
+  }, [updateScrollState, images.length]);
+
+  // Scroll selected thumbnail into view (horizontal)
+  useEffect(() => {
+    if (isReorderMode) return; // Don't auto-scroll during reorder
+    const container = scrollContainerRef.current;
+    if (container && images.length > 0) {
+      const thumbnailWidth = 64;
+      const targetScroll = selectedIndex * thumbnailWidth;
+      const containerWidth = container.clientWidth;
+      
+      if (targetScroll < container.scrollLeft || targetScroll > container.scrollLeft + containerWidth - thumbnailWidth) {
+        container.scrollTo({
+          left: Math.max(0, targetScroll - containerWidth / 2 + thumbnailWidth / 2),
+          behavior: 'smooth'
+        });
+      }
+    }
+  }, [selectedIndex, images.length, isReorderMode]);
+
   if (!currentImage) return null;
 
   // Get filter class
@@ -286,28 +326,6 @@ export function EnhancedCarouselEditor({
   // Image transform for crop
   const imageTransform = `scale(${currentImage.cropData.scale}) translate(${currentImage.cropData.translateX / currentImage.cropData.scale}%, ${currentImage.cropData.translateY / currentImage.cropData.scale}%) rotate(${currentImage.cropData.rotation || 0}deg)`;
 
-  // Thumbnail slider navigation (horizontal)
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [canScrollUp, setCanScrollUp] = useState(false); // left
-  const [canScrollDown, setCanScrollDown] = useState(false); // right
-
-  const updateScrollState = useCallback(() => {
-    const container = scrollContainerRef.current;
-    if (container) {
-      setCanScrollUp(container.scrollLeft > 0);
-      setCanScrollDown(container.scrollLeft < container.scrollWidth - container.clientWidth - 1);
-    }
-  }, []);
-
-  useEffect(() => {
-    updateScrollState();
-    const container = scrollContainerRef.current;
-    if (container) {
-      container.addEventListener('scroll', updateScrollState);
-      return () => container.removeEventListener('scroll', updateScrollState);
-    }
-  }, [updateScrollState, images.length]);
-
   const scrollThumbnails = (direction: 'up' | 'down') => {
     const container = scrollContainerRef.current;
     if (container) {
@@ -318,24 +336,6 @@ export function EnhancedCarouselEditor({
       });
     }
   };
-
-  // Scroll selected thumbnail into view (horizontal)
-  useEffect(() => {
-    if (isReorderMode) return; // Don't auto-scroll during reorder
-    const container = scrollContainerRef.current;
-    if (container && images.length > 0) {
-      const thumbnailWidth = 64;
-      const targetScroll = selectedIndex * thumbnailWidth;
-      const containerWidth = container.clientWidth;
-      
-      if (targetScroll < container.scrollLeft || targetScroll > container.scrollLeft + containerWidth - thumbnailWidth) {
-        container.scrollTo({
-          left: Math.max(0, targetScroll - containerWidth / 2 + thumbnailWidth / 2),
-          behavior: 'smooth'
-        });
-      }
-    }
-  }, [selectedIndex, images.length, isReorderMode]);
 
   return (
     <div className={cn("flex flex-col gap-3 h-full", className)}>
