@@ -56,4 +56,3 @@ export { AdjustmentPanel, getAdjustmentStyles } from './AdjustmentPanel';
 export { FilterLibrary } from './FilterLibrary';
 export { UserTagOverlay } from './UserTagOverlay';
 export { AltTextInput } from './AltTextInput';
-export { GalleryGrid } from './GalleryGrid';

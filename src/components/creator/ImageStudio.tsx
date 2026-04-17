@@ -53,8 +53,8 @@ import {
   useDraftAutoSave,
 } from './image';
 
-// Simulation mode flag
-const SIMULATION_MODE = true;
+// Simulation mode flag — only enabled when no authenticated user
+const SIMULATION_MODE = false;
 
 type Step = 'select' | 'edit' | 'details';
 type EditTab = 'filters' | 'adjust' | 'crop' | 'effects';
@@ -136,6 +136,18 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
   const { enhance, isEnhancing } = useImageEnhance();
   const [magikSuccess, setMagikSuccess] = useState(false);
 
+  // Draft auto-save (every 30s + on unload)
+  const { lastSaved: draftLastSaved, isSaving: isDraftSaving, deleteDraft } = useDraftAutoSave(
+    images,
+    caption,
+    selectedTags,
+    location,
+    selectedSound,
+    contentWarning,
+    contentWarningType,
+    { autoSaveIntervalMs: 30000 }
+  );
+
   // Start background compression when images are added
   useEffect(() => {
     images.forEach(img => {
@@ -145,16 +157,22 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
     });
   }, [images, compressInBackground]);
 
+  // Keep latest images in a ref so unmount cleanup sees the final list (not stale empty array)
+  const imagesRef = useRef<CarouselImage[]>([]);
+  useEffect(() => {
+    imagesRef.current = images;
+  }, [images]);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
       cancelAll();
-      // Revoke object URLs
-      images.forEach(img => {
+      // Revoke object URLs for ALL images that existed at unmount time
+      imagesRef.current.forEach(img => {
         if (img.previewUrl) URL.revokeObjectURL(img.previewUrl);
       });
     };
-  }, []);
+  }, [cancelAll]);
 
   // Keyboard shortcuts for undo/redo
   useEffect(() => {
@@ -458,6 +476,7 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
           description: 'Your post is now live in the feed.',
         });
 
+        await deleteDraft();
         onSuccess();
         return;
       }
@@ -587,28 +606,28 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
         description: 'Your post is now live in the feed.',
       });
 
+      // Successfully posted — remove the saved draft
+      await deleteDraft();
       onSuccess();
     } catch (error) {
       console.error('Error creating post:', error);
       setUploadStatus('error');
       toast({
         title: 'Upload failed',
-        description: 'Some images failed to upload. Please retry.',
+        description: error instanceof Error ? error.message : 'Some images failed to upload. Please retry.',
         variant: 'destructive',
       });
     } finally {
-      if (uploadStatus !== 'error') {
-        setIsSubmitting(false);
-      }
+      // Always release the submitting lock so the user can retry or close the overlay
+      setIsSubmitting(false);
     }
   };
 
-  const handleRetryUpload = (imageId: string) => {
-    // Retry logic would go here
-    toast({
-      title: 'Retry',
-      description: 'Retrying upload...',
-    });
+  const handleRetryUpload = (_imageId: string) => {
+    // Reset state and re-run the full submit pipeline
+    setUploadStatus('idle');
+    setUploadProgress([]);
+    handleSubmit();
   };
 
   return (
@@ -714,46 +733,41 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
 
             {/* Editing Tabs - fixed at bottom with consistent height */}
             <Tabs value={editTab} onValueChange={(v) => setEditTab(v as EditTab)} className="shrink-0 px-4 pt-2 pb-4">
-              <TabsList className="grid w-full grid-cols-5 mb-3">
-                <TabsTrigger value="filters" className="gap-1 text-xs">
-                  <Palette className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">Filters</span>
-                </TabsTrigger>
-                <TabsTrigger value="adjust" className="gap-1 text-xs">
-                  <Sliders className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">Adjust</span>
-                </TabsTrigger>
-                <TabsTrigger value="effects" className="gap-1 text-xs">
-                  <ImageIcon className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">Effects</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="crop" 
-                  className="gap-1 text-xs"
-                  onClick={(e) => {
-                    // Toggle crop mode off if already active
-                    if (editTab === 'crop') {
-                      e.preventDefault();
-                      setEditTab('filters');
-                    }
-                  }}
-                >
-                  <Crop className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">Crop</span>
-                </TabsTrigger>
+              <div className="flex items-center gap-2 mb-3">
+                <TabsList className="grid flex-1 grid-cols-4">
+                  <TabsTrigger value="filters" className="gap-1 text-xs">
+                    <Palette className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Filters</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="adjust" className="gap-1 text-xs">
+                    <Sliders className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Adjust</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="effects" className="gap-1 text-xs">
+                    <ImageIcon className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Effects</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="crop" className="gap-1 text-xs">
+                    <Crop className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Crop</span>
+                  </TabsTrigger>
+                </TabsList>
                 <button
+                  type="button"
                   onClick={() => setShowBeforeAfter(!showBeforeAfter)}
+                  aria-pressed={showBeforeAfter}
+                  aria-label="Compare before and after"
                   className={cn(
-                    'inline-flex items-center justify-center gap-1 text-xs whitespace-nowrap px-3 py-1.5 font-medium transition-all',
-                    showBeforeAfter 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'text-muted-foreground hover:text-foreground'
+                    'inline-flex items-center justify-center gap-1 text-xs whitespace-nowrap px-3 h-9 rounded-md font-medium transition-colors border',
+                    showBeforeAfter
+                      ? 'bg-primary text-primary-foreground border-primary'
+                      : 'bg-secondary text-muted-foreground hover:text-foreground border-border'
                   )}
                 >
                   <SplitSquareVertical className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline">Compare</span>
                 </button>
-              </TabsList>
+              </div>
 
               <TabsContent value="filters" className="space-y-4 max-h-[180px] overflow-y-auto">
                 {/* Preset Manager */}
@@ -804,6 +818,8 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                       shadows: { label: 'Shadows', min: -100, max: 100, default: 0 },
                       vignette: { label: 'Vignette', min: 0, max: 100, default: 0 },
                       fade: { label: 'Fade', min: 0, max: 100, default: 0 },
+                      sharpen: { label: 'Sharpen', min: 0, max: 100, default: 0 },
+                      structure: { label: 'Structure', min: 0, max: 100, default: 0 },
                     }).map(([key, config]) => (
                       <div key={key} className="space-y-1">
                         <div className="flex items-center justify-between">
