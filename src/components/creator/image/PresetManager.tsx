@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Save, Trash2, Edit2, Check, X, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
+import { BookmarkPlus, Trash2, Edit2, Check, X, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
