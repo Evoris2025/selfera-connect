@@ -142,84 +142,59 @@ export function EnhancedCarouselEditor({
 
   const currentImage = images[selectedIndex];
 
-  // Crop mode handlers
-  const handleCropMouseDown = useCallback((e: React.MouseEvent) => {
+  // Crop mode handlers — unified Pointer Events (mouse + touch + pen)
+  const activePointersRef = useRef<Map<number, { x: number; y: number }>>(new Map());
+
+  const handleCropPointerDown = useCallback((e: React.PointerEvent) => {
     const img = images[selectedIndex];
     if (!isCropMode || !img) return;
-    if (img.cropData.scale <= 1) return;
-    
-    setIsCropDragging(true);
-    setCropDragStart({ x: e.clientX, y: e.clientY });
-    setInitialCropTranslate({ 
-      x: img.cropData.translateX, 
-      y: img.cropData.translateY 
-    });
-  }, [isCropMode, images, selectedIndex]);
 
-  const handleCropMouseMove = useCallback((e: React.MouseEvent) => {
-    const img = images[selectedIndex];
-    if (!isCropDragging || !img || !onCropChange) return;
-    
-    const deltaX = (e.clientX - cropDragStart.x) / 2;
-    const deltaY = (e.clientY - cropDragStart.y) / 2;
-    
-    const maxTranslate = (img.cropData.scale - 1) * 50;
-    
-    onCropChange({
-      ...img.cropData,
-      translateX: Math.max(-maxTranslate, Math.min(maxTranslate, initialCropTranslate.x + deltaX)),
-      translateY: Math.max(-maxTranslate, Math.min(maxTranslate, initialCropTranslate.y + deltaY)),
-    });
-  }, [isCropDragging, cropDragStart, initialCropTranslate, images, selectedIndex, onCropChange]);
+    (e.currentTarget as Element).setPointerCapture?.(e.pointerId);
+    activePointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
-  const handleCropMouseUp = useCallback(() => {
-    setIsCropDragging(false);
-  }, []);
-
-  // Crop touch handlers for pinch-to-zoom
-  const handleCropTouchStart = useCallback((e: React.TouchEvent) => {
-    const img = images[selectedIndex];
-    if (!isCropMode || !img) return;
-    
-    if (e.touches.length === 2) {
-      const distance = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
+    if (activePointersRef.current.size === 2) {
+      const pts = Array.from(activePointersRef.current.values());
+      const distance = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
       setInitialPinchDistance(distance);
       setInitialPinchScale(img.cropData.scale);
-    } else if (e.touches.length === 1 && img.cropData.scale > 1) {
+      setIsCropDragging(false);
+    } else if (activePointersRef.current.size === 1) {
+      // Auto-zoom to 1.5x on first interaction so dragging is meaningful
+      if (img.cropData.scale <= 1 && onCropChange) {
+        onCropChange({ ...img.cropData, scale: 1.5 });
+      }
       setIsCropDragging(true);
-      setCropDragStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
-      setInitialCropTranslate({ 
-        x: img.cropData.translateX, 
-        y: img.cropData.translateY 
+      setCropDragStart({ x: e.clientX, y: e.clientY });
+      setInitialCropTranslate({
+        x: img.cropData.translateX,
+        y: img.cropData.translateY,
       });
     }
-  }, [isCropMode, images, selectedIndex]);
+  }, [isCropMode, images, selectedIndex, onCropChange]);
 
-  const handleCropTouchMove = useCallback((e: React.TouchEvent) => {
+  const handleCropPointerMove = useCallback((e: React.PointerEvent) => {
     const img = images[selectedIndex];
     if (!isCropMode || !img || !onCropChange) return;
-    
-    if (e.touches.length === 2 && initialPinchDistance !== null) {
-      const distance = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
+    if (!activePointersRef.current.has(e.pointerId)) return;
+
+    activePointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    if (activePointersRef.current.size === 2 && initialPinchDistance !== null) {
+      const pts = Array.from(activePointersRef.current.values());
+      const distance = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
       const scaleChange = distance / initialPinchDistance;
       const newScale = Math.max(1, Math.min(3, initialPinchScale * scaleChange));
-      
+      const maxTranslate = (newScale - 1) * 50;
       onCropChange({
         ...img.cropData,
         scale: newScale,
+        translateX: Math.max(-maxTranslate, Math.min(maxTranslate, img.cropData.translateX)),
+        translateY: Math.max(-maxTranslate, Math.min(maxTranslate, img.cropData.translateY)),
       });
-    } else if (isCropDragging && e.touches.length === 1) {
-      const deltaX = (e.touches[0].clientX - cropDragStart.x) / 2;
-      const deltaY = (e.touches[0].clientY - cropDragStart.y) / 2;
-      
+    } else if (isCropDragging && activePointersRef.current.size === 1) {
+      const deltaX = (e.clientX - cropDragStart.x) / 2;
+      const deltaY = (e.clientY - cropDragStart.y) / 2;
       const maxTranslate = (img.cropData.scale - 1) * 50;
-      
       onCropChange({
         ...img.cropData,
         translateX: Math.max(-maxTranslate, Math.min(maxTranslate, initialCropTranslate.x + deltaX)),
@@ -228,9 +203,14 @@ export function EnhancedCarouselEditor({
     }
   }, [isCropMode, isCropDragging, cropDragStart, initialCropTranslate, initialPinchDistance, initialPinchScale, images, selectedIndex, onCropChange]);
 
-  const handleCropTouchEnd = useCallback(() => {
-    setIsCropDragging(false);
-    setInitialPinchDistance(null);
+  const handleCropPointerUp = useCallback((e: React.PointerEvent) => {
+    activePointersRef.current.delete(e.pointerId);
+    if (activePointersRef.current.size < 2) {
+      setInitialPinchDistance(null);
+    }
+    if (activePointersRef.current.size === 0) {
+      setIsCropDragging(false);
+    }
   }, []);
 
   // Desktop wheel-zoom in crop mode
