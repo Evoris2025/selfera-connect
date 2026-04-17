@@ -818,6 +818,8 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                       shadows: { label: 'Shadows', min: -100, max: 100, default: 0 },
                       vignette: { label: 'Vignette', min: 0, max: 100, default: 0 },
                       fade: { label: 'Fade', min: 0, max: 100, default: 0 },
+                      sharpen: { label: 'Sharpen', min: 0, max: 100, default: 0 },
+                      structure: { label: 'Structure', min: 0, max: 100, default: 0 },
                     }).map(([key, config]) => (
                       <div key={key} className="space-y-1">
                         <div className="flex items-center justify-between">
