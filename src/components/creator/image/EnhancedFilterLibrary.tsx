@@ -213,15 +213,12 @@ export function EnhancedFilterLibrary({
                   className="w-full h-full object-cover absolute inset-0"
                 />
                 
-                {/* Filtered overlay with intensity */}
+                {/* Filtered overlay — always full-strength so the tile shows what the filter does */}
                 {filter.class && (
                   <img
                     src={previewUrl}
                     alt=""
                     className={cn('w-full h-full object-cover absolute inset-0', filter.class)}
-                    style={{
-                      opacity: isSelected ? filterIntensity / 100 : 1,
-                    }}
                   />
                 )}
                 
