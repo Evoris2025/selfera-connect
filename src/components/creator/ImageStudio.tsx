@@ -881,7 +881,7 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                 />
               </TabsContent>
 
-              <TabsContent value="crop" className="max-h-[180px] overflow-y-auto">
+              <TabsContent value="crop" className="max-h-[280px] md:max-h-[340px] overflow-y-auto pr-1">
                 <CropControls
                   cropData={currentImage.cropData}
                   onCropChange={(cropData) => updateCurrentImageWithHistory('crop', { 
