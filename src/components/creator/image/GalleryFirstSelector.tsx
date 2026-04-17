@@ -99,7 +99,7 @@ export function GalleryFirstSelector({
               
               <div className="text-center space-y-1">
                 <span className="text-base font-semibold text-foreground block">Select multiple photos</span>
-                <span className="text-sm text-muted-foreground block">Create a carousel with up to {maxImages} images</span>
+                <span className="text-sm text-muted-foreground block">Select up to {maxImages} images</span>
               </div>
 
 
