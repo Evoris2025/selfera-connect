@@ -233,6 +233,34 @@ export function EnhancedCarouselEditor({
     setInitialPinchDistance(null);
   }, []);
 
+  // Desktop wheel-zoom in crop mode
+  const cropPreviewRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!isCropMode) return;
+    const el = cropPreviewRef.current;
+    if (!el) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      const img = images[selectedIndex];
+      if (!img || !onCropChange) return;
+      e.preventDefault();
+      // Negative deltaY = scroll up = zoom in
+      const zoomDelta = -e.deltaY * 0.002;
+      const newScale = Math.max(1, Math.min(3, img.cropData.scale + zoomDelta));
+      // Clamp translate when zooming out
+      const maxTranslate = (newScale - 1) * 50;
+      onCropChange({
+        ...img.cropData,
+        scale: newScale,
+        translateX: Math.max(-maxTranslate, Math.min(maxTranslate, img.cropData.translateX)),
+        translateY: Math.max(-maxTranslate, Math.min(maxTranslate, img.cropData.translateY)),
+      });
+    };
+
+    el.addEventListener('wheel', handleWheel, { passive: false });
+    return () => el.removeEventListener('wheel', handleWheel);
+  }, [isCropMode, images, selectedIndex, onCropChange]);
+
   if (!currentImage) return null;
 
   // Get filter class
