@@ -79,8 +79,8 @@ export function EnhancedFilterLibrary({
 }: EnhancedFilterLibraryProps) {
   const [category, setCategory] = useState<FilterCategory>('all');
 
-  // Keep toolbar preview tiles consistent with the main carousel thumbnails (Compare uses w-14/h-14)
-  const tileClass = 'w-14 h-14';
+  // Larger thumbnails so the filter effect is clearly visible on the user's image
+  const tileClass = 'w-16 h-16';
 
   const filteredFilters = category === 'all' 
     ? filters 
@@ -213,15 +213,12 @@ export function EnhancedFilterLibrary({
                   className="w-full h-full object-cover absolute inset-0"
                 />
                 
-                {/* Filtered overlay with intensity */}
+                {/* Filtered overlay — always full-strength so the tile shows what the filter does */}
                 {filter.class && (
                   <img
                     src={previewUrl}
                     alt=""
                     className={cn('w-full h-full object-cover absolute inset-0', filter.class)}
-                    style={{
-                      opacity: isSelected ? filterIntensity / 100 : 1,
-                    }}
                   />
                 )}
                 
