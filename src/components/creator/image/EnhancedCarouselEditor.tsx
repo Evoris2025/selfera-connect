@@ -590,13 +590,12 @@ export function EnhancedCarouselEditor({
 
               if (ratio) {
                 const fittedWidth = Math.min(containerWidth, containerHeight * ratio);
-                const fittedHeight = fittedWidth / ratio;
                 frameWidth = fittedWidth;
-                frameHeight = fittedHeight;
+                frameHeight = fittedWidth / ratio;
               }
 
               return (
-                <div className="w-full h-full flex items-center justify-center" ref={containerRef}>
+                <div className="w-full h-full flex items-center justify-center">
                   <div
                     ref={cropPreviewRef}
                     className={cn(
@@ -604,8 +603,8 @@ export function EnhancedCarouselEditor({
                       isCropDragging ? 'cursor-grabbing' : currentImage.cropData.scale > 1 ? 'cursor-grab' : 'cursor-zoom-in'
                     )}
                     style={{
-                      width: `${Math.max(frameWidth, 1)}px`,
-                      height: `${Math.max(frameHeight, 1)}px`,
+                      width: Math.max(frameWidth, 1),
+                      height: Math.max(frameHeight, 1),
                     }}
                     onPointerDown={handleCropPointerDown}
                     onPointerMove={handleCropPointerMove}
