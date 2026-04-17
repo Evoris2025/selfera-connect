@@ -733,46 +733,41 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
 
             {/* Editing Tabs - fixed at bottom with consistent height */}
             <Tabs value={editTab} onValueChange={(v) => setEditTab(v as EditTab)} className="shrink-0 px-4 pt-2 pb-4">
-              <TabsList className="grid w-full grid-cols-5 mb-3">
-                <TabsTrigger value="filters" className="gap-1 text-xs">
-                  <Palette className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">Filters</span>
-                </TabsTrigger>
-                <TabsTrigger value="adjust" className="gap-1 text-xs">
-                  <Sliders className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">Adjust</span>
-                </TabsTrigger>
-                <TabsTrigger value="effects" className="gap-1 text-xs">
-                  <ImageIcon className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">Effects</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="crop" 
-                  className="gap-1 text-xs"
-                  onClick={(e) => {
-                    // Toggle crop mode off if already active
-                    if (editTab === 'crop') {
-                      e.preventDefault();
-                      setEditTab('filters');
-                    }
-                  }}
-                >
-                  <Crop className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">Crop</span>
-                </TabsTrigger>
+              <div className="flex items-center gap-2 mb-3">
+                <TabsList className="grid flex-1 grid-cols-4">
+                  <TabsTrigger value="filters" className="gap-1 text-xs">
+                    <Palette className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Filters</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="adjust" className="gap-1 text-xs">
+                    <Sliders className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Adjust</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="effects" className="gap-1 text-xs">
+                    <ImageIcon className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Effects</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="crop" className="gap-1 text-xs">
+                    <Crop className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Crop</span>
+                  </TabsTrigger>
+                </TabsList>
                 <button
+                  type="button"
                   onClick={() => setShowBeforeAfter(!showBeforeAfter)}
+                  aria-pressed={showBeforeAfter}
+                  aria-label="Compare before and after"
                   className={cn(
-                    'inline-flex items-center justify-center gap-1 text-xs whitespace-nowrap px-3 py-1.5 font-medium transition-all',
-                    showBeforeAfter 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'text-muted-foreground hover:text-foreground'
+                    'inline-flex items-center justify-center gap-1 text-xs whitespace-nowrap px-3 h-9 rounded-md font-medium transition-colors border',
+                    showBeforeAfter
+                      ? 'bg-primary text-primary-foreground border-primary'
+                      : 'bg-secondary text-muted-foreground hover:text-foreground border-border'
                   )}
                 >
                   <SplitSquareVertical className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline">Compare</span>
                 </button>
-              </TabsList>
+              </div>
 
               <TabsContent value="filters" className="space-y-4 max-h-[180px] overflow-y-auto">
                 {/* Preset Manager */}
