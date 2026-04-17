@@ -579,9 +579,10 @@ export function EnhancedCarouselEditor({
           ) : isCropMode ? (
             /* Crop Mode - full viewport with grid overlay */
             <div
+              ref={cropPreviewRef}
               className={cn(
-                'w-full h-full relative overflow-hidden bg-black flex items-center justify-center',
-                isCropDragging ? 'cursor-grabbing' : currentImage.cropData.scale > 1 ? 'cursor-grab' : 'cursor-default'
+                'w-full h-full relative overflow-hidden bg-black flex items-center justify-center touch-none',
+                isCropDragging ? 'cursor-grabbing' : currentImage.cropData.scale > 1 ? 'cursor-grab' : 'cursor-zoom-in'
               )}
               onMouseDown={handleCropMouseDown}
               onMouseMove={handleCropMouseMove}
@@ -614,10 +615,11 @@ export function EnhancedCarouselEditor({
                 </div>
               </div>
               
-              {/* Pinch hint on mobile */}
+              {/* Zoom hint — different copy for desktop vs mobile */}
               {currentImage.cropData.scale === 1 && (currentImage.cropData.rotation || 0) === 0 && (
-                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-full bg-black/60 text-white text-xs md:hidden">
-                  Pinch to zoom
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-full bg-black/60 text-white text-xs">
+                  <span className="md:hidden">Pinch to zoom</span>
+                  <span className="hidden md:inline">Scroll to zoom • Drag to reposition</span>
                 </div>
               )}
             </div>
