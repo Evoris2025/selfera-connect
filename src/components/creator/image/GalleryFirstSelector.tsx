@@ -102,20 +102,6 @@ export function GalleryFirstSelector({
                 <span className="text-sm text-muted-foreground block">Create a carousel with up to {maxImages} images</span>
               </div>
 
-              {/* Platform-specific instructions */}
-              <div className="mt-2 px-4 py-2 rounded-lg bg-secondary/50 text-xs text-center max-w-[250px]">
-                {isDesktop ? (
-                  <div className="flex items-center justify-center gap-1.5">
-                    <Monitor className="h-3.5 w-3.5" />
-                    <span>Hold <kbd className="px-1 py-0.5 rounded bg-background border text-[10px]">Ctrl</kbd> or <kbd className="px-1 py-0.5 rounded bg-background border text-[10px]">⌘</kbd> to select multiple</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-center gap-1.5">
-                    <Smartphone className="h-3.5 w-3.5" />
-                    <span>Tap multiple photos to select them</span>
-                  </div>
-                )}
-              </div>
 
               {/* Selection counter badge (shows 0 initially for affordance) */}
               <div className="absolute top-4 right-4 px-2.5 py-1 rounded-full bg-secondary text-xs font-medium">
