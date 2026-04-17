@@ -30,18 +30,27 @@ export function PresetManager({
   onRenamePreset,
 }: PresetManagerProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [newPresetName, setNewPresetName] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
 
-  const handleSave = () => {
-    if (newPresetName.trim()) {
-      onSavePreset(newPresetName.trim());
-      setNewPresetName('');
-      setIsSaving(false);
-    }
+  // Quick-save: auto-generate a name from the current filter + count
+  const handleQuickSave = () => {
+    const filterName = currentFilter > 0 && filters[currentFilter]
+      ? filters[currentFilter].name
+      : 'Custom';
+    const name = `${filterName} ${presets.length + 1}`;
+    onSavePreset(name);
+    setIsExpanded(true);
   };
+
+  const hasEffects =
+    currentFilter > 0 ||
+    Object.entries(currentAdjustments).some(([key, value]) => {
+      if (key === 'brightness' || key === 'contrast' || key === 'saturation') {
+        return value !== 100;
+      }
+      return value !== 0;
+    });
 
   const handleStartEdit = (preset: EditPreset) => {
     setEditingId(preset.id);
@@ -58,45 +67,61 @@ export function PresetManager({
 
   const getPresetSummary = (preset: EditPreset) => {
     const parts: string[] = [];
-    
+
     if (preset.filter > 0 && filters[preset.filter]) {
       parts.push(filters[preset.filter].name);
     }
-    
+
     const modifiedAdjustments = Object.entries(preset.adjustments).filter(([key, value]) => {
       if (key === 'brightness' || key === 'contrast' || key === 'saturation') {
         return value !== 100;
       }
       return value !== 0;
     });
-    
+
     if (modifiedAdjustments.length > 0) {
       parts.push(`${modifiedAdjustments.length} adj`);
     }
-    
+
     return parts.length > 0 ? parts.join(' + ') : 'No effects';
   };
 
   return (
     <div className="space-y-2">
-      {/* Header */}
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="flex items-center justify-between w-full p-2 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors"
-      >
-        <div className="flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-primary" />
-          <span className="text-sm font-medium">Saved Presets</span>
-          {presets.length > 0 && (
-            <span className="text-xs text-muted-foreground">({presets.length})</span>
+      {/* Header with quick-save icon */}
+      <div className="flex items-center gap-1">
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="flex items-center justify-between flex-1 p-2 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-primary" />
+            <span className="text-sm font-medium">Saved Presets</span>
+            {presets.length > 0 && (
+              <span className="text-xs text-muted-foreground">({presets.length})</span>
+            )}
+          </div>
+          {isExpanded ? (
+            <ChevronUp className="h-4 w-4 text-muted-foreground" />
+          ) : (
+            <ChevronDown className="h-4 w-4 text-muted-foreground" />
           )}
-        </div>
-        {isExpanded ? (
-          <ChevronUp className="h-4 w-4 text-muted-foreground" />
-        ) : (
-          <ChevronDown className="h-4 w-4 text-muted-foreground" />
-        )}
-      </button>
+        </button>
+        <motion.button
+          onClick={handleQuickSave}
+          disabled={!hasEffects}
+          whileTap={{ scale: 0.9 }}
+          title={hasEffects ? 'Save current look as a preset' : 'Apply a filter or adjustment first'}
+          className={cn(
+            'p-2 rounded-lg transition-colors flex items-center justify-center',
+            hasEffects
+              ? 'bg-primary/15 text-primary hover:bg-primary/25'
+              : 'bg-secondary/30 text-muted-foreground/50 cursor-not-allowed'
+          )}
+        >
+          <BookmarkPlus className="h-4 w-4" />
+        </motion.button>
+      </div>
 
       <AnimatePresence>
         {isExpanded && (
