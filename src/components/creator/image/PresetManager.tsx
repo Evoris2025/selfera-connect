@@ -133,52 +133,10 @@ export function PresetManager({
             className="overflow-hidden"
           >
             <div className="space-y-3 pt-2">
-              {/* Save New Preset */}
-              {isSaving ? (
-                <div className="flex items-center gap-2">
-                  <Input
-                    value={newPresetName}
-                    onChange={(e) => setNewPresetName(e.target.value)}
-                    placeholder="Preset name..."
-                    className="h-8 text-sm flex-1"
-                    autoFocus
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') handleSave();
-                      if (e.key === 'Escape') setIsSaving(false);
-                    }}
-                  />
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={handleSave}
-                    disabled={!newPresetName.trim()}
-                    className="h-8 w-8 p-0"
-                  >
-                    <Check className="h-4 w-4 text-primary" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => {
-                      setIsSaving(false);
-                      setNewPresetName('');
-                    }}
-                    className="h-8 w-8 p-0"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              ) : (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setIsSaving(true)}
-                  className="w-full h-8 text-xs gap-1.5"
-                >
-                  <Save className="h-3.5 w-3.5" />
-                  Save Current Settings
-                </Button>
-              )}
+              {/* Quick-save hint */}
+              <p className="text-[11px] text-muted-foreground px-1">
+                Tap the bookmark icon above to save your current filter & adjustments. Rename anytime.
+              </p>
 
               {/* Preset List */}
               {presets.length === 0 ? (
