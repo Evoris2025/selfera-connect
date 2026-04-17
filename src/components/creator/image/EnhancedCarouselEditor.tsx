@@ -564,13 +564,11 @@ export function EnhancedCarouselEditor({
                 'w-full h-full relative overflow-hidden bg-black flex items-center justify-center touch-none',
                 isCropDragging ? 'cursor-grabbing' : currentImage.cropData.scale > 1 ? 'cursor-grab' : 'cursor-zoom-in'
               )}
-              onMouseDown={handleCropMouseDown}
-              onMouseMove={handleCropMouseMove}
-              onMouseUp={handleCropMouseUp}
-              onMouseLeave={handleCropMouseUp}
-              onTouchStart={handleCropTouchStart}
-              onTouchMove={handleCropTouchMove}
-              onTouchEnd={handleCropTouchEnd}
+              onPointerDown={handleCropPointerDown}
+              onPointerMove={handleCropPointerMove}
+              onPointerUp={handleCropPointerUp}
+              onPointerCancel={handleCropPointerUp}
+              onPointerLeave={handleCropPointerUp}
             >
               <img
                 src={currentImage.previewUrl}
