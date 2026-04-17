@@ -52,6 +52,7 @@ export function EnhancedCarouselEditor({
   const [initialCropTranslate, setInitialCropTranslate] = useState({ x: 0, y: 0 });
   const [initialPinchDistance, setInitialPinchDistance] = useState<number | null>(null);
   const [initialPinchScale, setInitialPinchScale] = useState(1);
+  const [previewBounds, setPreviewBounds] = useState({ width: 0, height: 0 });
 
   const HOLD_DURATION = 600; // ms to trigger delete mode
 
@@ -240,6 +241,26 @@ export function EnhancedCarouselEditor({
     el.addEventListener('wheel', handleWheel, { passive: false });
     return () => el.removeEventListener('wheel', handleWheel);
   }, [isCropMode, images, selectedIndex, onCropChange]);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const updatePreviewBounds = () => {
+      setPreviewBounds({ width: el.clientWidth, height: el.clientHeight });
+    };
+
+    updatePreviewBounds();
+
+    const resizeObserver = new ResizeObserver(updatePreviewBounds);
+    resizeObserver.observe(el);
+    window.addEventListener('resize', updatePreviewBounds);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener('resize', updatePreviewBounds);
+    };
+  }, [isCropMode, images.length, selectedIndex]);
 
   // Thumbnail slider navigation (horizontal) — hooks must run before any early return
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -535,7 +556,7 @@ export function EnhancedCarouselEditor({
       {/* Right Side: Main Preview - FIXED SIZE Container matching thumbnail height */}
       <div className="flex-1 relative flex flex-col h-full">
         {/* Fixed size container that never changes */}
-        <div className="flex-1 min-h-0 bg-black/50 rounded-xl overflow-hidden flex items-center justify-center">
+        <div ref={containerRef} className="flex-1 min-h-0 bg-black/50 rounded-xl overflow-hidden flex items-center justify-center">
           {showBeforeAfter ? (
             /* Before/After Comparison Mode - same viewport as normal */
             <div className="w-full h-full">
@@ -557,63 +578,69 @@ export function EnhancedCarouselEditor({
               />
             </div>
           ) : isCropMode ? (
-            /* Crop Mode - aspect-ratio-aware frame with grid overlay */
+            /* Crop Mode - explicit fitted frame so the image always has real dimensions */
             (() => {
               const ar = currentImage.cropData.aspectRatio;
-              const arClass =
-                ar === 'square' ? 'aspect-square' :
-                ar === 'portrait' ? 'aspect-[4/5]' :
-                ar === 'landscape' ? 'aspect-video' :
-                ''; // 'original' — fill container
-              const sizingClass = ar === 'original'
-                ? 'w-full h-full'
-                : 'max-w-full max-h-full w-auto h-auto';
+              const ratio = ar === 'square' ? 1 : ar === 'portrait' ? 4 / 5 : ar === 'landscape' ? 16 / 9 : null;
+              const containerWidth = previewBounds.width || 1;
+              const containerHeight = previewBounds.height || 1;
+
+              let frameWidth = containerWidth;
+              let frameHeight = containerHeight;
+
+              if (ratio) {
+                const fittedWidth = Math.min(containerWidth, containerHeight * ratio);
+                frameWidth = fittedWidth;
+                frameHeight = fittedWidth / ratio;
+              }
+
               return (
-                <div
-                  ref={cropPreviewRef}
-                  className={cn(
-                    'relative overflow-hidden bg-black touch-none',
-                    sizingClass,
-                    arClass,
-                    isCropDragging ? 'cursor-grabbing' : currentImage.cropData.scale > 1 ? 'cursor-grab' : 'cursor-zoom-in'
-                  )}
-                  style={ar !== 'original' ? { maxWidth: '100%', maxHeight: '100%' } : undefined}
-                  onPointerDown={handleCropPointerDown}
-                  onPointerMove={handleCropPointerMove}
-                  onPointerUp={handleCropPointerUp}
-                  onPointerCancel={handleCropPointerUp}
-                  onPointerLeave={handleCropPointerUp}
-                >
-                  <img
-                    src={currentImage.previewUrl}
-                    alt="Crop preview"
-                    className="absolute inset-0 w-full h-full object-cover select-none"
+                <div className="w-full h-full flex items-center justify-center">
+                  <div
+                    ref={cropPreviewRef}
+                    className={cn(
+                      'relative overflow-hidden bg-black touch-none shrink-0',
+                      isCropDragging ? 'cursor-grabbing' : currentImage.cropData.scale > 1 ? 'cursor-grab' : 'cursor-zoom-in'
+                    )}
                     style={{
-                      transform: imageTransform,
-                      transformOrigin: 'center',
-                      transition: isCropDragging ? 'none' : 'transform 0.1s ease-out',
-                      ...adjustmentStyles,
+                      width: Math.max(frameWidth, 1),
+                      height: Math.max(frameHeight, 1),
                     }}
-                    draggable={false}
-                    onContextMenu={(e) => e.preventDefault()}
-                  />
+                    onPointerDown={handleCropPointerDown}
+                    onPointerMove={handleCropPointerMove}
+                    onPointerUp={handleCropPointerUp}
+                    onPointerCancel={handleCropPointerUp}
+                    onPointerLeave={handleCropPointerUp}
+                  >
+                    <img
+                      src={currentImage.previewUrl}
+                      alt="Crop preview"
+                      className="absolute inset-0 w-full h-full object-cover select-none"
+                      style={{
+                        transform: imageTransform,
+                        transformOrigin: 'center',
+                        transition: isCropDragging ? 'none' : 'transform 0.1s ease-out',
+                        ...adjustmentStyles,
+                      }}
+                      draggable={false}
+                      onContextMenu={(e) => e.preventDefault()}
+                    />
 
-                  {/* Grid Overlay */}
-                  <div className="absolute inset-0 pointer-events-none">
-                    <div className="w-full h-full grid grid-cols-3 grid-rows-3">
-                      {Array.from({ length: 9 }).map((_, i) => (
-                        <div key={i} className="border border-white/30" />
-                      ))}
+                    <div className="absolute inset-0 pointer-events-none">
+                      <div className="w-full h-full grid grid-cols-3 grid-rows-3">
+                        {Array.from({ length: 9 }).map((_, i) => (
+                          <div key={i} className="border border-white/30" />
+                        ))}
+                      </div>
                     </div>
+
+                    {currentImage.cropData.scale === 1 && (currentImage.cropData.rotation || 0) === 0 && (
+                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-full bg-black/60 text-white text-xs whitespace-nowrap">
+                        <span className="md:hidden">Pinch to zoom</span>
+                        <span className="hidden md:inline">Scroll to zoom • Drag to reposition</span>
+                      </div>
+                    )}
                   </div>
-
-                  {/* Zoom hint */}
-                  {currentImage.cropData.scale === 1 && (currentImage.cropData.rotation || 0) === 0 && (
-                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-full bg-black/60 text-white text-xs whitespace-nowrap">
-                      <span className="md:hidden">Pinch to zoom</span>
-                      <span className="hidden md:inline">Scroll to zoom • Drag to reposition</span>
-                    </div>
-                  )}
                 </div>
               );
             })()
