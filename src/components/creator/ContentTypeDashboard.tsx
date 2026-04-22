@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Video, Image, FileText, FileEdit, X } from 'lucide-react';
+import { Sparkles, Video, Image, FileText, FileEdit, X, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BrandMark } from '@/components/BrandMark';
-import { useDrafts } from './shared/DraftManager';
+import { useFeedData } from '@/contexts/FeedDataContext';
+import { UnifiedDraftsDrawer } from './shared/UnifiedDraftsDrawer';
 
 export type ContentType = 'expression' | 'video' | 'image' | 'post';
 
@@ -56,8 +58,11 @@ interface ContentTypeDashboardProps {
 }
 
 export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboardProps) {
-  const { drafts } = useDrafts();
+  const { drafts, scheduled } = useFeedData();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerTab, setDrawerTab] = useState<'drafts' | 'scheduled'>('drafts');
   const draftCount = drafts.length;
+  const scheduledCount = scheduled.length;
 
   return (
     <motion.div
@@ -206,15 +211,16 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
       </div>
 
       {/* Bottom Actions */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
-        className="relative z-10 p-4 border-t border-border/30 bg-card/20 backdrop-blur-sm"
+        className="relative z-10 p-4 border-t border-border/30 bg-card/20 backdrop-blur-sm grid grid-cols-2 gap-3"
       >
-        <button 
+        <button
+          onClick={() => { setDrawerTab('drafts'); setDrawerOpen(true); }}
           className={cn(
-            "flex items-center justify-center gap-2.5 w-full px-4 py-3.5",
+            "flex items-center justify-center gap-2 px-4 py-3.5",
             "bg-secondary/40 hover:bg-secondary/60 transition-all duration-200 group",
             "border border-border/30 hover:border-border/50",
             "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background focus:outline-none"
@@ -230,7 +236,28 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
             </span>
           )}
         </button>
+        <button
+          onClick={() => { setDrawerTab('scheduled'); setDrawerOpen(true); }}
+          className={cn(
+            "flex items-center justify-center gap-2 px-4 py-3.5",
+            "bg-secondary/40 hover:bg-secondary/60 transition-all duration-200 group",
+            "border border-border/30 hover:border-border/50",
+            "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background focus:outline-none"
+          )}
+        >
+          <Clock className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+          <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+            Scheduled
+          </span>
+          {scheduledCount > 0 && (
+            <span className="flex items-center justify-center min-w-[22px] h-5 px-1.5 bg-primary text-primary-foreground text-xs font-semibold rounded-full">
+              {scheduledCount}
+            </span>
+          )}
+        </button>
       </motion.div>
+
+      <UnifiedDraftsDrawer open={drawerOpen} onOpenChange={setDrawerOpen} initialTab={drawerTab} />
     </motion.div>
   );
 }

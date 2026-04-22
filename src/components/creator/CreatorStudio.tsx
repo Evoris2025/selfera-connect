@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -7,6 +7,7 @@ import { ImageStudio } from './ImageStudio';
 import { VideoStudio } from './VideoStudio';
 import { ExpressionCreator } from './ExpressionCreator';
 import { ContentTypeDashboard, ContentType } from './ContentTypeDashboard';
+import { useStudioStep } from '@/hooks/useStudioStep';
 
 interface CreatorStudioProps {
   open: boolean;
@@ -15,60 +16,33 @@ interface CreatorStudioProps {
 }
 
 export function CreatorStudio({ open, onOpenChange, initialMode }: CreatorStudioProps) {
-  const [selectedType, setSelectedType] = useState<ContentType | null>(null);
-  const [step, setStep] = useState<'dashboard' | 'canvas'>('dashboard');
+  const studio = useStudioStep({
+    initialStep: initialMode ?? 'dashboard',
+    onClose: () => onOpenChange(false),
+    onSuccess: () => onOpenChange(false),
+  });
 
-  // Reset state when dialog opens - ALWAYS show dashboard first unless initialMode is explicitly set
+  // Reset state when dialog opens
   useEffect(() => {
     if (open) {
-      if (initialMode) {
-        // Only skip dashboard if initialMode is explicitly passed (e.g., from ExpressionsRow)
-        setSelectedType(initialMode);
-        setStep('canvas');
-      } else {
-        // Always show dashboard when no initialMode
-        setSelectedType(null);
-        setStep('dashboard');
-      }
+      studio.setStep(initialMode ?? 'dashboard');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, initialMode]);
-
-  const handleClose = () => {
-    setSelectedType(null);
-    setStep('dashboard');
-    onOpenChange(false);
-  };
-
-  const handleBack = () => {
-    if (step === 'canvas') {
-      setStep('dashboard');
-      setSelectedType(null);
-    }
-  };
-
-  const handleTypeSelect = (type: ContentType) => {
-    setSelectedType(type);
-    setStep('canvas');
-  };
-
-  const handleSuccess = () => {
-    handleClose();
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="fixed inset-0 sm:inset-auto sm:left-[50%] sm:top-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%] w-full h-full sm:w-[90vw] sm:max-w-2xl sm:h-[90vh] sm:max-h-[800px] p-0 gap-0 bg-background border-none sm:border sm:border-border overflow-hidden">
-        {/* Accessibility: Hidden title for screen readers */}
         <VisuallyHidden>
           <DialogTitle>ERA Studio - Create Content</DialogTitle>
         </VisuallyHidden>
-        
+
         <AnimatePresence mode="wait">
-          {step === 'dashboard' ? (
+          {studio.isDashboard ? (
             <ContentTypeDashboard
               key="dashboard"
-              onSelect={handleTypeSelect}
-              onClose={handleClose}
+              onSelect={studio.select}
+              onClose={studio.close}
             />
           ) : (
             <motion.div
@@ -78,27 +52,15 @@ export function CreatorStudio({ open, onOpenChange, initialMode }: CreatorStudio
               exit={{ opacity: 0 }}
               className="h-full"
             >
-              {selectedType === 'post' ? (
-                <PostComposer
-                  onBack={handleBack}
-                  onSuccess={handleSuccess}
-                />
-              ) : selectedType === 'image' ? (
-                <ImageStudio
-                  onBack={handleBack}
-                  onSuccess={handleSuccess}
-                />
-              ) : selectedType === 'video' ? (
-                <VideoStudio
-                  onBack={handleBack}
-                  onSuccess={handleSuccess}
-                />
-              ) : (
-                <ExpressionCreator
-                  onBack={handleBack}
-                  onSuccess={handleSuccess}
-                />
-              )}
+              {studio.step === 'post' ? (
+                <PostComposer onBack={studio.back} onSuccess={studio.success} />
+              ) : studio.step === 'image' ? (
+                <ImageStudio onBack={studio.back} onSuccess={studio.success} />
+              ) : studio.step === 'video' ? (
+                <VideoStudio onBack={studio.back} onSuccess={studio.success} />
+              ) : studio.step === 'expression' ? (
+                <ExpressionCreator onBack={studio.back} onSuccess={studio.success} />
+              ) : null}
             </motion.div>
           )}
         </AnimatePresence>

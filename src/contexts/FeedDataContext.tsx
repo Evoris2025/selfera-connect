@@ -8,6 +8,19 @@ import { MockUUIDs, generateMockUUID, getMockUUID } from '@/lib/mockUUIDs';
 // TYPES
 // =============================================================================
 
+// Audience union shared across all creators
+export type StudioAudience = 'public' | 'followers' | 'close_friends' | 'only_me' | 'custom';
+
+// Expression mode: ephemeral story vs permanent reel
+export type ExpressionMode = 'story' | 'reel';
+
+// Text-post background (Facebook-style styled posts)
+export interface PostBackground {
+  type: 'color' | 'gradient';
+  value: string; // CSS color or gradient string
+  textColor?: string;
+}
+
 export interface FeedExpression {
   id: string;
   userId: string;
@@ -20,6 +33,34 @@ export interface FeedExpression {
   hasUnseenExpression: boolean;
   createdAt: Date;
   expiresAt: Date;
+  // New (additive, optional, defaulted)
+  mode?: ExpressionMode;          // 'story' (default) or 'reel'
+  audience?: StudioAudience;      // default 'public'
+  scheduledAt?: number | null;    // epoch ms; null/undef = published immediately
+  remixOfId?: string;
+}
+
+// =============================================================================
+// DRAFTS & SCHEDULED
+// =============================================================================
+
+export type StudioContentKind = 'expression' | 'video' | 'photo' | 'post';
+
+export interface StudioDraft {
+  id: string;
+  kind: StudioContentKind;
+  title: string;
+  data: Record<string, unknown>;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface ScheduledItem {
+  id: string;
+  kind: StudioContentKind;
+  scheduledAt: number;
+  payload: Record<string, unknown>; // raw createPost / createExpression args
+  createdAt: number;
 }
 
 export interface FeedComment {
@@ -51,6 +92,8 @@ interface PersistedFeedState {
   comments: Record<string, FeedComment[]>;
   expressions: FeedExpression[];
   userState: FeedUserState;
+  drafts?: StudioDraft[];
+  scheduled?: ScheduledItem[];
   lastUpdated: number;
 }
 
@@ -417,6 +460,19 @@ interface FeedDataContextType {
   
   // Utility
   refreshFeed: () => void;
+
+  // Drafts (unified across all four creators)
+  drafts: StudioDraft[];
+  saveDraft: (draft: Omit<StudioDraft, 'id' | 'createdAt' | 'updatedAt'> & { id?: string }) => StudioDraft;
+  deleteDraft: (id: string) => void;
+  getDraft: (id: string) => StudioDraft | undefined;
+  getDraftsByKind: (kind: StudioContentKind) => StudioDraft[];
+
+  // Scheduled
+  scheduled: ScheduledItem[];
+  schedulePublish: (item: Omit<ScheduledItem, 'id' | 'createdAt'>) => ScheduledItem;
+  cancelScheduled: (id: string) => void;
+  updateScheduled: (id: string, patch: Partial<Pick<ScheduledItem, 'scheduledAt' | 'payload'>>) => void;
 }
 
 const FeedDataContext = createContext<FeedDataContextType | null>(null);
@@ -448,7 +504,17 @@ export function FeedDataProvider({ children }: { children: ReactNode }) {
     const persisted = loadPersistedState();
     return persisted?.userState ?? createInitialUserState();
   });
-  
+
+  const [drafts, setDrafts] = useState<StudioDraft[]>(() => {
+    const persisted = loadPersistedState();
+    return persisted?.drafts ?? [];
+  });
+
+  const [scheduled, setScheduled] = useState<ScheduledItem[]>(() => {
+    const persisted = loadPersistedState();
+    return persisted?.scheduled ?? [];
+  });
+
   const isSimulationMode = true; // Always simulation for now
   
   // Persist state on changes
@@ -458,10 +524,12 @@ export function FeedDataProvider({ children }: { children: ReactNode }) {
       comments,
       expressions,
       userState,
+      drafts,
+      scheduled,
       lastUpdated: Date.now(),
     };
     savePersistedState(state);
-  }, [posts, comments, expressions, userState]);
+  }, [posts, comments, expressions, userState, drafts, scheduled]);
   
   // ---------------------------------------------------------------------------
   // POST OPERATIONS
@@ -715,6 +783,69 @@ export function FeedDataProvider({ children }: { children: ReactNode }) {
     setExpressions(createInitialExpressions());
     // Keep user state (reactions, saves, etc.)
   }, []);
+
+  // ---------------------------------------------------------------------------
+  // DRAFT OPERATIONS
+  // ---------------------------------------------------------------------------
+
+  const saveDraft = useCallback<FeedDataContextType['saveDraft']>((draft) => {
+    const now = Date.now();
+    let result!: StudioDraft;
+    setDrafts(prev => {
+      if (draft.id) {
+        const existing = prev.find(d => d.id === draft.id);
+        if (existing) {
+          result = { ...existing, ...draft, id: draft.id, updatedAt: now };
+          return prev.map(d => (d.id === draft.id ? result : d));
+        }
+      }
+      result = {
+        id: draft.id ?? generateMockUUID(),
+        kind: draft.kind,
+        title: draft.title,
+        data: draft.data,
+        createdAt: now,
+        updatedAt: now,
+      };
+      return [result, ...prev];
+    });
+    return result;
+  }, []);
+
+  const deleteDraft = useCallback((id: string) => {
+    setDrafts(prev => prev.filter(d => d.id !== id));
+  }, []);
+
+  const getDraft = useCallback((id: string) => drafts.find(d => d.id === id), [drafts]);
+
+  const getDraftsByKind = useCallback(
+    (kind: StudioContentKind) => drafts.filter(d => d.kind === kind),
+    [drafts]
+  );
+
+  // ---------------------------------------------------------------------------
+  // SCHEDULED OPERATIONS
+  // ---------------------------------------------------------------------------
+
+  const schedulePublish = useCallback<FeedDataContextType['schedulePublish']>((item) => {
+    const newItem: ScheduledItem = {
+      id: generateMockUUID(),
+      kind: item.kind,
+      scheduledAt: item.scheduledAt,
+      payload: item.payload,
+      createdAt: Date.now(),
+    };
+    setScheduled(prev => [newItem, ...prev]);
+    return newItem;
+  }, []);
+
+  const cancelScheduled = useCallback((id: string) => {
+    setScheduled(prev => prev.filter(s => s.id !== id));
+  }, []);
+
+  const updateScheduled = useCallback<FeedDataContextType['updateScheduled']>((id, patch) => {
+    setScheduled(prev => prev.map(s => (s.id === id ? { ...s, ...patch } : s)));
+  }, []);
   
   // ---------------------------------------------------------------------------
   // CONTEXT VALUE
@@ -747,6 +878,15 @@ export function FeedDataProvider({ children }: { children: ReactNode }) {
     blockUser,
     unblockUser,
     refreshFeed,
+    drafts,
+    saveDraft,
+    deleteDraft,
+    getDraft,
+    getDraftsByKind,
+    scheduled,
+    schedulePublish,
+    cancelScheduled,
+    updateScheduled,
   };
   
   return (
