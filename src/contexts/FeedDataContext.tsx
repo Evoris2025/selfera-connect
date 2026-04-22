@@ -8,6 +8,19 @@ import { MockUUIDs, generateMockUUID, getMockUUID } from '@/lib/mockUUIDs';
 // TYPES
 // =============================================================================
 
+// Audience union shared across all creators
+export type StudioAudience = 'public' | 'followers' | 'close_friends' | 'only_me' | 'custom';
+
+// Expression mode: ephemeral story vs permanent reel
+export type ExpressionMode = 'story' | 'reel';
+
+// Text-post background (Facebook-style styled posts)
+export interface PostBackground {
+  type: 'color' | 'gradient';
+  value: string; // CSS color or gradient string
+  textColor?: string;
+}
+
 export interface FeedExpression {
   id: string;
   userId: string;
@@ -20,6 +33,34 @@ export interface FeedExpression {
   hasUnseenExpression: boolean;
   createdAt: Date;
   expiresAt: Date;
+  // New (additive, optional, defaulted)
+  mode?: ExpressionMode;          // 'story' (default) or 'reel'
+  audience?: StudioAudience;      // default 'public'
+  scheduledAt?: number | null;    // epoch ms; null/undef = published immediately
+  remixOfId?: string;
+}
+
+// =============================================================================
+// DRAFTS & SCHEDULED
+// =============================================================================
+
+export type StudioContentKind = 'expression' | 'video' | 'photo' | 'post';
+
+export interface StudioDraft {
+  id: string;
+  kind: StudioContentKind;
+  title: string;
+  data: Record<string, unknown>;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface ScheduledItem {
+  id: string;
+  kind: StudioContentKind;
+  scheduledAt: number;
+  payload: Record<string, unknown>; // raw createPost / createExpression args
+  createdAt: number;
 }
 
 export interface FeedComment {
