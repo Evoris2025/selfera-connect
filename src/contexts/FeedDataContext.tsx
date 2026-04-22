@@ -878,6 +878,15 @@ export function FeedDataProvider({ children }: { children: ReactNode }) {
     blockUser,
     unblockUser,
     refreshFeed,
+    drafts,
+    saveDraft,
+    deleteDraft,
+    getDraft,
+    getDraftsByKind,
+    scheduled,
+    schedulePublish,
+    cancelScheduled,
+    updateScheduled,
   };
   
   return (
