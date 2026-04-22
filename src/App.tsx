@@ -106,6 +106,7 @@ function AppRoutes() {
         <Route path="/admin" element={<ProtectedRoute><AdminConsole /></ProtectedRoute>} />
         <Route path="/creator-dashboard" element={<ProtectedRoute><CreatorDashboard /></ProtectedRoute>} />
         <Route path="/studio" element={<ProtectedRoute><Studio /></ProtectedRoute>} />
+        <Route path="/studio/:type" element={<ProtectedRoute><Studio /></ProtectedRoute>} />
         {/* Public routes */}
         <Route path="/directory" element={<Directory />} />
         <Route path="/crisis" element={<CrisisSupport />} />
