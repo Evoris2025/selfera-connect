@@ -460,6 +460,19 @@ interface FeedDataContextType {
   
   // Utility
   refreshFeed: () => void;
+
+  // Drafts (unified across all four creators)
+  drafts: StudioDraft[];
+  saveDraft: (draft: Omit<StudioDraft, 'id' | 'createdAt' | 'updatedAt'> & { id?: string }) => StudioDraft;
+  deleteDraft: (id: string) => void;
+  getDraft: (id: string) => StudioDraft | undefined;
+  getDraftsByKind: (kind: StudioContentKind) => StudioDraft[];
+
+  // Scheduled
+  scheduled: ScheduledItem[];
+  schedulePublish: (item: Omit<ScheduledItem, 'id' | 'createdAt'>) => ScheduledItem;
+  cancelScheduled: (id: string) => void;
+  updateScheduled: (id: string, patch: Partial<Pick<ScheduledItem, 'scheduledAt' | 'payload'>>) => void;
 }
 
 const FeedDataContext = createContext<FeedDataContextType | null>(null);
