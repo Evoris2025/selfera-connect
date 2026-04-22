@@ -389,9 +389,12 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       enrichedContent = `📍 at ${state.location.name}\n\n${enrichedContent}`;
     }
 
-    const contentType: 'text' | 'image' | 'video' | 'thread' =
+    // contentType is constrained by FeedPost (no 'thread' variant). Threads
+    // carry their truth on the `thread` array; the legacy field stays 'text'
+    // for back-compat with the existing feed renderer.
+    const contentType: 'text' | 'image' | 'video' =
       state.composerMode === 'thread'
-        ? 'thread'
+        ? 'text'
         : mediaType === 'video'
         ? 'video'
         : mediaType === 'image'
