@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Video, Image, FileText, FileEdit, X } from 'lucide-react';
+import { Sparkles, Video, Image, FileText, FileEdit, X, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BrandMark } from '@/components/BrandMark';
-import { useDrafts } from './shared/DraftManager';
+import { useFeedData } from '@/contexts/FeedDataContext';
+import { UnifiedDraftsDrawer } from './shared/UnifiedDraftsDrawer';
 
 export type ContentType = 'expression' | 'video' | 'image' | 'post';
 
@@ -56,8 +58,11 @@ interface ContentTypeDashboardProps {
 }
 
 export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboardProps) {
-  const { drafts } = useDrafts();
+  const { drafts, scheduled } = useFeedData();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerTab, setDrawerTab] = useState<'drafts' | 'scheduled'>('drafts');
   const draftCount = drafts.length;
+  const scheduledCount = scheduled.length;
 
   return (
     <motion.div
