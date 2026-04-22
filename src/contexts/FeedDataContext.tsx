@@ -783,6 +783,69 @@ export function FeedDataProvider({ children }: { children: ReactNode }) {
     setExpressions(createInitialExpressions());
     // Keep user state (reactions, saves, etc.)
   }, []);
+
+  // ---------------------------------------------------------------------------
+  // DRAFT OPERATIONS
+  // ---------------------------------------------------------------------------
+
+  const saveDraft = useCallback<FeedDataContextType['saveDraft']>((draft) => {
+    const now = Date.now();
+    let result!: StudioDraft;
+    setDrafts(prev => {
+      if (draft.id) {
+        const existing = prev.find(d => d.id === draft.id);
+        if (existing) {
+          result = { ...existing, ...draft, id: draft.id, updatedAt: now };
+          return prev.map(d => (d.id === draft.id ? result : d));
+        }
+      }
+      result = {
+        id: draft.id ?? generateMockUUID(),
+        kind: draft.kind,
+        title: draft.title,
+        data: draft.data,
+        createdAt: now,
+        updatedAt: now,
+      };
+      return [result, ...prev];
+    });
+    return result;
+  }, []);
+
+  const deleteDraft = useCallback((id: string) => {
+    setDrafts(prev => prev.filter(d => d.id !== id));
+  }, []);
+
+  const getDraft = useCallback((id: string) => drafts.find(d => d.id === id), [drafts]);
+
+  const getDraftsByKind = useCallback(
+    (kind: StudioContentKind) => drafts.filter(d => d.kind === kind),
+    [drafts]
+  );
+
+  // ---------------------------------------------------------------------------
+  // SCHEDULED OPERATIONS
+  // ---------------------------------------------------------------------------
+
+  const schedulePublish = useCallback<FeedDataContextType['schedulePublish']>((item) => {
+    const newItem: ScheduledItem = {
+      id: generateMockUUID(),
+      kind: item.kind,
+      scheduledAt: item.scheduledAt,
+      payload: item.payload,
+      createdAt: Date.now(),
+    };
+    setScheduled(prev => [newItem, ...prev]);
+    return newItem;
+  }, []);
+
+  const cancelScheduled = useCallback((id: string) => {
+    setScheduled(prev => prev.filter(s => s.id !== id));
+  }, []);
+
+  const updateScheduled = useCallback<FeedDataContextType['updateScheduled']>((id, patch) => {
+    setScheduled(prev => prev.map(s => (s.id === id ? { ...s, ...patch } : s)));
+  }, []);
   
   // ---------------------------------------------------------------------------
   // CONTEXT VALUE
