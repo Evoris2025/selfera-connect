@@ -504,7 +504,17 @@ export function FeedDataProvider({ children }: { children: ReactNode }) {
     const persisted = loadPersistedState();
     return persisted?.userState ?? createInitialUserState();
   });
-  
+
+  const [drafts, setDrafts] = useState<StudioDraft[]>(() => {
+    const persisted = loadPersistedState();
+    return persisted?.drafts ?? [];
+  });
+
+  const [scheduled, setScheduled] = useState<ScheduledItem[]>(() => {
+    const persisted = loadPersistedState();
+    return persisted?.scheduled ?? [];
+  });
+
   const isSimulationMode = true; // Always simulation for now
   
   // Persist state on changes
@@ -514,10 +524,12 @@ export function FeedDataProvider({ children }: { children: ReactNode }) {
       comments,
       expressions,
       userState,
+      drafts,
+      scheduled,
       lastUpdated: Date.now(),
     };
     savePersistedState(state);
-  }, [posts, comments, expressions, userState]);
+  }, [posts, comments, expressions, userState, drafts, scheduled]);
   
   // ---------------------------------------------------------------------------
   // POST OPERATIONS
