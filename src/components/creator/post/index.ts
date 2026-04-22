@@ -14,3 +14,5 @@ export { WithPeoplePicker } from './WithPeoplePicker';
 export { CustomAudienceDialog } from './CustomAudienceDialog';
 export { LifeEventDialog } from './LifeEventDialog';
 export { FundraiserDialog } from './FundraiserDialog';
+export { PostCardLinkPreview } from './PostCardLinkPreview';
+export { legacyPostPayload } from './__fixtures__/legacyPostPayload';
