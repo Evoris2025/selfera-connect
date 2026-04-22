@@ -10,10 +10,13 @@ import {
   MessageSquare,
   MoreHorizontal,
   ChevronDown,
-  ChevronUp,
   Heart,
   PartyPopper,
   Sparkles,
+  FileText,
+  Shield,
+  Share2,
+  Settings2,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -529,61 +532,211 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       exit={{ opacity: 0, x: -20 }}
       className="flex flex-col h-full min-h-dvh bg-background"
     >
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-border">
-        <button onClick={onBack} className="p-2 -ml-2 rounded-full hover:bg-secondary transition-colors">
+      {/* ───────── Header ───────── */}
+      <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 bg-background/80 backdrop-blur-md border-b border-border/40">
+        <button
+          onClick={onBack}
+          aria-label="Back"
+          className="h-9 w-9 rounded-full hover:bg-secondary transition-colors flex items-center justify-center focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        >
           <ArrowLeft className="h-5 w-5" />
         </button>
-        <h2 className="font-semibold">{state.scheduledDate ? 'Schedule Post' : 'Create Post'}</h2>
+
         <div className="flex items-center gap-2">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden />
+          <FileText className="h-4 w-4 text-emerald-400" />
+          <span className="text-sm font-semibold tracking-wide">
+            {state.scheduledDate ? 'Schedule Post' : 'Create Post'}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-1">
           <Button
-            size="sm"
             onClick={handleSubmit}
             disabled={!canPost || isSubmitting}
-            className="gradient-brand text-white"
+            className={cn(
+              'rounded-full px-5 h-9 text-sm font-semibold',
+              canPost && !isSubmitting
+                ? 'bg-emerald-500 hover:bg-emerald-500/90 text-white'
+                : 'bg-secondary text-muted-foreground'
+            )}
           >
-            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : state.scheduledDate ? 'Schedule' : 'Post'}
+            {isSubmitting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : state.scheduledDate ? (
+              'Schedule'
+            ) : (
+              'Post'
+            )}
           </Button>
-          <button onClick={onBack} className="p-2 hover:bg-secondary transition-colors">
-            <X className="h-6 w-6" />
+          <button
+            onClick={onBack}
+            aria-label="Close"
+            className="h-9 w-9 rounded-full hover:bg-secondary transition-colors flex items-center justify-center focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
+            <X className="h-5 w-5" />
           </button>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {/* Author Row */}
+      {/* ───────── Body ───────── */}
+      <div className="flex-1 overflow-y-auto px-4 pt-4 pb-6 space-y-4">
+        {/* Author row */}
         <div className="flex items-center gap-3">
-          <Avatar className="h-10 w-10">
+          <Avatar className="h-10 w-10 ring-2 ring-primary/40 ring-offset-2 ring-offset-background">
             <AvatarImage src="" alt={displayName} />
-            <AvatarFallback className="bg-secondary text-secondary-foreground">{userInitial}</AvatarFallback>
+            <AvatarFallback className="bg-secondary text-secondary-foreground text-sm font-semibold">
+              {userInitial}
+            </AvatarFallback>
           </Avatar>
-          <div className="flex-1">
-            <p className="font-medium text-sm">{displayName}</p>
-            <AudienceSelector value={state.audience} onChange={handleAudienceChange} size="sm" />
+
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold leading-tight truncate">{displayName}</p>
+            <p className="text-xs text-muted-foreground leading-tight truncate">
+              @{displayName.toLowerCase().replace(/\s+/g, '')}
+            </p>
+            <div className="mt-1.5">
+              <AudienceSelector value={state.audience} onChange={handleAudienceChange} size="sm" />
+            </div>
           </div>
 
-          {state.composerMode === 'simple' && (
-            <CharacterCounter current={state.content.length} max={MAX_CHARACTERS} />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleThreadMode}
+            aria-label={state.composerMode === 'thread' ? 'Switch to single post' : 'Switch to thread'}
+            className={cn(
+              'rounded-full h-9 w-9 shrink-0',
+              state.composerMode === 'thread' && 'text-primary bg-primary/10'
+            )}
+          >
+            <MessageSquare className="h-4 w-4" />
+          </Button>
+        </div>
+
+        {/* Primary input card */}
+        <div
+          className={cn(
+            'rounded-2xl border bg-card/40 transition-colors',
+            state.background ? 'border-transparent overflow-hidden' : 'border-border/30 focus-within:border-border/60'
+          )}
+        >
+          <AnimatePresence mode="wait">
+            {state.composerMode === 'simple' ? (
+              <motion.div
+                key="simple"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                {state.background ? (
+                  <div
+                    className="px-6 py-10 min-h-[240px] flex items-center justify-center"
+                    style={backgroundStyle}
+                  >
+                    <Textarea
+                      placeholder={`What's on your mind, ${displayName}?`}
+                      value={state.content}
+                      onChange={(e) => update({ content: e.target.value })}
+                      maxLength={MAX_CHARACTERS}
+                      className="resize-none border-0 bg-transparent p-0 text-2xl font-semibold text-center focus-visible:ring-0 placeholder:text-current placeholder:opacity-60"
+                      style={{ color: 'inherit' }}
+                    />
+                  </div>
+                ) : (
+                  <div className="p-4">
+                    <Textarea
+                      placeholder={`What's on your mind, ${displayName}?`}
+                      value={state.content}
+                      onChange={(e) => update({ content: e.target.value })}
+                      maxLength={MAX_CHARACTERS}
+                      className="min-h-[120px] resize-none border-0 bg-transparent p-0 text-base focus-visible:ring-0 placeholder:text-muted-foreground"
+                    />
+                  </div>
+                )}
+              </motion.div>
+            ) : (
+              <motion.div
+                key="thread"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="p-4"
+              >
+                <ThreadComposer
+                  items={state.threadItems}
+                  onItemsChange={(items) => update({ threadItems: items })}
+                  maxCharacters={MAX_CHARACTERS}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Card footer: background picker + counter */}
+          {(canShowBackground || state.composerMode === 'simple') && (
+            <div
+              className={cn(
+                'flex items-center gap-3 px-3 py-2 border-t',
+                state.background ? 'border-white/10 bg-background/30 backdrop-blur-sm' : 'border-border/30'
+              )}
+            >
+              {canShowBackground && (
+                <div className="flex-1 min-w-0">
+                  <BackgroundPicker
+                    value={state.background}
+                    onChange={(bg) => update({ background: bg })}
+                  />
+                </div>
+              )}
+              {state.composerMode === 'simple' && (
+                <div className="ml-auto shrink-0">
+                  <CharacterCounter current={state.content.length} max={MAX_CHARACTERS} />
+                </div>
+              )}
+            </div>
           )}
         </div>
 
-        {/* Active feeling/location chips */}
-        {(state.feeling || state.location) && (
-          <div className="flex flex-wrap gap-2">
-            {state.feeling && <FeelingActivityPicker value={state.feeling} onChange={(v) => update({ feeling: v })} />}
-            {state.location && <LocationPicker value={state.location} onChange={(v) => update({ location: v })} />}
-          </div>
+        {/* Inline metadata chips */}
+        {(state.feeling ||
+          state.location ||
+          state.checkIn ||
+          state.taggedPeople.length > 0 ||
+          state.lifeEvent) && (
+          <motion.div
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-wrap gap-2"
+          >
+            {state.feeling && (
+              <FeelingActivityPicker value={state.feeling} onChange={(v) => update({ feeling: v })} />
+            )}
+            {state.location && (
+              <LocationPicker value={state.location} onChange={(v) => update({ location: v })} />
+            )}
+            {state.checkIn && (
+              <CheckInPicker value={state.checkIn} onChange={(v) => update({ checkIn: v })} />
+            )}
+            {state.taggedPeople.length > 0 && (
+              <WithPeoplePicker value={state.taggedPeople} onChange={(v) => update({ taggedPeople: v })} />
+            )}
+            {state.lifeEvent && (
+              <span className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-secondary/60 hover:bg-secondary text-xs">
+                <span className="text-sm leading-none">{state.lifeEvent.icon}</span>
+                <span className="font-medium">{state.lifeEvent.label}</span>
+                <button
+                  onClick={() => update({ lifeEvent: null })}
+                  aria-label="Remove life event"
+                  className="ml-0.5 h-4 w-4 rounded-full flex items-center justify-center hover:bg-background/60"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            )}
+          </motion.div>
         )}
 
-        {state.checkIn && (
-          <CheckInPicker value={state.checkIn} onChange={(v) => update({ checkIn: v })} />
-        )}
-
-        {state.taggedPeople.length > 0 && (
-          <WithPeoplePicker value={state.taggedPeople} onChange={(v) => update({ taggedPeople: v })} />
-        )}
-
+        {/* Scheduled banner */}
         {state.scheduledDate && (
           <ScheduleSelector
             value={new Date(state.scheduledDate)}
@@ -591,78 +744,26 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           />
         )}
 
-        {state.lifeEvent && (
-          <div className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-secondary border border-border">
-            <span className="text-xl">{state.lifeEvent.icon}</span>
-            <span className="text-sm font-medium">{state.lifeEvent.label}</span>
-            <button onClick={() => update({ lifeEvent: null })} className="ml-1 p-1 rounded hover:bg-background">
-              <X className="h-3 w-3" />
-            </button>
-          </div>
-        )}
-
+        {/* Fundraiser banner */}
         {state.fundraiser && (
-          <div className="rounded-xl border border-warning/40 bg-warning/10 p-3">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm font-semibold">{state.fundraiser.title}</p>
+          <div className="rounded-2xl border border-warning/40 bg-warning/10 p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-sm font-semibold truncate">{state.fundraiser.title}</p>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Goal: {state.fundraiser.currency} {state.fundraiser.goal.toLocaleString()}
                 </p>
               </div>
-              <button onClick={() => update({ fundraiser: null })} className="p-1 rounded hover:bg-background">
-                <X className="h-3 w-3" />
+              <button
+                onClick={() => update({ fundraiser: null })}
+                aria-label="Remove fundraiser"
+                className="h-7 w-7 rounded-full hover:bg-background/60 flex items-center justify-center shrink-0"
+              >
+                <X className="h-3.5 w-3.5" />
               </button>
             </div>
           </div>
         )}
-
-        {/* Background picker (text-only posts) */}
-        {canShowBackground && (
-          <BackgroundPicker
-            value={state.background}
-            onChange={(bg) => update({ background: bg })}
-          />
-        )}
-
-        {/* Text Input - Simple or Thread mode */}
-        <AnimatePresence mode="wait">
-          {state.composerMode === 'simple' ? (
-            <motion.div key="simple" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              {state.background ? (
-                <div
-                  className="rounded-2xl p-8 min-h-[280px] flex items-center justify-center"
-                  style={backgroundStyle}
-                >
-                  <Textarea
-                    placeholder={`What's on your mind, ${displayName}?`}
-                    value={state.content}
-                    onChange={(e) => update({ content: e.target.value })}
-                    maxLength={MAX_CHARACTERS}
-                    className="resize-none border-0 bg-transparent p-0 text-2xl font-semibold text-center focus-visible:ring-0 placeholder:text-current placeholder:opacity-60"
-                    style={{ color: 'inherit' }}
-                  />
-                </div>
-              ) : (
-                <Textarea
-                  placeholder={`What's on your mind, ${displayName}?`}
-                  value={state.content}
-                  onChange={(e) => update({ content: e.target.value })}
-                  maxLength={MAX_CHARACTERS}
-                  className="min-h-[120px] resize-none border-0 bg-transparent p-0 text-base focus-visible:ring-0 placeholder:text-muted-foreground"
-                />
-              )}
-            </motion.div>
-          ) : (
-            <motion.div key="thread" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <ThreadComposer
-                items={state.threadItems}
-                onItemsChange={(items) => update({ threadItems: items })}
-                maxCharacters={MAX_CHARACTERS}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* Link preview */}
         {(showLinkPreview || previewLoading) && (
@@ -673,24 +774,34 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           />
         )}
 
-        {/* GIF Preview */}
+        {/* GIF preview */}
         {state.selectedGifUrl && (
-          <div className="relative rounded-xl overflow-hidden bg-secondary">
-            <img src={state.selectedGifUrl} alt="" className="w-full max-h-64 object-contain" />
+          <div className="relative rounded-2xl overflow-hidden border border-border/30 bg-secondary">
+            <img src={state.selectedGifUrl} alt="" className="w-full max-h-80 object-contain" />
             <button
               onClick={() => update({ selectedGifUrl: null })}
-              className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 hover:bg-black/80 transition-colors"
+              aria-label="Remove GIF"
+              className="absolute top-2 right-2 h-7 w-7 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background flex items-center justify-center"
             >
-              <X className="h-4 w-4 text-white" />
+              <X className="h-4 w-4" />
             </button>
           </div>
         )}
 
-        {/* Media Previews */}
+        {/* Media grid */}
         {state.mediaPreviewUrls.length > 0 && (
-          <div className={cn('grid gap-2', state.mediaPreviewUrls.length === 1 ? 'grid-cols-1' : 'grid-cols-2')}>
+          <div
+            className={cn(
+              'grid gap-1 rounded-2xl overflow-hidden border border-border/30',
+              state.mediaPreviewUrls.length === 1
+                ? 'grid-cols-1'
+                : state.mediaPreviewUrls.length === 2
+                ? 'grid-cols-2'
+                : 'grid-cols-2'
+            )}
+          >
             {state.mediaPreviewUrls.map((url, index) => (
-              <div key={index} className="relative aspect-square rounded-xl overflow-hidden bg-secondary">
+              <div key={index} className="relative aspect-square bg-secondary overflow-hidden">
                 {state.mediaTypes[index] === 'video' ? (
                   <video src={url} className="w-full h-full object-cover" controls={false} />
                 ) : (
@@ -698,9 +809,10 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
                 )}
                 <button
                   onClick={() => removeMedia(index)}
-                  className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 hover:bg-black/80 transition-colors"
+                  aria-label="Remove media"
+                  className="absolute top-2 right-2 h-7 w-7 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background flex items-center justify-center"
                 >
-                  <X className="h-4 w-4 text-white" />
+                  <X className="h-3.5 w-3.5" />
                 </button>
               </div>
             ))}
@@ -708,141 +820,217 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         )}
 
         {/* Poll */}
-        <PollCreator poll={state.poll} onPollChange={(p) => update({ poll: p })} />
+        {state.poll && (
+          <div className="rounded-2xl border border-border/30 bg-card/40 p-4">
+            <PollCreator poll={state.poll} onPollChange={(p) => update({ poll: p })} />
+          </div>
+        )}
+        {!state.poll && (
+          <PollCreator poll={state.poll} onPollChange={(p) => update({ poll: p })} />
+        )}
 
-        {/* Topic Tags */}
-        <TopicTagSelector
-          selectedTags={state.selectedTags}
-          onTagsChange={(tags) => update({ selectedTags: tags })}
-        />
-
-        {/* Content Warning */}
-        <ContentWarningToggle
-          enabled={state.contentWarning}
-          onEnabledChange={(v) => update({ contentWarning: v })}
-          warningType={state.contentWarningType}
-          onWarningTypeChange={(v) => update({ contentWarningType: v })}
-        />
-
-        {/* Cross-post toggles */}
-        <div className="rounded-xl border border-border bg-secondary/30 p-3">
-          <CrossPostToggles
-            source="post"
-            value={state.crossPost}
-            onChange={(v) => update({ crossPost: v })}
+        {/* Topics */}
+        <div className="rounded-2xl border border-border/30 bg-card/40 p-4">
+          <TopicTagSelector
+            selectedTags={state.selectedTags}
+            onTagsChange={(tags) => update({ selectedTags: tags })}
           />
         </div>
 
-        {/* Advanced section */}
-        <div className="rounded-xl border border-border">
-          <button
-            onClick={() => setAdvancedOpen((v) => !v)}
-            className="w-full flex items-center justify-between p-3 text-sm font-medium"
-          >
-            <span>Advanced</span>
-            {advancedOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-          </button>
-          {advancedOpen && (
-            <div className="px-3 pb-3 space-y-3 border-t border-border pt-3">
-              <div className="space-y-1.5">
-                <Label className="text-sm">Who can comment</Label>
-                <Select
-                  value={state.commentPermission}
-                  onValueChange={(v) => update({ commentPermission: v as FeedCommentPermission })}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="everyone">Everyone</SelectItem>
-                    <SelectItem value="followers">Followers only</SelectItem>
-                    <SelectItem value="nobody">Nobody</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex items-center justify-between">
-                <Label htmlFor="reactions-off" className="text-sm flex items-center gap-2">
-                  <Heart className="h-4 w-4 text-muted-foreground" />
-                  Turn off reactions
-                </Label>
-                <Switch
-                  id="reactions-off"
-                  checked={state.reactionsDisabled}
-                  onCheckedChange={(v) => update({ reactionsDisabled: v })}
-                />
-              </div>
+        {/* Settings stack: Content Warning + Cross-post + Advanced */}
+        <div className="rounded-2xl border border-border/30 bg-card/40 divide-y divide-border/30 overflow-hidden">
+          {/* Content warning row */}
+          <div className="flex items-start gap-3 p-4">
+            <div className="h-9 w-9 rounded-full bg-secondary/60 flex items-center justify-center shrink-0">
+              <Shield className="h-4 w-4 text-muted-foreground" />
             </div>
-          )}
+            <div className="flex-1 min-w-0">
+              <ContentWarningToggle
+                enabled={state.contentWarning}
+                onEnabledChange={(v) => update({ contentWarning: v })}
+                warningType={state.contentWarningType}
+                onWarningTypeChange={(v) => update({ contentWarningType: v })}
+              />
+            </div>
+          </div>
+
+          {/* Cross-post row */}
+          <div className="flex items-start gap-3 p-4">
+            <div className="h-9 w-9 rounded-full bg-secondary/60 flex items-center justify-center shrink-0">
+              <Share2 className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <CrossPostToggles
+                source="post"
+                value={state.crossPost}
+                onChange={(v) => update({ crossPost: v })}
+              />
+            </div>
+          </div>
+
+          {/* Advanced row */}
+          <div className="p-4">
+            <button
+              onClick={() => setAdvancedOpen((v) => !v)}
+              aria-expanded={advancedOpen}
+              className="w-full flex items-start gap-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl"
+            >
+              <div className="h-9 w-9 rounded-full bg-secondary/60 flex items-center justify-center shrink-0">
+                <Settings2 className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium">Advanced</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Comments, reactions, and more
+                </p>
+              </div>
+              <ChevronDown
+                className={cn(
+                  'h-4 w-4 text-muted-foreground transition-transform shrink-0 mt-2',
+                  advancedOpen && 'rotate-180'
+                )}
+              />
+            </button>
+
+            {advancedOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-3 pl-12 space-y-4"
+              >
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">Who can comment</Label>
+                  <Select
+                    value={state.commentPermission}
+                    onValueChange={(v) => update({ commentPermission: v as FeedCommentPermission })}
+                  >
+                    <SelectTrigger className="w-full h-9 rounded-xl bg-secondary/60 border-border/30">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="everyone">Everyone</SelectItem>
+                      <SelectItem value="followers">Followers only</SelectItem>
+                      <SelectItem value="nobody">Nobody</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <Label
+                    htmlFor="reactions-off"
+                    className="text-sm flex items-center gap-2 cursor-pointer"
+                  >
+                    <Heart className="h-4 w-4 text-muted-foreground" />
+                    Turn off reactions
+                  </Label>
+                  <Switch
+                    id="reactions-off"
+                    checked={state.reactionsDisabled}
+                    onCheckedChange={(v) => update({ reactionsDisabled: v })}
+                  />
+                </div>
+              </motion.div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Action Bar */}
-      <div className="flex items-center gap-1 px-4 py-2 border-t border-border overflow-x-auto">
-        <label className="p-2 rounded-full hover:bg-secondary transition-colors cursor-pointer">
-          <ImageIcon className="h-5 w-5 text-primary" />
-          <input type="file" accept="image/*" multiple onChange={handleMediaSelect} className="hidden" />
-        </label>
-        <label className="p-2 rounded-full hover:bg-secondary transition-colors cursor-pointer">
-          <VideoIcon className="h-5 w-5 text-primary" />
-          <input type="file" accept="video/*" onChange={handleMediaSelect} className="hidden" />
-        </label>
+      {/* ───────── Sticky action bar ───────── */}
+      <div className="sticky bottom-0 z-10 bg-background/90 backdrop-blur-md border-t border-border/40">
+        <div className="flex items-center gap-1 px-2 py-2 overflow-x-auto scrollbar-none">
+          <label
+            className="flex flex-col items-center gap-0.5 h-14 min-w-[64px] px-2 rounded-xl hover:bg-secondary/60 transition-colors cursor-pointer"
+            aria-label="Add photo"
+          >
+            <ImageIcon className="h-5 w-5 text-muted-foreground" />
+            <span className="text-[10px] text-muted-foreground">Photo</span>
+            <input type="file" accept="image/*" multiple onChange={handleMediaSelect} className="hidden" />
+          </label>
 
-        <div className="h-5 w-px bg-border mx-1" />
+          <label
+            className="flex flex-col items-center gap-0.5 h-14 min-w-[64px] px-2 rounded-xl hover:bg-secondary/60 transition-colors cursor-pointer"
+            aria-label="Add video"
+          >
+            <VideoIcon className="h-5 w-5 text-muted-foreground" />
+            <span className="text-[10px] text-muted-foreground">Video</span>
+            <input type="file" accept="video/*" onChange={handleMediaSelect} className="hidden" />
+          </label>
 
-        <GifPicker onSelect={handleGifSelect} />
+          <div className="flex flex-col items-center justify-center h-14 min-w-[56px]">
+            <GifPicker onSelect={handleGifSelect} />
+          </div>
 
-        {!state.checkIn && (
-          <CheckInPicker value={null} onChange={(v) => update({ checkIn: v })} />
-        )}
+          <button
+            onClick={toggleThreadMode}
+            aria-label="Toggle thread mode"
+            className={cn(
+              'flex flex-col items-center gap-0.5 h-14 min-w-[64px] px-2 rounded-xl hover:bg-secondary/60 transition-colors',
+              state.composerMode === 'thread' && 'text-primary'
+            )}
+          >
+            <MessageSquare
+              className={cn(
+                'h-5 w-5',
+                state.composerMode === 'thread' ? 'text-primary' : 'text-muted-foreground'
+              )}
+            />
+            <span
+              className={cn(
+                'text-[10px]',
+                state.composerMode === 'thread' ? 'text-primary' : 'text-muted-foreground'
+              )}
+            >
+              Thread
+            </span>
+          </button>
 
-        {state.taggedPeople.length === 0 && (
-          <WithPeoplePicker value={[]} onChange={(v) => update({ taggedPeople: v })} />
-        )}
+          <div className="h-8 w-px bg-border/60 mx-1 shrink-0" aria-hidden />
 
-        {!state.location && (
-          <LocationPicker value={null} onChange={(v) => update({ location: v })} />
-        )}
+          {/* Inline picker triggers (each renders its own trigger button) */}
+          <div className="flex items-center shrink-0">
+            {!state.checkIn && (
+              <CheckInPicker value={null} onChange={(v) => update({ checkIn: v })} />
+            )}
+            {state.taggedPeople.length === 0 && (
+              <WithPeoplePicker value={[]} onChange={(v) => update({ taggedPeople: v })} />
+            )}
+            {!state.location && (
+              <LocationPicker value={null} onChange={(v) => update({ location: v })} />
+            )}
+            {!state.feeling && (
+              <FeelingActivityPicker value={null} onChange={(v) => update({ feeling: v })} />
+            )}
+            {!state.scheduledDate && (
+              <ScheduleSelector
+                value={null}
+                onChange={(d) => update({ scheduledDate: d ? d.getTime() : null })}
+              />
+            )}
+          </div>
 
-        {!state.feeling && (
-          <FeelingActivityPicker value={null} onChange={(v) => update({ feeling: v })} />
-        )}
-
-        {!state.scheduledDate && (
-          <ScheduleSelector
-            value={null}
-            onChange={(d) => update({ scheduledDate: d ? d.getTime() : null })}
-          />
-        )}
-
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={toggleThreadMode}
-          className={cn(
-            'gap-2 text-muted-foreground hover:text-foreground',
-            state.composerMode === 'thread' && 'text-primary'
-          )}
-        >
-          <MessageSquare className="h-4 w-4" />
-          Thread
-        </Button>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
-              <MoreHorizontal className="h-4 w-4" />
-              More
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => setLifeEventOpen(true)}>
-              <PartyPopper className="h-4 w-4 mr-2" /> Life event
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setFundraiserOpen(true)}>
-              <Sparkles className="h-4 w-4 mr-2" /> Fundraiser
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          <div className="ml-auto shrink-0">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="More options"
+                  className="rounded-full h-10 w-10"
+                >
+                  <MoreHorizontal className="h-5 w-5 text-muted-foreground" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setLifeEventOpen(true)}>
+                  <PartyPopper className="h-4 w-4 mr-2" /> Life event
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setFundraiserOpen(true)}>
+                  <Sparkles className="h-4 w-4 mr-2" /> Fundraiser
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
       </div>
 
       {/* Dialogs */}
