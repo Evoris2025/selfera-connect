@@ -10,10 +10,13 @@ import {
   MessageSquare,
   MoreHorizontal,
   ChevronDown,
-  ChevronUp,
   Heart,
   PartyPopper,
   Sparkles,
+  FileText,
+  Shield,
+  Share2,
+  Settings2,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
