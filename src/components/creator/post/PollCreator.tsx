@@ -1,9 +1,10 @@
-import { useState } from 'react';
-import { Plus, X, BarChart2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Plus, X, BarChart2, Image as ImageIcon, CheckSquare } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -11,11 +12,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { cn } from '@/lib/utils';
+
+export interface PollOptionData {
+  text: string;
+  image?: string;
+}
 
 export interface PollData {
-  options: string[];
+  options: PollOptionData[];
+  /** legacy hours-based duration; still written for back-compat. */
   durationHours: number;
+  /** Phase 4 additions */
+  multiSelect?: boolean;
+  durationMs?: number;
+  closesAt?: number;
 }
 
 interface PollCreatorProps {
@@ -23,57 +33,84 @@ interface PollCreatorProps {
   onPollChange: (poll: PollData | null) => void;
 }
 
-const durationOptions = [
-  { value: 24, label: '1 day' },
-  { value: 72, label: '3 days' },
-  { value: 168, label: '1 week' },
+const DURATION_PRESETS: Array<{ ms: number; label: string; hours: number }> = [
+  { ms: 60 * 60 * 1000,             label: '1 hour',  hours: 1 },
+  { ms: 24 * 60 * 60 * 1000,        label: '1 day',   hours: 24 },
+  { ms: 7 * 24 * 60 * 60 * 1000,    label: '1 week',  hours: 168 },
 ];
 
+const DEFAULT_DURATION_MS = 24 * 60 * 60 * 1000;
+
+/** Helper exposed for unit tests: compute closesAt given start + durationMs. */
+export function computePollClosesAt(startedAt: number, durationMs: number): number {
+  return startedAt + durationMs;
+}
+
+/** Helper exposed for unit tests: is the poll currently expired? */
+export function isPollExpired(closesAt: number | undefined, now = Date.now()): boolean {
+  return typeof closesAt === 'number' && closesAt <= now;
+}
+
 export function PollCreator({ poll, onPollChange }: PollCreatorProps) {
-  const [isCreating, setIsCreating] = useState(!!poll);
+  const [creating, setCreating] = useState(!!poll);
+
+  const upsert = (patch: Partial<PollData>) => {
+    if (!poll) return;
+    onPollChange({ ...poll, ...patch });
+  };
 
   const handleCreate = () => {
-    setIsCreating(true);
+    setCreating(true);
     onPollChange({
-      options: ['', ''],
+      options: [{ text: '' }, { text: '' }],
       durationHours: 24,
+      durationMs: DEFAULT_DURATION_MS,
+      multiSelect: false,
     });
   };
 
   const handleRemove = () => {
-    setIsCreating(false);
+    setCreating(false);
     onPollChange(null);
   };
 
-  const updateOption = (index: number, value: string) => {
+  const updateOption = (index: number, patch: Partial<PollOptionData>) => {
     if (!poll) return;
-    const newOptions = [...poll.options];
-    newOptions[index] = value;
-    onPollChange({ ...poll, options: newOptions });
+    const next = poll.options.slice();
+    next[index] = { ...next[index], ...patch };
+    upsert({ options: next });
   };
 
   const addOption = () => {
     if (!poll || poll.options.length >= 4) return;
-    onPollChange({
-      ...poll,
-      options: [...poll.options, ''],
-    });
+    upsert({ options: [...poll.options, { text: '' }] });
   };
 
   const removeOption = (index: number) => {
     if (!poll || poll.options.length <= 2) return;
-    onPollChange({
-      ...poll,
-      options: poll.options.filter((_, i) => i !== index),
-    });
+    upsert({ options: poll.options.filter((_, i) => i !== index) });
   };
 
-  const setDuration = (hours: number) => {
-    if (!poll) return;
-    onPollChange({ ...poll, durationHours: hours });
+  const setDurationMs = (ms: number) => {
+    const preset = DURATION_PRESETS.find(p => p.ms === ms);
+    upsert({ durationMs: ms, durationHours: preset?.hours ?? Math.round(ms / 3_600_000) });
   };
 
-  if (!isCreating) {
+  const handleOptionImage = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    updateOption(index, { image: URL.createObjectURL(file) });
+  };
+
+  // Migrate legacy polls (durationHours only) into durationMs lazily
+  useEffect(() => {
+    if (poll && poll.durationMs == null && poll.durationHours) {
+      upsert({ durationMs: poll.durationHours * 3_600_000 });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [poll?.id, poll?.durationHours]);
+
+  if (!creating) {
     return (
       <Button
         variant="ghost"
@@ -87,6 +124,8 @@ export function PollCreator({ poll, onPollChange }: PollCreatorProps) {
     );
   }
 
+  const durationMs = poll?.durationMs ?? DEFAULT_DURATION_MS;
+
   return (
     <motion.div
       initial={{ opacity: 0, height: 0 }}
@@ -99,12 +138,7 @@ export function PollCreator({ poll, onPollChange }: PollCreatorProps) {
           <BarChart2 className="h-4 w-4 text-primary" />
           <Label className="font-medium">Poll</Label>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleRemove}
-          className="h-8 w-8"
-        >
+        <Button variant="ghost" size="icon" onClick={handleRemove} className="h-8 w-8">
           <X className="h-4 w-4" />
         </Button>
       </div>
@@ -119,20 +153,35 @@ export function PollCreator({ poll, onPollChange }: PollCreatorProps) {
               exit={{ opacity: 0, x: 20 }}
               className="flex items-center gap-2"
             >
+              <div className="relative shrink-0">
+                {option.image ? (
+                  <div className="relative h-9 w-9 rounded overflow-hidden">
+                    <img src={option.image} alt="" className="w-full h-full object-cover" />
+                    <button
+                      onClick={() => updateOption(index, { image: undefined })}
+                      className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 flex items-center justify-center"
+                      aria-label="Remove image"
+                    >
+                      <X className="h-3.5 w-3.5 text-white" />
+                    </button>
+                  </div>
+                ) : (
+                  <label className="h-9 w-9 rounded border border-dashed border-border flex items-center justify-center hover:bg-secondary cursor-pointer text-muted-foreground" aria-label="Add option image">
+                    <ImageIcon className="h-4 w-4" />
+                    <input type="file" accept="image/*" onChange={(e) => handleOptionImage(index, e)} className="hidden" />
+                  </label>
+                )}
+              </div>
+
               <Input
-                value={option}
-                onChange={(e) => updateOption(index, e.target.value)}
+                value={option.text}
+                onChange={(e) => updateOption(index, { text: e.target.value })}
                 placeholder={`Option ${index + 1}`}
                 maxLength={50}
                 className="flex-1"
               />
-              {poll.options.length > 2 && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => removeOption(index)}
-                  className="h-9 w-9 shrink-0"
-                >
+              {poll && poll.options.length > 2 && (
+                <Button variant="ghost" size="icon" onClick={() => removeOption(index)} className="h-9 w-9 shrink-0">
                   <X className="h-4 w-4" />
                 </Button>
               )}
@@ -142,31 +191,33 @@ export function PollCreator({ poll, onPollChange }: PollCreatorProps) {
       </div>
 
       {poll && poll.options.length < 4 && (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={addOption}
-          className="gap-1.5 text-primary"
-        >
+        <Button variant="ghost" size="sm" onClick={addOption} className="gap-1.5 text-primary">
           <Plus className="h-4 w-4" />
           Add option
         </Button>
       )}
 
+      <div className="flex items-center justify-between gap-3 pt-1">
+        <Label htmlFor="poll-multi" className="flex items-center gap-2 text-sm">
+          <CheckSquare className="h-4 w-4 text-muted-foreground" />
+          Allow multiple answers
+        </Label>
+        <Switch
+          id="poll-multi"
+          checked={!!poll?.multiSelect}
+          onCheckedChange={(v) => upsert({ multiSelect: v })}
+        />
+      </div>
+
       <div className="flex items-center gap-3">
-        <Label className="text-sm text-muted-foreground">Poll duration:</Label>
-        <Select
-          value={poll?.durationHours.toString()}
-          onValueChange={(v) => setDuration(parseInt(v))}
-        >
+        <Label className="text-sm text-muted-foreground">Duration:</Label>
+        <Select value={durationMs.toString()} onValueChange={(v) => setDurationMs(parseInt(v))}>
           <SelectTrigger className="w-32">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {durationOptions.map((opt) => (
-              <SelectItem key={opt.value} value={opt.value.toString()}>
-                {opt.label}
-              </SelectItem>
+            {DURATION_PRESETS.map(opt => (
+              <SelectItem key={opt.ms} value={opt.ms.toString()}>{opt.label}</SelectItem>
             ))}
           </SelectContent>
         </Select>
