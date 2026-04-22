@@ -195,8 +195,8 @@ function PostCardBase(props: PostCardProps) {
         </p>
       )}
       {checkIn && (
-        <div className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-xs">
-          <MapPin className="h-3 w-3 text-emerald-500" />
+        <div className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full bg-primary/10 text-xs">
+          <MapPin className="h-3 w-3 text-primary" />
           <span className="font-medium">at {checkIn.name}</span>
           {checkIn.category && <span className="text-muted-foreground">· {checkIn.category}</span>}
         </div>
@@ -215,8 +215,8 @@ function PostCardBase(props: PostCardProps) {
   ) : null;
 
   const fundraiserCard = fundraiser ? (
-    <div className="px-4 py-3 mb-3 rounded-xl border border-orange-500/40 bg-orange-500/10">
-      <p className="text-xs uppercase tracking-wide text-orange-600 font-semibold mb-1">Fundraiser</p>
+    <div className="px-4 py-3 mb-3 rounded-xl border border-warning/40 bg-warning/10">
+      <p className="text-xs uppercase tracking-wide text-warning font-semibold mb-1">Fundraiser</p>
       <p className="text-sm font-semibold mb-1">{fundraiser.title}</p>
       <p className="text-xs text-muted-foreground">
         Goal: {fundraiser.currency} {fundraiser.goal.toLocaleString()}
