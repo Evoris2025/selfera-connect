@@ -16,6 +16,61 @@ export interface FeedPostBackground {
   textColor?: string;
 }
 
+// ---- Phase 4 additive types --------------------------------------------------
+export interface FeedCheckIn {
+  placeId: string;
+  name: string;
+  category?: string;
+}
+
+export interface FeedTaggedPerson {
+  id: string;
+  name: string;
+  handle: string;
+  avatar?: string;
+}
+
+export interface FeedLinkPreview {
+  url: string;
+  title?: string;
+  description?: string;
+  image?: string;
+  siteName?: string;
+}
+
+export type FeedCommentPermission = 'everyone' | 'followers' | 'nobody';
+
+export interface FeedLifeEvent {
+  kind: string;          // e.g. 'new_job' | 'moved' | 'married' | 'graduated' | 'custom'
+  label: string;
+  icon?: string;
+  date?: number;
+}
+
+export interface FeedFundraiser {
+  title: string;
+  goal: number;
+  currency: string;
+}
+
+export interface FeedCustomAudience {
+  include: string[];
+  exclude: string[];
+}
+
+// ---- Poll (lives on FeedPost.poll) ------------------------------------------
+export interface FeedPollOption {
+  text: string;
+  image?: string;
+}
+
+export interface FeedPoll {
+  options: FeedPollOption[];
+  multiSelect?: boolean;
+  durationMs?: number;
+  closesAt?: number;
+}
+
 export interface FeedPost {
   id: string;
   authorId?: string;
@@ -43,6 +98,17 @@ export interface FeedPost {
   mode?: FeedPostMode;
   background?: FeedPostBackground;
   remixOfId?: string;
+  // Phase 4 additive fields — every one optional, defaults preserve old behavior
+  checkIn?: FeedCheckIn;
+  taggedPeople?: FeedTaggedPerson[];
+  linkPreview?: FeedLinkPreview;
+  commentPermission?: FeedCommentPermission;
+  reactionsDisabled?: boolean;
+  lifeEvent?: FeedLifeEvent;
+  fundraiser?: FeedFundraiser;
+  customAudience?: FeedCustomAudience;
+  poll?: FeedPoll;
+  thread?: Array<{ id: string; content: string; mediaUrl?: string; mediaType?: 'image' | 'video' | 'gif' }>;
 }
 
 interface CrossroadFeedProps {

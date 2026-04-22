@@ -1,8 +1,16 @@
-export { PollCreator, type PollData } from './PollCreator';
+export { PollCreator, computePollClosesAt, isPollExpired, type PollData, type PollOptionData } from './PollCreator';
 export { CharacterCounter } from './CharacterCounter';
 export { FeelingActivityPicker, type FeelingActivity } from './FeelingActivityPicker';
 export { LocationPicker, type Location } from './LocationPicker';
 export { ScheduleSelector } from './ScheduleSelector';
 export { GifPicker, type GifData } from './GifPicker';
 export { ThreadComposer, type ThreadItem } from './ThreadComposer';
-export { LinkPreviewCard, useLinkPreview, extractUrls, type LinkPreviewData } from './LinkPreviewCard';
+export { reorderThread, insertThreadAt, removeThreadAt } from './threadReorder';
+export { LinkPreviewCard, useLinkPreview as useLegacyLinkPreview, extractUrls, type LinkPreviewData } from './LinkPreviewCard';
+export { ComposerLinkPreview } from './ComposerLinkPreview';
+export { BackgroundPicker, POST_BACKGROUND_PRESETS } from './BackgroundPicker';
+export { CheckInPicker } from './CheckInPicker';
+export { WithPeoplePicker } from './WithPeoplePicker';
+export { CustomAudienceDialog } from './CustomAudienceDialog';
+export { LifeEventDialog } from './LifeEventDialog';
+export { FundraiserDialog } from './FundraiserDialog';
