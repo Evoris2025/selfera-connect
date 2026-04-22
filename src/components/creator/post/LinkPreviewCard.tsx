@@ -25,6 +25,11 @@ export function extractUrls(text: string): string[] {
   return matches || [];
 }
 
+/**
+ * @deprecated Phase 4b: prefer ComposerLinkPreview (composer-side, driven by useLinkPreview)
+ * and PostCardLinkPreview (feed-side, reads stored linkPreview without fetching).
+ * Kept for legacy callsites; do not use in new code.
+ */
 export function LinkPreviewCard({ url, onRemove, className }: LinkPreviewCardProps) {
   const [preview, setPreview] = useState<LinkPreviewData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
