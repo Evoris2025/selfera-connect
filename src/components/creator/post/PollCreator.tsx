@@ -108,7 +108,7 @@ export function PollCreator({ poll, onPollChange }: PollCreatorProps) {
       upsert({ durationMs: poll.durationHours * 3_600_000 });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [poll?.id, poll?.durationHours]);
+  }, [poll?.durationHours, poll?.durationMs]);
 
   if (!creating) {
     return (
