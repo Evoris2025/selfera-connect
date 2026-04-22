@@ -51,11 +51,13 @@ describe('useLinkPreview', () => {
     });
 
     await act(async () => { vi.advanceTimersByTime(150); });
-    await waitFor(() => expect(invokeMock).toHaveBeenCalledTimes(1));
+    await act(async () => { await Promise.resolve(); await Promise.resolve(); });
+    expect(invokeMock).toHaveBeenCalledTimes(1);
 
     // Same URL again (different surrounding text) -> no extra fetch
     rerender({ text: 'still see https://example.com/x today' });
     await act(async () => { vi.advanceTimersByTime(150); });
+    await act(async () => { await Promise.resolve(); });
     expect(invokeMock).toHaveBeenCalledTimes(1);
   });
 
@@ -65,7 +67,8 @@ describe('useLinkPreview', () => {
     });
 
     await act(async () => { vi.advanceTimersByTime(100); });
-    await waitFor(() => expect(result.current.preview).not.toBeNull());
+    await act(async () => { await Promise.resolve(); await Promise.resolve(); });
+    expect(result.current.preview).not.toBeNull();
 
     rerender({ text: '' });
     await act(async () => { vi.advanceTimersByTime(100); });
