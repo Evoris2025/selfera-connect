@@ -6,6 +6,16 @@ import { PostCardSkeleton } from '@/components/SkeletonLoader';
 import { useViewTracking } from '@/hooks/useViewTracking';
 import type { ContentType } from '@/hooks/useCrossroadScroll';
 
+// Audience union shared with FeedDataContext (duplicated here to avoid circular imports)
+export type FeedAudience = 'public' | 'followers' | 'close_friends' | 'only_me' | 'custom';
+export type FeedPostMode = 'post' | 'reel';
+
+export interface FeedPostBackground {
+  type: 'color' | 'gradient';
+  value: string;
+  textColor?: string;
+}
+
 export interface FeedPost {
   id: string;
   authorId?: string;
@@ -27,6 +37,12 @@ export interface FeedPost {
   createdAt: string;
   likes: number;
   contentType: ContentType;
+  // Additive optional fields (default to legacy behavior)
+  audience?: FeedAudience;
+  scheduledAt?: number | null;
+  mode?: FeedPostMode;
+  background?: FeedPostBackground;
+  remixOfId?: string;
 }
 
 interface CrossroadFeedProps {
