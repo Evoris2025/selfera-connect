@@ -92,47 +92,6 @@ interface PersistedFeedState {
   comments: Record<string, FeedComment[]>;
   expressions: FeedExpression[];
   userState: FeedUserState;
-  lastUpdated: number;
-}
-
-// =============================================================================
-// STORAGE KEY & HELPERS
-// =============================================================================
-
-const STORAGE_KEY = 'selfiera_feed_data';
-
-function loadPersistedState(): PersistedFeedState | null {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) return null;
-    const parsed = JSON.parse(stored);
-    // Rehydrate dates
-    if (parsed.expressions) {
-      parsed.expressions = parsed.expressions.map((e: FeedExpression) => ({
-        ...e,
-        createdAt: new Date(e.createdAt),
-        expiresAt: new Date(e.expiresAt),
-      }));
-    }
-    if (parsed.comments) {
-      Object.keys(parsed.comments).forEach(postId => {
-        parsed.comments[postId] = parsed.comments[postId].map((c: FeedComment) => ({
-          ...c,
-          timestamp: new Date(c.timestamp),
-        }));
-      });
-    }
-    return parsed;
-  } catch {
-    return null;
-  }
-}
-
-interface PersistedFeedState {
-  posts: FeedPost[];
-  comments: Record<string, FeedComment[]>;
-  expressions: FeedExpression[];
-  userState: FeedUserState;
   drafts?: StudioDraft[];
   scheduled?: ScheduledItem[];
   lastUpdated: number;
