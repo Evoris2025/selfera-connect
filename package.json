@@ -48,6 +48,7 @@
     "@tanstack/react-query": "^5.83.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.6.1",
     "@vitest/ui": "^2.1.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
