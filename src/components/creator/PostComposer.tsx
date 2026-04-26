@@ -704,7 +704,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
             </AnimatePresence>
 
             {/* Selected topic chips + Aa popover footer */}
-            <div className="mt-3 flex items-end justify-between gap-2">
+            <div className="absolute inset-x-4 bottom-4 flex items-end justify-between gap-2">
               <div className="flex flex-wrap gap-1.5 flex-1 min-w-0">
                 {state.selectedTags.length === 0 ? (
                   <span className="text-[11px] text-foreground/40">
@@ -806,7 +806,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           state.lifeEvent ||
           state.fundraiser ||
           state.scheduledDate) && (
-          <div className="flex flex-wrap gap-2">
+          <div className="mt-3 flex flex-wrap gap-2">
             {state.feeling && (
               <Chip onRemove={() => update({ feeling: null })}>
                 <span>{state.feeling.emoji}</span>
@@ -906,7 +906,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         )}
 
         {/* Slim utility row */}
-        <div className="flex flex-wrap gap-2">
+        <div className="mt-3 flex flex-wrap gap-2">
           <UtilityPill
             icon={<Plus className="h-3.5 w-3.5" />}
             label={`Topics (${state.selectedTags.length}/5)`}
@@ -972,12 +972,12 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         <div className="mt-4 border-t border-white/5 pt-3">
           <div className="flex justify-around py-3">
             <BottomAction
-              icon={<Plus className="h-5 w-5" />}
+              icon={<Plus className="h-[22px] w-[22px]" />}
               label="Media"
               onClick={() => setMediaSheetOpen(true)}
             />
             <BottomAction
-              icon={<MessageSquare className="h-5 w-5" />}
+              icon={<MessageSquare className="h-[22px] w-[22px]" />}
               label="Thread"
               active={hasThread}
               onClick={toggleThreadMode}
