@@ -558,7 +558,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       className={cn(
         'w-full max-w-[640px] mx-auto flex flex-col bg-white/[0.03] border border-white/[0.06] backdrop-blur-md shadow-2xl overflow-hidden',
         'rounded-none sm:rounded-3xl',
-        'min-h-dvh sm:min-h-0 sm:max-h-[88dvh]'
+        'min-h-dvh sm:min-h-0 sm:max-h-[820px]'
       )}
     >
       {/* Header */}
