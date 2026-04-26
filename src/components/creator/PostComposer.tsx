@@ -23,6 +23,9 @@ import {
   Calendar,
   UserPlus,
   Hash,
+  ChevronDown,
+  Check,
+  Film,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -50,6 +53,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
 import { useFeedData, type StudioAudience, type PostBackground } from '@/contexts/FeedDataContext';
@@ -547,7 +558,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       className={cn(
         'w-full max-w-[640px] mx-auto flex flex-col bg-white/[0.03] border border-white/[0.06] backdrop-blur-md shadow-2xl overflow-hidden',
         'rounded-none sm:rounded-3xl',
-        'min-h-dvh sm:min-h-0 sm:max-h-[88dvh]'
+        'min-h-dvh sm:min-h-0 sm:max-h-[820px]'
       )}
     >
       {/* Header */}
@@ -598,26 +609,29 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         <div className="h-px w-full bg-gradient-to-r from-transparent via-fuchsia-500/40 to-transparent opacity-60" />
       </div>
 
-      {/* Identity row */}
-      <div className="shrink-0 px-5 py-4 flex items-start gap-3">
-        <div className="rounded-full p-[2px] bg-gradient-to-br from-fuchsia-500 via-violet-500 to-teal-400 shrink-0">
-          <Avatar className="h-11 w-11 border-2 border-background">
+      {/* Hero identity block */}
+      <div className="shrink-0 flex flex-col items-center text-center gap-3 px-5 pt-6 pb-6">
+        <div className="rounded-full p-1 bg-gradient-to-br from-fuchsia-500 via-violet-500 to-teal-400 shrink-0">
+          <Avatar className="h-32 w-32 border-2 border-background">
             <AvatarImage src={avatarUrl} alt={displayName} />
-            <AvatarFallback className="bg-secondary text-secondary-foreground text-sm">
+            <AvatarFallback className="bg-secondary text-secondary-foreground text-3xl font-semibold">
               {userInitial}
             </AvatarFallback>
           </Avatar>
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-base font-semibold leading-tight text-foreground">{displayName}</p>
-          <p className="text-xs text-foreground/50 leading-tight mt-0.5">@{displayName.toLowerCase()}</p>
-          <div className="mt-1.5">
+        <div className="flex flex-col items-center min-w-0">
+          <h1 className="text-4xl font-bold tracking-tight text-foreground leading-none truncate max-w-full">
+            {displayName}
+          </h1>
+          <p className="text-base text-foreground/55 mt-1">@{displayName.toLowerCase()}</p>
+          <div className="mt-2">
             <AudienceSelector value={state.audience} onChange={handleAudienceChange} variant="ghost" />
           </div>
         </div>
       </div>
 
-      <div className="h-px bg-white/5 shrink-0" />
+      {/* Branded gradient hairline transition */}
+      <div className="h-px w-full bg-gradient-to-r from-fuchsia-500/40 via-violet-500/40 to-teal-400/40 opacity-60 shrink-0" />
 
       {/* Textarea region — sits directly on the composer background */}
       <div className="flex-1 min-h-0 flex flex-col overflow-y-auto px-5 py-4">
@@ -654,7 +668,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
                   onFocus={() => setComposerFocused(true)}
                   onBlur={() => setComposerFocused(false)}
                   maxLength={MAX_CHARACTERS}
-                  className="flex-1 min-h-[180px] max-h-none resize-none border-0 bg-transparent p-0 text-lg focus-visible:ring-0 placeholder:text-foreground/35"
+                  className="flex-1 min-h-[160px] max-h-none resize-none border-0 bg-transparent p-0 text-lg focus-visible:ring-0 placeholder:text-foreground/35"
                 />
               )}
             </motion.div>
@@ -825,134 +839,214 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
 
       <div className="h-px bg-white/5 shrink-0" />
 
-      {/* Unified icon toolbar — single row, flat ghost icons */}
-      <div className="shrink-0 px-3 py-2 flex items-center gap-0.5">
-        <ToolbarIcon
-          label="Photo"
-          onClick={() => photoInputRef.current?.click()}
-          icon={<ImageIcon className="h-5 w-5" />}
-        />
-        <ToolbarIcon
-          label="Video"
-          onClick={() => videoInputRef.current?.click()}
-          icon={<VideoIcon className="h-5 w-5" />}
-        />
-        <ToolbarSlot label="GIF">
-          <GifPicker onSelect={handleGifSelect} />
-        </ToolbarSlot>
-        <ToolbarIcon
-          label={hasPoll ? 'Remove poll' : 'Poll'}
-          active={hasPoll}
-          onClick={() =>
-            update({
-              poll: hasPoll
-                ? null
-                : { options: [{ text: '' }, { text: '' }], multiSelect: false, durationHours: 24 },
-            })
-          }
-          icon={<BarChart3 className="h-5 w-5" />}
-        />
-        <ToolbarSlot label="Check in" active={!!state.checkIn}>
-          <CheckInPicker value={state.checkIn} onChange={(v) => update({ checkIn: v })} />
-        </ToolbarSlot>
-        <ToolbarSlot label="Tag people" active={state.taggedPeople.length > 0}>
-          <WithPeoplePicker value={state.taggedPeople} onChange={(v) => update({ taggedPeople: v })} />
-        </ToolbarSlot>
-        <ToolbarIcon
-          label={hasThread ? 'Exit thread' : 'Thread'}
-          active={hasThread}
-          onClick={toggleThreadMode}
-          icon={<MessageSquare className="h-5 w-5" />}
-        />
-        <ToolbarIcon
-          label="Topics"
-          active={state.selectedTags.length > 0}
-          onClick={() => {
-            setShowTopicsError(false);
-            setTopicsOpen(true);
-          }}
-          icon={<Hash className="h-5 w-5" />}
-          dot={state.selectedTags.length > 0}
-          ringError={showTopicsError && state.selectedTags.length === 0}
-        />
-        <ToolbarIcon
-          label="Content warning"
-          active={state.contentWarning}
-          onClick={() => update({ contentWarning: !state.contentWarning })}
-          icon={<Shield className="h-5 w-5" />}
-        />
-        <ToolbarIcon
-          label="Also share as Expression"
-          active={state.crossPost.alsoShareAsExpression}
-          onClick={() =>
-            update({
-              crossPost: {
-                ...state.crossPost,
-                alsoShareAsExpression: !state.crossPost.alsoShareAsExpression,
-              },
-            })
-          }
-          icon={<Sparkles className="h-5 w-5" />}
-        />
+      {/* Add to your post — single dropdown trigger + Aa picker */}
+      <div className="shrink-0 px-5 pt-3 pb-2 flex items-center gap-2">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              className="flex-1 justify-between rounded-2xl h-12 px-4 bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06] hover:shadow-[0_0_24px_-8px_rgba(217,70,239,0.4)] transition-all"
+            >
+              <span className="text-sm font-medium text-foreground/85">Add to your post</span>
+              <ChevronDown className="h-4 w-4 text-foreground/60" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="start"
+            sideOffset={6}
+            className="w-[min(92vw,360px)] bg-background/95 backdrop-blur-md border-white/10 p-1.5"
+          >
+            {/* Media */}
+            <DropdownMenuLabel className="text-[11px] text-foreground/40 uppercase tracking-wide px-3 py-1.5 font-normal">
+              Media
+            </DropdownMenuLabel>
+            <DropdownMenuItem
+              onSelect={(e) => { e.preventDefault(); photoInputRef.current?.click(); }}
+              className="flex items-center gap-3 px-3 py-2.5 text-sm text-foreground/85 hover:bg-white/5 rounded-lg cursor-pointer"
+            >
+              <ImageIcon className="h-[18px] w-[18px] text-emerald-400" /> Photo
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={(e) => { e.preventDefault(); videoInputRef.current?.click(); }}
+              className="flex items-center gap-3 px-3 py-2.5 text-sm text-foreground/85 hover:bg-white/5 rounded-lg cursor-pointer"
+            >
+              <VideoIcon className="h-[18px] w-[18px] text-rose-400" /> Video
+            </DropdownMenuItem>
+            <MenuRowSlot icon={<Film className="h-[18px] w-[18px] text-violet-400" />} label="GIF">
+              <GifPicker onSelect={handleGifSelect} />
+            </MenuRowSlot>
 
-        {/* Aa background picker — pinned right */}
-        <div className="ml-auto">
-          {canShowBackground && state.composerMode === 'simple' && (
-            <Popover>
-              <PopoverTrigger asChild>
-                <button
-                  className={cn(
-                    'shrink-0 h-9 w-9 rounded-full flex items-center justify-center text-sm font-bold transition',
-                    state.background
-                      ? 'ring-2 ring-fuchsia-500/60'
-                      : 'bg-white/[0.04] hover:bg-white/[0.08] text-foreground/70'
-                  )}
-                  style={state.background ? backgroundStyle : undefined}
-                  aria-label="Background style"
-                  title="Background"
-                >
-                  Aa
-                </button>
-              </PopoverTrigger>
-              <PopoverContent
-                align="end"
-                className="w-auto p-3 bg-background/95 backdrop-blur-md border-white/10"
+            <DropdownMenuSeparator className="my-1 bg-white/5" />
+
+            {/* Social */}
+            <DropdownMenuLabel className="text-[11px] text-foreground/40 uppercase tracking-wide px-3 py-1.5 font-normal">
+              Social
+            </DropdownMenuLabel>
+            <DropdownMenuItem
+              onSelect={(e) => {
+                e.preventDefault();
+                update({
+                  poll: hasPoll
+                    ? null
+                    : { options: [{ text: '' }, { text: '' }], multiSelect: false, durationHours: 24 },
+                });
+              }}
+              className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm text-foreground/85 hover:bg-white/5 rounded-lg cursor-pointer"
+            >
+              <span className="flex items-center gap-3">
+                <BarChart3 className="h-[18px] w-[18px] text-amber-400" /> Poll
+              </span>
+              {hasPoll && <Check className="h-4 w-4 text-fuchsia-400" />}
+            </DropdownMenuItem>
+            <MenuRowSlot
+              icon={<MapPin className="h-[18px] w-[18px] text-sky-400" />}
+              label="Check in"
+              activeIndicator={!!state.checkIn}
+            >
+              <CheckInPicker value={state.checkIn} onChange={(v) => update({ checkIn: v })} />
+            </MenuRowSlot>
+            <MenuRowSlot
+              icon={<UserPlus className="h-[18px] w-[18px] text-blue-400" />}
+              label="Tag people"
+              activeIndicator={state.taggedPeople.length > 0}
+            >
+              <WithPeoplePicker value={state.taggedPeople} onChange={(v) => update({ taggedPeople: v })} />
+            </MenuRowSlot>
+            <DropdownMenuItem
+              onSelect={(e) => { e.preventDefault(); toggleThreadMode(); }}
+              className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm text-foreground/85 hover:bg-white/5 rounded-lg cursor-pointer"
+            >
+              <span className="flex items-center gap-3">
+                <MessageSquare className="h-[18px] w-[18px] text-teal-400" /> Thread
+              </span>
+              {hasThread && <Check className="h-4 w-4 text-fuchsia-400" />}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={(e) => { e.preventDefault(); setMediaSheetOpen(true); }}
+              className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm text-foreground/85 hover:bg-white/5 rounded-lg cursor-pointer"
+            >
+              <span className="flex items-center gap-3">
+                <Smile className="h-[18px] w-[18px] text-yellow-400" /> Feeling
+              </span>
+              {state.feeling && <Check className="h-4 w-4 text-fuchsia-400" />}
+            </DropdownMenuItem>
+
+            <DropdownMenuSeparator className="my-1 bg-white/5" />
+
+            {/* Content */}
+            <DropdownMenuLabel className="text-[11px] text-foreground/40 uppercase tracking-wide px-3 py-1.5 font-normal">
+              Content
+            </DropdownMenuLabel>
+            <DropdownMenuItem
+              onSelect={(e) => {
+                e.preventDefault();
+                setShowTopicsError(false);
+                setTopicsOpen(true);
+              }}
+              className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm text-foreground/85 hover:bg-white/5 rounded-lg cursor-pointer"
+            >
+              <span className="flex items-center gap-3">
+                <Hash className="h-[18px] w-[18px] text-fuchsia-400" /> Topics
+              </span>
+              {state.selectedTags.length > 0 && (
+                <span className="h-1.5 w-1.5 rounded-full bg-fuchsia-400" />
+              )}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={(e) => {
+                e.preventDefault();
+                update({ contentWarning: !state.contentWarning });
+              }}
+              className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm text-foreground/85 hover:bg-white/5 rounded-lg cursor-pointer"
+            >
+              <span className="flex items-center gap-3">
+                <Shield className="h-[18px] w-[18px] text-amber-400" /> Content warning
+              </span>
+              {state.contentWarning && <Check className="h-4 w-4 text-fuchsia-400" />}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={(e) => {
+                e.preventDefault();
+                update({
+                  crossPost: {
+                    ...state.crossPost,
+                    alsoShareAsExpression: !state.crossPost.alsoShareAsExpression,
+                  },
+                });
+              }}
+              className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm text-foreground/85 hover:bg-white/5 rounded-lg cursor-pointer"
+            >
+              <span className="flex items-center gap-3">
+                <Sparkles className="h-[18px] w-[18px] text-violet-400" /> Share as Expression
+              </span>
+              {state.crossPost.alsoShareAsExpression && <Check className="h-4 w-4 text-fuchsia-400" />}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={(e) => { e.preventDefault(); setAdvancedOpen(true); }}
+              className="flex items-center gap-3 px-3 py-2.5 text-sm text-foreground/85 hover:bg-white/5 rounded-lg cursor-pointer"
+            >
+              <Settings2 className="h-[18px] w-[18px] text-foreground/60" /> More
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Aa background picker — separate small button */}
+        {canShowBackground && state.composerMode === 'simple' && (
+          <Popover>
+            <PopoverTrigger asChild>
+              <button
+                className={cn(
+                  'shrink-0 h-12 w-12 rounded-2xl flex items-center justify-center text-sm font-bold transition',
+                  state.background
+                    ? 'ring-2 ring-fuchsia-500/60'
+                    : 'bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] text-foreground/70'
+                )}
+                style={state.background ? backgroundStyle : undefined}
+                aria-label="Background style"
+                title="Background"
               >
-                <div className="grid grid-cols-5 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => update({ background: null })}
-                    className={cn(
-                      'h-9 w-9 rounded-lg border-2 flex items-center justify-center transition bg-secondary',
-                      !state.background ? 'border-fuchsia-500' : 'border-transparent hover:border-foreground/30'
-                    )}
-                    title="Plain"
-                    aria-label="Plain background"
-                  >
-                    <TypeIcon className="h-4 w-4" />
-                  </button>
-                  {POST_BACKGROUND_PRESETS.map((preset, i) => {
-                    const active = state.background?.value === preset.value;
-                    return (
-                      <button
-                        key={i}
-                        type="button"
-                        onClick={() => update({ background: preset })}
-                        className={cn(
-                          'h-9 w-9 rounded-lg border-2 transition',
-                          active ? 'border-fuchsia-500' : 'border-transparent hover:border-foreground/30'
-                        )}
-                        style={{ background: preset.value }}
-                        aria-label={`Background ${i + 1}`}
-                      />
-                    );
-                  })}
-                </div>
-              </PopoverContent>
-            </Popover>
-          )}
-        </div>
+                Aa
+              </button>
+            </PopoverTrigger>
+            <PopoverContent
+              align="end"
+              className="w-auto p-3 bg-background/95 backdrop-blur-md border-white/10"
+            >
+              <div className="grid grid-cols-5 gap-2">
+                <button
+                  type="button"
+                  onClick={() => update({ background: null })}
+                  className={cn(
+                    'h-9 w-9 rounded-lg border-2 flex items-center justify-center transition bg-secondary',
+                    !state.background ? 'border-fuchsia-500' : 'border-transparent hover:border-foreground/30'
+                  )}
+                  title="Plain"
+                  aria-label="Plain background"
+                >
+                  <TypeIcon className="h-4 w-4" />
+                </button>
+                {POST_BACKGROUND_PRESETS.map((preset, i) => {
+                  const active = state.background?.value === preset.value;
+                  return (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => update({ background: preset })}
+                      className={cn(
+                        'h-9 w-9 rounded-lg border-2 transition',
+                        active ? 'border-fuchsia-500' : 'border-transparent hover:border-foreground/30'
+                      )}
+                      style={{ background: preset.value }}
+                      aria-label={`Background ${i + 1}`}
+                    />
+                  );
+                })}
+              </div>
+            </PopoverContent>
+          </Popover>
+        )}
       </div>
+
 
       {/* Meta row */}
       <div className="shrink-0 border-t border-white/5 px-5 py-3 flex items-center justify-between">
@@ -1245,6 +1339,49 @@ function ToolbarSlot({
           : '[&>button]:!text-foreground/60 [&>button:hover]:!text-foreground'
       )}
     >
+      {children}
+    </div>
+  );
+}
+
+/**
+ * Renders a picker (which has its own trigger button) as a full-width menu row
+ * styled like a DropdownMenuItem. Restyles the picker's internal trigger via
+ * descendant selectors and overlays our own icon + label.
+ */
+function MenuRowSlot({
+  icon,
+  label,
+  children,
+  activeIndicator,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  children: React.ReactNode;
+  activeIndicator?: boolean;
+}) {
+  return (
+    <div
+      className={cn(
+        'relative w-full',
+        '[&>button]:!w-full [&>button]:!h-auto [&>button]:!justify-start',
+        '[&>button]:!px-3 [&>button]:!py-2.5 [&>button]:!rounded-lg',
+        '[&>button]:!bg-transparent [&>button:hover]:!bg-white/5',
+        '[&>button]:!border-0 [&>button]:!shadow-none',
+        '[&>button]:!text-sm [&>button]:!font-normal [&>button]:!text-transparent',
+        '[&>button>span]:hidden',
+        '[&>button>svg]:hidden',
+      )}
+    >
+      <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center gap-3 z-10 text-sm text-foreground/85">
+        {icon}
+        <span>{label}</span>
+      </div>
+      {activeIndicator && (
+        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 z-10">
+          <Check className="h-4 w-4 text-fuchsia-400" />
+        </span>
+      )}
       {children}
     </div>
   );
