@@ -21,6 +21,8 @@ import {
   Type as TypeIcon,
   Smile,
   Calendar,
+  UserPlus,
+  Hash,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
