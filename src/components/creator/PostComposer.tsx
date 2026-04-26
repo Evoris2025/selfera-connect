@@ -599,7 +599,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         <div className="flex items-center gap-3">
           <div className="rounded-full p-[2px] bg-gradient-to-br from-fuchsia-500 via-violet-500 to-teal-400">
             <Avatar className="h-10 w-10 border-2 border-background">
-              <AvatarImage src="" alt={displayName} />
+              <AvatarImage src={avatarUrl} alt={displayName} />
               <AvatarFallback className="bg-secondary text-secondary-foreground text-sm">
                 {userInitial}
               </AvatarFallback>
