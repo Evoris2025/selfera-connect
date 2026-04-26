@@ -110,11 +110,9 @@ export default function Studio() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="min-h-dvh flex flex-col"
+              className="min-h-dvh flex sm:items-center justify-center sm:px-4 sm:py-8"
             >
-              <div className="mx-auto w-full max-w-[720px] flex-1 flex flex-col min-h-0">
-                <PostComposer onBack={handleBack} onSuccess={studio.success} />
-              </div>
+              <PostComposer onBack={handleBack} onSuccess={studio.success} />
             </motion.div>
           )}
         </AnimatePresence>
