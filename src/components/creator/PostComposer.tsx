@@ -23,6 +23,9 @@ import {
   Calendar,
   UserPlus,
   Hash,
+  ChevronDown,
+  Check,
+  Film,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
