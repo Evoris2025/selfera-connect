@@ -966,31 +966,29 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         {showTopicsError && state.selectedTags.length === 0 && (
           <p className="text-xs text-destructive -mt-2">Please select at least one topic.</p>
         )}
-      </div>
-
-      {/* Sticky bottom action bar — 4 evenly spaced icons */}
-      <div className="sticky bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-white/5">
-        <div className="flex items-stretch justify-between px-4 py-2.5">
-          <BottomAction
-            icon={<Plus className="h-5 w-5" />}
-            label="Media"
-            onClick={() => setMediaSheetOpen(true)}
-          />
-          <BottomAction
-            icon={<MessageSquare className="h-5 w-5" />}
-            label="Thread"
-            active={hasThread}
-            onClick={toggleThreadMode}
-          />
-          {/* Check in — open via the existing CheckInPicker trigger inline */}
-          <CheckInBottomAction
-            value={state.checkIn}
-            onChange={(v) => update({ checkIn: v })}
-          />
-          <WithBottomAction
-            value={state.taggedPeople}
-            onChange={(v) => update({ taggedPeople: v })}
-          />
+        {/* Bottom action bar — in normal flow, separated by hairline */}
+        <div className="mt-4 border-t border-white/5 pt-3">
+          <div className="flex justify-around py-3">
+            <BottomAction
+              icon={<Plus className="h-5 w-5" />}
+              label="Media"
+              onClick={() => setMediaSheetOpen(true)}
+            />
+            <BottomAction
+              icon={<MessageSquare className="h-5 w-5" />}
+              label="Thread"
+              active={hasThread}
+              onClick={toggleThreadMode}
+            />
+            <CheckInBottomAction
+              value={state.checkIn}
+              onChange={(v) => update({ checkIn: v })}
+            />
+            <WithBottomAction
+              value={state.taggedPeople}
+              onChange={(v) => update({ taggedPeople: v })}
+            />
+          </div>
         </div>
       </div>
 
