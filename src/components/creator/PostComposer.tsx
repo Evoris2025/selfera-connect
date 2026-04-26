@@ -1239,6 +1239,27 @@ function UtilityPill({
   );
 }
 
+function SheetTile({
+  icon,
+  label,
+  onClick,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex flex-col items-center justify-center gap-2 p-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] transition-colors text-foreground/80 hover:text-foreground"
+    >
+      {icon}
+      <span className="text-[11px]">{label}</span>
+    </button>
+  );
+}
+
 function BottomAction({
   icon,
   label,
