@@ -542,7 +542,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
-      className="flex flex-col h-full min-h-dvh bg-background"
+      className="flex flex-col w-full max-h-[90vh] bg-background"
     >
       {/* Header */}
       <div className="relative">
