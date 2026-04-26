@@ -331,7 +331,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
   const update = <K extends keyof ComposerState>(patch: Pick<ComposerState, K>) =>
     setState((s) => ({ ...s, ...patch }));
 
-  const displayName = user?.email?.split('@')[0] || 'You';
+  const displayName = avatarDisplayName || user?.email?.split('@')[0] || 'You';
   const userInitial = displayName.charAt(0).toUpperCase();
 
   const handleMediaSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
