@@ -1296,7 +1296,7 @@ function CheckInBottomAction({
   onChange: (v: FeedCheckIn | null) => void;
 }) {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-0.5 py-1 [&>button]:!p-0 [&>button]:!h-auto [&>button]:!bg-transparent [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:gap-0.5 [&>button]:text-foreground/70 [&>button:hover]:text-foreground">
+    <div className="flex flex-col items-center justify-center gap-1 px-3 py-1 [&>button]:!p-0 [&>button]:!h-auto [&>button]:!bg-transparent [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:gap-1 [&>button]:text-foreground/60 [&>button:hover]:text-foreground [&_svg]:h-5 [&_svg]:w-5 [&_span]:text-[11px] [&_span]:leading-none">
       <CheckInPicker value={value} onChange={onChange} />
     </div>
   );
@@ -1310,7 +1310,7 @@ function WithBottomAction({
   onChange: (v: FeedTaggedPerson[]) => void;
 }) {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-0.5 py-1 [&>button]:!p-0 [&>button]:!h-auto [&>button]:!bg-transparent [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:gap-0.5 [&>button]:text-foreground/70 [&>button:hover]:text-foreground">
+    <div className="flex flex-col items-center justify-center gap-1 px-3 py-1 [&>button]:!p-0 [&>button]:!h-auto [&>button]:!bg-transparent [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:gap-1 [&>button]:text-foreground/60 [&>button:hover]:text-foreground [&_svg]:h-5 [&_svg]:w-5 [&_span]:text-[11px] [&_span]:leading-none">
       <WithPeoplePicker value={value} onChange={onChange} />
     </div>
   );
