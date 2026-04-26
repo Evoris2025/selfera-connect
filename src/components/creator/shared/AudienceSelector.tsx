@@ -1,4 +1,4 @@
-import { Globe, Users, Lock, UserCog, Heart } from 'lucide-react';
+import { Globe, Users, Lock, UserCog, Heart, ChevronDown } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,6 +6,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import type { FeedAudience } from '@/components/feed/CrossroadFeed';
 
 export type StudioAudience = FeedAudience;
@@ -31,9 +32,11 @@ interface AudienceSelectorProps {
   /** Hide audience options that don't apply (e.g. hide 'custom' for Expressions). */
   excludes?: StudioAudience[];
   size?: 'sm' | 'default';
+  /** 'outline' renders a bordered button (default). 'ghost' renders a subtle inline chip. */
+  variant?: 'outline' | 'ghost';
 }
 
-export function AudienceSelector({ value, onChange, excludes = [], size = 'sm' }: AudienceSelectorProps) {
+export function AudienceSelector({ value, onChange, excludes = [], size = 'sm', variant = 'outline' }: AudienceSelectorProps) {
   const options = OPTIONS.filter(o => !excludes.includes(o.value));
   const current = options.find(o => o.value === value) ?? options[0];
   const Icon = current.icon;
@@ -41,10 +44,24 @@ export function AudienceSelector({ value, onChange, excludes = [], size = 'sm' }
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size={size} className="gap-2">
-          <Icon className="h-4 w-4" />
-          {current.label}
-        </Button>
+        {variant === 'ghost' ? (
+          <button
+            type="button"
+            className={cn(
+              'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs',
+              'bg-white/5 hover:bg-white/10 text-foreground/70 hover:text-foreground transition'
+            )}
+          >
+            <Icon className="h-3 w-3" />
+            <span>{current.label}</span>
+            <ChevronDown className="h-3 w-3 opacity-60" />
+          </button>
+        ) : (
+          <Button variant="outline" size={size} className="gap-2">
+            <Icon className="h-4 w-4" />
+            {current.label}
+          </Button>
+        )}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-64">
         {options.map(opt => {
