@@ -542,14 +542,18 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
-      className="w-full flex flex-col flex-1 min-h-0 bg-background px-5 pt-4 pb-6"
+      className={cn(
+        'w-full max-w-[640px] mx-auto flex flex-col bg-white/[0.03] border border-white/[0.06] backdrop-blur-md shadow-2xl overflow-hidden',
+        'rounded-none sm:rounded-3xl',
+        'min-h-dvh sm:min-h-0 sm:max-h-[88dvh]'
+      )}
     >
       {/* Header */}
-      <div className="relative">
-        <div className="flex items-center justify-between py-3">
+      <div className="relative shrink-0">
+        <div className="flex items-center justify-between h-14 px-3">
           <button
             onClick={onBack}
-            className="p-2 -ml-1 rounded-full hover:bg-white/5 transition-colors"
+            className="p-2 rounded-full hover:bg-white/5 transition-colors"
             aria-label="Back"
           >
             <ArrowLeft className="h-5 w-5" />
@@ -589,201 +593,108 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
             </button>
           </div>
         </div>
-        {/* gradient hairline */}
         <div className="h-px w-full bg-gradient-to-r from-transparent via-fuchsia-500/40 to-transparent opacity-60" />
       </div>
 
-      {/* Body */}
-      <div className="flex-1 flex flex-col min-h-0">
-        {/* Identity row */}
-        <div className="flex items-center gap-3">
-          <div className="rounded-full p-[2px] bg-gradient-to-br from-fuchsia-500 via-violet-500 to-teal-400">
-            <Avatar className="h-10 w-10 border-2 border-background">
-              <AvatarImage src={avatarUrl} alt={displayName} />
-              <AvatarFallback className="bg-secondary text-secondary-foreground text-sm">
-                {userInitial}
-              </AvatarFallback>
-            </Avatar>
-          </div>
-          <div className="flex-1 min-w-0 flex items-center gap-2 flex-wrap">
-            <div className="leading-tight">
-              <p className="font-semibold text-sm">{displayName}</p>
-              <p className="text-[11px] text-foreground/50">@{displayName.toLowerCase()}</p>
-            </div>
-            <AudienceSelector value={state.audience} onChange={handleAudienceChange} size="sm" />
-          </div>
-          {state.composerMode === 'simple' && state.content.length > 0 && (
-            <CharacterCounter current={state.content.length} max={MAX_CHARACTERS} />
-          )}
+      {/* Identity row */}
+      <div className="shrink-0 px-5 py-4 flex items-start gap-3">
+        <div className="rounded-full p-[2px] bg-gradient-to-br from-fuchsia-500 via-violet-500 to-teal-400 shrink-0">
+          <Avatar className="h-11 w-11 border-2 border-background">
+            <AvatarImage src={avatarUrl} alt={displayName} />
+            <AvatarFallback className="bg-secondary text-secondary-foreground text-sm">
+              {userInitial}
+            </AvatarFallback>
+          </Avatar>
         </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-base font-semibold leading-tight text-foreground">{displayName}</p>
+          <p className="text-xs text-foreground/50 leading-tight mt-0.5">@{displayName.toLowerCase()}</p>
+          <div className="mt-1.5">
+            <AudienceSelector value={state.audience} onChange={handleAudienceChange} variant="ghost" />
+          </div>
+        </div>
+      </div>
 
-        {/* Composer hero card */}
-        <div className="relative mt-4 flex-1 flex flex-col min-h-[260px]">
-          {/* Gradient ring on focus or when warning is on */}
-          <div
-            className={cn(
-              'absolute -inset-px rounded-2xl pointer-events-none transition-opacity duration-200',
-              composerFocused || state.contentWarning ? 'opacity-100' : 'opacity-0'
-            )}
-            style={{
-              background: state.contentWarning
-                ? 'linear-gradient(135deg, hsl(35 95% 55%), hsl(15 90% 55%))'
-                : 'linear-gradient(135deg, hsl(310 90% 60%), hsl(265 85% 60%), hsl(180 70% 50%))',
-              padding: '1px',
-              WebkitMask:
-                'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
-              WebkitMaskComposite: 'xor',
-              maskComposite: 'exclude',
-            }}
-          />
-          <div className="relative rounded-2xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-md p-4 pb-14 flex-1 flex flex-col min-h-0">
-            {state.contentWarning && (
-              <div className="mb-3 flex items-center gap-2">
-                <Shield className="h-3.5 w-3.5 text-amber-400 shrink-0" />
-                <Input
-                  value={state.contentWarningReason}
-                  onChange={(e) => update({ contentWarningReason: e.target.value })}
-                  placeholder="Reason (optional)"
-                  className="h-7 text-xs bg-transparent border-amber-500/30 focus-visible:ring-amber-500/40"
-                />
-              </div>
-            )}
+      <div className="h-px bg-white/5 shrink-0" />
 
-            <AnimatePresence mode="wait">
-              {state.composerMode === 'simple' ? (
-                <motion.div
-                  key="simple"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="flex-1 flex flex-col min-h-0"
+      {/* Textarea region — sits directly on the composer background */}
+      <div className="flex-1 min-h-0 flex flex-col overflow-y-auto px-5 py-4">
+        <AnimatePresence mode="wait">
+          {state.composerMode === 'simple' ? (
+            <motion.div
+              key="simple"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex-1 flex flex-col min-h-0"
+            >
+              {state.background ? (
+                <div
+                  className="rounded-xl p-6 flex-1 min-h-[200px] flex items-center justify-center"
+                  style={backgroundStyle}
                 >
-                  {state.background ? (
-                    <div
-                      className="rounded-xl p-6 flex-1 min-h-[200px] flex items-center justify-center -mx-1"
-                      style={backgroundStyle}
-                    >
-                      <Textarea
-                        placeholder={`What's on your mind, ${displayName}?`}
-                        value={state.content}
-                        onChange={(e) => update({ content: e.target.value })}
-                        onFocus={() => setComposerFocused(true)}
-                        onBlur={() => setComposerFocused(false)}
-                        maxLength={MAX_CHARACTERS}
-                        className="flex-1 min-h-[200px] max-h-none resize-none border-0 bg-transparent p-0 text-2xl font-semibold text-center focus-visible:ring-0 placeholder:text-current placeholder:opacity-60"
-                        style={{ color: 'inherit' }}
-                      />
-                    </div>
-                  ) : (
-                    <Textarea
-                      placeholder={`What's on your mind, ${displayName}?`}
-                      value={state.content}
-                      onChange={(e) => update({ content: e.target.value })}
-                      onFocus={() => setComposerFocused(true)}
-                      onBlur={() => setComposerFocused(false)}
-                      maxLength={MAX_CHARACTERS}
-                      className="flex-1 min-h-[200px] max-h-none resize-none border-0 bg-transparent p-0 text-base focus-visible:ring-0 placeholder:text-foreground/40"
-                    />
-                  )}
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="thread"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="flex-1 min-h-0"
-                >
-                  <ThreadComposer
-                    items={state.threadItems}
-                    onItemsChange={(items) => update({ threadItems: items })}
-                    maxCharacters={MAX_CHARACTERS}
+                  <Textarea
+                    placeholder={`What's on your mind, ${displayName}?`}
+                    value={state.content}
+                    onChange={(e) => update({ content: e.target.value })}
+                    onFocus={() => setComposerFocused(true)}
+                    onBlur={() => setComposerFocused(false)}
+                    maxLength={MAX_CHARACTERS}
+                    className="flex-1 min-h-[200px] max-h-none resize-none border-0 bg-transparent p-0 text-2xl font-semibold text-center focus-visible:ring-0 placeholder:text-current placeholder:opacity-60"
+                    style={{ color: 'inherit' }}
                   />
-                </motion.div>
+                </div>
+              ) : (
+                <Textarea
+                  placeholder={`What's on your mind, ${displayName}?`}
+                  value={state.content}
+                  onChange={(e) => update({ content: e.target.value })}
+                  onFocus={() => setComposerFocused(true)}
+                  onBlur={() => setComposerFocused(false)}
+                  maxLength={MAX_CHARACTERS}
+                  className="flex-1 min-h-[180px] max-h-none resize-none border-0 bg-transparent p-0 text-lg focus-visible:ring-0 placeholder:text-foreground/35"
+                />
               )}
-            </AnimatePresence>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="thread"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex-1 min-h-0"
+            >
+              <ThreadComposer
+                items={state.threadItems}
+                onItemsChange={(items) => update({ threadItems: items })}
+                maxCharacters={MAX_CHARACTERS}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-            {/* Selected topic chips + Aa popover footer */}
-            <div className="absolute inset-x-4 bottom-4 flex items-end justify-between gap-2">
-              <div className="flex flex-wrap gap-1.5 flex-1 min-w-0">
-                {state.selectedTags.length === 0 ? (
-                  <span className="text-[11px] text-foreground/40">
-                    {state.selectedTags.length}/5 topics
-                  </span>
-                ) : (
-                  <span className="text-[11px] text-foreground/50 mr-1 self-center">
-                    {state.selectedTags.length}/5
-                  </span>
-                )}
-              </div>
-
-              {canShowBackground && state.composerMode === 'simple' && (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <button
-                      className={cn(
-                        'shrink-0 h-9 w-9 rounded-full flex items-center justify-center text-sm font-bold transition',
-                        state.background
-                          ? 'ring-2 ring-fuchsia-500/60'
-                          : 'bg-white/[0.06] hover:bg-white/[0.12] text-foreground/70'
-                      )}
-                      style={state.background ? backgroundStyle : undefined}
-                      aria-label="Background style"
-                      title="Background"
-                    >
-                      Aa
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    align="end"
-                    className="w-auto p-3 bg-background/95 backdrop-blur-md border-white/10"
-                  >
-                    <div className="grid grid-cols-5 gap-2">
-                      <button
-                        type="button"
-                        onClick={() => update({ background: null })}
-                        className={cn(
-                          'h-9 w-9 rounded-lg border-2 flex items-center justify-center transition bg-secondary',
-                          !state.background ? 'border-fuchsia-500' : 'border-transparent hover:border-foreground/30'
-                        )}
-                        title="Plain"
-                        aria-label="Plain background"
-                      >
-                        <TypeIcon className="h-4 w-4" />
-                      </button>
-                      {POST_BACKGROUND_PRESETS.map((preset, i) => {
-                        const active = state.background?.value === preset.value;
-                        return (
-                          <button
-                            key={i}
-                            type="button"
-                            onClick={() => update({ background: preset })}
-                            className={cn(
-                              'h-9 w-9 rounded-lg border-2 transition',
-                              active ? 'border-fuchsia-500' : 'border-transparent hover:border-foreground/30'
-                            )}
-                            style={{ background: preset.value }}
-                            aria-label={`Background ${i + 1}`}
-                          />
-                        );
-                      })}
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              )}
-            </div>
+        {/* Content-warning reason inline */}
+        {state.contentWarning && (
+          <div className="mt-3 flex items-center gap-2">
+            <Shield className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+            <Input
+              value={state.contentWarningReason}
+              onChange={(e) => update({ contentWarningReason: e.target.value })}
+              placeholder="Reason (optional)"
+              className="h-7 text-xs bg-transparent border-amber-500/30 focus-visible:ring-amber-500/40"
+            />
           </div>
-        </div>
+        )}
 
-        {/* Selected topic chips (above utility row, below card) */}
+        {/* Selected topic chips — only when chosen */}
         {state.selectedTags.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-1.5">
             {state.selectedTags.map((tagId) => (
               <span
                 key={tagId}
-                className="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full bg-white/10 text-foreground/90"
+                className="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full bg-white/[0.08] text-foreground/85"
               >
-                #{tagId.length > 24 ? `${tagId.slice(0, 4)}…` : tagId}
+                #{tagId.length > 24 ? `${tagId.slice(0, 12)}…` : tagId}
                 <button
                   onClick={() =>
                     update({ selectedTags: state.selectedTags.filter((t) => t !== tagId) })
@@ -798,7 +709,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           </div>
         )}
 
-        {/* Active context chips: feeling, location, check-in, with, life event, fundraiser, schedule */}
+        {/* Active context chips */}
         {(state.feeling ||
           state.location ||
           state.checkIn ||
@@ -827,8 +738,8 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
             )}
             {state.taggedPeople.length > 0 && (
               <Chip onRemove={() => update({ taggedPeople: [] })}>
-                <Users className="h-3 w-3" />
-                with {state.taggedPeople.length}
+                <UserPlus className="h-3 w-3" />
+                tag {state.taggedPeople.length}
               </Chip>
             )}
             {state.lifeEvent && (
@@ -859,16 +770,18 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
 
         {/* Link preview */}
         {(showLinkPreview || previewLoading) && (
-          <ComposerLinkPreview
-            preview={preview}
-            loading={previewLoading}
-            onDismiss={dismissPreview}
-          />
+          <div className="mt-3">
+            <ComposerLinkPreview
+              preview={preview}
+              loading={previewLoading}
+              onDismiss={dismissPreview}
+            />
+          </div>
         )}
 
         {/* GIF preview */}
         {state.selectedGifUrl && (
-          <div className="relative rounded-xl overflow-hidden bg-secondary">
+          <div className="relative rounded-xl overflow-hidden bg-secondary mt-3">
             <img src={state.selectedGifUrl} alt="" className="w-full max-h-64 object-contain" />
             <button
               onClick={() => update({ selectedGifUrl: null })}
@@ -881,7 +794,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
 
         {/* Media previews */}
         {state.mediaPreviewUrls.length > 0 && (
-          <div className={cn('grid gap-2', state.mediaPreviewUrls.length === 1 ? 'grid-cols-1' : 'grid-cols-2')}>
+          <div className={cn('grid gap-2 mt-3', state.mediaPreviewUrls.length === 1 ? 'grid-cols-1' : 'grid-cols-2')}>
             {state.mediaPreviewUrls.map((url, index) => (
               <div key={index} className="relative aspect-square rounded-xl overflow-hidden bg-secondary">
                 {state.mediaTypes[index] === 'video' ? (
@@ -900,99 +813,172 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           </div>
         )}
 
-        {/* Poll (only renders inputs when toggled on; PollCreator handles its own visibility) */}
+        {/* Poll */}
         {state.poll && (
-          <PollCreator poll={state.poll} onPollChange={(p) => update({ poll: p })} />
-        )}
-
-        {/* Slim utility row */}
-        <div className="mt-3 flex flex-wrap gap-2">
-          <UtilityPill
-            icon={<Plus className="h-3.5 w-3.5" />}
-            label={`Topics (${state.selectedTags.length}/5)`}
-            active={state.selectedTags.length > 0}
-            onClick={() => {
-              setShowTopicsError(false);
-              setTopicsOpen(true);
-            }}
-            classNameActive={utilityActive}
-            classNameIdle={cn(utilityIdle, showTopicsError && 'ring-1 ring-destructive/60')}
-          />
-          <UtilityPill
-            icon={<BarChart3 className="h-3.5 w-3.5" />}
-            label="Poll"
-            active={hasPoll}
-            onClick={() =>
-              update({
-                poll: hasPoll
-                  ? null
-                  : { options: [{ text: '' }, { text: '' }], multiSelect: false, durationHours: 24 },
-              })
-            }
-            classNameActive={utilityActive}
-            classNameIdle={utilityIdle}
-          />
-          <UtilityPill
-            icon={<Shield className="h-3.5 w-3.5" />}
-            label="Warning"
-            active={state.contentWarning}
-            onClick={() => update({ contentWarning: !state.contentWarning })}
-            classNameActive={utilityActive}
-            classNameIdle={utilityIdle}
-          />
-          <UtilityPill
-            icon={<Sparkles className="h-3.5 w-3.5 text-fuchsia-400" />}
-            label="Expression"
-            active={state.crossPost.alsoShareAsExpression}
-            onClick={() =>
-              update({
-                crossPost: {
-                  ...state.crossPost,
-                  alsoShareAsExpression: !state.crossPost.alsoShareAsExpression,
-                },
-              })
-            }
-            classNameActive={utilityActive}
-            classNameIdle={utilityIdle}
-          />
-          <UtilityPill
-            icon={<Settings2 className="h-3.5 w-3.5" />}
-            label="More"
-            active={false}
-            onClick={() => setAdvancedOpen(true)}
-            classNameActive={utilityActive}
-            classNameIdle={utilityIdle}
-          />
-        </div>
-
-        {showTopicsError && state.selectedTags.length === 0 && (
-          <p className="text-xs text-destructive -mt-2">Please select at least one topic.</p>
-        )}
-        {/* Bottom action bar — in normal flow, separated by hairline */}
-        <div className="mt-4 border-t border-white/5 pt-3">
-          <div className="flex justify-around py-3">
-            <BottomAction
-              icon={<Plus className="h-[22px] w-[22px]" />}
-              label="Media"
-              onClick={() => setMediaSheetOpen(true)}
-            />
-            <BottomAction
-              icon={<MessageSquare className="h-[22px] w-[22px]" />}
-              label="Thread"
-              active={hasThread}
-              onClick={toggleThreadMode}
-            />
-            <CheckInBottomAction
-              value={state.checkIn}
-              onChange={(v) => update({ checkIn: v })}
-            />
-            <WithBottomAction
-              value={state.taggedPeople}
-              onChange={(v) => update({ taggedPeople: v })}
-            />
+          <div className="mt-3">
+            <PollCreator poll={state.poll} onPollChange={(p) => update({ poll: p })} />
           </div>
+        )}
+      </div>
+
+      <div className="h-px bg-white/5 shrink-0" />
+
+      {/* Unified icon toolbar — single row, flat ghost icons */}
+      <div className="shrink-0 px-3 py-2 flex items-center gap-0.5">
+        <ToolbarIcon
+          label="Photo"
+          onClick={() => photoInputRef.current?.click()}
+          icon={<ImageIcon className="h-5 w-5" />}
+        />
+        <ToolbarIcon
+          label="Video"
+          onClick={() => videoInputRef.current?.click()}
+          icon={<VideoIcon className="h-5 w-5" />}
+        />
+        <ToolbarSlot label="GIF">
+          <GifPicker onSelect={handleGifSelect} />
+        </ToolbarSlot>
+        <ToolbarIcon
+          label={hasPoll ? 'Remove poll' : 'Poll'}
+          active={hasPoll}
+          onClick={() =>
+            update({
+              poll: hasPoll
+                ? null
+                : { options: [{ text: '' }, { text: '' }], multiSelect: false, durationHours: 24 },
+            })
+          }
+          icon={<BarChart3 className="h-5 w-5" />}
+        />
+        <ToolbarSlot label="Check in" active={!!state.checkIn}>
+          <CheckInPicker value={state.checkIn} onChange={(v) => update({ checkIn: v })} />
+        </ToolbarSlot>
+        <ToolbarSlot label="Tag people" active={state.taggedPeople.length > 0}>
+          <WithPeoplePicker value={state.taggedPeople} onChange={(v) => update({ taggedPeople: v })} />
+        </ToolbarSlot>
+        <ToolbarIcon
+          label={hasThread ? 'Exit thread' : 'Thread'}
+          active={hasThread}
+          onClick={toggleThreadMode}
+          icon={<MessageSquare className="h-5 w-5" />}
+        />
+        <ToolbarIcon
+          label="Topics"
+          active={state.selectedTags.length > 0}
+          onClick={() => {
+            setShowTopicsError(false);
+            setTopicsOpen(true);
+          }}
+          icon={<Hash className="h-5 w-5" />}
+          dot={state.selectedTags.length > 0}
+          ringError={showTopicsError && state.selectedTags.length === 0}
+        />
+        <ToolbarIcon
+          label="Content warning"
+          active={state.contentWarning}
+          onClick={() => update({ contentWarning: !state.contentWarning })}
+          icon={<Shield className="h-5 w-5" />}
+        />
+        <ToolbarIcon
+          label="Also share as Expression"
+          active={state.crossPost.alsoShareAsExpression}
+          onClick={() =>
+            update({
+              crossPost: {
+                ...state.crossPost,
+                alsoShareAsExpression: !state.crossPost.alsoShareAsExpression,
+              },
+            })
+          }
+          icon={<Sparkles className="h-5 w-5" />}
+        />
+
+        {/* Aa background picker — pinned right */}
+        <div className="ml-auto">
+          {canShowBackground && state.composerMode === 'simple' && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  className={cn(
+                    'shrink-0 h-9 w-9 rounded-full flex items-center justify-center text-sm font-bold transition',
+                    state.background
+                      ? 'ring-2 ring-fuchsia-500/60'
+                      : 'bg-white/[0.04] hover:bg-white/[0.08] text-foreground/70'
+                  )}
+                  style={state.background ? backgroundStyle : undefined}
+                  aria-label="Background style"
+                  title="Background"
+                >
+                  Aa
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="end"
+                className="w-auto p-3 bg-background/95 backdrop-blur-md border-white/10"
+              >
+                <div className="grid grid-cols-5 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => update({ background: null })}
+                    className={cn(
+                      'h-9 w-9 rounded-lg border-2 flex items-center justify-center transition bg-secondary',
+                      !state.background ? 'border-fuchsia-500' : 'border-transparent hover:border-foreground/30'
+                    )}
+                    title="Plain"
+                    aria-label="Plain background"
+                  >
+                    <TypeIcon className="h-4 w-4" />
+                  </button>
+                  {POST_BACKGROUND_PRESETS.map((preset, i) => {
+                    const active = state.background?.value === preset.value;
+                    return (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => update({ background: preset })}
+                        className={cn(
+                          'h-9 w-9 rounded-lg border-2 transition',
+                          active ? 'border-fuchsia-500' : 'border-transparent hover:border-foreground/30'
+                        )}
+                        style={{ background: preset.value }}
+                        aria-label={`Background ${i + 1}`}
+                      />
+                    );
+                  })}
+                </div>
+              </PopoverContent>
+            </Popover>
+          )}
         </div>
       </div>
+
+      {/* Meta row */}
+      <div className="shrink-0 border-t border-white/5 px-5 py-3 flex items-center justify-between">
+        <CharacterCounter current={state.content.length} max={MAX_CHARACTERS} />
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => {
+              update({
+                feeling: null,
+              });
+              setMediaSheetOpen(true);
+            }}
+            className="text-xs text-foreground/50 hover:text-foreground transition-colors inline-flex items-center gap-1"
+          >
+            <Smile className="h-3.5 w-3.5" /> Feeling
+          </button>
+          <button
+            onClick={() => setAdvancedOpen(true)}
+            className="text-xs text-foreground/50 hover:text-foreground transition-colors inline-flex items-center gap-1"
+          >
+            <Settings2 className="h-3.5 w-3.5" /> More
+          </button>
+        </div>
+      </div>
+
+      {showTopicsError && state.selectedTags.length === 0 && (
+        <p className="text-xs text-destructive px-5 pb-2">Please select at least one topic.</p>
+      )}
 
       {/* Hidden file inputs */}
       <input
@@ -1011,42 +997,19 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         className="hidden"
       />
 
-      {/* Media picker sheet */}
+      {/* Extras sheet (Feeling / Schedule / Life event / Fundraiser) */}
       <Sheet open={mediaSheetOpen} onOpenChange={setMediaSheetOpen}>
         <SheetContent side="bottom" className="rounded-t-2xl bg-background/95 backdrop-blur-md border-white/10">
           <SheetHeader className="text-left">
-            <SheetTitle>Add media</SheetTitle>
-            <SheetDescription>Choose what to attach to your post.</SheetDescription>
+            <SheetTitle>More</SheetTitle>
+            <SheetDescription>Add a feeling, schedule, life event or fundraiser.</SheetDescription>
           </SheetHeader>
-          <div className="mt-4 grid grid-cols-3 gap-3">
-            <SheetTile
-              icon={<ImageIcon className="h-5 w-5" />}
-              label="Photo"
-              onClick={() => {
-                setMediaSheetOpen(false);
-                setTimeout(() => photoInputRef.current?.click(), 100);
-              }}
-            />
-            <SheetTile
-              icon={<VideoIcon className="h-5 w-5" />}
-              label="Video"
-              onClick={() => {
-                setMediaSheetOpen(false);
-                setTimeout(() => videoInputRef.current?.click(), 100);
-              }}
-            />
-            <div className="flex flex-col items-center justify-center gap-2 p-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] transition-colors">
-              <GifPicker onSelect={(g) => { setMediaSheetOpen(false); handleGifSelect(g); }} />
-              <span className="text-[11px] text-foreground/70">GIF</span>
-            </div>
-          </div>
-          <div className="mt-3 grid grid-cols-2 gap-3">
+          <div className="mt-4 grid grid-cols-2 gap-3">
             <div className="flex items-center justify-center gap-2 p-3 rounded-xl bg-white/[0.04]">
               <FeelingActivityPicker
                 value={state.feeling}
                 onChange={(v) => { update({ feeling: v }); setMediaSheetOpen(false); }}
               />
-              <span className="text-xs text-foreground/70 sr-only">Feeling</span>
             </div>
             <div className="flex items-center justify-center gap-2 p-3 rounded-xl bg-white/[0.04]">
               <ScheduleSelector
@@ -1054,8 +1017,6 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
                 onChange={(d) => { update({ scheduledDate: d ? d.getTime() : null }); setMediaSheetOpen(false); }}
               />
             </div>
-          </div>
-          <div className="mt-3 grid grid-cols-2 gap-3">
             <button
               onClick={() => { setMediaSheetOpen(false); setLifeEventOpen(true); }}
               className="flex items-center justify-center gap-2 p-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-sm"
@@ -1188,6 +1149,11 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         value={state.fundraiser}
         onSave={(v) => update({ fundraiser: v })}
       />
+
+      {/* Subtle focus ring on the whole card when textarea is focused */}
+      {composerFocused && (
+        <div className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-fuchsia-500/20" />
+      )}
     </motion.div>
   );
 }
