@@ -53,7 +53,7 @@ export default function Studio() {
     <div className="min-h-dvh bg-background flex flex-col">
       <div
         className={`w-full min-h-dvh ${
-          studio.step === 'post' ? 'flex flex-col' : 'max-w-lg md:max-w-full lg:max-w-2xl mx-auto'
+          studio.step === 'post' ? '' : 'max-w-lg md:max-w-full lg:max-w-2xl mx-auto'
         }`}
       >
         <AnimatePresence mode="wait">
