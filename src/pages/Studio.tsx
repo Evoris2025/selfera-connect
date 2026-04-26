@@ -49,8 +49,12 @@ export default function Studio() {
   const handleBack = () => navigate('/studio');
 
   return (
-    <div className="min-h-dvh bg-background flex justify-center">
-      <div className="w-full max-w-lg md:max-w-full lg:max-w-2xl min-h-dvh">
+    <div className="min-h-dvh bg-background flex flex-col">
+      <div
+        className={`w-full min-h-dvh ${
+          studio.step === 'post' ? 'flex flex-col' : 'max-w-lg md:max-w-full lg:max-w-2xl mx-auto'
+        }`}
+      >
         <AnimatePresence mode="wait">
           {studio.isDashboard && (
             <motion.div
@@ -106,9 +110,11 @@ export default function Studio() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="h-full min-h-dvh"
+              className="min-h-dvh flex flex-col"
             >
-              <PostComposer onBack={handleBack} onSuccess={studio.success} />
+              <div className="mx-auto w-full max-w-[720px] flex-1 flex flex-col min-h-0">
+                <PostComposer onBack={handleBack} onSuccess={studio.success} />
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
