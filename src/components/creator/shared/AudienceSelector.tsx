@@ -1,4 +1,4 @@
-import { Globe, Users, Lock, UserCog, Heart } from 'lucide-react';
+import { Globe, Users, Lock, UserCog, Heart, ChevronDown } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,6 +6,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import type { FeedAudience } from '@/components/feed/CrossroadFeed';
 
 export type StudioAudience = FeedAudience;
