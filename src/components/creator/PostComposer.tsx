@@ -244,6 +244,7 @@ const DEFAULT_STATE: ComposerState = {
 export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { avatarUrl, displayName: avatarDisplayName } = useCurrentUserAvatar();
   const { createPost, createExpression, schedulePublish, getDraft } = useFeedData();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
