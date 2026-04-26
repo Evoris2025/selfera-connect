@@ -1343,3 +1343,46 @@ function ToolbarSlot({
     </div>
   );
 }
+
+/**
+ * Renders a picker (which has its own trigger button) as a full-width menu row
+ * styled like a DropdownMenuItem. Restyles the picker's internal trigger via
+ * descendant selectors and overlays our own icon + label.
+ */
+function MenuRowSlot({
+  icon,
+  label,
+  children,
+  activeIndicator,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  children: React.ReactNode;
+  activeIndicator?: boolean;
+}) {
+  return (
+    <div
+      className={cn(
+        'relative w-full',
+        '[&>button]:!w-full [&>button]:!h-auto [&>button]:!justify-start',
+        '[&>button]:!px-3 [&>button]:!py-2.5 [&>button]:!rounded-lg',
+        '[&>button]:!bg-transparent [&>button:hover]:!bg-white/5',
+        '[&>button]:!border-0 [&>button]:!shadow-none',
+        '[&>button]:!text-sm [&>button]:!font-normal [&>button]:!text-transparent',
+        '[&>button>span]:hidden',
+        '[&>button>svg]:hidden',
+      )}
+    >
+      <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center gap-3 z-10 text-sm text-foreground/85">
+        {icon}
+        <span>{label}</span>
+      </div>
+      {activeIndicator && (
+        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 z-10">
+          <Check className="h-4 w-4 text-fuchsia-400" />
+        </span>
+      )}
+      {children}
+    </div>
+  );
+}
