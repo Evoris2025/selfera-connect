@@ -777,7 +777,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
 
         {/* Selected topic chips (above utility row, below card) */}
         {state.selectedTags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
+          <div className="mt-3 flex flex-wrap gap-1.5">
             {state.selectedTags.map((tagId) => (
               <span
                 key={tagId}
@@ -1278,13 +1278,13 @@ function BottomAction({
       type="button"
       onClick={onClick}
       className={cn(
-        'flex flex-col items-center justify-center gap-1 px-3 py-1 rounded-lg transition-colors',
+        'flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-lg transition-colors',
         'text-foreground/60 hover:text-foreground',
         active && 'text-foreground'
       )}
     >
       {icon}
-      <span className="text-[11px] leading-none">{label}</span>
+      <span className="text-xs leading-none">{label}</span>
     </button>
   );
 }
@@ -1298,7 +1298,7 @@ function CheckInBottomAction({
   onChange: (v: FeedCheckIn | null) => void;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-1 px-3 py-1 [&>button]:!p-0 [&>button]:!h-auto [&>button]:!bg-transparent [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:gap-1 [&>button]:text-foreground/60 [&>button:hover]:text-foreground [&_svg]:h-5 [&_svg]:w-5 [&_span]:text-[11px] [&_span]:leading-none">
+    <div className="flex flex-col items-center justify-center gap-1 px-3 py-3 [&>button]:!p-0 [&>button]:!h-auto [&>button]:!bg-transparent [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:gap-1 [&>button]:text-foreground/60 [&>button:hover]:text-foreground [&_svg]:h-[22px] [&_svg]:w-[22px] [&_span]:text-xs [&_span]:leading-none">
       <CheckInPicker value={value} onChange={onChange} />
     </div>
   );
@@ -1312,7 +1312,7 @@ function WithBottomAction({
   onChange: (v: FeedTaggedPerson[]) => void;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-1 px-3 py-1 [&>button]:!p-0 [&>button]:!h-auto [&>button]:!bg-transparent [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:gap-1 [&>button]:text-foreground/60 [&>button:hover]:text-foreground [&_svg]:h-5 [&_svg]:w-5 [&_span]:text-[11px] [&_span]:leading-none">
+    <div className="flex flex-col items-center justify-center gap-1 px-3 py-3 [&>button]:!p-0 [&>button]:!h-auto [&>button]:!bg-transparent [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:gap-1 [&>button]:text-foreground/60 [&>button:hover]:text-foreground [&_svg]:h-[22px] [&_svg]:w-[22px] [&_span]:text-xs [&_span]:leading-none">
       <WithPeoplePicker value={value} onChange={onChange} />
     </div>
   );
