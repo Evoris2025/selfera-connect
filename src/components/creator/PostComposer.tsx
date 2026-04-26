@@ -49,6 +49,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
 import { useFeedData, type StudioAudience, type PostBackground } from '@/contexts/FeedDataContext';
 import { toast } from '@/hooks/use-toast';
 import { useStudioDraft } from '@/hooks/useStudioDraft';
