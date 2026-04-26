@@ -542,11 +542,11 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
-      className="w-full max-h-[90vh] overflow-y-auto bg-background"
+      className="w-full flex flex-col flex-1 min-h-0 bg-background px-5 pt-4 pb-6"
     >
       {/* Header */}
       <div className="relative">
-        <div className="flex items-center justify-between px-3 py-3">
+        <div className="flex items-center justify-between py-3">
           <button
             onClick={onBack}
             className="p-2 -ml-1 rounded-full hover:bg-white/5 transition-colors"
@@ -594,7 +594,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       </div>
 
       {/* Body */}
-      <div className="p-5 space-y-3">
+      <div className="flex-1 flex flex-col min-h-0">
         {/* Identity row */}
         <div className="flex items-center gap-3">
           <div className="rounded-full p-[2px] bg-gradient-to-br from-fuchsia-500 via-violet-500 to-teal-400">
@@ -618,7 +618,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         </div>
 
         {/* Composer hero card */}
-        <div className="relative">
+        <div className="relative mt-4 flex-1 flex flex-col min-h-[260px]">
           {/* Gradient ring on focus or when warning is on */}
           <div
             className={cn(
@@ -636,7 +636,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
               maskComposite: 'exclude',
             }}
           />
-          <div className="relative rounded-2xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-md p-4">
+          <div className="relative rounded-2xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-md p-4 pb-14 flex-1 flex flex-col min-h-0">
             {state.contentWarning && (
               <div className="mb-3 flex items-center gap-2">
                 <Shield className="h-3.5 w-3.5 text-amber-400 shrink-0" />
@@ -656,10 +656,11 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
+                  className="flex-1 flex flex-col min-h-0"
                 >
                   {state.background ? (
                     <div
-                      className="rounded-xl p-6 min-h-[220px] flex items-center justify-center -mx-1"
+                      className="rounded-xl p-6 flex-1 min-h-[200px] flex items-center justify-center -mx-1"
                       style={backgroundStyle}
                     >
                       <Textarea
@@ -669,7 +670,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
                         onFocus={() => setComposerFocused(true)}
                         onBlur={() => setComposerFocused(false)}
                         maxLength={MAX_CHARACTERS}
-                        className="resize-none border-0 bg-transparent p-0 text-2xl font-semibold text-center focus-visible:ring-0 placeholder:text-current placeholder:opacity-60"
+                        className="flex-1 min-h-[200px] max-h-none resize-none border-0 bg-transparent p-0 text-2xl font-semibold text-center focus-visible:ring-0 placeholder:text-current placeholder:opacity-60"
                         style={{ color: 'inherit' }}
                       />
                     </div>
@@ -681,7 +682,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
                       onFocus={() => setComposerFocused(true)}
                       onBlur={() => setComposerFocused(false)}
                       maxLength={MAX_CHARACTERS}
-                      className="min-h-[200px] max-h-[50vh] resize-none border-0 bg-transparent p-0 text-base focus-visible:ring-0 placeholder:text-foreground/40"
+                      className="flex-1 min-h-[200px] max-h-none resize-none border-0 bg-transparent p-0 text-base focus-visible:ring-0 placeholder:text-foreground/40"
                     />
                   )}
                 </motion.div>
@@ -691,6 +692,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
+                  className="flex-1 min-h-0"
                 >
                   <ThreadComposer
                     items={state.threadItems}
