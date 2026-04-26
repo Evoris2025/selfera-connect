@@ -542,11 +542,11 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
-      className="w-full max-h-[90vh] overflow-y-auto bg-background"
+      className="w-full flex flex-col flex-1 min-h-0 bg-background px-5 pt-4 pb-6"
     >
       {/* Header */}
       <div className="relative">
-        <div className="flex items-center justify-between px-3 py-3">
+        <div className="flex items-center justify-between py-3">
           <button
             onClick={onBack}
             className="p-2 -ml-1 rounded-full hover:bg-white/5 transition-colors"
@@ -594,7 +594,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       </div>
 
       {/* Body */}
-      <div className="p-5 space-y-3">
+      <div className="flex-1 flex flex-col min-h-0">
         {/* Identity row */}
         <div className="flex items-center gap-3">
           <div className="rounded-full p-[2px] bg-gradient-to-br from-fuchsia-500 via-violet-500 to-teal-400">
@@ -618,7 +618,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         </div>
 
         {/* Composer hero card */}
-        <div className="relative">
+        <div className="relative mt-4 flex-1 flex flex-col min-h-[260px]">
           {/* Gradient ring on focus or when warning is on */}
           <div
             className={cn(
@@ -636,7 +636,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
               maskComposite: 'exclude',
             }}
           />
-          <div className="relative rounded-2xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-md p-4">
+          <div className="relative rounded-2xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-md p-4 pb-14 flex-1 flex flex-col min-h-0">
             {state.contentWarning && (
               <div className="mb-3 flex items-center gap-2">
                 <Shield className="h-3.5 w-3.5 text-amber-400 shrink-0" />
@@ -656,10 +656,11 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
+                  className="flex-1 flex flex-col min-h-0"
                 >
                   {state.background ? (
                     <div
-                      className="rounded-xl p-6 min-h-[220px] flex items-center justify-center -mx-1"
+                      className="rounded-xl p-6 flex-1 min-h-[200px] flex items-center justify-center -mx-1"
                       style={backgroundStyle}
                     >
                       <Textarea
@@ -669,7 +670,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
                         onFocus={() => setComposerFocused(true)}
                         onBlur={() => setComposerFocused(false)}
                         maxLength={MAX_CHARACTERS}
-                        className="resize-none border-0 bg-transparent p-0 text-2xl font-semibold text-center focus-visible:ring-0 placeholder:text-current placeholder:opacity-60"
+                        className="flex-1 min-h-[200px] max-h-none resize-none border-0 bg-transparent p-0 text-2xl font-semibold text-center focus-visible:ring-0 placeholder:text-current placeholder:opacity-60"
                         style={{ color: 'inherit' }}
                       />
                     </div>
@@ -681,7 +682,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
                       onFocus={() => setComposerFocused(true)}
                       onBlur={() => setComposerFocused(false)}
                       maxLength={MAX_CHARACTERS}
-                      className="min-h-[200px] max-h-[50vh] resize-none border-0 bg-transparent p-0 text-base focus-visible:ring-0 placeholder:text-foreground/40"
+                      className="flex-1 min-h-[200px] max-h-none resize-none border-0 bg-transparent p-0 text-base focus-visible:ring-0 placeholder:text-foreground/40"
                     />
                   )}
                 </motion.div>
@@ -691,6 +692,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
+                  className="flex-1 min-h-0"
                 >
                   <ThreadComposer
                     items={state.threadItems}
@@ -702,7 +704,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
             </AnimatePresence>
 
             {/* Selected topic chips + Aa popover footer */}
-            <div className="mt-3 flex items-end justify-between gap-2">
+            <div className="absolute inset-x-4 bottom-4 flex items-end justify-between gap-2">
               <div className="flex flex-wrap gap-1.5 flex-1 min-w-0">
                 {state.selectedTags.length === 0 ? (
                   <span className="text-[11px] text-foreground/40">
@@ -775,7 +777,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
 
         {/* Selected topic chips (above utility row, below card) */}
         {state.selectedTags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
+          <div className="mt-3 flex flex-wrap gap-1.5">
             {state.selectedTags.map((tagId) => (
               <span
                 key={tagId}
@@ -804,7 +806,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           state.lifeEvent ||
           state.fundraiser ||
           state.scheduledDate) && (
-          <div className="flex flex-wrap gap-2">
+          <div className="mt-3 flex flex-wrap gap-2">
             {state.feeling && (
               <Chip onRemove={() => update({ feeling: null })}>
                 <span>{state.feeling.emoji}</span>
@@ -904,7 +906,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         )}
 
         {/* Slim utility row */}
-        <div className="flex flex-wrap gap-2">
+        <div className="mt-3 flex flex-wrap gap-2">
           <UtilityPill
             icon={<Plus className="h-3.5 w-3.5" />}
             label={`Topics (${state.selectedTags.length}/5)`}
@@ -970,12 +972,12 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         <div className="mt-4 border-t border-white/5 pt-3">
           <div className="flex justify-around py-3">
             <BottomAction
-              icon={<Plus className="h-5 w-5" />}
+              icon={<Plus className="h-[22px] w-[22px]" />}
               label="Media"
               onClick={() => setMediaSheetOpen(true)}
             />
             <BottomAction
-              icon={<MessageSquare className="h-5 w-5" />}
+              icon={<MessageSquare className="h-[22px] w-[22px]" />}
               label="Thread"
               active={hasThread}
               onClick={toggleThreadMode}
@@ -1276,13 +1278,13 @@ function BottomAction({
       type="button"
       onClick={onClick}
       className={cn(
-        'flex flex-col items-center justify-center gap-1 px-3 py-1 rounded-lg transition-colors',
+        'flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-lg transition-colors',
         'text-foreground/60 hover:text-foreground',
         active && 'text-foreground'
       )}
     >
       {icon}
-      <span className="text-[11px] leading-none">{label}</span>
+      <span className="text-xs leading-none">{label}</span>
     </button>
   );
 }
@@ -1296,7 +1298,7 @@ function CheckInBottomAction({
   onChange: (v: FeedCheckIn | null) => void;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-1 px-3 py-1 [&>button]:!p-0 [&>button]:!h-auto [&>button]:!bg-transparent [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:gap-1 [&>button]:text-foreground/60 [&>button:hover]:text-foreground [&_svg]:h-5 [&_svg]:w-5 [&_span]:text-[11px] [&_span]:leading-none">
+    <div className="flex flex-col items-center justify-center gap-1 px-3 py-3 [&>button]:!p-0 [&>button]:!h-auto [&>button]:!bg-transparent [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:gap-1 [&>button]:text-foreground/60 [&>button:hover]:text-foreground [&_svg]:h-[22px] [&_svg]:w-[22px] [&_span]:text-xs [&_span]:leading-none">
       <CheckInPicker value={value} onChange={onChange} />
     </div>
   );
@@ -1310,7 +1312,7 @@ function WithBottomAction({
   onChange: (v: FeedTaggedPerson[]) => void;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-1 px-3 py-1 [&>button]:!p-0 [&>button]:!h-auto [&>button]:!bg-transparent [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:gap-1 [&>button]:text-foreground/60 [&>button:hover]:text-foreground [&_svg]:h-5 [&_svg]:w-5 [&_span]:text-[11px] [&_span]:leading-none">
+    <div className="flex flex-col items-center justify-center gap-1 px-3 py-3 [&>button]:!p-0 [&>button]:!h-auto [&>button]:!bg-transparent [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:gap-1 [&>button]:text-foreground/60 [&>button:hover]:text-foreground [&_svg]:h-[22px] [&_svg]:w-[22px] [&_span]:text-xs [&_span]:leading-none">
       <WithPeoplePicker value={value} onChange={onChange} />
     </div>
   );
