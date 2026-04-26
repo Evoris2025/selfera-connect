@@ -668,7 +668,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
                   onFocus={() => setComposerFocused(true)}
                   onBlur={() => setComposerFocused(false)}
                   maxLength={MAX_CHARACTERS}
-                  className="flex-1 min-h-[180px] max-h-none resize-none border-0 bg-transparent p-0 text-lg focus-visible:ring-0 placeholder:text-foreground/35"
+                  className="flex-1 min-h-[160px] max-h-none resize-none border-0 bg-transparent p-0 text-lg focus-visible:ring-0 placeholder:text-foreground/35"
                 />
               )}
             </motion.div>
