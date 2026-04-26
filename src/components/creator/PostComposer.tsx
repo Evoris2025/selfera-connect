@@ -49,6 +49,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
 import { useFeedData, type StudioAudience, type PostBackground } from '@/contexts/FeedDataContext';
 import { toast } from '@/hooks/use-toast';
 import { useStudioDraft } from '@/hooks/useStudioDraft';
@@ -243,6 +244,7 @@ const DEFAULT_STATE: ComposerState = {
 export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { avatarUrl, displayName: avatarDisplayName } = useCurrentUserAvatar();
   const { createPost, createExpression, schedulePublish, getDraft } = useFeedData();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -329,7 +331,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
   const update = <K extends keyof ComposerState>(patch: Pick<ComposerState, K>) =>
     setState((s) => ({ ...s, ...patch }));
 
-  const displayName = user?.email?.split('@')[0] || 'You';
+  const displayName = avatarDisplayName || user?.email?.split('@')[0] || 'You';
   const userInitial = displayName.charAt(0).toUpperCase();
 
   const handleMediaSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -540,7 +542,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
-      className="flex flex-col h-full min-h-dvh bg-background"
+      className="w-full max-h-[90vh] overflow-y-auto bg-background"
     >
       {/* Header */}
       <div className="relative">
@@ -592,12 +594,12 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       </div>
 
       {/* Body */}
-      <div className="flex-1 overflow-y-auto px-3 pt-4 pb-32 space-y-4">
+      <div className="p-5 space-y-3">
         {/* Identity row */}
         <div className="flex items-center gap-3">
           <div className="rounded-full p-[2px] bg-gradient-to-br from-fuchsia-500 via-violet-500 to-teal-400">
             <Avatar className="h-10 w-10 border-2 border-background">
-              <AvatarImage src="" alt={displayName} />
+              <AvatarImage src={avatarUrl} alt={displayName} />
               <AvatarFallback className="bg-secondary text-secondary-foreground text-sm">
                 {userInitial}
               </AvatarFallback>
@@ -679,7 +681,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
                       onFocus={() => setComposerFocused(true)}
                       onBlur={() => setComposerFocused(false)}
                       maxLength={MAX_CHARACTERS}
-                      className="min-h-[140px] resize-none border-0 bg-transparent p-0 text-base focus-visible:ring-0 placeholder:text-foreground/40"
+                      className="min-h-[200px] max-h-[50vh] resize-none border-0 bg-transparent p-0 text-base focus-visible:ring-0 placeholder:text-foreground/40"
                     />
                   )}
                 </motion.div>
@@ -964,31 +966,29 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         {showTopicsError && state.selectedTags.length === 0 && (
           <p className="text-xs text-destructive -mt-2">Please select at least one topic.</p>
         )}
-      </div>
-
-      {/* Sticky bottom action bar — 4 evenly spaced icons */}
-      <div className="sticky bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-white/5">
-        <div className="flex items-stretch justify-between px-4 py-2.5">
-          <BottomAction
-            icon={<Plus className="h-5 w-5" />}
-            label="Media"
-            onClick={() => setMediaSheetOpen(true)}
-          />
-          <BottomAction
-            icon={<MessageSquare className="h-5 w-5" />}
-            label="Thread"
-            active={hasThread}
-            onClick={toggleThreadMode}
-          />
-          {/* Check in — open via the existing CheckInPicker trigger inline */}
-          <CheckInBottomAction
-            value={state.checkIn}
-            onChange={(v) => update({ checkIn: v })}
-          />
-          <WithBottomAction
-            value={state.taggedPeople}
-            onChange={(v) => update({ taggedPeople: v })}
-          />
+        {/* Bottom action bar — in normal flow, separated by hairline */}
+        <div className="mt-4 border-t border-white/5 pt-3">
+          <div className="flex justify-around py-3">
+            <BottomAction
+              icon={<Plus className="h-5 w-5" />}
+              label="Media"
+              onClick={() => setMediaSheetOpen(true)}
+            />
+            <BottomAction
+              icon={<MessageSquare className="h-5 w-5" />}
+              label="Thread"
+              active={hasThread}
+              onClick={toggleThreadMode}
+            />
+            <CheckInBottomAction
+              value={state.checkIn}
+              onChange={(v) => update({ checkIn: v })}
+            />
+            <WithBottomAction
+              value={state.taggedPeople}
+              onChange={(v) => update({ taggedPeople: v })}
+            />
+          </div>
         </div>
       </div>
 
@@ -1276,13 +1276,13 @@ function BottomAction({
       type="button"
       onClick={onClick}
       className={cn(
-        'flex flex-1 flex-col items-center justify-center gap-0.5 py-1 rounded-lg transition-colors',
-        'text-foreground/70 hover:text-foreground hover:bg-white/5',
+        'flex flex-col items-center justify-center gap-1 px-3 py-1 rounded-lg transition-colors',
+        'text-foreground/60 hover:text-foreground',
         active && 'text-foreground'
       )}
     >
       {icon}
-      <span className="text-[10px] leading-none">{label}</span>
+      <span className="text-[11px] leading-none">{label}</span>
     </button>
   );
 }
@@ -1296,7 +1296,7 @@ function CheckInBottomAction({
   onChange: (v: FeedCheckIn | null) => void;
 }) {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-0.5 py-1 [&>button]:!p-0 [&>button]:!h-auto [&>button]:!bg-transparent [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:gap-0.5 [&>button]:text-foreground/70 [&>button:hover]:text-foreground">
+    <div className="flex flex-col items-center justify-center gap-1 px-3 py-1 [&>button]:!p-0 [&>button]:!h-auto [&>button]:!bg-transparent [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:gap-1 [&>button]:text-foreground/60 [&>button:hover]:text-foreground [&_svg]:h-5 [&_svg]:w-5 [&_span]:text-[11px] [&_span]:leading-none">
       <CheckInPicker value={value} onChange={onChange} />
     </div>
   );
@@ -1310,7 +1310,7 @@ function WithBottomAction({
   onChange: (v: FeedTaggedPerson[]) => void;
 }) {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-0.5 py-1 [&>button]:!p-0 [&>button]:!h-auto [&>button]:!bg-transparent [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:gap-0.5 [&>button]:text-foreground/70 [&>button:hover]:text-foreground">
+    <div className="flex flex-col items-center justify-center gap-1 px-3 py-1 [&>button]:!p-0 [&>button]:!h-auto [&>button]:!bg-transparent [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:gap-1 [&>button]:text-foreground/60 [&>button:hover]:text-foreground [&_svg]:h-5 [&_svg]:w-5 [&_span]:text-[11px] [&_span]:leading-none">
       <WithPeoplePicker value={value} onChange={onChange} />
     </div>
   );
