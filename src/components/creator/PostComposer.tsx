@@ -594,7 +594,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       </div>
 
       {/* Body */}
-      <div className="flex-1 overflow-y-auto p-5 space-y-3">
+      <div className="p-5 space-y-3">
         {/* Identity row */}
         <div className="flex items-center gap-3">
           <div className="rounded-full p-[2px] bg-gradient-to-br from-fuchsia-500 via-violet-500 to-teal-400">
