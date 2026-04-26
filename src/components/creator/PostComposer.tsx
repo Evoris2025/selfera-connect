@@ -1276,13 +1276,13 @@ function BottomAction({
       type="button"
       onClick={onClick}
       className={cn(
-        'flex flex-1 flex-col items-center justify-center gap-0.5 py-1 rounded-lg transition-colors',
-        'text-foreground/70 hover:text-foreground hover:bg-white/5',
+        'flex flex-col items-center justify-center gap-1 px-3 py-1 rounded-lg transition-colors',
+        'text-foreground/60 hover:text-foreground',
         active && 'text-foreground'
       )}
     >
       {icon}
-      <span className="text-[10px] leading-none">{label}</span>
+      <span className="text-[11px] leading-none">{label}</span>
     </button>
   );
 }
