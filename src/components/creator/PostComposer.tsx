@@ -1177,109 +1177,73 @@ function Chip({
   );
 }
 
-function UtilityPill({
+function ToolbarIcon({
   icon,
   label,
   active,
   onClick,
-  classNameActive,
-  classNameIdle,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  active: boolean;
-  onClick: () => void;
-  classNameActive: string;
-  classNameIdle: string;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        'inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-xs font-medium transition-all',
-        active ? classNameActive : classNameIdle
-      )}
-    >
-      {icon}
-      <span>{label}</span>
-    </button>
-  );
-}
-
-function SheetTile({
-  icon,
-  label,
-  onClick,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="flex flex-col items-center justify-center gap-2 p-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] transition-colors text-foreground/80 hover:text-foreground"
-    >
-      {icon}
-      <span className="text-[11px]">{label}</span>
-    </button>
-  );
-}
-
-function BottomAction({
-  icon,
-  label,
-  active,
-  onClick,
+  dot,
+  ringError,
 }: {
   icon: React.ReactNode;
   label: string;
   active?: boolean;
   onClick: () => void;
+  dot?: boolean;
+  ringError?: boolean;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      title={label}
+      aria-label={label}
       className={cn(
-        'flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-lg transition-colors',
-        'text-foreground/60 hover:text-foreground',
-        active && 'text-foreground'
+        'relative w-9 h-9 rounded-full flex items-center justify-center transition-colors',
+        active
+          ? 'text-fuchsia-300 bg-fuchsia-500/10'
+          : 'text-foreground/60 hover:text-foreground hover:bg-white/5',
+        ringError && 'ring-1 ring-destructive/60'
       )}
     >
       {icon}
-      <span className="text-xs leading-none">{label}</span>
+      {dot && (
+        <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-fuchsia-400" />
+      )}
     </button>
   );
 }
 
-/** Wraps the existing CheckInPicker so it visually matches the bottom bar. */
-function CheckInBottomAction({
-  value,
-  onChange,
+/**
+ * Wraps a picker component (which renders its own trigger button) so it
+ * visually matches the toolbar: 36px circular ghost button, icon-only.
+ */
+function ToolbarSlot({
+  children,
+  label,
+  active,
 }: {
-  value: FeedCheckIn | null;
-  onChange: (v: FeedCheckIn | null) => void;
+  children: React.ReactNode;
+  label: string;
+  active?: boolean;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-1 px-3 py-3 [&>button]:!p-0 [&>button]:!h-auto [&>button]:!bg-transparent [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:gap-1 [&>button]:text-foreground/60 [&>button:hover]:text-foreground [&_svg]:h-[22px] [&_svg]:w-[22px] [&_span]:text-xs [&_span]:leading-none">
-      <CheckInPicker value={value} onChange={onChange} />
-    </div>
-  );
-}
-
-function WithBottomAction({
-  value,
-  onChange,
-}: {
-  value: FeedTaggedPerson[];
-  onChange: (v: FeedTaggedPerson[]) => void;
-}) {
-  return (
-    <div className="flex flex-col items-center justify-center gap-1 px-3 py-3 [&>button]:!p-0 [&>button]:!h-auto [&>button]:!bg-transparent [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:gap-1 [&>button]:text-foreground/60 [&>button:hover]:text-foreground [&_svg]:h-[22px] [&_svg]:w-[22px] [&_span]:text-xs [&_span]:leading-none">
-      <WithPeoplePicker value={value} onChange={onChange} />
+    <div
+      title={label}
+      aria-label={label}
+      className={cn(
+        'inline-flex items-center justify-center',
+        '[&>button]:!w-9 [&>button]:!h-9 [&>button]:!p-0 [&>button]:!rounded-full',
+        '[&>button]:!bg-transparent [&>button:hover]:!bg-white/5',
+        '[&>button]:!border-0 [&>button]:!shadow-none [&>button]:!gap-0',
+        '[&>button>span]:hidden',
+        '[&_svg]:h-5 [&_svg]:w-5',
+        active
+          ? '[&>button]:!text-fuchsia-300 [&>button]:!bg-fuchsia-500/10'
+          : '[&>button]:!text-foreground/60 [&>button:hover]:!text-foreground'
+      )}
+    >
+      {children}
     </div>
   );
 }
