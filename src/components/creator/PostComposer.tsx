@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
@@ -8,12 +8,19 @@ import {
   X,
   Loader2,
   MessageSquare,
-  MoreHorizontal,
-  ChevronDown,
-  ChevronUp,
   Heart,
   PartyPopper,
   Sparkles,
+  Shield,
+  Settings2,
+  BarChart3,
+  Plus,
+  MapPin,
+  Users,
+  FileText,
+  Type as TypeIcon,
+  Smile,
+  Calendar,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -21,6 +28,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -29,18 +37,23 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from '@/components/ui/sheet';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { useAuth } from '@/contexts/AuthContext';
 import { useFeedData, type StudioAudience, type PostBackground } from '@/contexts/FeedDataContext';
 import { toast } from '@/hooks/use-toast';
 import { useStudioDraft } from '@/hooks/useStudioDraft';
 import { useLinkPreview } from '@/hooks/useLinkPreview';
 import { TopicTagSelector } from './shared/TopicTagSelector';
-import { ContentWarningToggle } from './shared/ContentWarningToggle';
 import { AudienceSelector } from './shared/AudienceSelector';
 import { CrossPostToggles, type CrossPostState } from './shared/CrossPostToggles';
 import {
@@ -56,7 +69,7 @@ import {
   GifData,
   ThreadComposer,
   ThreadItem,
-  BackgroundPicker,
+  POST_BACKGROUND_PRESETS,
   CheckInPicker,
   WithPeoplePicker,
   CustomAudienceDialog,
@@ -102,8 +115,6 @@ function deriveTitle(state: ComposerState): string {
   return 'Post';
 }
 
-/** Render a styled background + caption to a PNG blob URL. Used for
- *  text-only posts that are also fan-out as Expressions. */
 async function renderBackgroundToPng(bg: PostBackground, caption: string): Promise<string | undefined> {
   try {
     const W = 720;
@@ -114,9 +125,7 @@ async function renderBackgroundToPng(bg: PostBackground, caption: string): Promi
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Background
     if (bg.type === 'gradient' && bg.value.startsWith('linear-gradient')) {
-      // Crude parser: accept "linear-gradient(135deg, hsl(...), hsl(...))"
       const match = bg.value.match(/linear-gradient\([^,]+,\s*([^)]+\)),\s*([^)]+\))\)/);
       const grad = ctx.createLinearGradient(0, 0, W, H);
       if (match) {
@@ -132,7 +141,6 @@ async function renderBackgroundToPng(bg: PostBackground, caption: string): Promi
     }
     ctx.fillRect(0, 0, W, H);
 
-    // Caption
     ctx.fillStyle = bg.textColor || '#ffffff';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -169,7 +177,7 @@ function wrapLines(ctx: CanvasRenderingContext2D, text: string, maxWidth: number
     }
   }
   if (current) lines.push(current);
-  return lines.slice(0, 8); // hard cap
+  return lines.slice(0, 8);
 }
 
 // ---- Composer state shape ---------------------------------------------------
@@ -181,6 +189,7 @@ interface ComposerState {
   customAudience: FeedCustomAudience;
   contentWarning: boolean;
   contentWarningType: ContentWarningType;
+  contentWarningReason: string;
   mediaPreviewUrls: string[];
   mediaTypes: Array<'image' | 'video'>;
   selectedGifUrl: string | null;
@@ -190,7 +199,7 @@ interface ComposerState {
   poll: PollData | null;
   feeling: FeelingActivity | null;
   location: Location | null;
-  scheduledDate: number | null; // epoch ms
+  scheduledDate: number | null;
   checkIn: FeedCheckIn | null;
   taggedPeople: FeedTaggedPerson[];
   commentPermission: FeedCommentPermission;
@@ -208,6 +217,7 @@ const DEFAULT_STATE: ComposerState = {
   customAudience: { include: [], exclude: [] },
   contentWarning: false,
   contentWarningType: null,
+  contentWarningReason: '',
   mediaPreviewUrls: [],
   mediaTypes: [],
   selectedGifUrl: null,
@@ -239,13 +249,19 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
 
   const [state, setState] = useState<ComposerState>(DEFAULT_STATE);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [composerFocused, setComposerFocused] = useState(false);
   const [customDialogOpen, setCustomDialogOpen] = useState(false);
   const [lifeEventOpen, setLifeEventOpen] = useState(false);
   const [fundraiserOpen, setFundraiserOpen] = useState(false);
+  const [topicsOpen, setTopicsOpen] = useState(false);
   const [advancedOpen, setAdvancedOpen] = useState(false);
+  const [mediaSheetOpen, setMediaSheetOpen] = useState(false);
+  const [showTopicsError, setShowTopicsError] = useState(false);
   const [dismissedUrls, setDismissedUrls] = useState<Set<string>>(new Set());
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
 
-  // ---- Resume from draft (?draftId=) ----------------------------------------
+  // ---- Resume from draft ----
   const draftIdParam = searchParams.get('draftId') || undefined;
   useEffect(() => {
     if (!draftIdParam) return;
@@ -255,12 +271,11 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
     setState((prev) => ({ ...prev, ...DEFAULT_STATE, ...data }));
   }, [draftIdParam, getDraft]);
 
-  // ---- Link preview ---------------------------------------------------------
+  // ---- Link preview ----
   const { preview, loading: previewLoading, clear: clearPreview } = useLinkPreview(state.content);
   const previewUrl = preview?.url;
   const showLinkPreview = !!preview && !!previewUrl && !dismissedUrls.has(previewUrl);
 
-  // Persist preview onto state.linkPreview so it lands in the payload
   useEffect(() => {
     if (showLinkPreview && preview) {
       setState((s) =>
@@ -279,7 +294,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
     clearPreview();
   };
 
-  // ---- Derived flags --------------------------------------------------------
+  // ---- Derived flags ----
   const hasMedia = state.mediaPreviewUrls.length > 0 || !!state.selectedGifUrl;
   const hasPoll = !!state.poll;
   const hasThread = state.composerMode === 'thread';
@@ -301,9 +316,9 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
     !!state.lifeEvent ||
     !!state.fundraiser;
 
-  // ---- Drafts auto-save -----------------------------------------------------
+  // ---- Drafts ----
   const draftTitle = useMemo(() => deriveTitle(state), [state]);
-  const { discard, persist } = useStudioDraft<Record<string, unknown>>({
+  const { discard } = useStudioDraft<Record<string, unknown>>({
     kind: 'post',
     data: state as unknown as Record<string, unknown>,
     title: draftTitle,
@@ -311,7 +326,6 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
     existingDraftId: draftIdParam,
   });
 
-  // ---- Handlers -------------------------------------------------------------
   const update = <K extends keyof ComposerState>(patch: Pick<ComposerState, K>) =>
     setState((s) => ({ ...s, ...patch }));
 
@@ -329,6 +343,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       selectedGifUrl: null,
       background: null,
     });
+    event.target.value = '';
   };
 
   const removeMedia = (i: number) =>
@@ -359,9 +374,8 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
     if (next === 'custom') setCustomDialogOpen(true);
   };
 
-  // ---- Build the createPost payload ----------------------------------------
+  // ---- Build payload ----
   const buildPostPayload = () => {
-    // Primary media (legacy single-media field stays populated for back-compat)
     let mediaUrl: string | undefined;
     let mediaType: 'image' | 'video' | undefined;
     if (state.selectedGifUrl) {
@@ -389,9 +403,6 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       enrichedContent = `📍 at ${state.location.name}\n\n${enrichedContent}`;
     }
 
-    // contentType is constrained by FeedPost (no 'thread' variant). Threads
-    // carry their truth on the `thread` array; the legacy field stays 'text'
-    // for back-compat with the existing feed renderer.
     const contentType: 'text' | 'image' | 'video' =
       state.composerMode === 'thread'
         ? 'text'
@@ -401,7 +412,6 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         ? 'image'
         : 'text';
 
-    // Poll → FeedPoll (with computed closesAt)
     let feedPoll: FeedPoll | undefined;
     if (state.poll) {
       const durationMs = state.poll.durationMs ?? state.poll.durationHours * 3_600_000;
@@ -426,12 +436,8 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       tags: state.selectedTags,
       contentType,
       media: mediaUrl && mediaType ? { type: mediaType, url: mediaUrl } : undefined,
-      // Phase 4 additive fields
       audience: state.audience,
-      customAudience:
-        state.audience === 'custom'
-          ? state.customAudience
-          : undefined,
+      customAudience: state.audience === 'custom' ? state.customAudience : undefined,
       background: canShowBackground && state.background ? state.background : undefined,
       checkIn: state.checkIn || undefined,
       taggedPeople: state.taggedPeople.length > 0 ? state.taggedPeople : undefined,
@@ -454,12 +460,17 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
   };
 
   const handleSubmit = async () => {
-    if (!canPost) return;
+    if (!canPost) {
+      if (state.selectedTags.length === 0) {
+        setShowTopicsError(true);
+        setTopicsOpen(true);
+      }
+      return;
+    }
     setIsSubmitting(true);
     try {
       const payload = buildPostPayload();
 
-      // Schedule branch
       if (state.scheduledDate && state.scheduledDate > Date.now()) {
         schedulePublish({
           kind: 'post',
@@ -475,10 +486,8 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         return;
       }
 
-      // Immediate publish
       createPost(payload);
 
-      // Cross-post: also share as Expression
       if (state.crossPost.alsoShareAsExpression) {
         let mediaUrlForExpr = payload.media?.url;
         let mediaTypeForExpr: 'image' | 'video' = (payload.media?.type as 'image' | 'video') || 'image';
@@ -517,152 +526,332 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
     }
   };
 
-  // ---- Render ---------------------------------------------------------------
+  // ---- Render ----
   const backgroundStyle = state.background
     ? { background: state.background.value, color: state.background.textColor || '#ffffff' }
     : undefined;
 
+  const utilityActive =
+    'border border-transparent bg-gradient-to-r from-fuchsia-500/20 via-violet-500/20 to-teal-400/20 text-foreground';
+  const utilityIdle = 'bg-white/[0.04] hover:bg-white/[0.08] text-foreground/80';
+
   return (
     <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -8 }}
       className="flex flex-col h-full min-h-dvh bg-background"
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-border">
-        <button onClick={onBack} className="p-2 -ml-2 rounded-full hover:bg-secondary transition-colors">
-          <ArrowLeft className="h-5 w-5" />
-        </button>
-        <h2 className="font-semibold">{state.scheduledDate ? 'Schedule Post' : 'Create Post'}</h2>
-        <div className="flex items-center gap-2">
-          <Button
-            size="sm"
-            onClick={handleSubmit}
-            disabled={!canPost || isSubmitting}
-            className="gradient-brand text-white"
+      <div className="relative">
+        <div className="flex items-center justify-between px-3 py-3">
+          <button
+            onClick={onBack}
+            className="p-2 -ml-1 rounded-full hover:bg-white/5 transition-colors"
+            aria-label="Back"
           >
-            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : state.scheduledDate ? 'Schedule' : 'Post'}
-          </Button>
-          <button onClick={onBack} className="p-2 hover:bg-secondary transition-colors">
-            <X className="h-6 w-6" />
+            <ArrowLeft className="h-5 w-5" />
           </button>
+          <div className="flex items-center gap-2">
+            <FileText className="h-4 w-4 text-foreground/60" />
+            <h2 className="text-sm font-semibold gradient-brand-text">
+              {state.scheduledDate ? 'Schedule Post' : 'Create Post'}
+            </h2>
+          </div>
+          <div className="flex items-center gap-1">
+            <Button
+              size="sm"
+              onClick={handleSubmit}
+              disabled={!canPost || isSubmitting}
+              className={cn(
+                'h-8 px-4 rounded-full text-xs font-semibold transition-all',
+                canPost && !isSubmitting
+                  ? 'gradient-brand text-white shadow-md shadow-fuchsia-500/20'
+                  : 'bg-white/5 text-foreground/40 hover:bg-white/5'
+              )}
+            >
+              {isSubmitting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : state.scheduledDate ? (
+                'Schedule'
+              ) : (
+                'Post'
+              )}
+            </Button>
+            <button
+              onClick={onBack}
+              className="p-2 rounded-full hover:bg-white/5 transition-colors"
+              aria-label="Close"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
         </div>
+        {/* gradient hairline */}
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-fuchsia-500/40 to-transparent opacity-60" />
       </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {/* Author Row */}
+      {/* Body */}
+      <div className="flex-1 overflow-y-auto px-3 pt-4 pb-32 space-y-4">
+        {/* Identity row */}
         <div className="flex items-center gap-3">
-          <Avatar className="h-10 w-10">
-            <AvatarImage src="" alt={displayName} />
-            <AvatarFallback className="bg-secondary text-secondary-foreground">{userInitial}</AvatarFallback>
-          </Avatar>
-          <div className="flex-1">
-            <p className="font-medium text-sm">{displayName}</p>
+          <div className="rounded-full p-[2px] bg-gradient-to-br from-fuchsia-500 via-violet-500 to-teal-400">
+            <Avatar className="h-10 w-10 border-2 border-background">
+              <AvatarImage src="" alt={displayName} />
+              <AvatarFallback className="bg-secondary text-secondary-foreground text-sm">
+                {userInitial}
+              </AvatarFallback>
+            </Avatar>
+          </div>
+          <div className="flex-1 min-w-0 flex items-center gap-2 flex-wrap">
+            <div className="leading-tight">
+              <p className="font-semibold text-sm">{displayName}</p>
+              <p className="text-[11px] text-foreground/50">@{displayName.toLowerCase()}</p>
+            </div>
             <AudienceSelector value={state.audience} onChange={handleAudienceChange} size="sm" />
           </div>
-
-          {state.composerMode === 'simple' && (
+          {state.composerMode === 'simple' && state.content.length > 0 && (
             <CharacterCounter current={state.content.length} max={MAX_CHARACTERS} />
           )}
         </div>
 
-        {/* Active feeling/location chips */}
-        {(state.feeling || state.location) && (
-          <div className="flex flex-wrap gap-2">
-            {state.feeling && <FeelingActivityPicker value={state.feeling} onChange={(v) => update({ feeling: v })} />}
-            {state.location && <LocationPicker value={state.location} onChange={(v) => update({ location: v })} />}
-          </div>
-        )}
-
-        {state.checkIn && (
-          <CheckInPicker value={state.checkIn} onChange={(v) => update({ checkIn: v })} />
-        )}
-
-        {state.taggedPeople.length > 0 && (
-          <WithPeoplePicker value={state.taggedPeople} onChange={(v) => update({ taggedPeople: v })} />
-        )}
-
-        {state.scheduledDate && (
-          <ScheduleSelector
-            value={new Date(state.scheduledDate)}
-            onChange={(d) => update({ scheduledDate: d ? d.getTime() : null })}
+        {/* Composer hero card */}
+        <div className="relative">
+          {/* Gradient ring on focus or when warning is on */}
+          <div
+            className={cn(
+              'absolute -inset-px rounded-2xl pointer-events-none transition-opacity duration-200',
+              composerFocused || state.contentWarning ? 'opacity-100' : 'opacity-0'
+            )}
+            style={{
+              background: state.contentWarning
+                ? 'linear-gradient(135deg, hsl(35 95% 55%), hsl(15 90% 55%))'
+                : 'linear-gradient(135deg, hsl(310 90% 60%), hsl(265 85% 60%), hsl(180 70% 50%))',
+              padding: '1px',
+              WebkitMask:
+                'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
+              WebkitMaskComposite: 'xor',
+              maskComposite: 'exclude',
+            }}
           />
-        )}
-
-        {state.lifeEvent && (
-          <div className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-secondary border border-border">
-            <span className="text-xl">{state.lifeEvent.icon}</span>
-            <span className="text-sm font-medium">{state.lifeEvent.label}</span>
-            <button onClick={() => update({ lifeEvent: null })} className="ml-1 p-1 rounded hover:bg-background">
-              <X className="h-3 w-3" />
-            </button>
-          </div>
-        )}
-
-        {state.fundraiser && (
-          <div className="rounded-xl border border-warning/40 bg-warning/10 p-3">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm font-semibold">{state.fundraiser.title}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Goal: {state.fundraiser.currency} {state.fundraiser.goal.toLocaleString()}
-                </p>
+          <div className="relative rounded-2xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-md p-4">
+            {state.contentWarning && (
+              <div className="mb-3 flex items-center gap-2">
+                <Shield className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+                <Input
+                  value={state.contentWarningReason}
+                  onChange={(e) => update({ contentWarningReason: e.target.value })}
+                  placeholder="Reason (optional)"
+                  className="h-7 text-xs bg-transparent border-amber-500/30 focus-visible:ring-amber-500/40"
+                />
               </div>
-              <button onClick={() => update({ fundraiser: null })} className="p-1 rounded hover:bg-background">
-                <X className="h-3 w-3" />
-              </button>
+            )}
+
+            <AnimatePresence mode="wait">
+              {state.composerMode === 'simple' ? (
+                <motion.div
+                  key="simple"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  {state.background ? (
+                    <div
+                      className="rounded-xl p-6 min-h-[220px] flex items-center justify-center -mx-1"
+                      style={backgroundStyle}
+                    >
+                      <Textarea
+                        placeholder={`What's on your mind, ${displayName}?`}
+                        value={state.content}
+                        onChange={(e) => update({ content: e.target.value })}
+                        onFocus={() => setComposerFocused(true)}
+                        onBlur={() => setComposerFocused(false)}
+                        maxLength={MAX_CHARACTERS}
+                        className="resize-none border-0 bg-transparent p-0 text-2xl font-semibold text-center focus-visible:ring-0 placeholder:text-current placeholder:opacity-60"
+                        style={{ color: 'inherit' }}
+                      />
+                    </div>
+                  ) : (
+                    <Textarea
+                      placeholder={`What's on your mind, ${displayName}?`}
+                      value={state.content}
+                      onChange={(e) => update({ content: e.target.value })}
+                      onFocus={() => setComposerFocused(true)}
+                      onBlur={() => setComposerFocused(false)}
+                      maxLength={MAX_CHARACTERS}
+                      className="min-h-[140px] resize-none border-0 bg-transparent p-0 text-base focus-visible:ring-0 placeholder:text-foreground/40"
+                    />
+                  )}
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="thread"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <ThreadComposer
+                    items={state.threadItems}
+                    onItemsChange={(items) => update({ threadItems: items })}
+                    maxCharacters={MAX_CHARACTERS}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Selected topic chips + Aa popover footer */}
+            <div className="mt-3 flex items-end justify-between gap-2">
+              <div className="flex flex-wrap gap-1.5 flex-1 min-w-0">
+                {state.selectedTags.length === 0 ? (
+                  <span className="text-[11px] text-foreground/40">
+                    {state.selectedTags.length}/5 topics
+                  </span>
+                ) : (
+                  <span className="text-[11px] text-foreground/50 mr-1 self-center">
+                    {state.selectedTags.length}/5
+                  </span>
+                )}
+              </div>
+
+              {canShowBackground && state.composerMode === 'simple' && (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      className={cn(
+                        'shrink-0 h-9 w-9 rounded-full flex items-center justify-center text-sm font-bold transition',
+                        state.background
+                          ? 'ring-2 ring-fuchsia-500/60'
+                          : 'bg-white/[0.06] hover:bg-white/[0.12] text-foreground/70'
+                      )}
+                      style={state.background ? backgroundStyle : undefined}
+                      aria-label="Background style"
+                      title="Background"
+                    >
+                      Aa
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    align="end"
+                    className="w-auto p-3 bg-background/95 backdrop-blur-md border-white/10"
+                  >
+                    <div className="grid grid-cols-5 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => update({ background: null })}
+                        className={cn(
+                          'h-9 w-9 rounded-lg border-2 flex items-center justify-center transition bg-secondary',
+                          !state.background ? 'border-fuchsia-500' : 'border-transparent hover:border-foreground/30'
+                        )}
+                        title="Plain"
+                        aria-label="Plain background"
+                      >
+                        <TypeIcon className="h-4 w-4" />
+                      </button>
+                      {POST_BACKGROUND_PRESETS.map((preset, i) => {
+                        const active = state.background?.value === preset.value;
+                        return (
+                          <button
+                            key={i}
+                            type="button"
+                            onClick={() => update({ background: preset })}
+                            className={cn(
+                              'h-9 w-9 rounded-lg border-2 transition',
+                              active ? 'border-fuchsia-500' : 'border-transparent hover:border-foreground/30'
+                            )}
+                            style={{ background: preset.value }}
+                            aria-label={`Background ${i + 1}`}
+                          />
+                        );
+                      })}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              )}
             </div>
           </div>
-        )}
+        </div>
 
-        {/* Background picker (text-only posts) */}
-        {canShowBackground && (
-          <BackgroundPicker
-            value={state.background}
-            onChange={(bg) => update({ background: bg })}
-          />
-        )}
-
-        {/* Text Input - Simple or Thread mode */}
-        <AnimatePresence mode="wait">
-          {state.composerMode === 'simple' ? (
-            <motion.div key="simple" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              {state.background ? (
-                <div
-                  className="rounded-2xl p-8 min-h-[280px] flex items-center justify-center"
-                  style={backgroundStyle}
+        {/* Selected topic chips (above utility row, below card) */}
+        {state.selectedTags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {state.selectedTags.map((tagId) => (
+              <span
+                key={tagId}
+                className="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full bg-white/10 text-foreground/90"
+              >
+                #{tagId.length > 24 ? `${tagId.slice(0, 4)}…` : tagId}
+                <button
+                  onClick={() =>
+                    update({ selectedTags: state.selectedTags.filter((t) => t !== tagId) })
+                  }
+                  className="hover:text-foreground"
+                  aria-label="Remove topic"
                 >
-                  <Textarea
-                    placeholder={`What's on your mind, ${displayName}?`}
-                    value={state.content}
-                    onChange={(e) => update({ content: e.target.value })}
-                    maxLength={MAX_CHARACTERS}
-                    className="resize-none border-0 bg-transparent p-0 text-2xl font-semibold text-center focus-visible:ring-0 placeholder:text-current placeholder:opacity-60"
-                    style={{ color: 'inherit' }}
-                  />
-                </div>
-              ) : (
-                <Textarea
-                  placeholder={`What's on your mind, ${displayName}?`}
-                  value={state.content}
-                  onChange={(e) => update({ content: e.target.value })}
-                  maxLength={MAX_CHARACTERS}
-                  className="min-h-[120px] resize-none border-0 bg-transparent p-0 text-base focus-visible:ring-0 placeholder:text-muted-foreground"
-                />
-              )}
-            </motion.div>
-          ) : (
-            <motion.div key="thread" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <ThreadComposer
-                items={state.threadItems}
-                onItemsChange={(items) => update({ threadItems: items })}
-                maxCharacters={MAX_CHARACTERS}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Active context chips: feeling, location, check-in, with, life event, fundraiser, schedule */}
+        {(state.feeling ||
+          state.location ||
+          state.checkIn ||
+          state.taggedPeople.length > 0 ||
+          state.lifeEvent ||
+          state.fundraiser ||
+          state.scheduledDate) && (
+          <div className="flex flex-wrap gap-2">
+            {state.feeling && (
+              <Chip onRemove={() => update({ feeling: null })}>
+                <span>{state.feeling.emoji}</span>
+                <span>{state.feeling.label}</span>
+              </Chip>
+            )}
+            {state.location && (
+              <Chip onRemove={() => update({ location: null })}>
+                <MapPin className="h-3 w-3" />
+                {state.location.name}
+              </Chip>
+            )}
+            {state.checkIn && (
+              <Chip onRemove={() => update({ checkIn: null })}>
+                <MapPin className="h-3 w-3" />
+                {state.checkIn.name}
+              </Chip>
+            )}
+            {state.taggedPeople.length > 0 && (
+              <Chip onRemove={() => update({ taggedPeople: [] })}>
+                <Users className="h-3 w-3" />
+                with {state.taggedPeople.length}
+              </Chip>
+            )}
+            {state.lifeEvent && (
+              <Chip onRemove={() => update({ lifeEvent: null })}>
+                <span>{state.lifeEvent.icon}</span>
+                {state.lifeEvent.label}
+              </Chip>
+            )}
+            {state.fundraiser && (
+              <Chip onRemove={() => update({ fundraiser: null })}>
+                <Sparkles className="h-3 w-3" />
+                {state.fundraiser.title}
+              </Chip>
+            )}
+            {state.scheduledDate && (
+              <Chip onRemove={() => update({ scheduledDate: null })}>
+                <Calendar className="h-3 w-3" />
+                {new Date(state.scheduledDate).toLocaleString([], {
+                  month: 'short',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </Chip>
+            )}
+          </div>
+        )}
 
         {/* Link preview */}
         {(showLinkPreview || previewLoading) && (
@@ -673,7 +862,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           />
         )}
 
-        {/* GIF Preview */}
+        {/* GIF preview */}
         {state.selectedGifUrl && (
           <div className="relative rounded-xl overflow-hidden bg-secondary">
             <img src={state.selectedGifUrl} alt="" className="w-full max-h-64 object-contain" />
@@ -686,7 +875,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           </div>
         )}
 
-        {/* Media Previews */}
+        {/* Media previews */}
         {state.mediaPreviewUrls.length > 0 && (
           <div className={cn('grid gap-2', state.mediaPreviewUrls.length === 1 ? 'grid-cols-1' : 'grid-cols-2')}>
             {state.mediaPreviewUrls.map((url, index) => (
@@ -707,143 +896,276 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           </div>
         )}
 
-        {/* Poll */}
-        <PollCreator poll={state.poll} onPollChange={(p) => update({ poll: p })} />
+        {/* Poll (only renders inputs when toggled on; PollCreator handles its own visibility) */}
+        {state.poll && (
+          <PollCreator poll={state.poll} onPollChange={(p) => update({ poll: p })} />
+        )}
 
-        {/* Topic Tags */}
-        <TopicTagSelector
-          selectedTags={state.selectedTags}
-          onTagsChange={(tags) => update({ selectedTags: tags })}
-        />
-
-        {/* Content Warning */}
-        <ContentWarningToggle
-          enabled={state.contentWarning}
-          onEnabledChange={(v) => update({ contentWarning: v })}
-          warningType={state.contentWarningType}
-          onWarningTypeChange={(v) => update({ contentWarningType: v })}
-        />
-
-        {/* Cross-post toggles */}
-        <div className="rounded-xl border border-border bg-secondary/30 p-3">
-          <CrossPostToggles
-            source="post"
-            value={state.crossPost}
-            onChange={(v) => update({ crossPost: v })}
+        {/* Slim utility row */}
+        <div className="flex flex-wrap gap-2">
+          <UtilityPill
+            icon={<Plus className="h-3.5 w-3.5" />}
+            label={`Topics (${state.selectedTags.length}/5)`}
+            active={state.selectedTags.length > 0}
+            onClick={() => {
+              setShowTopicsError(false);
+              setTopicsOpen(true);
+            }}
+            classNameActive={utilityActive}
+            classNameIdle={cn(utilityIdle, showTopicsError && 'ring-1 ring-destructive/60')}
+          />
+          <UtilityPill
+            icon={<BarChart3 className="h-3.5 w-3.5" />}
+            label="Poll"
+            active={hasPoll}
+            onClick={() =>
+              update({
+                poll: hasPoll
+                  ? null
+                  : { options: [{ text: '' }, { text: '' }], multiSelect: false, durationHours: 24 },
+              })
+            }
+            classNameActive={utilityActive}
+            classNameIdle={utilityIdle}
+          />
+          <UtilityPill
+            icon={<Shield className="h-3.5 w-3.5" />}
+            label="Warning"
+            active={state.contentWarning}
+            onClick={() => update({ contentWarning: !state.contentWarning })}
+            classNameActive={utilityActive}
+            classNameIdle={utilityIdle}
+          />
+          <UtilityPill
+            icon={<Sparkles className="h-3.5 w-3.5 text-fuchsia-400" />}
+            label="Expression"
+            active={state.crossPost.alsoShareAsExpression}
+            onClick={() =>
+              update({
+                crossPost: {
+                  ...state.crossPost,
+                  alsoShareAsExpression: !state.crossPost.alsoShareAsExpression,
+                },
+              })
+            }
+            classNameActive={utilityActive}
+            classNameIdle={utilityIdle}
+          />
+          <UtilityPill
+            icon={<Settings2 className="h-3.5 w-3.5" />}
+            label="More"
+            active={false}
+            onClick={() => setAdvancedOpen(true)}
+            classNameActive={utilityActive}
+            classNameIdle={utilityIdle}
           />
         </div>
 
-        {/* Advanced section */}
-        <div className="rounded-xl border border-border">
-          <button
-            onClick={() => setAdvancedOpen((v) => !v)}
-            className="w-full flex items-center justify-between p-3 text-sm font-medium"
-          >
-            <span>Advanced</span>
-            {advancedOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-          </button>
-          {advancedOpen && (
-            <div className="px-3 pb-3 space-y-3 border-t border-border pt-3">
+        {showTopicsError && state.selectedTags.length === 0 && (
+          <p className="text-xs text-destructive -mt-2">Please select at least one topic.</p>
+        )}
+      </div>
+
+      {/* Sticky bottom action bar — 4 evenly spaced icons */}
+      <div className="sticky bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-white/5">
+        <div className="flex items-stretch justify-between px-4 py-2.5">
+          <BottomAction
+            icon={<Plus className="h-5 w-5" />}
+            label="Media"
+            onClick={() => setMediaSheetOpen(true)}
+          />
+          <BottomAction
+            icon={<MessageSquare className="h-5 w-5" />}
+            label="Thread"
+            active={hasThread}
+            onClick={toggleThreadMode}
+          />
+          {/* Check in — open via the existing CheckInPicker trigger inline */}
+          <CheckInBottomAction
+            value={state.checkIn}
+            onChange={(v) => update({ checkIn: v })}
+          />
+          <WithBottomAction
+            value={state.taggedPeople}
+            onChange={(v) => update({ taggedPeople: v })}
+          />
+        </div>
+      </div>
+
+      {/* Hidden file inputs */}
+      <input
+        ref={photoInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        onChange={handleMediaSelect}
+        className="hidden"
+      />
+      <input
+        ref={videoInputRef}
+        type="file"
+        accept="video/*"
+        onChange={handleMediaSelect}
+        className="hidden"
+      />
+
+      {/* Media picker sheet */}
+      <Sheet open={mediaSheetOpen} onOpenChange={setMediaSheetOpen}>
+        <SheetContent side="bottom" className="rounded-t-2xl bg-background/95 backdrop-blur-md border-white/10">
+          <SheetHeader className="text-left">
+            <SheetTitle>Add media</SheetTitle>
+            <SheetDescription>Choose what to attach to your post.</SheetDescription>
+          </SheetHeader>
+          <div className="mt-4 grid grid-cols-3 gap-3">
+            <SheetTile
+              icon={<ImageIcon className="h-5 w-5" />}
+              label="Photo"
+              onClick={() => {
+                setMediaSheetOpen(false);
+                setTimeout(() => photoInputRef.current?.click(), 100);
+              }}
+            />
+            <SheetTile
+              icon={<VideoIcon className="h-5 w-5" />}
+              label="Video"
+              onClick={() => {
+                setMediaSheetOpen(false);
+                setTimeout(() => videoInputRef.current?.click(), 100);
+              }}
+            />
+            <div className="flex flex-col items-center justify-center gap-2 p-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] transition-colors">
+              <GifPicker onSelect={(g) => { setMediaSheetOpen(false); handleGifSelect(g); }} />
+              <span className="text-[11px] text-foreground/70">GIF</span>
+            </div>
+          </div>
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            <div className="flex items-center justify-center gap-2 p-3 rounded-xl bg-white/[0.04]">
+              <FeelingActivityPicker
+                value={state.feeling}
+                onChange={(v) => { update({ feeling: v }); setMediaSheetOpen(false); }}
+              />
+              <span className="text-xs text-foreground/70 sr-only">Feeling</span>
+            </div>
+            <div className="flex items-center justify-center gap-2 p-3 rounded-xl bg-white/[0.04]">
+              <ScheduleSelector
+                value={state.scheduledDate ? new Date(state.scheduledDate) : null}
+                onChange={(d) => { update({ scheduledDate: d ? d.getTime() : null }); setMediaSheetOpen(false); }}
+              />
+            </div>
+          </div>
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            <button
+              onClick={() => { setMediaSheetOpen(false); setLifeEventOpen(true); }}
+              className="flex items-center justify-center gap-2 p-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-sm"
+            >
+              <PartyPopper className="h-4 w-4" /> Life event
+            </button>
+            <button
+              onClick={() => { setMediaSheetOpen(false); setFundraiserOpen(true); }}
+              className="flex items-center justify-center gap-2 p-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-sm"
+            >
+              <Sparkles className="h-4 w-4" /> Fundraiser
+            </button>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Topics sheet */}
+      <Sheet open={topicsOpen} onOpenChange={setTopicsOpen}>
+        <SheetContent
+          side="bottom"
+          className="rounded-t-2xl bg-background/95 backdrop-blur-md border-white/10 max-h-[85dvh] overflow-y-auto"
+        >
+          <SheetHeader className="text-left">
+            <SheetTitle>Add topics</SheetTitle>
+            <SheetDescription>Pick up to 5 topics to help others find your post.</SheetDescription>
+          </SheetHeader>
+          <div className="mt-4">
+            <TopicTagSelector
+              selectedTags={state.selectedTags}
+              onTagsChange={(tags) => {
+                update({ selectedTags: tags });
+                if (tags.length > 0) setShowTopicsError(false);
+              }}
+              maxTags={5}
+            />
+          </div>
+          <div className="mt-4 flex justify-end">
+            <Button
+              size="sm"
+              onClick={() => setTopicsOpen(false)}
+              className="gradient-brand text-white rounded-full px-4"
+            >
+              Done
+            </Button>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Advanced sheet */}
+      <Sheet open={advancedOpen} onOpenChange={setAdvancedOpen}>
+        <SheetContent side="bottom" className="rounded-t-2xl bg-background/95 backdrop-blur-md border-white/10">
+          <SheetHeader className="text-left">
+            <SheetTitle>Advanced</SheetTitle>
+            <SheetDescription>Fine-tune comments, reactions and cross-posting.</SheetDescription>
+          </SheetHeader>
+          <div className="mt-4 space-y-4">
+            <div className="space-y-1.5">
+              <Label className="text-sm">Who can comment</Label>
+              <Select
+                value={state.commentPermission}
+                onValueChange={(v) => update({ commentPermission: v as FeedCommentPermission })}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="everyone">Everyone</SelectItem>
+                  <SelectItem value="followers">Followers only</SelectItem>
+                  <SelectItem value="nobody">Nobody</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="reactions-off" className="text-sm flex items-center gap-2">
+                <Heart className="h-4 w-4 text-muted-foreground" />
+                Turn off reactions
+              </Label>
+              <Switch
+                id="reactions-off"
+                checked={state.reactionsDisabled}
+                onCheckedChange={(v) => update({ reactionsDisabled: v })}
+              />
+            </div>
+            {state.contentWarning && (
               <div className="space-y-1.5">
-                <Label className="text-sm">Who can comment</Label>
+                <Label className="text-sm">Warning type</Label>
                 <Select
-                  value={state.commentPermission}
-                  onValueChange={(v) => update({ commentPermission: v as FeedCommentPermission })}
+                  value={state.contentWarningType || ''}
+                  onValueChange={(v) => update({ contentWarningType: v as ContentWarningType })}
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue />
+                    <SelectValue placeholder="Select warning type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="everyone">Everyone</SelectItem>
-                    <SelectItem value="followers">Followers only</SelectItem>
-                    <SelectItem value="nobody">Nobody</SelectItem>
+                    <SelectItem value="sensitive">Sensitive content</SelectItem>
+                    <SelectItem value="triggering">Potentially triggering</SelectItem>
+                    <SelectItem value="graphic">Graphic content</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex items-center justify-between">
-                <Label htmlFor="reactions-off" className="text-sm flex items-center gap-2">
-                  <Heart className="h-4 w-4 text-muted-foreground" />
-                  Turn off reactions
-                </Label>
-                <Switch
-                  id="reactions-off"
-                  checked={state.reactionsDisabled}
-                  onCheckedChange={(v) => update({ reactionsDisabled: v })}
-                />
-              </div>
+            )}
+            <div className="pt-2 border-t border-white/5">
+              <CrossPostToggles
+                source="post"
+                value={state.crossPost}
+                onChange={(v) => update({ crossPost: v })}
+              />
             </div>
-          )}
-        </div>
-      </div>
-
-      {/* Action Bar */}
-      <div className="flex items-center gap-1 px-4 py-2 border-t border-border overflow-x-auto">
-        <label className="p-2 rounded-full hover:bg-secondary transition-colors cursor-pointer">
-          <ImageIcon className="h-5 w-5 text-primary" />
-          <input type="file" accept="image/*" multiple onChange={handleMediaSelect} className="hidden" />
-        </label>
-        <label className="p-2 rounded-full hover:bg-secondary transition-colors cursor-pointer">
-          <VideoIcon className="h-5 w-5 text-primary" />
-          <input type="file" accept="video/*" onChange={handleMediaSelect} className="hidden" />
-        </label>
-
-        <div className="h-5 w-px bg-border mx-1" />
-
-        <GifPicker onSelect={handleGifSelect} />
-
-        {!state.checkIn && (
-          <CheckInPicker value={null} onChange={(v) => update({ checkIn: v })} />
-        )}
-
-        {state.taggedPeople.length === 0 && (
-          <WithPeoplePicker value={[]} onChange={(v) => update({ taggedPeople: v })} />
-        )}
-
-        {!state.location && (
-          <LocationPicker value={null} onChange={(v) => update({ location: v })} />
-        )}
-
-        {!state.feeling && (
-          <FeelingActivityPicker value={null} onChange={(v) => update({ feeling: v })} />
-        )}
-
-        {!state.scheduledDate && (
-          <ScheduleSelector
-            value={null}
-            onChange={(d) => update({ scheduledDate: d ? d.getTime() : null })}
-          />
-        )}
-
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={toggleThreadMode}
-          className={cn(
-            'gap-2 text-muted-foreground hover:text-foreground',
-            state.composerMode === 'thread' && 'text-primary'
-          )}
-        >
-          <MessageSquare className="h-4 w-4" />
-          Thread
-        </Button>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
-              <MoreHorizontal className="h-4 w-4" />
-              More
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => setLifeEventOpen(true)}>
-              <PartyPopper className="h-4 w-4 mr-2" /> Life event
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setFundraiserOpen(true)}>
-              <Sparkles className="h-4 w-4 mr-2" /> Fundraiser
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+          </div>
+        </SheetContent>
+      </Sheet>
 
       {/* Dialogs */}
       <CustomAudienceDialog
@@ -865,5 +1187,110 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         onSave={(v) => update({ fundraiser: v })}
       />
     </motion.div>
+  );
+}
+
+// ---- Local UI atoms ---------------------------------------------------------
+
+function Chip({
+  children,
+  onRemove,
+}: {
+  children: React.ReactNode;
+  onRemove: () => void;
+}) {
+  return (
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs rounded-full bg-white/10 text-foreground/90">
+      {children}
+      <button onClick={onRemove} className="hover:text-foreground" aria-label="Remove">
+        <X className="h-3 w-3" />
+      </button>
+    </span>
+  );
+}
+
+function UtilityPill({
+  icon,
+  label,
+  active,
+  onClick,
+  classNameActive,
+  classNameIdle,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  active: boolean;
+  onClick: () => void;
+  classNameActive: string;
+  classNameIdle: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-xs font-medium transition-all',
+        active ? classNameActive : classNameIdle
+      )}
+    >
+      {icon}
+      <span>{label}</span>
+    </button>
+  );
+}
+
+function BottomAction({
+  icon,
+  label,
+  active,
+  onClick,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  active?: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'flex flex-1 flex-col items-center justify-center gap-0.5 py-1 rounded-lg transition-colors',
+        'text-foreground/70 hover:text-foreground hover:bg-white/5',
+        active && 'text-foreground'
+      )}
+    >
+      {icon}
+      <span className="text-[10px] leading-none">{label}</span>
+    </button>
+  );
+}
+
+/** Wraps the existing CheckInPicker so it visually matches the bottom bar. */
+function CheckInBottomAction({
+  value,
+  onChange,
+}: {
+  value: FeedCheckIn | null;
+  onChange: (v: FeedCheckIn | null) => void;
+}) {
+  return (
+    <div className="flex flex-1 flex-col items-center justify-center gap-0.5 py-1 [&>button]:!p-0 [&>button]:!h-auto [&>button]:!bg-transparent [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:gap-0.5 [&>button]:text-foreground/70 [&>button:hover]:text-foreground">
+      <CheckInPicker value={value} onChange={onChange} />
+    </div>
+  );
+}
+
+function WithBottomAction({
+  value,
+  onChange,
+}: {
+  value: FeedTaggedPerson[];
+  onChange: (v: FeedTaggedPerson[]) => void;
+}) {
+  return (
+    <div className="flex flex-1 flex-col items-center justify-center gap-0.5 py-1 [&>button]:!p-0 [&>button]:!h-auto [&>button]:!bg-transparent [&>button]:flex [&>button]:flex-col [&>button]:items-center [&>button]:gap-0.5 [&>button]:text-foreground/70 [&>button:hover]:text-foreground">
+      <WithPeoplePicker value={value} onChange={onChange} />
+    </div>
   );
 }
