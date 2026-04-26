@@ -609,26 +609,29 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         <div className="h-px w-full bg-gradient-to-r from-transparent via-fuchsia-500/40 to-transparent opacity-60" />
       </div>
 
-      {/* Identity row */}
-      <div className="shrink-0 px-5 py-4 flex items-start gap-3">
-        <div className="rounded-full p-[2px] bg-gradient-to-br from-fuchsia-500 via-violet-500 to-teal-400 shrink-0">
-          <Avatar className="h-11 w-11 border-2 border-background">
+      {/* Hero identity block */}
+      <div className="shrink-0 flex flex-col items-center text-center gap-3 px-5 pt-6 pb-6">
+        <div className="rounded-full p-1 bg-gradient-to-br from-fuchsia-500 via-violet-500 to-teal-400 shrink-0">
+          <Avatar className="h-32 w-32 border-2 border-background">
             <AvatarImage src={avatarUrl} alt={displayName} />
-            <AvatarFallback className="bg-secondary text-secondary-foreground text-sm">
+            <AvatarFallback className="bg-secondary text-secondary-foreground text-3xl font-semibold">
               {userInitial}
             </AvatarFallback>
           </Avatar>
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-base font-semibold leading-tight text-foreground">{displayName}</p>
-          <p className="text-xs text-foreground/50 leading-tight mt-0.5">@{displayName.toLowerCase()}</p>
-          <div className="mt-1.5">
+        <div className="flex flex-col items-center min-w-0">
+          <h1 className="text-4xl font-bold tracking-tight text-foreground leading-none truncate max-w-full">
+            {displayName}
+          </h1>
+          <p className="text-base text-foreground/55 mt-1">@{displayName.toLowerCase()}</p>
+          <div className="mt-2">
             <AudienceSelector value={state.audience} onChange={handleAudienceChange} variant="ghost" />
           </div>
         </div>
       </div>
 
-      <div className="h-px bg-white/5 shrink-0" />
+      {/* Branded gradient hairline transition */}
+      <div className="h-px w-full bg-gradient-to-r from-fuchsia-500/40 via-violet-500/40 to-teal-400/40 opacity-60 shrink-0" />
 
       {/* Textarea region — sits directly on the composer background */}
       <div className="flex-1 min-h-0 flex flex-col overflow-y-auto px-5 py-4">
