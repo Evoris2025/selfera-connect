@@ -6,6 +6,7 @@ import { ExpressionCreator } from '@/components/creator/ExpressionCreator';
 import { VideoStudio } from '@/components/creator/VideoStudio';
 import { ImageStudio } from '@/components/creator/ImageStudio';
 import { PostComposer } from '@/components/creator/PostComposer';
+import { AppLayout } from '@/components/AppLayout';
 import { useStudioStep } from '@/hooks/useStudioStep';
 import { useScheduler } from '@/hooks/useScheduler';
 
@@ -110,9 +111,12 @@ export default function Studio() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="min-h-dvh flex sm:items-center justify-center sm:px-4 sm:py-8"
             >
-              <PostComposer onBack={handleBack} onSuccess={studio.success} />
+              <AppLayout showHeader={false}>
+                <div className="flex justify-center sm:px-4 sm:py-6 pb-[calc(env(safe-area-inset-bottom)+88px)] lg:pb-6">
+                  <PostComposer onBack={handleBack} onSuccess={studio.success} />
+                </div>
+              </AppLayout>
             </motion.div>
           )}
         </AnimatePresence>
