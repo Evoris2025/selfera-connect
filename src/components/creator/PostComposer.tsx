@@ -551,7 +551,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       className={cn(
         'w-full max-w-[640px] mx-auto flex flex-col bg-white/[0.03] border border-white/[0.06] backdrop-blur-md shadow-2xl overflow-hidden',
         'rounded-none sm:rounded-3xl',
-        'min-h-dvh sm:min-h-0 sm:max-h-[820px]'
+        'flex-1 min-h-0 sm:min-h-0 sm:max-h-[820px]'
       )}
     >
       {/* Header */}
@@ -610,10 +610,21 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
 
       {/* Textarea region — sits directly on the composer background */}
       <div className="relative shrink-0 flex flex-col px-5 py-4">
-        {/* Character counter — top-right of textarea region */}
-        <span className="absolute top-2 right-3 text-xs text-foreground/40 pointer-events-none z-10">
-          {state.content.length}/{MAX_CHARACTERS}
-        </span>
+        {/* Top-right cluster: expand toggle + character counter */}
+        <div className="absolute top-2 right-3 z-10 flex items-center gap-1 pointer-events-none">
+          <button
+            type="button"
+            onClick={() => setTextareaExpanded((v) => !v)}
+            title={textareaExpanded ? 'Collapse' : 'Expand'}
+            aria-label={textareaExpanded ? 'Collapse textarea' : 'Expand textarea'}
+            className="pointer-events-auto w-7 h-7 rounded-md flex items-center justify-center text-foreground/40 hover:text-foreground hover:bg-white/5 transition"
+          >
+            {textareaExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+          </button>
+          <span className="text-xs text-foreground/40">
+            {state.content.length}/{MAX_CHARACTERS}
+          </span>
+        </div>
         <AnimatePresence mode="wait">
           {state.composerMode === 'simple' ? (
             <motion.div
@@ -647,7 +658,11 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
                   onFocus={() => setComposerFocused(true)}
                   onBlur={() => setComposerFocused(false)}
                   maxLength={MAX_CHARACTERS}
-                  className="flex-1 min-h-[160px] max-h-none resize-none border-0 bg-transparent p-0 text-lg focus-visible:ring-0 placeholder:text-foreground/35"
+                  className={cn(
+                    'flex-1 resize-none border-0 bg-transparent p-0 text-lg focus-visible:ring-0 placeholder:text-foreground/35',
+                    'transition-[min-height,max-height] duration-200',
+                    textareaExpanded ? 'min-h-[60vh] max-h-[75vh]' : 'min-h-[160px] max-h-[40vh]'
+                  )}
                 />
               )}
             </motion.div>
