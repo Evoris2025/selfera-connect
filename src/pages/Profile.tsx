@@ -157,6 +157,7 @@ export default function Profile() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { primary: themePrimary } = useThemeColor();
   const { isBlocked, isBlockedByMe, isBlockingMe, blockUser, muteUser, isMuted } = useSafety();
   const { avatarUrl, refreshAvatar } = useCurrentUserAvatar();
   const { coverUrl, refreshCover } = useCurrentUserCover();
