@@ -629,26 +629,31 @@ export default function Profile() {
             {/* CTA Buttons - Below Stats */}
             {!isOwnProfile && (
               <motion.div
-                className="flex items-center gap-3 mt-5 pt-5 border-t border-border/50"
+                className="flex items-center gap-2 mt-5 pt-5 border-t border-white/[0.08]"
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.35 }}
               >
-                <FollowButton
-                  isFollowing={isFollowing}
-                  isPending={isPending}
-                  onToggle={handleFollow}
-                  size="md"
-                  className="px-8 h-10 rounded-full font-semibold text-sm tracking-wide transition-all duration-300 active:scale-[0.97] shadow-soft"
-                  variant="gradient"
-                />
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-10 w-10 rounded-full border-border/60 hover:bg-primary/10 hover:border-primary/30 transition-all duration-300 active:scale-95"
+                <button
+                  type="button"
+                  onClick={handleFollow}
+                  disabled={isPending}
+                  className="inline-flex items-center justify-center bg-transparent border h-9 px-4 rounded-full text-[12px] uppercase tracking-[0.1em] transition-colors disabled:opacity-60"
+                  style={
+                    isFollowing
+                      ? { borderColor: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.55)' }
+                      : { borderColor: themePrimary, color: themePrimary }
+                  }
                 >
-                  <MessageCircle className="w-4 h-4" />
-                </Button>
+                  {isPending ? 'Requested' : isFollowing ? 'Following' : 'Follow'}
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center gap-1.5 bg-transparent border border-white/15 text-white h-9 px-4 rounded-full text-[12px] uppercase tracking-[0.1em] transition-colors hover:border-white/30"
+                >
+                  <MessageCircle className="w-3.5 h-3.5" />
+                  Message
+                </button>
               </motion.div>
             )}
           </div>
