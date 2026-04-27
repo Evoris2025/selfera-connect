@@ -36,9 +36,9 @@ export function MessageReactions({ reactions, onReact, isOwnMessage }: MessageRe
           whileTap={{ scale: 0.85 }}
           onClick={() => onReact(reaction.emoji)}
           className={cn(
-            "flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs",
-            "bg-secondary/80 hover:bg-secondary transition-colors",
-            reaction.userReacted && "ring-1 ring-primary/50"
+            "flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs border",
+            "bg-white/[0.06] border-white/10 hover:bg-white/[0.1] transition-colors",
+            reaction.userReacted && "ring-1 ring-white/40"
           )}
         >
           <span>{reaction.emoji}</span>
