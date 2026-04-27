@@ -214,19 +214,6 @@ export function GalleryFirstSelector({
         )}
       </AnimatePresence>
 
-      {/* Empty State Footer */}
-      {images.length === 0 && (
-        <div className="p-4 border-t border-border">
-          <Button
-            onClick={() => fileInputRef.current?.click()}
-            variant="outline"
-            className="w-full"
-          >
-            <Images className="h-4 w-4 mr-2" />
-            Select from Gallery
-          </Button>
-        </div>
-      )}
     </div>
   );
 }
