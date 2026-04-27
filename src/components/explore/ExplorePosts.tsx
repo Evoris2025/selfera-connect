@@ -1,12 +1,13 @@
 import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, TrendingUp, Heart, MessageCircle, Clock, ChevronRight } from 'lucide-react';
+import { Sparkles, TrendingUp, Heart, MessageCircle, Clock, ChevronRight, type LucideIcon } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
 import { PullToRefresh } from '@/components/ui/PullToRefresh';
 import { ExploreFilters, FilterType, DateRange } from './ExploreFilters';
+import { BrandSectionLabel, BrandIcon } from '@/components/brand';
 import { cn } from '@/lib/utils';
 
 // Mock post data
