@@ -149,20 +149,27 @@ function CreatorRow({
       />
 
       {/* Content layer — horizontal, vertically centered */}
-      <div className="relative z-10 flex items-center gap-3 h-full px-4 py-3">
-        {/* Icon chip */}
-        <div className="w-10 h-10 rounded-xl bg-white/[0.10] backdrop-blur-md border border-white/10 flex items-center justify-center shrink-0">
-          <Icon size={18} strokeWidth={2} style={{ color: accentColor }} aria-hidden />
-        </div>
+      <div className="relative z-10 flex items-center gap-4 h-full px-5 py-4">
+        {/* Free-floating gradient-stroked icon mark */}
+        <Icon
+          size={36}
+          strokeWidth={1.6}
+          stroke="url(#selfera-brand-gradient)"
+          fill="none"
+          aria-hidden
+          className="shrink-0"
+          style={{ filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.4))' }}
+        />
 
         {/* Content column */}
         <div className="flex-1 min-w-0">
-          <div className="text-base font-semibold text-white leading-tight truncate">
-            {title}
-          </div>
-          <div className="text-xs text-white/70 mt-0.5 leading-snug truncate">
+          <h3 className="text-xl font-extrabold tracking-tight text-white leading-none truncate">
+            {title.toUpperCase()}
+            <span className="text-gradient-brand">.</span>
+          </h3>
+          <p className="text-[10px] font-medium tracking-[0.15em] uppercase text-white/55 mt-1.5 truncate">
             {description}
-          </div>
+          </p>
         </div>
 
         {/* Chevron chip */}
