@@ -959,37 +959,41 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       <Sheet open={addSheetOpen} onOpenChange={setAddSheetOpen}>
         <SheetContent
           side="bottom"
-          className="rounded-t-2xl bg-background/95 backdrop-blur-md border-white/10 px-4 pt-3 pb-[calc(env(safe-area-inset-bottom)+24px)] max-h-[80vh] overflow-y-auto"
+          className="rounded-t-2xl bg-background/95 backdrop-blur-md border-white/10 px-5 pt-1 pb-[calc(env(safe-area-inset-bottom)+32px)] max-h-[80vh] overflow-y-auto [&>button]:hidden"
         >
-          <div className="w-10 h-1 rounded-full bg-white/20 mx-auto mt-2" />
-          <SheetHeader className="text-left mt-3">
-            <SheetTitle className="text-base">Add to your post</SheetTitle>
+          <div className="w-10 h-1 rounded-full bg-white/20 mx-auto mt-3 mb-4" />
+          <SheetHeader className="text-left mb-1">
+            <SheetTitle className="text-lg font-semibold text-white">Add to your post</SheetTitle>
             <SheetDescription className="sr-only">Pick what to add</SheetDescription>
           </SheetHeader>
 
           {/* Media */}
-          <p className="text-[11px] text-foreground/40 uppercase tracking-wide px-1 mb-2 mt-4">Media</p>
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          <p className="text-[11px] font-medium text-white/40 uppercase tracking-wider px-1 mb-3 mt-3">
+            Media
+          </p>
+          <div className="grid grid-cols-3 gap-3">
             <Tile
-              icon={<ImageIcon className="h-6 w-6 text-emerald-400" />}
+              icon={<ImageIcon className="h-6 w-6" />}
               label="Photo"
               onClick={() => { setAddSheetOpen(false); photoInputRef.current?.click(); }}
             />
             <Tile
-              icon={<VideoIcon className="h-6 w-6 text-rose-400" />}
+              icon={<VideoIcon className="h-6 w-6" />}
               label="Video"
               onClick={() => { setAddSheetOpen(false); videoInputRef.current?.click(); }}
             />
-            <TileSlot icon={<Film className="h-6 w-6 text-violet-400" />} label="GIF">
+            <TileSlot icon={<Film className="h-6 w-6" />} label="GIF">
               <GifPicker onSelect={(g) => { handleGifSelect(g); setAddSheetOpen(false); }} />
             </TileSlot>
           </div>
 
           {/* Social */}
-          <p className="text-[11px] text-foreground/40 uppercase tracking-wide px-1 mb-2 mt-4">Social</p>
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          <p className="text-[11px] font-medium text-white/40 uppercase tracking-wider px-1 mb-3 mt-5">
+            Social
+          </p>
+          <div className="grid grid-cols-3 gap-3">
             <Tile
-              icon={<BarChart3 className="h-6 w-6 text-amber-400" />}
+              icon={<BarChart3 className="h-6 w-6" />}
               label="Poll"
               active={hasPoll}
               onClick={() => {
@@ -1001,27 +1005,27 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
               }}
             />
             <TileSlot
-              icon={<MapPin className="h-6 w-6 text-sky-400" />}
+              icon={<MapPin className="h-6 w-6" />}
               label="Check in"
               active={!!state.checkIn}
             >
               <CheckInPicker value={state.checkIn} onChange={(v) => update({ checkIn: v })} />
             </TileSlot>
             <TileSlot
-              icon={<UserPlus className="h-6 w-6 text-blue-400" />}
+              icon={<UserPlus className="h-6 w-6" />}
               label="Tag people"
               active={state.taggedPeople.length > 0}
             >
               <WithPeoplePicker value={state.taggedPeople} onChange={(v) => update({ taggedPeople: v })} />
             </TileSlot>
             <Tile
-              icon={<MessageSquare className="h-6 w-6 text-teal-400" />}
+              icon={<MessageSquare className="h-6 w-6" />}
               label="Thread"
               active={hasThread}
               onClick={() => { toggleThreadMode(); }}
             />
             <Tile
-              icon={<Smile className="h-6 w-6 text-yellow-400" />}
+              icon={<Smile className="h-6 w-6" />}
               label="Feeling"
               active={!!state.feeling}
               onClick={() => { setAddSheetOpen(false); setMediaSheetOpen(true); }}
@@ -1029,10 +1033,12 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           </div>
 
           {/* Content */}
-          <p className="text-[11px] text-foreground/40 uppercase tracking-wide px-1 mb-2 mt-4">Content</p>
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          <p className="text-[11px] font-medium text-white/40 uppercase tracking-wider px-1 mb-3 mt-5">
+            Content
+          </p>
+          <div className="grid grid-cols-3 gap-3">
             <Tile
-              icon={<Hash className="h-6 w-6 text-fuchsia-400" />}
+              icon={<Hash className="h-6 w-6" />}
               label="Topics"
               active={state.selectedTags.length > 0}
               onClick={() => {
@@ -1042,13 +1048,13 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
               }}
             />
             <Tile
-              icon={<Shield className="h-6 w-6 text-amber-400" />}
+              icon={<Shield className="h-6 w-6" />}
               label="Content warning"
               active={state.contentWarning}
               onClick={() => update({ contentWarning: !state.contentWarning })}
             />
             <Tile
-              icon={<Sparkles className="h-6 w-6 text-violet-400" />}
+              icon={<Sparkles className="h-6 w-6" />}
               label="Share as Expression"
               active={state.crossPost.alsoShareAsExpression}
               onClick={() =>
@@ -1060,12 +1066,16 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
                 })
               }
             />
-            <Tile
-              icon={<Settings2 className="h-6 w-6 text-foreground/70" />}
-              label="More"
-              onClick={() => { setAddSheetOpen(false); setAdvancedOpen(true); }}
-            />
           </div>
+
+          {/* More — ghost text link, not a tile */}
+          <button
+            type="button"
+            onClick={() => { setAddSheetOpen(false); setAdvancedOpen(true); }}
+            className="block w-full text-sm text-white/60 hover:text-white text-center mt-5 py-2 transition-colors"
+          >
+            More
+          </button>
         </SheetContent>
       </Sheet>
 
