@@ -51,14 +51,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
 import { useFeedData, type StudioAudience, type PostBackground } from '@/contexts/FeedDataContext';
