@@ -358,7 +358,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
     });
 
   const handleGifSelect = (gif: GifData) =>
-    update({ selectedGifUrl: gif.url, mediaPreviewUrls: [], mediaTypes: [], background: null });
+    update({ selectedGifUrl: gif.url, mediaPreviewUrls: [], mediaTypes: [] });
 
   const toggleThreadMode = () => {
     if (state.composerMode === 'simple') {
