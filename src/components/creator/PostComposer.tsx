@@ -262,7 +262,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
   const [mediaSheetOpen, setMediaSheetOpen] = useState(false);
   const [showTopicsError, setShowTopicsError] = useState(false);
   const [dismissedUrls, setDismissedUrls] = useState<Set<string>>(new Set());
-  const [textareaExpanded, setTextareaExpanded] = useState(true);
+  const [textareaExpanded, setTextareaExpanded] = useState(false);
   const [bgSheetOpen, setBgSheetOpen] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
