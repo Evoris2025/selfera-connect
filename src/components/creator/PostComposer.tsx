@@ -56,6 +56,7 @@ import { useStudioDraft } from '@/hooks/useStudioDraft';
 import { useLinkPreview } from '@/hooks/useLinkPreview';
 import { TopicTagSelector } from './shared/TopicTagSelector';
 import { AudienceSelector } from './shared/AudienceSelector';
+import { CreatorScreenHeader } from './CreatorScreenHeader';
 import { CrossPostToggles, type CrossPostState } from './shared/CrossPostToggles';
 import {
   PollCreator,
