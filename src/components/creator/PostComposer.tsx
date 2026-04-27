@@ -48,11 +48,6 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
 import { useFeedData, type StudioAudience, type PostBackground } from '@/contexts/FeedDataContext';
@@ -265,7 +260,8 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
   const [mediaSheetOpen, setMediaSheetOpen] = useState(false);
   const [showTopicsError, setShowTopicsError] = useState(false);
   const [dismissedUrls, setDismissedUrls] = useState<Set<string>>(new Set());
-  const [textareaExpanded, setTextareaExpanded] = useState(false);
+  const [textareaExpanded, setTextareaExpanded] = useState(true);
+  const [bgSheetOpen, setBgSheetOpen] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
 
@@ -861,58 +857,21 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
             <Settings2 className="h-[18px] w-[18px]" />
           </button>
           {canShowBackground && state.composerMode === 'simple' && (
-            <Popover>
-              <PopoverTrigger asChild>
-                <button
-                  className={cn(
-                    'h-11 w-11 rounded-2xl flex items-center justify-center text-sm font-bold transition border',
-                    state.background
-                      ? 'border-fuchsia-500/60 ring-2 ring-fuchsia-500/40'
-                      : 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06] text-foreground/70 hover:text-foreground'
-                  )}
-                  style={state.background ? backgroundStyle : undefined}
-                  aria-label="Background style"
-                  title="Background"
-                >
-                  Aa
-                </button>
-              </PopoverTrigger>
-              <PopoverContent
-                align="end"
-                className="w-auto p-3 bg-background/95 backdrop-blur-md border-white/10"
-              >
-                <div className="grid grid-cols-5 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => update({ background: null })}
-                    className={cn(
-                      'h-9 w-9 rounded-lg border-2 flex items-center justify-center transition bg-secondary',
-                      !state.background ? 'border-fuchsia-500' : 'border-transparent hover:border-foreground/30'
-                    )}
-                    title="Plain"
-                    aria-label="Plain background"
-                  >
-                    <TypeIcon className="h-4 w-4" />
-                  </button>
-                  {POST_BACKGROUND_PRESETS.map((preset, i) => {
-                    const active = state.background?.value === preset.value;
-                    return (
-                      <button
-                        key={i}
-                        type="button"
-                        onClick={() => update({ background: preset })}
-                        className={cn(
-                          'h-9 w-9 rounded-lg border-2 transition',
-                          active ? 'border-fuchsia-500' : 'border-transparent hover:border-foreground/30'
-                        )}
-                        style={{ background: preset.value }}
-                        aria-label={`Background ${i + 1}`}
-                      />
-                    );
-                  })}
-                </div>
-              </PopoverContent>
-            </Popover>
+            <button
+              type="button"
+              onClick={() => setBgSheetOpen(true)}
+              className={cn(
+                'h-11 w-11 rounded-2xl flex items-center justify-center text-sm font-bold transition border',
+                state.background
+                  ? 'border-fuchsia-500/60 ring-2 ring-fuchsia-500/40'
+                  : 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06] text-foreground/70 hover:text-foreground'
+              )}
+              style={state.background ? backgroundStyle : undefined}
+              aria-label="Background style"
+              title="Background"
+            >
+              Aa
+            </button>
           )}
         </div>
       </div>
@@ -922,7 +881,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       {/* /centered body region */}
 
       {/* Sticky bottom Post CTA — sits above the global app navbar */}
-      <div className="sticky bottom-0 px-4 pt-3 pb-3 bg-background/80 backdrop-blur border-t border-white/5 mb-[72px] lg:mb-0 shrink-0">
+      <div className="sticky bottom-0 px-4 pt-4 pb-4 mb-[72px] lg:mb-0 shrink-0">
         <Button
           onClick={handleSubmit}
           disabled={!canPost || isSubmitting}
@@ -951,6 +910,46 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       {showTopicsError && state.selectedTags.length === 0 && (
         <p className="text-xs text-destructive px-5 pb-2">Please select at least one topic.</p>
       )}
+
+      {/* Background — bottom sheet swatch picker */}
+      <Sheet open={bgSheetOpen} onOpenChange={setBgSheetOpen}>
+        <SheetContent
+          side="bottom"
+          className="rounded-t-2xl bg-background/95 backdrop-blur-md border-white/10 px-5 pt-3 pb-[calc(env(safe-area-inset-bottom)+24px)]"
+        >
+          <div className="w-10 h-1 rounded-full bg-white/20 mx-auto mt-2" />
+          <div className="text-[11px] text-white/40 uppercase tracking-wide mb-3 mt-4">Background</div>
+          <div className="grid grid-cols-5 gap-3">
+            <button
+              type="button"
+              onClick={() => { update({ background: null }); setBgSheetOpen(false); }}
+              className={cn(
+                'h-14 w-14 rounded-full flex items-center justify-center transition bg-secondary',
+                !state.background ? 'ring-2 ring-white' : 'hover:ring-2 hover:ring-white/30'
+              )}
+              aria-label="Plain background"
+            >
+              <TypeIcon className="h-5 w-5" />
+            </button>
+            {POST_BACKGROUND_PRESETS.map((preset, i) => {
+              const active = state.background?.value === preset.value;
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => { update({ background: preset }); setBgSheetOpen(false); }}
+                  className={cn(
+                    'h-14 w-14 rounded-full transition',
+                    active ? 'ring-2 ring-white' : 'hover:ring-2 hover:ring-white/30'
+                  )}
+                  style={{ background: preset.value }}
+                  aria-label={`Background ${i + 1}`}
+                />
+              );
+            })}
+          </div>
+        </SheetContent>
+      </Sheet>
 
       {/* Add to your post — bottom sheet with icon-tile grid */}
       <Sheet open={addSheetOpen} onOpenChange={setAddSheetOpen}>
