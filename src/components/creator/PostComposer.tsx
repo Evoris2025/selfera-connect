@@ -557,69 +557,20 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         'flex-1 min-h-0 sm:min-h-0 sm:max-h-[820px]'
       )}
     >
-      {/* Header */}
-      <div className="relative shrink-0">
-        <div className="flex items-center justify-between h-14 px-3">
-          <button
-            onClick={onBack}
-            className="p-2 rounded-full hover:bg-white/5 transition-colors"
-            aria-label="Back"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </button>
-          <h1 className="text-base font-bold tracking-tight">
-            <span className="font-medium text-white">
-              {state.scheduledDate ? 'schedule ' : 'create '}
-            </span>
-            <span className="bg-gradient-to-r from-fuchsia-500 via-violet-500 to-teal-400 bg-clip-text text-transparent">
-              POST.
-            </span>
-          </h1>
-          <button
-            onClick={onBack}
-            className="p-2 rounded-full hover:bg-white/5 transition-colors"
-            aria-label="Close"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-        <div className="h-px w-full bg-gradient-to-r from-transparent via-fuchsia-500/40 to-transparent opacity-60" />
-      </div>
+      {/* Shared identity-forward header (back · create POST. · close + hero) */}
+      <CreatorScreenHeader
+        type="post"
+        framingWord={state.scheduledDate ? 'schedule' : 'create'}
+        onBack={onBack}
+        onClose={onBack}
+        audience={state.audience}
+        onAudienceChange={handleAudienceChange}
+      />
 
-      {/* Body region (hero + textarea + Add row). Sized to content so the
+      {/* Body region (textarea + Add row). Sized to content so the
           Post button sits in real whitespace below it. */}
       <div className="shrink-0 flex flex-col">
         <div className="flex flex-col">
-      {/* Hero identity block */}
-      <div className="shrink-0 flex flex-col items-center text-center gap-3 px-5 pt-6 pb-6">
-        <div
-          className="rounded-full p-1 shrink-0"
-          style={{
-            background:
-              'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-muted)))',
-          }}
-        >
-          <Avatar className="h-32 w-32 border-2 border-background">
-            <AvatarImage src={avatarUrl} alt={displayName} />
-            <AvatarFallback className="bg-secondary text-secondary-foreground text-3xl font-semibold">
-              {userInitial}
-            </AvatarFallback>
-          </Avatar>
-        </div>
-        <div className="flex flex-col items-center min-w-0">
-          <h1 className="text-4xl font-bold tracking-tight text-foreground leading-none truncate max-w-full">
-            {displayName}
-          </h1>
-          <p className="text-base text-foreground/55 mt-1">@{displayName.toLowerCase()}</p>
-          <div className="mt-2">
-            <AudienceSelector value={state.audience} onChange={handleAudienceChange} variant="ghost" />
-          </div>
-        </div>
-      </div>
-
-      {/* Branded gradient hairline transition */}
-      <div className="h-px w-full bg-gradient-to-r from-fuchsia-500/40 via-violet-500/40 to-teal-400/40 opacity-60 shrink-0" />
-
       {/* Textarea region — sits directly on the composer background */}
       <div className="relative shrink-0 flex flex-col px-5 py-4">
         {/* Top-right cluster: expand toggle + character counter */}
