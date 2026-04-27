@@ -6,6 +6,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { PullToRefresh } from '@/components/ui/PullToRefresh';
 import { ExploreFilters, FilterType, DateRange } from './ExploreFilters';
+import { BrandSectionLabel, BrandIcon } from '@/components/brand';
+import { useThemeColor } from '@/hooks/useThemeColor';
 import { cn } from '@/lib/utils';
 
 // Mock image data
