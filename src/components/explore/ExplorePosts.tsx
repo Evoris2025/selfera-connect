@@ -92,7 +92,7 @@ function PostCard({ post, index }: PostCardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
     >
-      <Card className="p-4 hover:border-primary/30 transition-colors cursor-pointer">
+      <Card className="p-4 bg-black border border-white/[0.08] rounded-md hover:border-white/20 transition-colors cursor-pointer">
         {/* Header */}
         <div className="flex items-center gap-3 mb-3">
           <Avatar className="h-10 w-10">
