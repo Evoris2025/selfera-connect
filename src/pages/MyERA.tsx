@@ -359,8 +359,9 @@ export default function MyERA() {
 
           {/* Profile Card Floating Over Cover */}
           <div className="px-4 -mt-20 relative z-10">
-            <motion.div
-              className="bg-card/80 backdrop-blur-xl border border-white/10 p-5 shadow-2xl"
+            <BrandSurface
+              as={motion.div as any}
+              className="p-5 shadow-2xl"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ ...springGentle, delay: 0.1 }}
@@ -376,15 +377,15 @@ export default function MyERA() {
                   interactive
                   onClick={() => navigate('/profile')}
                 />
-                
+
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h1 className="text-lg font-semibold text-foreground truncate">
+                    <h2 className="text-lg font-semibold text-white truncate">
                       {profile?.display_name || 'User'}
-                    </h1>
+                    </h2>
                     {profile?.is_verified && <EraVerifiedTick size="sm" userEmail={profile?.email || undefined} />}
                   </div>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-white/55">
                     @{profile?.handle || 'user'}
                   </p>
                   <div className="mt-1.5">
@@ -392,68 +393,85 @@ export default function MyERA() {
                   </div>
                 </div>
 
-                {/* Quick Action */}
-                <Button 
-                  size="sm" 
-                  variant="secondary"
-                  className="rounded-full h-9 px-4"
+                {/* Quick Action — outline only, theme color */}
+                <button
+                  type="button"
                   onClick={() => navigate('/profile')}
+                  className="shrink-0 h-9 px-3.5 rounded-full border bg-transparent text-[12px] uppercase tracking-[0.1em]"
+                  style={{ borderColor: themePrimary, color: themePrimary }}
                 >
                   View Profile
-                </Button>
+                </button>
               </div>
 
-              {/* Stats Row - Evenly Spaced Grid */}
-              <div className="grid grid-cols-4 gap-0 mt-5 pt-4 border-t border-white/10">
-                <button 
-                  className="text-center group py-2"
+              {/* Stats Row */}
+              <div className="grid grid-cols-4 gap-0 mt-5 pt-4 border-t border-white/[0.08]">
+                <button
+                  type="button"
+                  className="text-center py-2"
                   onClick={() => navigate('/community')}
                 >
                   <div className="h-7 flex items-center justify-center mb-1.5">
-                    <p className="text-xl font-bold text-foreground group-hover:text-primary transition-colors leading-none">
+                    <p className="text-xl font-bold text-white leading-none">
                       {communitiesLoading ? '—' : communitiesCount}
                     </p>
                   </div>
-                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Waitlist</p>
+                  <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-white/55">Waitlist</p>
                 </button>
-                <button 
-                  className="text-center group py-2 border-l border-white/10"
+                <button
+                  type="button"
+                  className="text-center py-2 border-l border-white/[0.08]"
                   onClick={() => navigate('/directory')}
                 >
                   <div className="h-7 flex items-center justify-center mb-1.5">
-                    <p className="text-xl font-bold text-foreground group-hover:text-primary transition-colors leading-none">
+                    <p className="text-xl font-bold text-white leading-none">
                       {connectionsCount}
                     </p>
                   </div>
-                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide">My List</p>
+                  <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-white/55">My List</p>
                 </button>
-                <button 
-                  className="text-center group relative py-2 border-l border-white/10"
+                <button
+                  type="button"
+                  className="text-center relative py-2 border-l border-white/[0.08]"
                   onClick={() => navigate('/notifications')}
                 >
                   <div className="h-7 flex items-center justify-center mb-1.5">
-                    <p className="text-xl font-bold text-foreground group-hover:text-primary transition-colors leading-none">
+                    <p className="text-xl font-bold text-white leading-none">
                       {pendingConnectionCount || 0}
                     </p>
                   </div>
-                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Pending</p>
+                  <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-white/55">Pending</p>
                   {pendingConnectionCount > 0 && (
-                    <span className="absolute top-1 right-1/4 w-2 h-2 rounded-full bg-rose-500" />
+                    <span
+                      className="absolute top-1 right-1/4 w-2 h-2 rounded-full"
+                      style={{ backgroundColor: themePrimary }}
+                    />
                   )}
                 </button>
-                <button 
-                  className="text-center group relative py-2 border-l border-white/10"
+                <button
+                  type="button"
+                  className="text-center relative py-2 border-l border-white/[0.08]"
                   onClick={() => navigate('/notifications')}
                 >
                   <div className="h-7 flex items-center justify-center mb-1.5">
-                    <Bell className="w-5 h-5 text-foreground group-hover:text-primary transition-colors" />
+                    <BrandIcon icon={Bell} size={20} />
                   </div>
-                  <p className="text-[11px] text-muted-foreground uppercase tracking-wide">Alerts</p>
+                  <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-white/55">Alerts</p>
                 </button>
               </div>
-            </motion.div>
+            </BrandSurface>
           </div>
         </motion.section>
+
+        {/* In-page brand title */}
+        <div className="px-4 mt-8">
+          <BrandScreenTitle
+            setup="your"
+            emphasis="ERA"
+            subtitle="a record of who you've been."
+            size="screen"
+          />
+        </div>
 
 
         {/* Your Account Info Section */}
