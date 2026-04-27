@@ -192,12 +192,21 @@ export function TrendingNowRail({ activeTab }: TrendingNowRailProps) {
   const loopCountRef = useRef<number>(1);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
-  const [items, setItems] = useState<AnyItem[]>(() => getSeedForTab(activeTab));
+  const [state, setState] = useState<{ tab: ExploreTab; items: AnyItem[] }>(() => ({
+    tab: activeTab,
+    items: getSeedForTab(activeTab),
+  }));
 
-  // Reset items + scroll position whenever tab changes.
-  useEffect(() => {
+  // If activeTab changed since last render, reset synchronously so items
+  // never mismatch the card type being rendered.
+  if (state.tab !== activeTab) {
     loopCountRef.current = 1;
-    setItems(getSeedForTab(activeTab));
+    setState({ tab: activeTab, items: getSeedForTab(activeTab) });
+  }
+  const items = state.tab === activeTab ? state.items : getSeedForTab(activeTab);
+
+  // Reset scroll position whenever tab changes.
+  useEffect(() => {
     const el = railRef.current;
     if (el) el.scrollLeft = 0;
   }, [activeTab]);
@@ -219,7 +228,11 @@ export function TrendingNowRail({ activeTab }: TrendingNowRailProps) {
       ) {
         loopCountRef.current += 1;
         const seed = getSeedForTab(activeTab);
-        setItems((prev) => [...prev, ...remapIds(seed, loopCountRef.current)]);
+        setState((prev) =>
+          prev.tab === activeTab
+            ? { tab: prev.tab, items: [...prev.items, ...remapIds(seed, loopCountRef.current)] }
+            : prev
+        );
       }
     };
 
