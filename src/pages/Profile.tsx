@@ -38,6 +38,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { BrandSectionLabel, BrandIcon } from '@/components/brand';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { CheckCircle as CheckCircleIcon } from 'lucide-react';
 
 // Mock user data with full social metrics
 const mockUser = {
