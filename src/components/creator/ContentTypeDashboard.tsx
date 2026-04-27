@@ -300,30 +300,27 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
           )}
 
           <button
-            onClick={() => { setDrawerTab('drafts'); setDrawerOpen(true); }}
+            onClick={() => {
+              setDrawerTab(draftCount === 0 && scheduledCount > 0 ? 'scheduled' : 'drafts');
+              setDrawerOpen(true);
+            }}
             className="relative flex-1 flex flex-col items-center justify-center gap-1 py-3 px-2 hover:bg-white/[0.03] transition cursor-pointer"
+            aria-label={`Library: ${draftCount} drafts, ${scheduledCount} scheduled`}
           >
-            <span className="text-base font-semibold text-white leading-none">
+            <span className="text-base font-semibold text-white leading-none flex items-baseline gap-1">
               {draftCount}
+              {scheduledCount > 0 && (
+                <>
+                  <span className="text-white/30 text-xs font-normal">/</span>
+                  <span className="inline-flex items-center gap-0.5 text-xs font-medium text-white/70">
+                    <Clock size={10} className="text-white/70" />
+                    {scheduledCount}
+                  </span>
+                </>
+              )}
             </span>
             <span className="text-[10px] tracking-wider text-white/55 leading-none uppercase">
-              Drafts
-            </span>
-          </button>
-
-          <button
-            onClick={() => { setDrawerTab('scheduled'); setDrawerOpen(true); }}
-            className="relative flex-1 flex flex-col items-center justify-center gap-1 py-3 px-2 hover:bg-white/[0.03] transition cursor-pointer"
-          >
-            {scheduledCount > 0 ? (
-              <span className="text-base font-semibold text-white leading-none">
-                {scheduledCount}
-              </span>
-            ) : (
-              <Clock size={16} className="text-white" />
-            )}
-            <span className="text-[10px] tracking-wider text-white/55 leading-none uppercase">
-              Scheduled
+              Library
             </span>
           </button>
         </div>
