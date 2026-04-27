@@ -62,8 +62,8 @@ export const DEFAULT_FILTERS: ExploreFiltersState = {
 };
 
 export function isTabFiltersDefault(tab: ExploreTab, filters: ExploreFiltersState): boolean {
-  const a = filters[tab] as Record<string, unknown>;
-  const b = DEFAULT_FILTERS[tab] as Record<string, unknown>;
+  const a = filters[tab] as unknown as Record<string, unknown>;
+  const b = DEFAULT_FILTERS[tab] as unknown as Record<string, unknown>;
   return Object.keys(b).every((k) => a[k] === b[k]);
 }
 
