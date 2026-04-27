@@ -789,36 +789,55 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
 
         {/* GIF preview */}
         {state.selectedGifUrl && (
-          <div className="relative rounded-xl overflow-hidden bg-secondary mt-3">
-            <img src={state.selectedGifUrl} alt="" className="w-full max-h-64 object-contain" />
+          <div className="relative my-3 mx-auto w-fit max-w-full rounded-2xl overflow-hidden border border-white/10 bg-white/[0.02]">
+            <img src={state.selectedGifUrl} alt="" className="max-h-[200px] w-auto h-auto object-contain" />
             <button
               onClick={() => update({ selectedGifUrl: null })}
-              className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 hover:bg-black/80 transition-colors"
+              className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 backdrop-blur flex items-center justify-center text-white/85 hover:bg-black/80 transition-colors"
+              aria-label="Remove GIF"
             >
-              <X className="h-4 w-4 text-white" />
+              <X className="h-3.5 w-3.5" />
             </button>
           </div>
         )}
 
         {/* Media previews */}
         {state.mediaPreviewUrls.length > 0 && (
-          <div className={cn('grid gap-2 mt-3', state.mediaPreviewUrls.length === 1 ? 'grid-cols-1' : 'grid-cols-2')}>
-            {state.mediaPreviewUrls.map((url, index) => (
-              <div key={index} className="relative aspect-square rounded-xl overflow-hidden bg-secondary">
-                {state.mediaTypes[index] === 'video' ? (
-                  <video src={url} className="w-full h-full object-cover" controls={false} />
-                ) : (
-                  <img src={url} alt="" className="w-full h-full object-cover" />
-                )}
-                <button
-                  onClick={() => removeMedia(index)}
-                  className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 hover:bg-black/80 transition-colors"
-                >
-                  <X className="h-4 w-4 text-white" />
-                </button>
-              </div>
-            ))}
-          </div>
+          state.mediaPreviewUrls.length === 1 ? (
+            <div className="relative my-3 mx-auto w-fit max-w-full rounded-2xl overflow-hidden border border-white/10 bg-white/[0.02]">
+              {state.mediaTypes[0] === 'video' ? (
+                <video src={state.mediaPreviewUrls[0]} className="max-h-[200px] w-auto h-auto object-contain block" controls={false} />
+              ) : (
+                <img src={state.mediaPreviewUrls[0]} alt="" className="max-h-[200px] w-auto h-auto object-contain block" />
+              )}
+              <button
+                onClick={() => removeMedia(0)}
+                className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 backdrop-blur flex items-center justify-center text-white/85 hover:bg-black/80 transition-colors"
+                aria-label="Remove media"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          ) : (
+            <div className="grid gap-2 my-3 grid-cols-2 max-w-[320px] mx-auto">
+              {state.mediaPreviewUrls.map((url, index) => (
+                <div key={index} className="relative aspect-square rounded-xl overflow-hidden border border-white/10 bg-white/[0.02]">
+                  {state.mediaTypes[index] === 'video' ? (
+                    <video src={url} className="w-full h-full object-cover" controls={false} />
+                  ) : (
+                    <img src={url} alt="" className="w-full h-full object-cover" />
+                  )}
+                  <button
+                    onClick={() => removeMedia(index)}
+                    className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 backdrop-blur flex items-center justify-center text-white/85 hover:bg-black/80 transition-colors"
+                    aria-label="Remove media"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )
         )}
 
         {/* Poll */}
