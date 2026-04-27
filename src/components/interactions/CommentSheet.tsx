@@ -183,7 +183,7 @@ export function CommentSheet({ open, onOpenChange, postId }: CommentSheetProps) 
             </div>
           </div>
         </motion.div>
-      </DrawerContent>
+      </BrandDrawerContent>
 
       {/* Comment Report Modal */}
       <ReportModal
