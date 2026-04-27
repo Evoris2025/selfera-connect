@@ -577,9 +577,10 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         <div className="h-px w-full bg-gradient-to-r from-transparent via-fuchsia-500/40 to-transparent opacity-60" />
       </div>
 
-      {/* Centered body region (hero + textarea + Add button) */}
-      <div className="flex-1 min-h-0 flex flex-col overflow-y-auto">
-        <div className="flex-1 flex flex-col justify-center">
+      {/* Body region (hero + textarea + Add button). Sized to content so the
+          Post button sits in real whitespace below it. */}
+      <div className="shrink-0 flex flex-col overflow-y-auto max-h-[calc(100dvh-220px)]">
+        <div className="flex flex-col">
       {/* Hero identity block */}
       <div className="shrink-0 flex flex-col items-center text-center gap-3 px-5 pt-6 pb-6">
         <div className="rounded-full p-1 bg-gradient-to-br from-fuchsia-500 via-violet-500 to-teal-400 shrink-0">
@@ -880,8 +881,11 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       </div>
       {/* /centered body region */}
 
-      {/* Sticky bottom Post CTA — sits above the global app navbar */}
-      <div className="sticky bottom-0 px-4 pt-4 pb-4 mb-[72px] lg:mb-0 shrink-0">
+      {/* Spacer pushes the Post button into the dead space below. */}
+      <div className="flex-1 min-h-0" />
+
+      {/* Post CTA — centered in the gap above the global app navbar */}
+      <div className="shrink-0 flex items-center justify-center px-4 py-6 mb-[72px] lg:mb-0">
         <Button
           onClick={handleSubmit}
           disabled={!canPost || isSubmitting}
@@ -955,37 +959,41 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       <Sheet open={addSheetOpen} onOpenChange={setAddSheetOpen}>
         <SheetContent
           side="bottom"
-          className="rounded-t-2xl bg-background/95 backdrop-blur-md border-white/10 px-4 pt-3 pb-[calc(env(safe-area-inset-bottom)+24px)] max-h-[80vh] overflow-y-auto"
+          className="rounded-t-2xl bg-background/95 backdrop-blur-md border-white/10 px-5 pt-1 pb-[calc(env(safe-area-inset-bottom)+32px)] max-h-[80vh] overflow-y-auto [&>button]:hidden"
         >
-          <div className="w-10 h-1 rounded-full bg-white/20 mx-auto mt-2" />
-          <SheetHeader className="text-left mt-3">
-            <SheetTitle className="text-base">Add to your post</SheetTitle>
+          <div className="w-10 h-1 rounded-full bg-white/20 mx-auto mt-3 mb-4" />
+          <SheetHeader className="text-left mb-1">
+            <SheetTitle className="text-lg font-semibold text-white">Add to your post</SheetTitle>
             <SheetDescription className="sr-only">Pick what to add</SheetDescription>
           </SheetHeader>
 
           {/* Media */}
-          <p className="text-[11px] text-foreground/40 uppercase tracking-wide px-1 mb-2 mt-4">Media</p>
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          <p className="text-[11px] font-medium text-white/40 uppercase tracking-wider px-1 mb-3 mt-3">
+            Media
+          </p>
+          <div className="grid grid-cols-3 gap-3">
             <Tile
-              icon={<ImageIcon className="h-6 w-6 text-emerald-400" />}
+              icon={<ImageIcon className="h-6 w-6" />}
               label="Photo"
               onClick={() => { setAddSheetOpen(false); photoInputRef.current?.click(); }}
             />
             <Tile
-              icon={<VideoIcon className="h-6 w-6 text-rose-400" />}
+              icon={<VideoIcon className="h-6 w-6" />}
               label="Video"
               onClick={() => { setAddSheetOpen(false); videoInputRef.current?.click(); }}
             />
-            <TileSlot icon={<Film className="h-6 w-6 text-violet-400" />} label="GIF">
+            <TileSlot icon={<Film className="h-6 w-6" />} label="GIF">
               <GifPicker onSelect={(g) => { handleGifSelect(g); setAddSheetOpen(false); }} />
             </TileSlot>
           </div>
 
           {/* Social */}
-          <p className="text-[11px] text-foreground/40 uppercase tracking-wide px-1 mb-2 mt-4">Social</p>
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          <p className="text-[11px] font-medium text-white/40 uppercase tracking-wider px-1 mb-3 mt-5">
+            Social
+          </p>
+          <div className="grid grid-cols-3 gap-3">
             <Tile
-              icon={<BarChart3 className="h-6 w-6 text-amber-400" />}
+              icon={<BarChart3 className="h-6 w-6" />}
               label="Poll"
               active={hasPoll}
               onClick={() => {
@@ -997,27 +1005,27 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
               }}
             />
             <TileSlot
-              icon={<MapPin className="h-6 w-6 text-sky-400" />}
+              icon={<MapPin className="h-6 w-6" />}
               label="Check in"
               active={!!state.checkIn}
             >
               <CheckInPicker value={state.checkIn} onChange={(v) => update({ checkIn: v })} />
             </TileSlot>
             <TileSlot
-              icon={<UserPlus className="h-6 w-6 text-blue-400" />}
+              icon={<UserPlus className="h-6 w-6" />}
               label="Tag people"
               active={state.taggedPeople.length > 0}
             >
               <WithPeoplePicker value={state.taggedPeople} onChange={(v) => update({ taggedPeople: v })} />
             </TileSlot>
             <Tile
-              icon={<MessageSquare className="h-6 w-6 text-teal-400" />}
+              icon={<MessageSquare className="h-6 w-6" />}
               label="Thread"
               active={hasThread}
               onClick={() => { toggleThreadMode(); }}
             />
             <Tile
-              icon={<Smile className="h-6 w-6 text-yellow-400" />}
+              icon={<Smile className="h-6 w-6" />}
               label="Feeling"
               active={!!state.feeling}
               onClick={() => { setAddSheetOpen(false); setMediaSheetOpen(true); }}
@@ -1025,10 +1033,12 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           </div>
 
           {/* Content */}
-          <p className="text-[11px] text-foreground/40 uppercase tracking-wide px-1 mb-2 mt-4">Content</p>
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          <p className="text-[11px] font-medium text-white/40 uppercase tracking-wider px-1 mb-3 mt-5">
+            Content
+          </p>
+          <div className="grid grid-cols-3 gap-3">
             <Tile
-              icon={<Hash className="h-6 w-6 text-fuchsia-400" />}
+              icon={<Hash className="h-6 w-6" />}
               label="Topics"
               active={state.selectedTags.length > 0}
               onClick={() => {
@@ -1038,13 +1048,13 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
               }}
             />
             <Tile
-              icon={<Shield className="h-6 w-6 text-amber-400" />}
+              icon={<Shield className="h-6 w-6" />}
               label="Content warning"
               active={state.contentWarning}
               onClick={() => update({ contentWarning: !state.contentWarning })}
             />
             <Tile
-              icon={<Sparkles className="h-6 w-6 text-violet-400" />}
+              icon={<Sparkles className="h-6 w-6" />}
               label="Share as Expression"
               active={state.crossPost.alsoShareAsExpression}
               onClick={() =>
@@ -1056,12 +1066,16 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
                 })
               }
             />
-            <Tile
-              icon={<Settings2 className="h-6 w-6 text-foreground/70" />}
-              label="More"
-              onClick={() => { setAddSheetOpen(false); setAdvancedOpen(true); }}
-            />
           </div>
+
+          {/* More — ghost text link, not a tile */}
+          <button
+            type="button"
+            onClick={() => { setAddSheetOpen(false); setAdvancedOpen(true); }}
+            className="block w-full text-sm text-white/60 hover:text-white text-center mt-5 py-2 transition-colors"
+          >
+            More
+          </button>
         </SheetContent>
       </Sheet>
 
@@ -1286,25 +1300,31 @@ function Tile({
       title={label}
       aria-label={label}
       className={cn(
-        'relative flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl hover:bg-white/5 transition',
-        active && 'bg-white/[0.04] ring-1 ring-fuchsia-500/40'
+        'group flex flex-col items-center justify-center gap-2 aspect-square rounded-2xl p-3 transition cursor-pointer border',
+        active
+          ? 'bg-white/[0.06] border-white/30'
+          : 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06] hover:border-white/[0.12]'
       )}
     >
-      {icon}
-      <span className="text-xs text-foreground/80 leading-tight text-center line-clamp-1">
+      <span
+        className={cn(
+          'flex items-center justify-center transition-colors',
+          active ? 'text-primary' : 'text-white/85'
+        )}
+      >
+        {icon}
+      </span>
+      <span className="text-xs text-white/70 leading-tight text-center line-clamp-1">
         {label}
       </span>
-      {active && (
-        <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-fuchsia-400" />
-      )}
     </button>
   );
 }
 
 /**
- * Wraps a picker (which renders its own trigger button) as a Tile. Hides the
- * picker's internal label/icon and overlays our own icon + label so the tile
- * matches sibling Tile components visually while still triggering the picker.
+ * Wraps a picker (which renders its own trigger button) as a Tile. Restyles
+ * the picker's internal button to match the Tile aesthetic and overlays our
+ * own monochrome icon + label.
  */
 function TileSlot({
   icon,
@@ -1320,27 +1340,33 @@ function TileSlot({
   return (
     <div
       className={cn(
-        'relative',
-        '[&>button]:!w-full [&>button]:!h-auto [&>button]:!min-h-[84px]',
-        '[&>button]:!flex [&>button]:!flex-col [&>button]:!items-center [&>button]:!justify-center [&>button]:!gap-1.5',
+        'relative aspect-square rounded-2xl border transition',
+        active
+          ? 'bg-white/[0.06] border-white/30'
+          : 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06] hover:border-white/[0.12]',
+        '[&>button]:!w-full [&>button]:!h-full',
+        '[&>button]:!flex [&>button]:!flex-col [&>button]:!items-center [&>button]:!justify-center [&>button]:!gap-2',
         '[&>button]:!p-3 [&>button]:!rounded-2xl',
-        '[&>button]:!bg-transparent [&>button:hover]:!bg-white/5',
+        '[&>button]:!bg-transparent [&>button:hover]:!bg-transparent',
         '[&>button]:!border-0 [&>button]:!shadow-none',
         '[&>button]:!text-transparent',
         '[&>button>span]:hidden',
-        '[&>button>svg]:hidden',
-        active && '[&>button]:!bg-white/[0.04] [&>button]:!ring-1 [&>button]:!ring-fuchsia-500/40'
+        '[&>button>svg]:hidden'
       )}
     >
-      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-1.5 z-10">
-        {icon}
-        <span className="text-xs text-foreground/80 leading-tight text-center line-clamp-1 px-2">
+      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 z-10 p-3">
+        <span
+          className={cn(
+            'flex items-center justify-center',
+            active ? 'text-primary' : 'text-white/85'
+          )}
+        >
+          {icon}
+        </span>
+        <span className="text-xs text-white/70 leading-tight text-center line-clamp-1">
           {label}
         </span>
       </div>
-      {active && (
-        <span className="pointer-events-none absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-fuchsia-400 z-20" />
-      )}
       {children}
     </div>
   );
