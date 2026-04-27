@@ -82,7 +82,6 @@ const verificationIntents = [
     title: 'Creator / Influencer',
     description: 'Mental health & wellbeing content creator',
     depth: 'Light verification',
-    gradient: 'from-amber-500 via-orange-500 to-rose-500',
     accountType: 'individual' as const,
   },
   {
@@ -91,7 +90,6 @@ const verificationIntents = [
     title: 'Professional',
     description: 'Licensed mental health practitioner',
     depth: 'Full verification',
-    gradient: 'from-cyan-500 via-blue-500 to-indigo-500',
     accountType: 'professional' as const,
   },
   {
@@ -100,7 +98,6 @@ const verificationIntents = [
     title: 'Organization',
     description: 'Mental health service or clinic',
     depth: 'Full verification',
-    gradient: 'from-violet-500 via-purple-500 to-fuchsia-500',
     accountType: 'organization' as const,
   },
   {
@@ -109,7 +106,6 @@ const verificationIntents = [
     title: 'Individual',
     description: 'Looking for professional support',
     depth: 'Simple profile',
-    gradient: 'from-rose-500 via-pink-500 to-red-500',
     accountType: 'individual' as const,
   },
 ];
@@ -722,7 +718,7 @@ export default function MyERA() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={springGentle}
-                className="space-y-3 mt-4"
+                className="space-y-2 mt-4"
               >
                 <div className="flex items-center justify-between mb-2">
                   <div>
@@ -749,52 +745,41 @@ export default function MyERA() {
                 {verificationIntents.map((intent, index) => {
                   const IconComponent = intent.icon;
                   const isSelected = selectedIntents.includes(intent.id);
-                  
-                  return (
-                    <motion.button
-                      key={intent.id}
-                      className={`relative w-full overflow-hidden rounded-2xl text-left transition-all ${
-                        isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : ''
-                      }`}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ ...springGentle, delay: index * 0.05 }}
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.99 }}
-                      onClick={() => handleIntentToggle(intent.id)}
-                    >
-                      <div className={`absolute inset-0 bg-gradient-to-r ${intent.gradient} ${isSelected ? 'opacity-25' : 'opacity-15'}`} />
-                      <div className="absolute inset-0 bg-card/70 backdrop-blur-sm" />
-                      
-                      <div className="relative p-4 flex items-center gap-4">
-                        <div className={`flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br ${intent.gradient}`}>
-                          <IconComponent className="w-6 h-6 text-white" />
-                        </div>
-                        
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-0.5">
-                            <h3 className="text-sm font-semibold text-foreground">
-                              {intent.title}
-                            </h3>
-                            <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-white/10 text-muted-foreground">
-                              {intent.depth}
-                            </Badge>
-                          </div>
-                          <p className="text-xs text-muted-foreground">
-                            {intent.description}
-                          </p>
-                        </div>
 
-                        {/* Checkbox indicator */}
-                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                          isSelected 
-                            ? 'bg-primary border-primary' 
-                            : 'border-muted-foreground/30 bg-transparent'
-                        }`}>
-                          {isSelected && <Check className="w-4 h-4 text-primary-foreground" />}
+                  return (
+                    <BrandSurface
+                      as="button"
+                      key={intent.id}
+                      onClick={() => handleIntentToggle(intent.id)}
+                      className="relative w-full overflow-hidden text-left p-4 flex items-center gap-4 transition-colors"
+                      style={isSelected ? { borderColor: themePrimary, borderWidth: '1.5px' } : undefined}
+                    >
+                      <BrandIcon icon={IconComponent} size={22} />
+
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <h3 className="text-white text-[15px] font-medium">
+                            {intent.title}
+                          </h3>
+                          <span className="text-[10px] uppercase tracking-[0.1em] text-white/45">
+                            {intent.depth}
+                          </span>
                         </div>
+                        <p className="text-white/55 text-[13px] leading-relaxed">
+                          {intent.description}
+                        </p>
                       </div>
-                    </motion.button>
+
+                      {/* Selection indicator */}
+                      <div
+                        className="w-4 h-4 rounded-full border flex items-center justify-center shrink-0"
+                        style={isSelected ? { borderColor: themePrimary } : { borderColor: 'rgba(255,255,255,0.15)' }}
+                      >
+                        {isSelected && (
+                          <Check className="w-3 h-3" style={{ color: themePrimary }} strokeWidth={2.5} />
+                        )}
+                      </div>
+                    </BrandSurface>
                   );
                 })}
 
@@ -865,7 +850,10 @@ export default function MyERA() {
                 {/* Loading state */}
                 {supportLinksLoading && (
                   <div className="flex items-center justify-center py-8">
-                    <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                    <div
+                      className="w-6 h-6 border-2 border-white/30 rounded-full animate-spin"
+                      style={{ borderTopColor: themePrimary }}
+                    />
                   </div>
                 )}
 
@@ -891,29 +879,28 @@ export default function MyERA() {
 
                 {/* Empty state */}
                 {!supportLinksLoading && !supportLinksError && activeProviders.length === 0 && pendingProviders.length === 0 && (
-                  <motion.div 
-                    className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-rose-500/10 via-pink-500/10 to-fuchsia-500/10 border border-white/5 p-6"
-                    whileHover={{ scale: 1.01 }}
-                  >
-                    <div className="text-center">
-                      <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-500 flex items-center justify-center">
-                        <Heart className="w-7 h-7 text-white" />
+                  <BrandSurface className="p-8">
+                    <div className="text-center flex flex-col items-center">
+                      <div className="mb-4">
+                        <BrandIcon icon={Heart} size={28} />
                       </div>
-                      <h3 className="text-base font-medium text-foreground mb-1">
-                        Your support connections
+                      <h3 className="text-white/85 text-[15px] lowercase mb-2">
+                        your support connections
                       </h3>
-                      <p className="text-sm text-muted-foreground mb-4 max-w-[240px] mx-auto">
-                        Find support when you're ready. Connect with verified professionals on SelfERA.
+                      <p className="text-white/55 text-[13px] leading-relaxed max-w-[260px] mx-auto mb-5">
+                        find support when you're ready. connect with verified professionals on selfera.
                       </p>
-                      <Button
-                        className="rounded-full px-6"
+                      <button
+                        type="button"
                         onClick={() => navigate('/directory')}
+                        className="inline-flex items-center gap-2 bg-transparent border h-9 px-4 rounded-full text-[12px] uppercase tracking-[0.1em]"
+                        style={{ borderColor: themePrimary, color: themePrimary }}
                       >
-                        <Compass className="w-4 h-4 mr-2" />
+                        <Compass className="w-3.5 h-3.5" />
                         Explore Directory
-                      </Button>
+                      </button>
                     </div>
-                  </motion.div>
+                  </BrandSurface>
                 )}
 
                 {/* List of providers */}
@@ -936,7 +923,10 @@ export default function MyERA() {
                             ring={link.status === 'active' ? 'primary' : 'muted'}
                           />
                           {link.status === 'active' && (
-                            <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-primary border-2 border-card" />
+                            <span
+                              className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full"
+                              style={{ backgroundColor: themePrimary }}
+                            />
                           )}
                         </div>
                         
@@ -953,9 +943,7 @@ export default function MyERA() {
                         </div>
 
                         {link.status === 'pending' && (
-                          <Badge className="bg-amber-500/20 text-amber-400 text-[10px]">
-                            Pending
-                          </Badge>
+                          <BrandSectionLabel>PENDING</BrandSectionLabel>
                         )}
                         
                         <Button
@@ -985,19 +973,20 @@ export default function MyERA() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 10 }}
                 transition={{ duration: 0.2 }}
-                className="relative overflow-hidden rounded-2xl bg-card/30 border border-white/5 p-6"
               >
-                <div className="text-center">
-                  <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-muted/30 flex items-center justify-center">
-                    <Heart className="w-6 h-6 text-muted-foreground" />
+                <BrandSurface className="p-8">
+                  <div className="text-center flex flex-col items-center">
+                    <div className="mb-4">
+                      <BrandIcon icon={Heart} size={28} />
+                    </div>
+                    <h3 className="text-white/85 text-[15px] lowercase mb-2">
+                      your saved connections
+                    </h3>
+                    <p className="text-white/55 text-[13px] leading-relaxed max-w-[220px] mx-auto">
+                      people and providers you've added to your personal list will appear here.
+                    </p>
                   </div>
-                  <h3 className="text-sm font-medium text-foreground mb-1">
-                    Your saved connections
-                  </h3>
-                  <p className="text-xs text-muted-foreground max-w-[200px] mx-auto">
-                    People and providers you've added to your personal list will appear here.
-                  </p>
-                </div>
+                </BrandSurface>
               </motion.div>
             )}
 
@@ -1011,7 +1000,10 @@ export default function MyERA() {
               >
                 {interactionsLoading ? (
                   <div className="flex items-center justify-center py-8">
-                    <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                    <div
+                      className="w-6 h-6 border-2 border-white/30 rounded-full animate-spin"
+                      style={{ borderTopColor: themePrimary }}
+                    />
                   </div>
                 ) : (
                   <InteractionList
