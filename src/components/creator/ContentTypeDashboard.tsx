@@ -282,65 +282,47 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
           <p className="text-sm text-white/55 mt-1.5">Pick a format to begin</p>
         </div>
 
-        {/* Single 4-column stat strip — Continue / Prompt / Drafts / Scheduled */}
-        <div className="mx-5 mt-4 mb-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-stretch overflow-hidden divide-x divide-white/[0.06] shrink-0">
-          {showPickup && (
+        {/* Adaptive pill — opens the continue WORKING. sheet */}
+        {pill && (
+          <div className="px-5 mt-2 mb-4 shrink-0">
             <button
-              onClick={openDraft}
-              className="relative flex-1 flex flex-col items-center justify-center gap-1 py-3 px-2 hover:bg-white/[0.03] transition cursor-pointer"
-            >
-              <span
-                className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full"
-                style={{ background: 'hsl(var(--primary))' }}
-                aria-hidden
-              />
-              <span className="text-base font-semibold text-white leading-none">
-                {relativeTimeShort(latestDraft!.updatedAt)}
-              </span>
-              <span className="text-[10px] tracking-wider text-white/55 leading-none uppercase">
-                Continue
-              </span>
-            </button>
-          )}
-
-          {showPrompt && (
-            <button
-              onClick={openPromptComposer}
-              className="relative flex-1 flex flex-col items-center justify-center gap-1 py-3 px-2 hover:bg-white/[0.03] transition cursor-pointer"
-              aria-label="Use today's prompt"
-            >
-              <Sparkles size={16} className="text-white" />
-              <span className="text-[10px] tracking-wider text-white/55 leading-none uppercase">
-                Prompt
-              </span>
-            </button>
-          )}
-
-          <button
-            onClick={() => {
-              setDrawerTab(draftCount === 0 && scheduledCount > 0 ? 'scheduled' : 'drafts');
-              setDrawerOpen(true);
-            }}
-            className="relative flex-1 flex flex-col items-center justify-center gap-1 py-3 px-2 hover:bg-white/[0.03] transition cursor-pointer"
-            aria-label={`Library: ${draftCount} drafts, ${scheduledCount} scheduled`}
-          >
-            <span className="text-base font-semibold text-white leading-none flex items-baseline gap-1">
-              {draftCount}
-              {scheduledCount > 0 && (
-                <>
-                  <span className="text-white/30 text-xs font-normal">/</span>
-                  <span className="inline-flex items-center gap-0.5 text-xs font-medium text-white/70">
-                    <Clock size={10} className="text-white/70" />
-                    {scheduledCount}
-                  </span>
-                </>
+              type="button"
+              onClick={() => setSheetOpen(true)}
+              aria-label={pill.ariaLabel}
+              className={cn(
+                'group relative w-full flex items-center gap-3 px-4 py-3 rounded-full',
+                'bg-white/[0.03] border border-white/[0.08]',
+                'hover:bg-white/[0.05] hover:border-white/[0.14] transition-colors',
+                'focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--primary))]/40',
               )}
-            </span>
-            <span className="text-[10px] tracking-wider text-white/55 leading-none uppercase">
-              Library
-            </span>
-          </button>
-        </div>
+            >
+              <pill.Icon
+                size={20}
+                strokeWidth={1.6}
+                stroke="url(#selfera-brand-gradient)"
+                fill="none"
+                aria-hidden
+                className="shrink-0"
+                style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.4))' }}
+              />
+              <span className="flex-1 min-w-0 flex flex-col items-start text-left">
+                <span className="text-sm font-semibold text-white leading-tight truncate w-full">
+                  {pill.label}
+                </span>
+                <span className="text-[11px] text-white/55 leading-tight truncate w-full mt-0.5">
+                  {pill.subtitle}
+                </span>
+              </span>
+              {hasWork && scheduledCount > 0 && (
+                <span className="shrink-0 inline-flex items-center gap-1 text-[11px] font-medium text-white/65">
+                  <Clock size={11} className="text-white/55" />
+                  {scheduledCount}
+                </span>
+              )}
+              <ChevronRight size={16} className="shrink-0 text-white/40" />
+            </button>
+          </div>
+        )}
 
         {/* Creator rows — fixed tall rows (doubled height) */}
         <div className="grid grid-cols-1 gap-3 px-5 pb-2">
