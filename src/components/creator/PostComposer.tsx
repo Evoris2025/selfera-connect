@@ -23,8 +23,6 @@ import {
   Calendar,
   UserPlus,
   Hash,
-  ChevronDown,
-  Check,
   Film,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -73,7 +71,6 @@ import { CrossPostToggles, type CrossPostState } from './shared/CrossPostToggles
 import {
   PollCreator,
   PollData,
-  CharacterCounter,
   FeelingActivityPicker,
   FeelingActivity,
   LocationPicker,
