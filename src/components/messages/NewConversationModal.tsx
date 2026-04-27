@@ -176,8 +176,8 @@ export function NewConversationModal({ isOpen, onClose, onStartConversation }: N
                   className={cn(
                     "w-full flex items-center gap-3 px-5 py-3 transition-colors",
                     selectedUserId === userResult.id
-                      ? "bg-primary/10"
-                      : "hover:bg-secondary/50"
+                      ? "bg-white/[0.06]"
+                      : "hover:bg-white/[0.04]"
                   )}
                 >
                   <Avatar className="h-12 w-12">
