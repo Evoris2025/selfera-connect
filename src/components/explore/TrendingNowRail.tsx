@@ -53,10 +53,12 @@ function ExpressionCard({ item, index }: { item: TrendingExpression; index: numb
       onClick={() => handleTap('expressions', item.id)}
       className="relative w-[112px] aspect-[9/16] flex-shrink-0 overflow-hidden rounded-md bg-secondary group"
     >
-      <span className="absolute top-2 left-2 z-10"><BrandIcon icon={Flame} className="w-3 h-3" /></span>
+      <span className="absolute top-2 left-2 z-10 flex items-center justify-center w-5 h-5 rounded-full bg-black/40 backdrop-blur-sm">
+        <BrandIcon icon={Flame} className="w-3 h-3" />
+      </span>
       <img src={item.thumbnail} alt="" loading="lazy" className="w-full h-full object-cover" />
-      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/85 via-black/30 to-transparent pointer-events-none" />
-      <div className="absolute bottom-1.5 left-1.5 right-1.5 flex items-center gap-1 min-w-0">
+      <div className="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black/85 via-black/30 to-transparent pointer-events-none" />
+      <div className="absolute bottom-1.5 left-1.5 right-12 flex items-center gap-1 min-w-0">
         <Avatar className="h-4 w-4 ring-1 ring-white/30 flex-shrink-0">
           <AvatarImage src={item.user.avatar} alt={item.user.handle} />
           <AvatarFallback className="text-[7px] bg-white/[0.08] text-white/70">
@@ -65,10 +67,10 @@ function ExpressionCard({ item, index }: { item: TrendingExpression; index: numb
         </Avatar>
         <span className="text-white text-[10px] font-medium truncate">@{item.user.handle}</span>
       </div>
-      <div className="absolute top-1.5 right-1.5 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-black/55 backdrop-blur-sm">
-        <Eye className="h-2.5 w-2.5 text-white" />
-        <span className="text-white text-[9px] font-medium tabular-nums">{formatCount(item.views)}</span>
-      </div>
+      <span className="absolute bottom-2 right-2 z-10 flex items-center gap-1 text-white/90 text-[10px] font-medium">
+        <Eye className="w-2.5 h-2.5" strokeWidth={1.5} />
+        {formatCount(item.views)}
+      </span>
     </motion.button>
   );
 }
@@ -84,7 +86,9 @@ function VideoCard({ item, index }: { item: TrendingVideo; index: number }) {
       className="w-[200px] flex-shrink-0 text-left group"
     >
       <div className="relative aspect-video rounded-md overflow-hidden bg-black">
-        <span className="absolute top-2 left-2 z-10"><BrandIcon icon={Flame} className="w-3 h-3" /></span>
+        <span className="absolute top-2 left-2 z-10 flex items-center justify-center w-5 h-5 rounded-full bg-black/40 backdrop-blur-sm">
+          <BrandIcon icon={Flame} className="w-3 h-3" />
+        </span>
         <img src={item.thumbnail} alt={item.title} loading="lazy" className="w-full h-full object-cover" />
         <div className="absolute bottom-1 right-1 px-1.5 py-0.5 bg-black/80 text-[10px] text-white font-medium rounded">
           {item.duration}
@@ -115,7 +119,9 @@ function ImageCard({ item, index }: { item: TrendingImage; index: number }) {
       onClick={() => handleTap('images', item.id)}
       className="relative w-[120px] aspect-square flex-shrink-0 overflow-hidden rounded-md bg-secondary group"
     >
-      <span className="absolute top-2 left-2 z-10"><BrandIcon icon={Flame} className="w-3 h-3" /></span>
+      <span className="absolute top-2 left-2 z-10 flex items-center justify-center w-5 h-5 rounded-full bg-black/40 backdrop-blur-sm">
+        <BrandIcon icon={Flame} className="w-3 h-3" />
+      </span>
       <img src={item.url} alt="" loading="lazy" className="w-full h-full object-cover" />
       <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/70 to-transparent pointer-events-none" />
       <div className="absolute bottom-1.5 left-1.5 flex items-center gap-1">
@@ -136,7 +142,9 @@ function PostCard({ item, index }: { item: TrendingPost; index: number }) {
       onClick={() => handleTap('posts', item.id)}
       className="relative w-[240px] flex-shrink-0 text-left rounded-md border border-white/[0.08] p-3 hover:border-white/20 transition-colors"
     >
-      <span className="absolute top-2 right-2 z-10"><BrandIcon icon={Flame} className="w-3 h-3" /></span>
+      <span className="absolute top-2 right-2 z-10 flex items-center justify-center w-5 h-5 rounded-full bg-black/40 backdrop-blur-sm">
+        <BrandIcon icon={Flame} className="w-3 h-3" />
+      </span>
       <p className="text-white/85 text-[12px] leading-snug line-clamp-3 mb-2">
         {item.snippet}
       </p>
@@ -184,7 +192,7 @@ export function TrendingNowRail({ activeTab }: TrendingNowRailProps) {
   };
 
   return (
-    <div className="bg-background pt-3 pb-3">
+    <div className="bg-background pt-4 pb-6">
       <div className="px-4 mb-2 flex items-center gap-1.5">
         <BrandIcon icon={Flame} size={12} />
         <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-white/55">
