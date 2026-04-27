@@ -677,7 +677,7 @@ export default function Profile() {
         </div>
 
         {/* Content Tabs */}
-        <div className="mt-4 border-t border-border/40">
+        <div className="mt-4 border-t border-white/[0.08]">
           <RearrangeableTabBar
             activeTab={activeTab}
             onTabChange={setActiveTab}
