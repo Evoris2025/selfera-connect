@@ -48,11 +48,6 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
 import { useFeedData, type StudioAudience, type PostBackground } from '@/contexts/FeedDataContext';
