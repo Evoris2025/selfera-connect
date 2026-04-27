@@ -973,19 +973,20 @@ export default function MyERA() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 10 }}
                 transition={{ duration: 0.2 }}
-                className="relative overflow-hidden rounded-2xl bg-card/30 border border-white/5 p-6"
               >
-                <div className="text-center">
-                  <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-muted/30 flex items-center justify-center">
-                    <Heart className="w-6 h-6 text-muted-foreground" />
+                <BrandSurface className="p-8">
+                  <div className="text-center flex flex-col items-center">
+                    <div className="mb-4">
+                      <BrandIcon icon={Heart} size={28} />
+                    </div>
+                    <h3 className="text-white/85 text-[15px] lowercase mb-2">
+                      your saved connections
+                    </h3>
+                    <p className="text-white/55 text-[13px] leading-relaxed max-w-[220px] mx-auto">
+                      people and providers you've added to your personal list will appear here.
+                    </p>
                   </div>
-                  <h3 className="text-sm font-medium text-foreground mb-1">
-                    Your saved connections
-                  </h3>
-                  <p className="text-xs text-muted-foreground max-w-[200px] mx-auto">
-                    People and providers you've added to your personal list will appear here.
-                  </p>
-                </div>
+                </BrandSurface>
               </motion.div>
             )}
 
