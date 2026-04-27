@@ -15,6 +15,7 @@ import { HashtagAutocomplete, TrendingHashtagChips } from './HashtagAutocomplete
 import { ToolsRail, ToolType } from './shared/ToolsRail';
 import { HoldToRecordButton } from './shared/HoldToRecordButton';
 import { 
+import { CreatorScreenHeader } from './CreatorScreenHeader';
   DrawingCanvas, 
   DrawingData,
   InteractiveStickerPicker,
