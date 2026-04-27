@@ -150,6 +150,7 @@ function getVerificationStepIndex(status: string | undefined): number {
 export default function MyERA() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { primary: themePrimary } = useThemeColor();
   const { activeProviders, pendingProviders, loading: supportLinksLoading, error: supportLinksError, refresh: refreshSupportLinks } = useSupportLinks();
   const { count: pendingConnectionCount } = usePendingConnectionCount();
   const { myRequest, isLoading: verificationLoading } = useVerification();
