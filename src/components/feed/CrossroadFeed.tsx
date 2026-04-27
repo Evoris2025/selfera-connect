@@ -358,10 +358,10 @@ export function CrossroadFeed({
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
             transition={{ type: 'spring', stiffness: 400, damping: 25 }}
             onClick={scrollToTop}
-            className="fixed bottom-24 right-4 z-40 w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:bg-primary/90 active:scale-95 transition-transform"
+            className="fixed bottom-24 right-4 z-40 w-10 h-10 rounded-full bg-black/70 backdrop-blur-md border border-white/[0.12] flex items-center justify-center active:scale-95 transition-transform"
             aria-label="Back to top"
           >
-            <ArrowUp className="w-5 h-5" />
+            <ArrowUp className="w-4 h-4 text-white" />
           </motion.button>
         )}
       </AnimatePresence>
