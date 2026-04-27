@@ -82,7 +82,6 @@ const verificationIntents = [
     title: 'Creator / Influencer',
     description: 'Mental health & wellbeing content creator',
     depth: 'Light verification',
-    gradient: 'from-amber-500 via-orange-500 to-rose-500',
     accountType: 'individual' as const,
   },
   {
@@ -91,7 +90,6 @@ const verificationIntents = [
     title: 'Professional',
     description: 'Licensed mental health practitioner',
     depth: 'Full verification',
-    gradient: 'from-cyan-500 via-blue-500 to-indigo-500',
     accountType: 'professional' as const,
   },
   {
@@ -100,7 +98,6 @@ const verificationIntents = [
     title: 'Organization',
     description: 'Mental health service or clinic',
     depth: 'Full verification',
-    gradient: 'from-violet-500 via-purple-500 to-fuchsia-500',
     accountType: 'organization' as const,
   },
   {
@@ -109,7 +106,6 @@ const verificationIntents = [
     title: 'Individual',
     description: 'Looking for professional support',
     depth: 'Simple profile',
-    gradient: 'from-rose-500 via-pink-500 to-red-500',
     accountType: 'individual' as const,
   },
 ];
