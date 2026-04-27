@@ -52,12 +52,12 @@ function ImageCard({ image, index, onClick }: ImageCardProps) {
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: index * 0.03 }}
-      className="relative group cursor-pointer overflow-hidden aspect-square"
+      className="relative group cursor-pointer overflow-hidden aspect-square border border-white/[0.08] rounded-md"
       onClick={onClick}
     >
-      <img 
-        src={image.url} 
-        alt="" 
+      <img
+        src={image.url}
+        alt=""
         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
       />
       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
