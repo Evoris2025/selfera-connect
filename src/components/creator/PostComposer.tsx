@@ -23,8 +23,6 @@ import {
   Calendar,
   UserPlus,
   Hash,
-  ChevronDown,
-  Check,
   Film,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -53,14 +51,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
 import { useFeedData, type StudioAudience, type PostBackground } from '@/contexts/FeedDataContext';
@@ -73,7 +63,6 @@ import { CrossPostToggles, type CrossPostState } from './shared/CrossPostToggles
 import {
   PollCreator,
   PollData,
-  CharacterCounter,
   FeelingActivityPicker,
   FeelingActivity,
   LocationPicker,
@@ -270,6 +259,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
   const [fundraiserOpen, setFundraiserOpen] = useState(false);
   const [topicsOpen, setTopicsOpen] = useState(false);
   const [advancedOpen, setAdvancedOpen] = useState(false);
+  const [addSheetOpen, setAddSheetOpen] = useState(false);
   const [mediaSheetOpen, setMediaSheetOpen] = useState(false);
   const [showTopicsError, setShowTopicsError] = useState(false);
   const [dismissedUrls, setDismissedUrls] = useState<Set<string>>(new Set());
@@ -577,38 +567,20 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
               {state.scheduledDate ? 'Schedule Post' : 'Create Post'}
             </h2>
           </div>
-          <div className="flex items-center gap-1">
-            <Button
-              size="sm"
-              onClick={handleSubmit}
-              disabled={!canPost || isSubmitting}
-              className={cn(
-                'h-8 px-4 rounded-full text-xs font-semibold transition-all',
-                canPost && !isSubmitting
-                  ? 'gradient-brand text-white shadow-md shadow-fuchsia-500/20'
-                  : 'bg-white/5 text-foreground/40 hover:bg-white/5'
-              )}
-            >
-              {isSubmitting ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : state.scheduledDate ? (
-                'Schedule'
-              ) : (
-                'Post'
-              )}
-            </Button>
-            <button
-              onClick={onBack}
-              className="p-2 rounded-full hover:bg-white/5 transition-colors"
-              aria-label="Close"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
+          <button
+            onClick={onBack}
+            className="p-2 rounded-full hover:bg-white/5 transition-colors"
+            aria-label="Close"
+          >
+            <X className="h-5 w-5" />
+          </button>
         </div>
         <div className="h-px w-full bg-gradient-to-r from-transparent via-fuchsia-500/40 to-transparent opacity-60" />
       </div>
 
+      {/* Centered body region (hero + textarea + Add button) */}
+      <div className="flex-1 min-h-0 flex flex-col overflow-y-auto">
+        <div className="flex-1 flex flex-col justify-center">
       {/* Hero identity block */}
       <div className="shrink-0 flex flex-col items-center text-center gap-3 px-5 pt-6 pb-6">
         <div className="rounded-full p-1 bg-gradient-to-br from-fuchsia-500 via-violet-500 to-teal-400 shrink-0">
@@ -634,7 +606,11 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       <div className="h-px w-full bg-gradient-to-r from-fuchsia-500/40 via-violet-500/40 to-teal-400/40 opacity-60 shrink-0" />
 
       {/* Textarea region — sits directly on the composer background */}
-      <div className="flex-1 min-h-0 flex flex-col overflow-y-auto px-5 py-4">
+      <div className="relative shrink-0 flex flex-col px-5 py-4">
+        {/* Character counter — top-right of textarea region */}
+        <span className="absolute top-2 right-3 text-xs text-foreground/40 pointer-events-none z-10">
+          {state.content.length}/{MAX_CHARACTERS}
+        </span>
         <AnimatePresence mode="wait">
           {state.composerMode === 'simple' ? (
             <motion.div
@@ -837,169 +813,35 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         )}
       </div>
 
-      <div className="h-px bg-white/5 shrink-0" />
-
-      {/* Add to your post — single dropdown trigger + Aa picker */}
-      <div className="shrink-0 px-5 pt-3 pb-2 flex items-center gap-2">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              className="flex-1 justify-between rounded-2xl h-12 px-4 bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06] hover:shadow-[0_0_24px_-8px_rgba(217,70,239,0.4)] transition-all"
-            >
-              <span className="text-sm font-medium text-foreground/85">Add to your post</span>
-              <ChevronDown className="h-4 w-4 text-foreground/60" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="start"
-            sideOffset={6}
-            className="w-[min(92vw,360px)] bg-background/95 backdrop-blur-md border-white/10 p-1.5"
-          >
-            {/* Media */}
-            <DropdownMenuLabel className="text-[11px] text-foreground/40 uppercase tracking-wide px-3 py-1.5 font-normal">
-              Media
-            </DropdownMenuLabel>
-            <DropdownMenuItem
-              onSelect={(e) => { e.preventDefault(); photoInputRef.current?.click(); }}
-              className="flex items-center gap-3 px-3 py-2.5 text-sm text-foreground/85 hover:bg-white/5 rounded-lg cursor-pointer"
-            >
-              <ImageIcon className="h-[18px] w-[18px] text-emerald-400" /> Photo
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onSelect={(e) => { e.preventDefault(); videoInputRef.current?.click(); }}
-              className="flex items-center gap-3 px-3 py-2.5 text-sm text-foreground/85 hover:bg-white/5 rounded-lg cursor-pointer"
-            >
-              <VideoIcon className="h-[18px] w-[18px] text-rose-400" /> Video
-            </DropdownMenuItem>
-            <MenuRowSlot icon={<Film className="h-[18px] w-[18px] text-violet-400" />} label="GIF">
-              <GifPicker onSelect={handleGifSelect} />
-            </MenuRowSlot>
-
-            <DropdownMenuSeparator className="my-1 bg-white/5" />
-
-            {/* Social */}
-            <DropdownMenuLabel className="text-[11px] text-foreground/40 uppercase tracking-wide px-3 py-1.5 font-normal">
-              Social
-            </DropdownMenuLabel>
-            <DropdownMenuItem
-              onSelect={(e) => {
-                e.preventDefault();
-                update({
-                  poll: hasPoll
-                    ? null
-                    : { options: [{ text: '' }, { text: '' }], multiSelect: false, durationHours: 24 },
-                });
-              }}
-              className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm text-foreground/85 hover:bg-white/5 rounded-lg cursor-pointer"
-            >
-              <span className="flex items-center gap-3">
-                <BarChart3 className="h-[18px] w-[18px] text-amber-400" /> Poll
-              </span>
-              {hasPoll && <Check className="h-4 w-4 text-fuchsia-400" />}
-            </DropdownMenuItem>
-            <MenuRowSlot
-              icon={<MapPin className="h-[18px] w-[18px] text-sky-400" />}
-              label="Check in"
-              activeIndicator={!!state.checkIn}
-            >
-              <CheckInPicker value={state.checkIn} onChange={(v) => update({ checkIn: v })} />
-            </MenuRowSlot>
-            <MenuRowSlot
-              icon={<UserPlus className="h-[18px] w-[18px] text-blue-400" />}
-              label="Tag people"
-              activeIndicator={state.taggedPeople.length > 0}
-            >
-              <WithPeoplePicker value={state.taggedPeople} onChange={(v) => update({ taggedPeople: v })} />
-            </MenuRowSlot>
-            <DropdownMenuItem
-              onSelect={(e) => { e.preventDefault(); toggleThreadMode(); }}
-              className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm text-foreground/85 hover:bg-white/5 rounded-lg cursor-pointer"
-            >
-              <span className="flex items-center gap-3">
-                <MessageSquare className="h-[18px] w-[18px] text-teal-400" /> Thread
-              </span>
-              {hasThread && <Check className="h-4 w-4 text-fuchsia-400" />}
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onSelect={(e) => { e.preventDefault(); setMediaSheetOpen(true); }}
-              className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm text-foreground/85 hover:bg-white/5 rounded-lg cursor-pointer"
-            >
-              <span className="flex items-center gap-3">
-                <Smile className="h-[18px] w-[18px] text-yellow-400" /> Feeling
-              </span>
-              {state.feeling && <Check className="h-4 w-4 text-fuchsia-400" />}
-            </DropdownMenuItem>
-
-            <DropdownMenuSeparator className="my-1 bg-white/5" />
-
-            {/* Content */}
-            <DropdownMenuLabel className="text-[11px] text-foreground/40 uppercase tracking-wide px-3 py-1.5 font-normal">
-              Content
-            </DropdownMenuLabel>
-            <DropdownMenuItem
-              onSelect={(e) => {
-                e.preventDefault();
-                setShowTopicsError(false);
-                setTopicsOpen(true);
-              }}
-              className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm text-foreground/85 hover:bg-white/5 rounded-lg cursor-pointer"
-            >
-              <span className="flex items-center gap-3">
-                <Hash className="h-[18px] w-[18px] text-fuchsia-400" /> Topics
-              </span>
-              {state.selectedTags.length > 0 && (
-                <span className="h-1.5 w-1.5 rounded-full bg-fuchsia-400" />
-              )}
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onSelect={(e) => {
-                e.preventDefault();
-                update({ contentWarning: !state.contentWarning });
-              }}
-              className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm text-foreground/85 hover:bg-white/5 rounded-lg cursor-pointer"
-            >
-              <span className="flex items-center gap-3">
-                <Shield className="h-[18px] w-[18px] text-amber-400" /> Content warning
-              </span>
-              {state.contentWarning && <Check className="h-4 w-4 text-fuchsia-400" />}
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onSelect={(e) => {
-                e.preventDefault();
-                update({
-                  crossPost: {
-                    ...state.crossPost,
-                    alsoShareAsExpression: !state.crossPost.alsoShareAsExpression,
-                  },
-                });
-              }}
-              className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm text-foreground/85 hover:bg-white/5 rounded-lg cursor-pointer"
-            >
-              <span className="flex items-center gap-3">
-                <Sparkles className="h-[18px] w-[18px] text-violet-400" /> Share as Expression
-              </span>
-              {state.crossPost.alsoShareAsExpression && <Check className="h-4 w-4 text-fuchsia-400" />}
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onSelect={(e) => { e.preventDefault(); setAdvancedOpen(true); }}
-              className="flex items-center gap-3 px-3 py-2.5 text-sm text-foreground/85 hover:bg-white/5 rounded-lg cursor-pointer"
-            >
-              <Settings2 className="h-[18px] w-[18px] text-foreground/60" /> More
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        {/* Aa background picker — separate small button */}
+      {/* Bottom-right icon row inside textarea region: Feeling · More · Aa */}
+      <div className="shrink-0 px-5 -mt-1 mb-2 flex items-center justify-end gap-1.5">
+        <button
+          type="button"
+          onClick={() => setMediaSheetOpen(true)}
+          title="Feeling"
+          aria-label="Feeling"
+          className="w-9 h-9 rounded-full flex items-center justify-center text-foreground/60 hover:text-foreground hover:bg-white/5 transition"
+        >
+          <Smile className="h-[18px] w-[18px]" />
+        </button>
+        <button
+          type="button"
+          onClick={() => setAdvancedOpen(true)}
+          title="More"
+          aria-label="More"
+          className="w-9 h-9 rounded-full flex items-center justify-center text-foreground/60 hover:text-foreground hover:bg-white/5 transition"
+        >
+          <Settings2 className="h-[18px] w-[18px]" />
+        </button>
         {canShowBackground && state.composerMode === 'simple' && (
           <Popover>
             <PopoverTrigger asChild>
               <button
                 className={cn(
-                  'shrink-0 h-12 w-12 rounded-2xl flex items-center justify-center text-sm font-bold transition',
+                  'w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold transition',
                   state.background
                     ? 'ring-2 ring-fuchsia-500/60'
-                    : 'bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] text-foreground/70'
+                    : 'text-foreground/60 hover:text-foreground hover:bg-white/5'
                 )}
                 style={state.background ? backgroundStyle : undefined}
                 aria-label="Background style"
@@ -1047,34 +889,162 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         )}
       </div>
 
+      {/* Add to your post — opens bottom sheet */}
+      <div className="shrink-0 px-5 pt-1 pb-2">
+        <Button
+          variant="outline"
+          onClick={() => setAddSheetOpen(true)}
+          className="w-full justify-between rounded-2xl h-12 px-4 bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06] hover:shadow-[0_0_24px_-8px_rgba(217,70,239,0.4)] transition-all"
+        >
+          <span className="text-sm font-medium text-foreground/85">Add to your post</span>
+          <Plus className="h-4 w-4 text-foreground/60" />
+        </Button>
+      </div>
 
-      {/* Meta row */}
-      <div className="shrink-0 border-t border-white/5 px-5 py-3 flex items-center justify-between">
-        <CharacterCounter current={state.content.length} max={MAX_CHARACTERS} />
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => {
-              update({
-                feeling: null,
-              });
-              setMediaSheetOpen(true);
-            }}
-            className="text-xs text-foreground/50 hover:text-foreground transition-colors inline-flex items-center gap-1"
-          >
-            <Smile className="h-3.5 w-3.5" /> Feeling
-          </button>
-          <button
-            onClick={() => setAdvancedOpen(true)}
-            className="text-xs text-foreground/50 hover:text-foreground transition-colors inline-flex items-center gap-1"
-          >
-            <Settings2 className="h-3.5 w-3.5" /> More
-          </button>
         </div>
+      </div>
+      {/* /centered body region */}
+
+      {/* Sticky bottom Post CTA — sits above the global app navbar */}
+      <div className="sticky bottom-0 px-4 pt-3 pb-3 bg-background/80 backdrop-blur border-t border-white/5 mb-[72px] lg:mb-0 shrink-0">
+        <Button
+          onClick={handleSubmit}
+          disabled={!canPost || isSubmitting}
+          className={cn(
+            'w-full h-14 rounded-2xl text-base font-semibold text-white transition active:scale-[0.99]',
+            canPost && !isSubmitting
+              ? 'gradient-brand shadow-lg shadow-violet-500/20 hover:opacity-95'
+              : 'bg-white/10 opacity-40 cursor-not-allowed'
+          )}
+        >
+          {isSubmitting ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : state.scheduledDate ? (
+            'Schedule'
+          ) : (
+            'Post'
+          )}
+        </Button>
       </div>
 
       {showTopicsError && state.selectedTags.length === 0 && (
         <p className="text-xs text-destructive px-5 pb-2">Please select at least one topic.</p>
       )}
+
+      {/* Add to your post — bottom sheet with icon-tile grid */}
+      <Sheet open={addSheetOpen} onOpenChange={setAddSheetOpen}>
+        <SheetContent
+          side="bottom"
+          className="rounded-t-2xl bg-background/95 backdrop-blur-md border-white/10 px-4 pt-3 pb-[calc(env(safe-area-inset-bottom)+24px)] max-h-[80vh] overflow-y-auto"
+        >
+          <div className="w-10 h-1 rounded-full bg-white/20 mx-auto mt-2" />
+          <SheetHeader className="text-left mt-3">
+            <SheetTitle className="text-base">Add to your post</SheetTitle>
+            <SheetDescription className="sr-only">Pick what to add</SheetDescription>
+          </SheetHeader>
+
+          {/* Media */}
+          <p className="text-[11px] text-foreground/40 uppercase tracking-wide px-1 mb-2 mt-4">Media</p>
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+            <Tile
+              icon={<ImageIcon className="h-6 w-6 text-emerald-400" />}
+              label="Photo"
+              onClick={() => { setAddSheetOpen(false); photoInputRef.current?.click(); }}
+            />
+            <Tile
+              icon={<VideoIcon className="h-6 w-6 text-rose-400" />}
+              label="Video"
+              onClick={() => { setAddSheetOpen(false); videoInputRef.current?.click(); }}
+            />
+            <TileSlot icon={<Film className="h-6 w-6 text-violet-400" />} label="GIF">
+              <GifPicker onSelect={(g) => { handleGifSelect(g); setAddSheetOpen(false); }} />
+            </TileSlot>
+          </div>
+
+          {/* Social */}
+          <p className="text-[11px] text-foreground/40 uppercase tracking-wide px-1 mb-2 mt-4">Social</p>
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+            <Tile
+              icon={<BarChart3 className="h-6 w-6 text-amber-400" />}
+              label="Poll"
+              active={hasPoll}
+              onClick={() => {
+                update({
+                  poll: hasPoll
+                    ? null
+                    : { options: [{ text: '' }, { text: '' }], multiSelect: false, durationHours: 24 },
+                });
+              }}
+            />
+            <TileSlot
+              icon={<MapPin className="h-6 w-6 text-sky-400" />}
+              label="Check in"
+              active={!!state.checkIn}
+            >
+              <CheckInPicker value={state.checkIn} onChange={(v) => update({ checkIn: v })} />
+            </TileSlot>
+            <TileSlot
+              icon={<UserPlus className="h-6 w-6 text-blue-400" />}
+              label="Tag people"
+              active={state.taggedPeople.length > 0}
+            >
+              <WithPeoplePicker value={state.taggedPeople} onChange={(v) => update({ taggedPeople: v })} />
+            </TileSlot>
+            <Tile
+              icon={<MessageSquare className="h-6 w-6 text-teal-400" />}
+              label="Thread"
+              active={hasThread}
+              onClick={() => { toggleThreadMode(); }}
+            />
+            <Tile
+              icon={<Smile className="h-6 w-6 text-yellow-400" />}
+              label="Feeling"
+              active={!!state.feeling}
+              onClick={() => { setAddSheetOpen(false); setMediaSheetOpen(true); }}
+            />
+          </div>
+
+          {/* Content */}
+          <p className="text-[11px] text-foreground/40 uppercase tracking-wide px-1 mb-2 mt-4">Content</p>
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+            <Tile
+              icon={<Hash className="h-6 w-6 text-fuchsia-400" />}
+              label="Topics"
+              active={state.selectedTags.length > 0}
+              onClick={() => {
+                setAddSheetOpen(false);
+                setShowTopicsError(false);
+                setTopicsOpen(true);
+              }}
+            />
+            <Tile
+              icon={<Shield className="h-6 w-6 text-amber-400" />}
+              label="Content warning"
+              active={state.contentWarning}
+              onClick={() => update({ contentWarning: !state.contentWarning })}
+            />
+            <Tile
+              icon={<Sparkles className="h-6 w-6 text-violet-400" />}
+              label="Share as Expression"
+              active={state.crossPost.alsoShareAsExpression}
+              onClick={() =>
+                update({
+                  crossPost: {
+                    ...state.crossPost,
+                    alsoShareAsExpression: !state.crossPost.alsoShareAsExpression,
+                  },
+                })
+              }
+            />
+            <Tile
+              icon={<Settings2 className="h-6 w-6 text-foreground/70" />}
+              label="More"
+              onClick={() => { setAddSheetOpen(false); setAdvancedOpen(true); }}
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
+
 
       {/* Hidden file inputs */}
       <input
@@ -1273,20 +1243,21 @@ function Chip({
   );
 }
 
-function ToolbarIcon({
+/**
+ * Icon-tile button used inside the "Add to your post" bottom sheet.
+ * Vertical layout: 24px icon on top, label underneath. Active state shows a
+ * gradient ring and a small dot.
+ */
+function Tile({
   icon,
   label,
-  active,
   onClick,
-  dot,
-  ringError,
+  active,
 }: {
   icon: React.ReactNode;
   label: string;
-  active?: boolean;
   onClick: () => void;
-  dot?: boolean;
-  ringError?: boolean;
+  active?: boolean;
 }) {
   return (
     <button
@@ -1295,15 +1266,15 @@ function ToolbarIcon({
       title={label}
       aria-label={label}
       className={cn(
-        'relative w-9 h-9 rounded-full flex items-center justify-center transition-colors',
-        active
-          ? 'text-fuchsia-300 bg-fuchsia-500/10'
-          : 'text-foreground/60 hover:text-foreground hover:bg-white/5',
-        ringError && 'ring-1 ring-destructive/60'
+        'relative flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl hover:bg-white/5 transition',
+        active && 'bg-white/[0.04] ring-1 ring-fuchsia-500/40'
       )}
     >
       {icon}
-      {dot && (
+      <span className="text-xs text-foreground/80 leading-tight text-center line-clamp-1">
+        {label}
+      </span>
+      {active && (
         <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-fuchsia-400" />
       )}
     </button>
@@ -1311,76 +1282,44 @@ function ToolbarIcon({
 }
 
 /**
- * Wraps a picker component (which renders its own trigger button) so it
- * visually matches the toolbar: 36px circular ghost button, icon-only.
+ * Wraps a picker (which renders its own trigger button) as a Tile. Hides the
+ * picker's internal label/icon and overlays our own icon + label so the tile
+ * matches sibling Tile components visually while still triggering the picker.
  */
-function ToolbarSlot({
-  children,
-  label,
-  active,
-}: {
-  children: React.ReactNode;
-  label: string;
-  active?: boolean;
-}) {
-  return (
-    <div
-      title={label}
-      aria-label={label}
-      className={cn(
-        'inline-flex items-center justify-center',
-        '[&>button]:!w-9 [&>button]:!h-9 [&>button]:!p-0 [&>button]:!rounded-full',
-        '[&>button]:!bg-transparent [&>button:hover]:!bg-white/5',
-        '[&>button]:!border-0 [&>button]:!shadow-none [&>button]:!gap-0',
-        '[&>button>span]:hidden',
-        '[&_svg]:h-5 [&_svg]:w-5',
-        active
-          ? '[&>button]:!text-fuchsia-300 [&>button]:!bg-fuchsia-500/10'
-          : '[&>button]:!text-foreground/60 [&>button:hover]:!text-foreground'
-      )}
-    >
-      {children}
-    </div>
-  );
-}
-
-/**
- * Renders a picker (which has its own trigger button) as a full-width menu row
- * styled like a DropdownMenuItem. Restyles the picker's internal trigger via
- * descendant selectors and overlays our own icon + label.
- */
-function MenuRowSlot({
+function TileSlot({
   icon,
   label,
   children,
-  activeIndicator,
+  active,
 }: {
   icon: React.ReactNode;
   label: string;
   children: React.ReactNode;
-  activeIndicator?: boolean;
+  active?: boolean;
 }) {
   return (
     <div
       className={cn(
-        'relative w-full',
-        '[&>button]:!w-full [&>button]:!h-auto [&>button]:!justify-start',
-        '[&>button]:!px-3 [&>button]:!py-2.5 [&>button]:!rounded-lg',
+        'relative',
+        '[&>button]:!w-full [&>button]:!h-auto [&>button]:!min-h-[84px]',
+        '[&>button]:!flex [&>button]:!flex-col [&>button]:!items-center [&>button]:!justify-center [&>button]:!gap-1.5',
+        '[&>button]:!p-3 [&>button]:!rounded-2xl',
         '[&>button]:!bg-transparent [&>button:hover]:!bg-white/5',
         '[&>button]:!border-0 [&>button]:!shadow-none',
-        '[&>button]:!text-sm [&>button]:!font-normal [&>button]:!text-transparent',
+        '[&>button]:!text-transparent',
         '[&>button>span]:hidden',
         '[&>button>svg]:hidden',
+        active && '[&>button]:!bg-white/[0.04] [&>button]:!ring-1 [&>button]:!ring-fuchsia-500/40'
       )}
     >
-      <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center gap-3 z-10 text-sm text-foreground/85">
+      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-1.5 z-10">
         {icon}
-        <span>{label}</span>
-      </div>
-      {activeIndicator && (
-        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 z-10">
-          <Check className="h-4 w-4 text-fuchsia-400" />
+        <span className="text-xs text-foreground/80 leading-tight text-center line-clamp-1 px-2">
+          {label}
         </span>
+      </div>
+      {active && (
+        <span className="pointer-events-none absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-fuchsia-400 z-20" />
       )}
       {children}
     </div>
