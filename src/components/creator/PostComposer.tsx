@@ -862,58 +862,21 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
             <Settings2 className="h-[18px] w-[18px]" />
           </button>
           {canShowBackground && state.composerMode === 'simple' && (
-            <Popover>
-              <PopoverTrigger asChild>
-                <button
-                  className={cn(
-                    'h-11 w-11 rounded-2xl flex items-center justify-center text-sm font-bold transition border',
-                    state.background
-                      ? 'border-fuchsia-500/60 ring-2 ring-fuchsia-500/40'
-                      : 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06] text-foreground/70 hover:text-foreground'
-                  )}
-                  style={state.background ? backgroundStyle : undefined}
-                  aria-label="Background style"
-                  title="Background"
-                >
-                  Aa
-                </button>
-              </PopoverTrigger>
-              <PopoverContent
-                align="end"
-                className="w-auto p-3 bg-background/95 backdrop-blur-md border-white/10"
-              >
-                <div className="grid grid-cols-5 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => update({ background: null })}
-                    className={cn(
-                      'h-9 w-9 rounded-lg border-2 flex items-center justify-center transition bg-secondary',
-                      !state.background ? 'border-fuchsia-500' : 'border-transparent hover:border-foreground/30'
-                    )}
-                    title="Plain"
-                    aria-label="Plain background"
-                  >
-                    <TypeIcon className="h-4 w-4" />
-                  </button>
-                  {POST_BACKGROUND_PRESETS.map((preset, i) => {
-                    const active = state.background?.value === preset.value;
-                    return (
-                      <button
-                        key={i}
-                        type="button"
-                        onClick={() => update({ background: preset })}
-                        className={cn(
-                          'h-9 w-9 rounded-lg border-2 transition',
-                          active ? 'border-fuchsia-500' : 'border-transparent hover:border-foreground/30'
-                        )}
-                        style={{ background: preset.value }}
-                        aria-label={`Background ${i + 1}`}
-                      />
-                    );
-                  })}
-                </div>
-              </PopoverContent>
-            </Popover>
+            <button
+              type="button"
+              onClick={() => setBgSheetOpen(true)}
+              className={cn(
+                'h-11 w-11 rounded-2xl flex items-center justify-center text-sm font-bold transition border',
+                state.background
+                  ? 'border-fuchsia-500/60 ring-2 ring-fuchsia-500/40'
+                  : 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06] text-foreground/70 hover:text-foreground'
+              )}
+              style={state.background ? backgroundStyle : undefined}
+              aria-label="Background style"
+              title="Background"
+            >
+              Aa
+            </button>
           )}
         </div>
       </div>
