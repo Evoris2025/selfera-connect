@@ -617,7 +617,11 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       <div className="h-px w-full bg-gradient-to-r from-fuchsia-500/40 via-violet-500/40 to-teal-400/40 opacity-60 shrink-0" />
 
       {/* Textarea region — sits directly on the composer background */}
-      <div className="flex-1 min-h-0 flex flex-col overflow-y-auto px-5 py-4">
+      <div className="relative shrink-0 flex flex-col px-5 py-4">
+        {/* Character counter — top-right of textarea region */}
+        <span className="absolute top-2 right-3 text-xs text-foreground/40 pointer-events-none z-10">
+          {state.content.length}/{MAX_CHARACTERS}
+        </span>
         <AnimatePresence mode="wait">
           {state.composerMode === 'simple' ? (
             <motion.div
