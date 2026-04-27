@@ -38,6 +38,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { BrandSectionLabel, BrandIcon } from '@/components/brand';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 // Mock user data with full social metrics
 const mockUser = {
@@ -87,13 +89,13 @@ function formatCount(count: number): string {
 }
 
 // Clickable stat item for the card profile
-function CardStatItem({ 
-  count, 
-  label, 
-  onClick 
-}: { 
-  count: number; 
-  label: string; 
+function CardStatItem({
+  count,
+  label,
+  onClick,
+}: {
+  count: number;
+  label: string;
   onClick?: () => void;
 }) {
   return (
@@ -101,12 +103,14 @@ function CardStatItem({
       onClick={onClick}
       disabled={!onClick}
       className={cn(
-        "text-center flex-1 py-3 px-2 rounded-xl transition-all duration-300",
-        onClick && "hover:bg-primary/5 active:scale-[0.97] cursor-pointer"
+        'text-center flex-1 py-3 px-2 transition-colors duration-200',
+        onClick && 'hover:bg-white/[0.04] active:scale-[0.97] cursor-pointer',
       )}
     >
-      <p className="text-lg sm:text-xl font-bold text-foreground tracking-tight">{formatCount(count)}</p>
-      <p className="text-xs text-muted-foreground mt-1 font-medium uppercase tracking-wider">{label}</p>
+      <p className="text-white text-[18px] font-medium leading-none">{formatCount(count)}</p>
+      <div className="mt-1.5 flex justify-center">
+        <BrandSectionLabel>{label}</BrandSectionLabel>
+      </div>
     </button>
   );
 }
@@ -117,13 +121,13 @@ function renderBioWithHashtags(bio: string) {
     part.startsWith('#') ? (
       <span
         key={index}
-        className="text-primary hover:text-primary/80 cursor-pointer transition-colors"
+        className="text-gradient-brand cursor-pointer"
       >
         {part}
       </span>
     ) : (
       <span key={index}>{part}</span>
-    )
+    ),
   );
 }
 
@@ -137,10 +141,10 @@ function FounderAdminMenuItem() {
   return (
     <>
       <DropdownMenuSeparator />
-      <DropdownMenuItem className="flex items-center gap-2 cursor-pointer text-primary" onClick={() => navigate('/admin')}>
+      <DropdownMenuItem className="flex items-center gap-2 cursor-pointer text-white" onClick={() => navigate('/admin')}>
         <Shield className="h-4 w-4 flex-shrink-0" />
         <span className="flex-1">Admin Console</span>
-        <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-primary/10 text-primary border-0 flex-shrink-0">
+        <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-white/[0.08] text-white/70 border-0 flex-shrink-0">
           STAFF
         </Badge>
       </DropdownMenuItem>
@@ -153,6 +157,7 @@ export default function Profile() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { primary: themePrimary } = useThemeColor();
   const { isBlocked, isBlockedByMe, isBlockingMe, blockUser, muteUser, isMuted } = useSafety();
   const { avatarUrl, refreshAvatar } = useCurrentUserAvatar();
   const { coverUrl, refreshCover } = useCurrentUserCover();
@@ -374,7 +379,10 @@ export default function Profile() {
             {/* Loading spinner for cover */}
             {isCoverUploading && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="w-10 h-10 border-3 border-white border-t-transparent rounded-full animate-spin" />
+                <div
+                  className="w-10 h-10 border-2 border-white/30 rounded-full animate-spin"
+                  style={{ borderTopColor: themePrimary }}
+                />
               </div>
             )}
             
@@ -484,24 +492,28 @@ export default function Profile() {
                   className="hidden"
                 />
                 
-                <div className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full p-[3px] gradient-brand shadow-glow">
-                  <div className="w-full h-full rounded-full overflow-hidden border-[3px] border-background relative">
-                    <img
-                      src={isOwnProfile ? avatarUrl : mockUser.avatar}
-                      alt={mockUser.name}
-                      className={cn(
-                        "w-full h-full object-cover img-cinematic transition-opacity",
-                        (isUploading || isCoverUploading) && "opacity-50"
-                      )}
-                    />
-                    
-                    {/* Loading spinner */}
-                    {(isUploading || isCoverUploading) && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                        <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      </div>
+                <div
+                  className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full overflow-hidden relative bg-black"
+                  style={{ boxShadow: `0 0 0 2px ${themePrimary}` }}
+                >
+                  <img
+                    src={isOwnProfile ? avatarUrl : mockUser.avatar}
+                    alt={mockUser.name}
+                    className={cn(
+                      'w-full h-full object-cover img-cinematic transition-opacity',
+                      (isUploading || isCoverUploading) && 'opacity-50',
                     )}
-                  </div>
+                  />
+
+                  {/* Loading spinner */}
+                  {(isUploading || isCoverUploading) && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                      <div
+                        className="w-8 h-8 border-2 border-white/30 rounded-full animate-spin"
+                        style={{ borderTopColor: themePrimary }}
+                      />
+                    </div>
+                  )}
                 </div>
                 
                 {/* Plus button with dropdown menu - only on own profile */}
@@ -509,7 +521,8 @@ export default function Profile() {
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button
-                        className="absolute bottom-0 right-0 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md border-[1.5px] border-background hover:bg-primary/90 active:scale-95 transition-all"
+                        className="absolute bottom-0 right-0 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-black flex items-center justify-center active:scale-95 transition-all"
+                        style={{ border: `1.5px solid ${themePrimary}`, color: themePrimary }}
                       >
                         <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </button>
@@ -596,19 +609,19 @@ export default function Profile() {
               transition={{ delay: 0.3 }}
             >
               <CardStatItem count={normalizedStats.postCount} label="Posts" />
-              <div className="w-px h-10 bg-border/50" />
+              <div className="w-px self-stretch bg-white/[0.08]" />
               <CardStatItem 
                 count={followerCount || normalizedStats.followerCount} 
                 label="Followers" 
                 onClick={() => openListModal('followers')}
               />
-              <div className="w-px h-10 bg-border/50" />
+              <div className="w-px self-stretch bg-white/[0.08]" />
               <CardStatItem 
                 count={normalizedStats.followingCount} 
                 label="Following" 
                 onClick={() => openListModal('following')}
               />
-              <div className="w-px h-10 bg-border/50" />
+              <div className="w-px self-stretch bg-white/[0.08]" />
               <CardStatItem 
                 count={normalizedStats.communityCount} 
                 label="Community" 
@@ -619,26 +632,31 @@ export default function Profile() {
             {/* CTA Buttons - Below Stats */}
             {!isOwnProfile && (
               <motion.div
-                className="flex items-center gap-3 mt-5 pt-5 border-t border-border/50"
+                className="flex items-center gap-2 mt-5 pt-5 border-t border-white/[0.08]"
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.35 }}
               >
-                <FollowButton
-                  isFollowing={isFollowing}
-                  isPending={isPending}
-                  onToggle={handleFollow}
-                  size="md"
-                  className="px-8 h-10 rounded-full font-semibold text-sm tracking-wide transition-all duration-300 active:scale-[0.97] shadow-soft"
-                  variant="gradient"
-                />
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-10 w-10 rounded-full border-border/60 hover:bg-primary/10 hover:border-primary/30 transition-all duration-300 active:scale-95"
+                <button
+                  type="button"
+                  onClick={handleFollow}
+                  disabled={isPending}
+                  className="inline-flex items-center justify-center bg-transparent border h-9 px-4 rounded-full text-[12px] uppercase tracking-[0.1em] transition-colors disabled:opacity-60"
+                  style={
+                    isFollowing
+                      ? { borderColor: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.55)' }
+                      : { borderColor: themePrimary, color: themePrimary }
+                  }
                 >
-                  <MessageCircle className="w-4 h-4" />
-                </Button>
+                  {isPending ? 'Requested' : isFollowing ? 'Following' : 'Follow'}
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center gap-1.5 bg-transparent border border-white/15 text-white h-9 px-4 rounded-full text-[12px] uppercase tracking-[0.1em] transition-colors hover:border-white/30"
+                >
+                  <MessageCircle className="w-3.5 h-3.5" />
+                  Message
+                </button>
               </motion.div>
             )}
           </div>
@@ -659,7 +677,7 @@ export default function Profile() {
         </div>
 
         {/* Content Tabs */}
-        <div className="mt-4 border-t border-border/40">
+        <div className="mt-4 border-t border-white/[0.08]">
           <RearrangeableTabBar
             activeTab={activeTab}
             onTabChange={setActiveTab}

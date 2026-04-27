@@ -296,7 +296,7 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
                 }}
                 data-grid-index={index}
                 className={cn(
-                  'relative overflow-hidden',
+                  'relative overflow-hidden border border-white/[0.08] rounded-md',
                   layoutStyle === 'uniform' && 'aspect-square',
                   spanClasses
                 )}

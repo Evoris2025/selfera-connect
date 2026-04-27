@@ -143,8 +143,8 @@ const DraggableTab = memo(function DraggableTab({
         'relative flex-1 flex items-center justify-center py-2.5 transition-all duration-200',
         isRearrangeMode && 'cursor-grab active:cursor-grabbing animate-jiggle',
         isDragging && 'z-50',
-        isActive && !isRearrangeMode && 'text-primary',
-        !isActive && !isRearrangeMode && 'text-muted-foreground hover:text-foreground/70'
+        isActive && !isRearrangeMode && 'text-white',
+        !isActive && !isRearrangeMode && 'text-white/45 hover:text-white/70',
       )}
       onClick={handleClick}
       onPointerDown={handlePointerDown}
@@ -164,11 +164,11 @@ const DraggableTab = memo(function DraggableTab({
       }}
       onDragEnd={onDragEnd}
     >
-      {/* Active indicator - clean square border */}
+      {/* Active indicator - 2px brand-gradient underline */}
       {isActive && !isRearrangeMode && (
         <motion.div
           layoutId="polishedTabIndicator"
-          className="absolute inset-0 border border-primary bg-primary/5"
+          className="absolute bottom-0 left-0 right-0 h-[2px] gradient-brand pointer-events-none"
           transition={{ type: 'spring', stiffness: 400, damping: 30 }}
         />
       )}
