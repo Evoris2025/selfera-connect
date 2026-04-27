@@ -153,7 +153,9 @@ export default function Explore() {
           </div>
         </div>
 
-        {isSearchFocused ? (
+        {isSearchFocused && searchSubmitted ? (
+          <ExploreSearchResults query={searchQuery} submissionId={submissionId} />
+        ) : isSearchFocused ? (
           <ExploreSearchOverlay query={searchQuery} onSelect={handleOverlaySelect} />
         ) : (
           <>
