@@ -280,7 +280,7 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
       {/* Override BrandSheetContent's default px/overflow so we can manage
           sticky header + scrollable body + sticky footer ourselves. */}
       <BrandSheetContent
-        maxHeight="85vh"
+        maxHeight="90vh"
         hideHandle
         className="!px-0 !pb-0 overflow-hidden flex flex-col"
       >
