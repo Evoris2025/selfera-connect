@@ -9,6 +9,7 @@ import {
 import { BrandSectionLabel } from '@/components/brand';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { cn } from '@/lib/utils';
+import type { VerificationTier } from './ExploreVerifiedTick';
 
 export type ExploreTab = 'expressions' | 'videos' | 'images' | 'posts';
 
@@ -29,16 +30,19 @@ export type TimePeriod =
 export type Origin = 'all' | 'follow' | 'communities' | 'verified';
 export type Duration = 'all' | 'under-5' | '5-20' | 'over-20';
 export type Format = 'all' | 'photos' | 'illustrations';
+export type CreatorTier = 'all' | VerificationTier[];
 
 export interface ExpressionsFilters {
   sortBy: SortBy;
   timePeriod: TimePeriod;
+  creatorTier: CreatorTier;
   origin: Origin;
 }
 export interface VideosFilters {
   sortBy: SortBy;
   timePeriod: TimePeriod;
   duration: Duration;
+  creatorTier: CreatorTier;
   origin: Origin;
 }
 export interface ImagesFilters {
@@ -50,6 +54,7 @@ export interface ImagesFilters {
 export interface PostsFilters {
   sortBy: SortBy;
   timePeriod: TimePeriod;
+  creatorTier: CreatorTier;
   origin: Origin;
 }
 
@@ -61,10 +66,10 @@ export interface ExploreFiltersState {
 }
 
 export const DEFAULT_FILTERS: ExploreFiltersState = {
-  expressions: { sortBy: 'for-you', timePeriod: 'all-time', origin: 'all' },
-  videos: { sortBy: 'for-you', timePeriod: 'all-time', duration: 'all', origin: 'all' },
+  expressions: { sortBy: 'for-you', timePeriod: 'all-time', creatorTier: 'all', origin: 'all' },
+  videos: { sortBy: 'for-you', timePeriod: 'all-time', duration: 'all', creatorTier: 'all', origin: 'all' },
   images: { sortBy: 'for-you', timePeriod: 'all-time', format: 'all', origin: 'all' },
-  posts: { sortBy: 'for-you', timePeriod: 'all-time', origin: 'all' },
+  posts: { sortBy: 'for-you', timePeriod: 'all-time', creatorTier: 'all', origin: 'all' },
 };
 
 export function isTabFiltersDefault(tab: ExploreTab, filters: ExploreFiltersState): boolean {
