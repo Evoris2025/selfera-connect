@@ -227,7 +227,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
 
   const showPickup = !!latestDraft;
   const showPrompt = !!todayPrompt;
-  const onlyOne = showPickup !== showPrompt; // exactly one renders → span full width
+  
 
   return (
     <div className="h-dvh flex flex-col bg-background pb-[calc(env(safe-area-inset-bottom)+72px)] overflow-hidden">
