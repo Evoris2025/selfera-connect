@@ -1,16 +1,11 @@
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TrendingUp, Flame, Users, Clock, Heart, X, Share2, Bookmark, type LucideIcon } from 'lucide-react';
-import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { PullToRefresh } from '@/components/ui/PullToRefresh';
-import { ExploreFilters, FilterType, DateRange } from './ExploreFilters';
 import { BrandSectionLabel, BrandIcon } from '@/components/brand';
-import { useThemeColor } from '@/hooks/useThemeColor';
-import { cn } from '@/lib/utils';
 
-// Mock image data
 const trendingImages = [
   { id: 'i1', url: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=600&h=600&fit=crop', likes: 12400, user: 'drsarah' },
   { id: 'i2', url: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=600&h=800&fit=crop', likes: 8900, user: 'mindful' },
@@ -31,8 +26,6 @@ const recentImages = [
   { id: 'i8', url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=600&h=600&fit=crop', likes: 890, user: 'alex' },
   { id: 'i9', url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&h=700&fit=crop', likes: 1200, user: 'mind' },
 ];
-
-const allImages = [...trendingImages, ...popularWeekImages, ...communityImages, ...recentImages];
 
 function formatCount(count: number): string {
   if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`;
@@ -90,7 +83,6 @@ function ImageViewer({ image, onClose }: ImageViewerProps) {
         className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
         onClick={onClose}
       >
-        {/* Close button */}
         <Button
           variant="ghost"
           size="icon"
@@ -100,7 +92,6 @@ function ImageViewer({ image, onClose }: ImageViewerProps) {
           <X className="h-6 w-6" />
         </Button>
 
-        {/* Image */}
         <motion.img
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -111,7 +102,6 @@ function ImageViewer({ image, onClose }: ImageViewerProps) {
           onClick={(e) => e.stopPropagation()}
         />
 
-        {/* Actions */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4">
           <Button variant="secondary" size="sm" className="gap-2 rounded-full">
             <Bookmark className="h-4 w-4" />
@@ -166,12 +156,18 @@ function ImageSection({ title, icon, images, isLoading, onImageClick }: ImageSec
 
 interface ExploreImagesProps {
   isLoading?: boolean;
+  activeChip?: string;
 }
 
-export function ExploreImages({ isLoading = false }: ExploreImagesProps) {
+const CHIP_TO_DATA: Record<string, { title: string; icon: LucideIcon; data: typeof trendingImages }> = {
+  'trending': { title: 'TRENDING VISUALS', icon: TrendingUp, data: trendingImages },
+  'popular-week': { title: 'POPULAR THIS WEEK', icon: Flame, data: popularWeekImages },
+  'community': { title: 'FROM COMMUNITIES', icon: Users, data: communityImages },
+  'recent': { title: 'RECENTLY ADDED', icon: Clock, data: recentImages },
+};
+
+export function ExploreImages({ isLoading = false, activeChip = 'trending' }: ExploreImagesProps) {
   const [selectedImage, setSelectedImage] = useState<typeof trendingImages[0] | null>(null);
-  const [activeFilter, setActiveFilter] = useState<FilterType>('trending');
-  const [dateRange, setDateRange] = useState<DateRange>('7d');
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const handleRefresh = useCallback(async () => {
@@ -181,49 +177,16 @@ export function ExploreImages({ isLoading = false }: ExploreImagesProps) {
   }, []);
 
   const loading = isLoading || isRefreshing;
+  const section = CHIP_TO_DATA[activeChip] ?? CHIP_TO_DATA['trending'];
 
   return (
     <>
       <PullToRefresh onRefresh={handleRefresh} className="h-full">
         <div className="py-4 space-y-6">
-          {/* Filter bar */}
-          <div className="px-4">
-            <ExploreFilters
-              activeFilter={activeFilter}
-              dateRange={dateRange}
-              onFilterChange={setActiveFilter}
-              onDateRangeChange={setDateRange}
-            />
-          </div>
-
           <ImageSection
-            title="TRENDING VISUALS"
-            icon={TrendingUp}
-            images={trendingImages}
-            isLoading={loading}
-            onImageClick={setSelectedImage}
-          />
-
-          <ImageSection
-            title="POPULAR THIS WEEK"
-            icon={Flame}
-            images={popularWeekImages}
-            isLoading={loading}
-            onImageClick={setSelectedImage}
-          />
-
-          <ImageSection
-            title="FROM COMMUNITIES YOU FOLLOW"
-            icon={Users}
-            images={communityImages}
-            isLoading={loading}
-            onImageClick={setSelectedImage}
-          />
-
-          <ImageSection
-            title="RECENTLY ADDED"
-            icon={Clock}
-            images={recentImages}
+            title={section.title}
+            icon={section.icon}
+            images={section.data}
             isLoading={loading}
             onImageClick={setSelectedImage}
           />

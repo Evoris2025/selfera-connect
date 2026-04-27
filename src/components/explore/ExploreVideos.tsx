@@ -1,85 +1,34 @@
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Play, Clock, Users, Compass, ChevronRight, TrendingUp, Eye, Upload, type LucideIcon } from 'lucide-react';
+import { Play, Clock, Users, Compass, ChevronRight, TrendingUp, Eye, type LucideIcon } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
 import { PullToRefresh } from '@/components/ui/PullToRefresh';
-import { ExploreFilters, FilterType, DateRange } from './ExploreFilters';
 import { BrandSectionLabel, BrandIcon } from '@/components/brand';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
-// Mock video data
 const forYouVideos = [
-  {
-    id: 'v1',
-    title: 'Understanding Anxiety: A Complete Guide',
-    thumbnail: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&h=450&fit=crop',
-    duration: '12:34',
-    views: 45200,
-    creator: { name: 'Dr. Sarah Mitchell', handle: 'drsarah', avatar: '', isVerified: true },
-  },
-  {
-    id: 'v2',
-    title: 'Morning Meditation for Calm',
-    thumbnail: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=800&h=450&fit=crop',
-    duration: '8:15',
-    views: 23100,
-    creator: { name: 'Mindful Moments', handle: 'mindfulmoments', avatar: '', isVerified: true },
-  },
+  { id: 'v1', title: 'Understanding Anxiety: A Complete Guide', thumbnail: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&h=450&fit=crop', duration: '12:34', views: 45200, creator: { name: 'Dr. Sarah Mitchell', handle: 'drsarah', avatar: 'https://i.pravatar.cc/100?img=47', isVerified: true } },
+  { id: 'v2', title: 'Morning Meditation for Calm', thumbnail: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=800&h=450&fit=crop', duration: '8:15', views: 23100, creator: { name: 'Mindful Moments', handle: 'mindfulmoments', avatar: 'https://i.pravatar.cc/100?img=32', isVerified: true } },
 ];
 
 const followingVideos = [
-  {
-    id: 'v3',
-    title: 'My Recovery Journey: 6 Month Update',
-    thumbnail: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=800&h=450&fit=crop',
-    duration: '15:22',
-    views: 8900,
-    creator: { name: 'Jamie', handle: 'jamie_journey', avatar: '', isVerified: false },
-  },
+  { id: 'v3', title: 'My Recovery Journey: 6 Month Update', thumbnail: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=800&h=450&fit=crop', duration: '15:22', views: 8900, creator: { name: 'Jamie', handle: 'jamie_journey', avatar: 'https://i.pravatar.cc/100?img=12', isVerified: false } },
 ];
 
 const trendingVideos = [
-  {
-    id: 'v4',
-    title: 'The Science of Sleep and Mental Health',
-    thumbnail: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=800&h=450&fit=crop',
-    duration: '45:00',
-    views: 67800,
-    creator: { name: 'Wellness Academy', handle: 'wellnessacademy', avatar: '', isVerified: true },
-  },
-  {
-    id: 'v5',
-    title: 'Building Resilience: A Workshop',
-    thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=450&fit=crop',
-    duration: '1:02:15',
-    views: 34500,
-    creator: { name: 'Mental Health Foundation', handle: 'mhfoundation', avatar: '', isVerified: true },
-  },
+  { id: 'v4', title: 'The Science of Sleep and Mental Health', thumbnail: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=800&h=450&fit=crop', duration: '45:00', views: 67800, creator: { name: 'Wellness Academy', handle: 'wellnessacademy', avatar: 'https://i.pravatar.cc/100?img=14', isVerified: true } },
+  { id: 'v5', title: 'Building Resilience: A Workshop', thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=450&fit=crop', duration: '1:02:15', views: 34500, creator: { name: 'Mental Health Foundation', handle: 'mhfoundation', avatar: 'https://i.pravatar.cc/100?img=9', isVerified: true } },
 ];
 
 const mostWatchedVideos = [
-  {
-    id: 'v6',
-    title: 'How to Start Your Wellness Journey',
-    thumbnail: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&h=450&fit=crop',
-    duration: '18:45',
-    views: 156000,
-    creator: { name: 'Wellness Guide', handle: 'wellnessguide', avatar: '', isVerified: true },
-  },
+  { id: 'v6', title: 'How to Start Your Wellness Journey', thumbnail: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&h=450&fit=crop', duration: '18:45', views: 156000, creator: { name: 'Wellness Guide', handle: 'wellnessguide', avatar: 'https://i.pravatar.cc/100?img=33', isVerified: true } },
 ];
 
 const recentVideos = [
-  {
-    id: 'v7',
-    title: 'Daily Check-in: How Are You Today?',
-    thumbnail: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=800&h=450&fit=crop',
-    duration: '5:30',
-    views: 1200,
-    creator: { name: 'Mind Check', handle: 'mindcheck', avatar: '', isVerified: false },
-  },
+  { id: 'v7', title: 'Daily Check-in: How Are You Today?', thumbnail: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=800&h=450&fit=crop', duration: '5:30', views: 1200, creator: { name: 'Mind Check', handle: 'mindcheck', avatar: 'https://i.pravatar.cc/100?img=51', isVerified: false } },
 ];
 
 function formatViews(views: number): string {
@@ -203,11 +152,18 @@ function VideoSection({ title, icon, videos, isLoading }: VideoSectionProps) {
 
 interface ExploreVideosProps {
   isLoading?: boolean;
+  activeChip?: string;
 }
 
-export function ExploreVideos({ isLoading = false }: ExploreVideosProps) {
-  const [activeFilter, setActiveFilter] = useState<FilterType>('trending');
-  const [dateRange, setDateRange] = useState<DateRange>('7d');
+const CHIP_TO_DATA: Record<string, { title: string; icon: LucideIcon; data: typeof forYouVideos }> = {
+  'for-you': { title: 'FOR YOU RIGHT NOW', icon: Compass, data: forYouVideos },
+  'following': { title: 'CREATORS YOU FOLLOW', icon: Users, data: followingVideos },
+  'trending': { title: 'TRENDING VIDEOS', icon: TrendingUp, data: trendingVideos },
+  'most-watched': { title: 'MOST WATCHED', icon: Eye, data: mostWatchedVideos },
+  'recent': { title: 'RECENTLY UPLOADED', icon: Clock, data: recentVideos },
+};
+
+export function ExploreVideos({ isLoading = false, activeChip = 'for-you' }: ExploreVideosProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const handleRefresh = useCallback(async () => {
@@ -217,25 +173,12 @@ export function ExploreVideos({ isLoading = false }: ExploreVideosProps) {
   }, []);
 
   const loading = isLoading || isRefreshing;
+  const section = CHIP_TO_DATA[activeChip] ?? CHIP_TO_DATA['for-you'];
 
   return (
     <PullToRefresh onRefresh={handleRefresh} className="h-full">
       <div className="py-4 space-y-6">
-        {/* Filter bar */}
-        <div className="px-4">
-          <ExploreFilters
-            activeFilter={activeFilter}
-            dateRange={dateRange}
-            onFilterChange={setActiveFilter}
-            onDateRangeChange={setDateRange}
-          />
-        </div>
-
-        <VideoSection title="FOR YOU RIGHT NOW" icon={Compass} videos={forYouVideos} isLoading={loading} />
-        <VideoSection title="CREATORS YOU FOLLOW" icon={Users} videos={followingVideos} isLoading={loading} />
-        <VideoSection title="TRENDING VIDEOS" icon={TrendingUp} videos={trendingVideos} isLoading={loading} />
-        <VideoSection title="MOST WATCHED" icon={Eye} videos={mostWatchedVideos} isLoading={loading} />
-        <VideoSection title="RECENTLY UPLOADED" icon={Upload} videos={recentVideos} isLoading={loading} />
+        <VideoSection title={section.title} icon={section.icon} videos={section.data} isLoading={loading} />
       </div>
     </PullToRefresh>
   );
