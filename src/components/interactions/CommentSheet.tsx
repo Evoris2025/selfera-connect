@@ -2,12 +2,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Send, Flag, MoreHorizontal } from 'lucide-react';
 import { motion } from 'framer-motion';
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-} from '@/components/ui/drawer';
+import { Drawer } from '@/components/ui/drawer';
+import { BrandDrawerContent, BrandSheetTitle } from '@/components/ui/sheet-system';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -74,16 +70,18 @@ export function CommentSheet({ open, onOpenChange, postId }: CommentSheetProps) 
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-[85vh] pb-safe">
+      <BrandDrawerContent maxHeight="85vh">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={springConfig}
           className="flex flex-col h-full"
         >
-          <DrawerHeader className="text-center border-b border-border/50">
-            <DrawerTitle>{t('comments.title')} ({commentCount})</DrawerTitle>
-          </DrawerHeader>
+          <BrandSheetTitle
+            setup={t('comments.title').toLowerCase()}
+            emphasis={String(commentCount)}
+            srDescription={`${commentCount} comments`}
+          />
           
           {/* Comments list */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
