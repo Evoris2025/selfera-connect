@@ -857,10 +857,6 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         </div>
       </div>
 
-        </div>
-      </div>
-      {/* /centered body region */}
-
       {/* Spacer pushes the Post button into the dead space below. */}
       <div className="flex-1 min-h-0" />
 
