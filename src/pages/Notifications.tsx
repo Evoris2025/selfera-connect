@@ -199,17 +199,21 @@ function NotificationItem({
           </div>
 
           {notification.showFollowButton ? (
-            <Button
-              size="sm"
-              variant={isFollowing ? 'outline' : 'default'}
-              className={cn(
-                'shrink-0 h-8 px-4 rounded-lg text-[13px] font-semibold',
-                isFollowing && 'border-white/[0.12] bg-transparent',
-              )}
+            <button
+              type="button"
               onClick={(e) => { e.stopPropagation(); setIsFollowing(!isFollowing); }}
+              className={cn(
+                'shrink-0 h-8 px-3.5 rounded-full border bg-transparent text-[12px] uppercase tracking-[0.1em]',
+                isFollowing && 'border-white/15 text-white/55',
+              )}
+              style={
+                isFollowing
+                  ? undefined
+                  : { borderColor: primaryColor, color: primaryColor }
+              }
             >
               {isFollowing ? 'Following' : 'Follow'}
-            </Button>
+            </button>
           ) : notification.thumbnailUrl && !notification.thumbnailUrl.endsWith('/placeholder.svg') ? (
             <div className="w-11 h-11 rounded-md overflow-hidden shrink-0 border border-white/[0.08] bg-black">
               <img src={notification.thumbnailUrl} alt="" className="w-full h-full object-cover" />
