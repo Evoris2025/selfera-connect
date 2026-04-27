@@ -24,6 +24,8 @@ import {
   UserPlus,
   Hash,
   Film,
+  Maximize2,
+  Minimize2,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -263,6 +265,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
   const [mediaSheetOpen, setMediaSheetOpen] = useState(false);
   const [showTopicsError, setShowTopicsError] = useState(false);
   const [dismissedUrls, setDismissedUrls] = useState<Set<string>>(new Set());
+  const [textareaExpanded, setTextareaExpanded] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
 
@@ -548,7 +551,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       className={cn(
         'w-full max-w-[640px] mx-auto flex flex-col bg-white/[0.03] border border-white/[0.06] backdrop-blur-md shadow-2xl overflow-hidden',
         'rounded-none sm:rounded-3xl',
-        'min-h-dvh sm:min-h-0 sm:max-h-[820px]'
+        'flex-1 min-h-0 sm:min-h-0 sm:max-h-[820px]'
       )}
     >
       {/* Header */}
@@ -607,10 +610,21 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
 
       {/* Textarea region — sits directly on the composer background */}
       <div className="relative shrink-0 flex flex-col px-5 py-4">
-        {/* Character counter — top-right of textarea region */}
-        <span className="absolute top-2 right-3 text-xs text-foreground/40 pointer-events-none z-10">
-          {state.content.length}/{MAX_CHARACTERS}
-        </span>
+        {/* Top-right cluster: expand toggle + character counter */}
+        <div className="absolute top-2 right-3 z-10 flex items-center gap-1 pointer-events-none">
+          <button
+            type="button"
+            onClick={() => setTextareaExpanded((v) => !v)}
+            title={textareaExpanded ? 'Collapse' : 'Expand'}
+            aria-label={textareaExpanded ? 'Collapse textarea' : 'Expand textarea'}
+            className="pointer-events-auto w-7 h-7 rounded-md flex items-center justify-center text-foreground/40 hover:text-foreground hover:bg-white/5 transition"
+          >
+            {textareaExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+          </button>
+          <span className="text-xs text-foreground/40">
+            {state.content.length}/{MAX_CHARACTERS}
+          </span>
+        </div>
         <AnimatePresence mode="wait">
           {state.composerMode === 'simple' ? (
             <motion.div
@@ -644,7 +658,11 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
                   onFocus={() => setComposerFocused(true)}
                   onBlur={() => setComposerFocused(false)}
                   maxLength={MAX_CHARACTERS}
-                  className="flex-1 min-h-[160px] max-h-none resize-none border-0 bg-transparent p-0 text-lg focus-visible:ring-0 placeholder:text-foreground/35"
+                  className={cn(
+                    'flex-1 resize-none border-0 bg-transparent p-0 text-lg focus-visible:ring-0 placeholder:text-foreground/35',
+                    'transition-[min-height,max-height] duration-200',
+                    textareaExpanded ? 'min-h-[60vh] max-h-[75vh]' : 'min-h-[160px] max-h-[40vh]'
+                  )}
                 />
               )}
             </motion.div>
@@ -813,92 +831,90 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         )}
       </div>
 
-      {/* Bottom-right icon row inside textarea region: Feeling · More · Aa */}
-      <div className="shrink-0 px-5 -mt-1 mb-2 flex items-center justify-end gap-1.5">
-        <button
-          type="button"
-          onClick={() => setMediaSheetOpen(true)}
-          title="Feeling"
-          aria-label="Feeling"
-          className="w-9 h-9 rounded-full flex items-center justify-center text-foreground/60 hover:text-foreground hover:bg-white/5 transition"
-        >
-          <Smile className="h-[18px] w-[18px]" />
-        </button>
-        <button
-          type="button"
-          onClick={() => setAdvancedOpen(true)}
-          title="More"
-          aria-label="More"
-          className="w-9 h-9 rounded-full flex items-center justify-center text-foreground/60 hover:text-foreground hover:bg-white/5 transition"
-        >
-          <Settings2 className="h-[18px] w-[18px]" />
-        </button>
-        {canShowBackground && state.composerMode === 'simple' && (
-          <Popover>
-            <PopoverTrigger asChild>
-              <button
-                className={cn(
-                  'w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold transition',
-                  state.background
-                    ? 'ring-2 ring-fuchsia-500/60'
-                    : 'text-foreground/60 hover:text-foreground hover:bg-white/5'
-                )}
-                style={state.background ? backgroundStyle : undefined}
-                aria-label="Background style"
-                title="Background"
-              >
-                Aa
-              </button>
-            </PopoverTrigger>
-            <PopoverContent
-              align="end"
-              className="w-auto p-3 bg-background/95 backdrop-blur-md border-white/10"
-            >
-              <div className="grid grid-cols-5 gap-2">
-                <button
-                  type="button"
-                  onClick={() => update({ background: null })}
-                  className={cn(
-                    'h-9 w-9 rounded-lg border-2 flex items-center justify-center transition bg-secondary',
-                    !state.background ? 'border-fuchsia-500' : 'border-transparent hover:border-foreground/30'
-                  )}
-                  title="Plain"
-                  aria-label="Plain background"
-                >
-                  <TypeIcon className="h-4 w-4" />
-                </button>
-                {POST_BACKGROUND_PRESETS.map((preset, i) => {
-                  const active = state.background?.value === preset.value;
-                  return (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={() => update({ background: preset })}
-                      className={cn(
-                        'h-9 w-9 rounded-lg border-2 transition',
-                        active ? 'border-fuchsia-500' : 'border-transparent hover:border-foreground/30'
-                      )}
-                      style={{ background: preset.value }}
-                      aria-label={`Background ${i + 1}`}
-                    />
-                  );
-                })}
-              </div>
-            </PopoverContent>
-          </Popover>
-        )}
-      </div>
-
-      {/* Add to your post — opens bottom sheet */}
-      <div className="shrink-0 px-5 pt-1 pb-2">
+      {/* Action bar: Add to your post (flex-1) + Feeling / More / Aa button group */}
+      <div className="shrink-0 px-4 pt-1 pb-2 flex items-center gap-2">
         <Button
           variant="outline"
           onClick={() => setAddSheetOpen(true)}
-          className="w-full justify-between rounded-2xl h-12 px-4 bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06] hover:shadow-[0_0_24px_-8px_rgba(217,70,239,0.4)] transition-all"
+          className="flex-1 justify-between rounded-2xl h-11 px-4 bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06] hover:shadow-[0_0_24px_-8px_rgba(217,70,239,0.4)] transition-all"
         >
           <span className="text-sm font-medium text-foreground/85">Add to your post</span>
           <Plus className="h-4 w-4 text-foreground/60" />
         </Button>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => setMediaSheetOpen(true)}
+            title="Feeling"
+            aria-label="Feeling"
+            className="h-11 w-11 rounded-2xl flex items-center justify-center bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] text-foreground/70 hover:text-foreground transition"
+          >
+            <Smile className="h-[18px] w-[18px]" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setAdvancedOpen(true)}
+            title="More"
+            aria-label="More"
+            className="h-11 w-11 rounded-2xl flex items-center justify-center bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] text-foreground/70 hover:text-foreground transition"
+          >
+            <Settings2 className="h-[18px] w-[18px]" />
+          </button>
+          {canShowBackground && state.composerMode === 'simple' && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  className={cn(
+                    'h-11 w-11 rounded-2xl flex items-center justify-center text-sm font-bold transition border',
+                    state.background
+                      ? 'border-fuchsia-500/60 ring-2 ring-fuchsia-500/40'
+                      : 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06] text-foreground/70 hover:text-foreground'
+                  )}
+                  style={state.background ? backgroundStyle : undefined}
+                  aria-label="Background style"
+                  title="Background"
+                >
+                  Aa
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="end"
+                className="w-auto p-3 bg-background/95 backdrop-blur-md border-white/10"
+              >
+                <div className="grid grid-cols-5 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => update({ background: null })}
+                    className={cn(
+                      'h-9 w-9 rounded-lg border-2 flex items-center justify-center transition bg-secondary',
+                      !state.background ? 'border-fuchsia-500' : 'border-transparent hover:border-foreground/30'
+                    )}
+                    title="Plain"
+                    aria-label="Plain background"
+                  >
+                    <TypeIcon className="h-4 w-4" />
+                  </button>
+                  {POST_BACKGROUND_PRESETS.map((preset, i) => {
+                    const active = state.background?.value === preset.value;
+                    return (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => update({ background: preset })}
+                        className={cn(
+                          'h-9 w-9 rounded-lg border-2 transition',
+                          active ? 'border-fuchsia-500' : 'border-transparent hover:border-foreground/30'
+                        )}
+                        style={{ background: preset.value }}
+                        aria-label={`Background ${i + 1}`}
+                      />
+                    );
+                  })}
+                </div>
+              </PopoverContent>
+            </Popover>
+          )}
+        </div>
       </div>
 
         </div>
@@ -911,11 +927,16 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           onClick={handleSubmit}
           disabled={!canPost || isSubmitting}
           className={cn(
-            'w-full h-14 rounded-2xl text-base font-semibold text-white transition active:scale-[0.99]',
+            'w-full h-14 rounded-2xl text-base font-semibold text-primary-foreground transition active:scale-[0.99]',
             canPost && !isSubmitting
-              ? 'gradient-brand shadow-lg shadow-violet-500/20 hover:opacity-95'
-              : 'bg-white/10 opacity-40 cursor-not-allowed'
+              ? 'bg-primary hover:opacity-95'
+              : 'bg-white/10 text-white/40 opacity-100 cursor-not-allowed'
           )}
+          style={
+            canPost && !isSubmitting
+              ? { boxShadow: '0 8px 24px -8px hsl(var(--primary) / 0.5)' }
+              : undefined
+          }
         >
           {isSubmitting ? (
             <Loader2 className="h-5 w-5 animate-spin" />
