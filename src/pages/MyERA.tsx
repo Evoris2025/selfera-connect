@@ -722,7 +722,7 @@ export default function MyERA() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={springGentle}
-                className="space-y-3 mt-4"
+                className="space-y-2 mt-4"
               >
                 <div className="flex items-center justify-between mb-2">
                   <div>
