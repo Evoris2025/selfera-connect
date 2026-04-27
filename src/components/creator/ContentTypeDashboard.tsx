@@ -50,7 +50,7 @@ interface ContentTypeDashboardProps {
 }
 
 // Fixed SelfERA brand gradient — used only for the page hero typography.
-const BRAND_GRADIENT = 'linear-gradient(135deg, #d946ef, #8b5cf6, #2dd4bf)';
+// Brand gradient is sourced from the canonical .text-gradient-brand utility in src/index.css
 
 function relativeTime(ts: number): string {
   const diff = Date.now() - ts;
@@ -258,16 +258,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
         <div className="px-5 pt-4 pb-6 text-center shrink-0">
           <h1 className="text-4xl font-bold tracking-tight leading-tight">
             <span className="font-medium text-white">what will you </span>
-            <span
-              className="font-extrabold"
-              style={{
-                backgroundImage: BRAND_GRADIENT,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                color: 'transparent',
-              }}
-            >
+            <span className="font-extrabold text-gradient-brand">
               CREATE.
             </span>
           </h1>
