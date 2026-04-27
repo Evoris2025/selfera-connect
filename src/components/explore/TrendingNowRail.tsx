@@ -55,7 +55,7 @@ function ExpressionCard({ item, index }: { item: TrendingExpression; index: numb
       onClick={() => handleTap('expressions', item.id)}
       className="relative w-[112px] aspect-[9/16] flex-shrink-0 overflow-hidden rounded-md bg-secondary group"
     >
-      <span className="absolute top-2 left-2 z-10 flex items-center justify-center w-5 h-5 rounded-full bg-black/40 backdrop-blur-sm">
+      <span className="absolute top-2 left-2 z-10 flex items-center justify-center size-5 rounded-full bg-black/40 backdrop-blur-sm">
         <BrandIcon icon={Flame} className="w-3 h-3" />
       </span>
       <img src={item.thumbnail} alt="" loading="lazy" className="w-full h-full object-cover" />
@@ -88,7 +88,7 @@ function VideoCard({ item, index }: { item: TrendingVideo; index: number }) {
       className="w-[200px] flex-shrink-0 text-left group"
     >
       <div className="relative aspect-video rounded-md overflow-hidden bg-black">
-        <span className="absolute top-2 left-2 z-10 flex items-center justify-center w-5 h-5 rounded-full bg-black/40 backdrop-blur-sm">
+        <span className="absolute top-2 left-2 z-10 flex items-center justify-center size-5 rounded-full bg-black/40 backdrop-blur-sm">
           <BrandIcon icon={Flame} className="w-3 h-3" />
         </span>
         <img src={item.thumbnail} alt={item.title} loading="lazy" className="w-full h-full object-cover" />
@@ -121,7 +121,7 @@ function ImageCard({ item, index }: { item: TrendingImage; index: number }) {
       onClick={() => handleTap('images', item.id)}
       className="relative w-[120px] aspect-square flex-shrink-0 overflow-hidden rounded-md bg-secondary group"
     >
-      <span className="absolute top-2 left-2 z-10 flex items-center justify-center w-5 h-5 rounded-full bg-black/40 backdrop-blur-sm">
+      <span className="absolute top-2 left-2 z-10 flex items-center justify-center size-5 rounded-full bg-black/40 backdrop-blur-sm">
         <BrandIcon icon={Flame} className="w-3 h-3" />
       </span>
       <img src={item.url} alt="" loading="lazy" className="w-full h-full object-cover" />
@@ -144,7 +144,7 @@ function PostCard({ item, index }: { item: TrendingPost; index: number }) {
       onClick={() => handleTap('posts', item.id)}
       className="relative w-[240px] flex-shrink-0 text-left rounded-md border border-white/[0.08] p-3 hover:border-white/20 transition-colors"
     >
-      <span className="absolute top-2 right-2 z-10 flex items-center justify-center w-5 h-5 rounded-full bg-black/40 backdrop-blur-sm">
+      <span className="absolute top-2 right-2 z-10 flex items-center justify-center size-5 rounded-full bg-black/40 backdrop-blur-sm">
         <BrandIcon icon={Flame} className="w-3 h-3" />
       </span>
       <p className="text-white/85 text-[12px] leading-snug line-clamp-3 mb-2">
@@ -158,7 +158,7 @@ function PostCard({ item, index }: { item: TrendingPost; index: number }) {
               {item.user.handle.charAt(0)}
             </AvatarFallback>
           </Avatar>
-          <span className="text-white/55 text-[10px] truncate">@{item.user.handle}</span>
+          <span className="text-white/55 text-[10px] truncate">{item.user.handle}</span>
         </div>
         <div className="flex items-center gap-1 text-white/55 flex-shrink-0">
           <Heart className="h-2.5 w-2.5" />
