@@ -63,6 +63,18 @@ function relativeTime(ts: number): string {
   return `${d}d ago`;
 }
 
+// Compact variant for stat-strip cells (e.g. "27m", "3h", "2d")
+function relativeTimeShort(ts: number): string {
+  const diff = Date.now() - ts;
+  const m = Math.round(diff / 60000);
+  if (m < 1) return 'now';
+  if (m < 60) return `${m}m`;
+  const h = Math.round(m / 60);
+  if (h < 24) return `${h}h`;
+  const d = Math.round(h / 24);
+  return `${d}d`;
+}
+
 function CreatorRow({
   icon: Icon,
   title,
@@ -94,7 +106,7 @@ function CreatorRow({
       onClick={onClick}
       className={cn(
         'group relative w-full text-left',
-        'h-[115px] rounded-2xl overflow-hidden',
+        'flex-1 min-h-[110px] rounded-2xl overflow-hidden',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--primary))]/40'
       )}
       aria-label={`Create ${title}`}
@@ -215,7 +227,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
 
   const showPickup = !!latestDraft;
   const showPrompt = !!todayPrompt;
-  const onlyOne = showPickup !== showPrompt; // exactly one renders → span full width
+  
 
   return (
     <div className="h-dvh flex flex-col bg-background pb-[calc(env(safe-area-inset-bottom)+72px)] overflow-hidden">
@@ -259,57 +271,71 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
           <p className="text-sm text-white/55 mt-1.5">Pick a format to begin</p>
         </div>
 
-        {/* Side-by-side banners — pickup + today's prompt */}
-        {(showPickup || showPrompt) && (
-          <div className="grid grid-cols-2 gap-3 px-5 mb-4 shrink-0">
-            {showPickup && (
-              <button
-                onClick={openDraft}
-                className={cn(
-                  'rounded-xl bg-white/[0.04] border border-white/[0.08] px-3 py-2.5 text-left',
-                  'hover:bg-white/[0.06] hover:border-white/[0.15] transition flex flex-col gap-1',
-                  onlyOne && 'col-span-2'
-                )}
-              >
-                <div className="flex items-center justify-between">
-                  <RefreshCw className="h-3.5 w-3.5 shrink-0" style={{ color: 'hsl(var(--primary))' }} />
-                  <ChevronRight className="h-3.5 w-3.5 text-white/45" />
-                </div>
-                <div className="text-xs font-medium text-white/85 truncate">
-                  Continue
-                </div>
-                <div className="text-[11px] text-white/45 truncate">
-                  {relativeTime(latestDraft!.updatedAt)}
-                </div>
-              </button>
-            )}
+        {/* Single 4-column stat strip — Continue / Prompt / Drafts / Scheduled */}
+        <div className="mx-5 mt-4 mb-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-stretch overflow-hidden divide-x divide-white/[0.06] shrink-0">
+          {showPickup && (
+            <button
+              onClick={openDraft}
+              className="relative flex-1 flex flex-col items-center justify-center gap-1 py-3 px-2 hover:bg-white/[0.03] transition cursor-pointer"
+            >
+              <span
+                className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full"
+                style={{ background: 'hsl(var(--primary))' }}
+                aria-hidden
+              />
+              <span className="text-base font-semibold text-white leading-none">
+                {relativeTimeShort(latestDraft!.updatedAt)}
+              </span>
+              <span className="text-[10px] tracking-wider text-white/55 leading-none uppercase">
+                Continue
+              </span>
+            </button>
+          )}
 
-            {showPrompt && (
-              <button
-                onClick={openPromptComposer}
-                className={cn(
-                  'rounded-xl bg-white/[0.03] border border-white/[0.08] px-3 py-2.5 text-left',
-                  'hover:bg-white/[0.05] hover:border-white/[0.15] transition flex flex-col gap-1',
-                  onlyOne && 'col-span-2'
-                )}
-                aria-label="Use today's prompt"
-              >
-                <div className="flex items-center gap-1.5">
-                  <Sparkles className="h-3 w-3" style={{ color: 'hsl(var(--primary))' }} />
-                  <span className="text-[10px] uppercase tracking-wider text-white/45">
-                    Today's prompt
-                  </span>
-                </div>
-                <p className="text-xs text-white/85 leading-snug line-clamp-2">
-                  {todayPrompt}
-                </p>
-              </button>
+          {showPrompt && (
+            <button
+              onClick={openPromptComposer}
+              className="relative flex-1 flex flex-col items-center justify-center gap-1 py-3 px-2 hover:bg-white/[0.03] transition cursor-pointer"
+              aria-label="Use today's prompt"
+            >
+              <Sparkles size={16} className="text-white" />
+              <span className="text-[10px] tracking-wider text-white/55 leading-none uppercase">
+                Prompt
+              </span>
+            </button>
+          )}
+
+          <button
+            onClick={() => { setDrawerTab('drafts'); setDrawerOpen(true); }}
+            className="relative flex-1 flex flex-col items-center justify-center gap-1 py-3 px-2 hover:bg-white/[0.03] transition cursor-pointer"
+          >
+            <span className="text-base font-semibold text-white leading-none">
+              {draftCount}
+            </span>
+            <span className="text-[10px] tracking-wider text-white/55 leading-none uppercase">
+              Drafts
+            </span>
+          </button>
+
+          <button
+            onClick={() => { setDrawerTab('scheduled'); setDrawerOpen(true); }}
+            className="relative flex-1 flex flex-col items-center justify-center gap-1 py-3 px-2 hover:bg-white/[0.03] transition cursor-pointer"
+          >
+            {scheduledCount > 0 ? (
+              <span className="text-base font-semibold text-white leading-none">
+                {scheduledCount}
+              </span>
+            ) : (
+              <Clock size={16} className="text-white" />
             )}
-          </div>
-        )}
+            <span className="text-[10px] tracking-wider text-white/55 leading-none uppercase">
+              Scheduled
+            </span>
+          </button>
+        </div>
 
         {/* Creator rows — flex-1 to fill remaining vertical space */}
-        <div className="flex-1 min-h-0 flex flex-col gap-2 px-5">
+        <div className="flex-1 min-h-0 flex flex-col gap-2 px-5 pb-2">
           {contentTypes.map((type) => (
             <CreatorRow
               key={type.id}
@@ -322,29 +348,6 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
               onClick={() => onSelect(type.id)}
             />
           ))}
-        </div>
-
-        {/* Drafts / Scheduled — subtle ghost links */}
-        <div className="flex justify-center gap-6 mt-4 mb-2 text-sm text-white/55 shrink-0">
-          <button
-            onClick={() => { setDrawerTab('drafts'); setDrawerOpen(true); }}
-            className="hover:text-white/85 transition"
-          >
-            Drafts
-            {draftCount > 0 && (
-              <span className="text-white/85 font-medium ml-1">{draftCount}</span>
-            )}
-          </button>
-          <button
-            onClick={() => { setDrawerTab('scheduled'); setDrawerOpen(true); }}
-            className="hover:text-white/85 transition flex items-center gap-1"
-          >
-            <Clock className="h-3.5 w-3.5" />
-            Scheduled
-            {scheduledCount > 0 && (
-              <span className="text-white/85 font-medium ml-1">{scheduledCount}</span>
-            )}
-          </button>
         </div>
       </div>
 
