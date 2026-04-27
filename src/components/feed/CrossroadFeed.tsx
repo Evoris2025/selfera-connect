@@ -242,8 +242,7 @@ export function CrossroadFeed({
   if (!loading && posts.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-        <p className="text-lg font-medium text-foreground mb-2">No posts yet</p>
-        <p className="text-sm text-muted-foreground">Be the first to share something!</p>
+        <p className="text-[14px] text-white/55 mt-4">your feed starts here.</p>
       </div>
     );
   }
