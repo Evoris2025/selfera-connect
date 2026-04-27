@@ -20,6 +20,15 @@ import { getTodayPrompt } from '@/lib/dailyPrompts';
 
 export type ContentType = 'expression' | 'video' | 'image' | 'post';
 
+// Per-category SelfERA brand color (HEX) — used ONLY for the icon container tint
+// and the soft radial corner glow. Never used as a tile fill.
+const CATEGORY_COLORS: Record<ContentType, string> = {
+  expression: '#d946ef', // SelfERA magenta
+  video:      '#8b5cf6', // SelfERA violet
+  image:      '#f59e0b', // SelfERA amber (Photo)
+  post:       '#2dd4bf', // SelfERA teal
+};
+
 interface ContentTypeCard {
   id: ContentType;
   icon: typeof Sparkles;
@@ -71,6 +80,7 @@ function CreateTile({
   contextLine?: string;
 }) {
   const Icon = type.icon;
+  const categoryColor = CATEGORY_COLORS[type.id];
   return (
     <motion.button
       initial={{ opacity: 0, y: 16 }}
@@ -82,7 +92,7 @@ function CreateTile({
       className={cn(
         'group relative overflow-hidden rounded-2xl p-5 aspect-[4/5]',
         'bg-white/[0.03] hover:bg-white/[0.05] active:bg-white/[0.06]',
-        'transition-colors text-left flex flex-col items-center justify-center',
+        'transition-colors text-left flex flex-col',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--primary))]/40'
       )}
       style={{
@@ -93,6 +103,23 @@ function CreateTile({
       }}
       aria-label={`Create ${type.title}`}
     >
+      {/* Soft radial corner glow — atmosphere, not fill */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 transition-opacity duration-300"
+        style={{
+          background: `radial-gradient(circle at 100% 100%, ${categoryColor}22 0%, transparent 60%)`,
+          opacity: 0.6,
+        }}
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        style={{
+          background: `radial-gradient(circle at 100% 100%, ${categoryColor}33 0%, transparent 60%)`,
+        }}
+      />
+
       {/* Sheen overlay */}
       <span
         aria-hidden
@@ -103,24 +130,26 @@ function CreateTile({
         }}
       />
 
-      <Icon
-        size={36}
-        strokeWidth={1.75}
-        style={{ color: 'hsl(var(--primary))' }}
-        aria-hidden
-      />
+      {/* Icon container — top-left */}
+      <div
+        className="relative w-12 h-12 rounded-xl flex items-center justify-center"
+        style={{ backgroundColor: `${categoryColor}1a` }}
+      >
+        <Icon size={22} strokeWidth={2} style={{ color: categoryColor }} aria-hidden />
+      </div>
 
-      <span className="relative mt-4 text-lg font-semibold text-white tracking-tight">
+      <span className="relative mt-3 text-lg font-semibold text-white tracking-tight">
         {type.title}
       </span>
-      <span className="relative mt-1 text-xs text-white/55 text-center">
+      <span className="relative mt-1 text-xs text-white/55 leading-snug">
         {type.description}
       </span>
-      {contextLine && (
-        <span className="relative mt-2 text-[11px] text-white/45 text-center">
-          {contextLine}
-        </span>
-      )}
+
+      {/* Activity context + chevron — pinned to bottom */}
+      <div className="relative mt-auto pt-3 border-t border-white/[0.06] flex items-center justify-between text-[11px] text-white/45">
+        <span className="truncate">{contextLine ?? ''}</span>
+        <ChevronRight size={14} className="text-white/35 shrink-0 ml-2" />
+      </div>
     </motion.button>
   );
 }
@@ -191,10 +220,11 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
       </div>
 
       {/* Page hero (moved out of header) */}
-      <div className="px-5 pt-4 pb-6 text-center">
-        <h1 className="text-2xl font-bold tracking-tight">
+      <div className="px-5 pt-6 pb-10 text-center">
+        <h1 className="text-4xl font-bold tracking-tight leading-tight">
           <span className="font-medium text-white">what will you </span>
           <span
+            className="font-extrabold"
             style={{
               backgroundImage: BRAND_GRADIENT,
               WebkitBackgroundClip: 'text',
@@ -206,7 +236,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
             CREATE.
           </span>
         </h1>
-        <p className="text-sm text-white/50 mt-1">Pick a format to begin</p>
+        <p className="text-base text-white/55 mt-2">Pick a format to begin</p>
       </div>
 
       <div className="px-5">
