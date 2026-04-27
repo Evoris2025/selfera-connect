@@ -140,15 +140,18 @@ function VideoTileSkeleton() {
 export function ExploreVideos({
   isLoading = false,
   filters,
+  topic = null,
 }: {
   isLoading?: boolean;
   filters?: VideosFilters;
+  /** Selected trending topic from ExploreTopicChips. TODO(round-2): wire to data filter. */
+  topic?: string | null;
 }) {
   const { primary: themePrimary } = useThemeColor();
   const sortBy = filters?.sortBy ?? 'for-you';
   const duration = filters?.duration ?? 'all';
   const source = applyDuration(SORT_TO_DATA[sortBy] ?? SORT_TO_DATA['for-you'], duration);
-  const resetKey = `${sortBy}|${filters?.timePeriod ?? 'all-time'}|${duration}|${filters?.origin ?? 'all'}`;
+  const resetKey = `${sortBy}|${filters?.timePeriod ?? 'all-time'}|${duration}|${filters?.origin ?? 'all'}|${topic ?? 'none'}`;
   const { items, sentinelRef, isLoadingMore, hasMore } = useInfiniteList({
     source,
     pageSize: 8,
