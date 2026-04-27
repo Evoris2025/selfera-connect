@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { TrendingUp, Flame, Users, Clock, Heart, X, Share2, Bookmark } from 'lucide-react';
+import { TrendingUp, Flame, Users, Clock, Heart, X, Share2, Bookmark, type LucideIcon } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
