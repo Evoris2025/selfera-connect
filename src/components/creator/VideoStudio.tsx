@@ -24,6 +24,7 @@ import {
   EndScreenElement,
 } from './video';
 import { cn } from '@/lib/utils';
+import { CreatorScreenHeader } from './CreatorScreenHeader';
 
 // Simulation mode flag
 const SIMULATION_MODE = true;
@@ -322,27 +323,8 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
       exit={{ opacity: 0, x: -20 }}
       className="flex flex-col h-full min-h-dvh bg-background"
     >
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-border">
-        <button
-          onClick={goToPrevStep}
-          className="p-2 -ml-2 rounded-full hover:bg-secondary transition-colors"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </button>
-        <div className="flex items-center gap-2">
-          <Play className="h-5 w-5 text-red-500" />
-          <h2 className="font-semibold">
-            {step === 'upload' ? 'Upload Video' : 'Video Studio'}
-          </h2>
-        </div>
-        <button
-          onClick={onBack}
-          className="p-2 hover:bg-secondary transition-colors"
-        >
-          <X className="h-6 w-6" />
-        </button>
-      </div>
+      {/* Shared identity-forward header */}
+      <CreatorScreenHeader type="video" onBack={goToPrevStep} onClose={onBack} />
 
       {/* YouTube-style Step Pills */}
       {step !== 'upload' && (

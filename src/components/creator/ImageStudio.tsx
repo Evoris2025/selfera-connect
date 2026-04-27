@@ -15,6 +15,7 @@ import { LocationPicker, type Location } from './post/LocationPicker';
 import { SoundPicker } from './SoundPicker';
 import { cn } from '@/lib/utils';
 import { useImageEnhance } from '@/hooks/useImageEnhance';
+import { CreatorScreenHeader } from './CreatorScreenHeader';
 
 // Enhanced imports
 import {
@@ -637,15 +638,12 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
       exit={{ opacity: 0, x: -20 }}
       className="flex flex-col h-full min-h-dvh bg-background"
     >
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-border">
+      {/* Shared identity-forward header */}
+      <CreatorScreenHeader type="photo" onBack={handleBack} onClose={handleClose} />
+
+      {/* Step-specific action bar (Undo/Redo · step label · Next/Share) */}
+      <div className="flex items-center justify-between px-4 py-2 border-b border-border">
         <div className="flex items-center gap-1">
-          <button
-            onClick={handleBack}
-            className="p-2 -ml-2 rounded-full hover:bg-secondary transition-colors"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </button>
           {step === 'edit' && (
             <UndoRedoControls
               canUndo={canUndo}
@@ -655,7 +653,7 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
             />
           )}
         </div>
-        <h2 className="font-semibold">
+        <h2 className="text-sm font-medium text-foreground/70">
           {step === 'select' ? 'Select Photos' : step === 'edit' ? 'Edit' : 'Details'}
         </h2>
         <div className="flex items-center gap-2">
@@ -674,12 +672,6 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
               {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Share'}
             </Button>
           )}
-          <button
-            onClick={handleClose}
-            className="p-2 rounded-full hover:bg-secondary transition-colors"
-          >
-            <X className="h-5 w-5" />
-          </button>
         </div>
       </div>
 
