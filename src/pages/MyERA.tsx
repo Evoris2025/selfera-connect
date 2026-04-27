@@ -749,52 +749,41 @@ export default function MyERA() {
                 {verificationIntents.map((intent, index) => {
                   const IconComponent = intent.icon;
                   const isSelected = selectedIntents.includes(intent.id);
-                  
-                  return (
-                    <motion.button
-                      key={intent.id}
-                      className={`relative w-full overflow-hidden rounded-2xl text-left transition-all ${
-                        isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : ''
-                      }`}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ ...springGentle, delay: index * 0.05 }}
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.99 }}
-                      onClick={() => handleIntentToggle(intent.id)}
-                    >
-                      <div className={`absolute inset-0 bg-gradient-to-r ${intent.gradient} ${isSelected ? 'opacity-25' : 'opacity-15'}`} />
-                      <div className="absolute inset-0 bg-card/70 backdrop-blur-sm" />
-                      
-                      <div className="relative p-4 flex items-center gap-4">
-                        <div className={`flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br ${intent.gradient}`}>
-                          <IconComponent className="w-6 h-6 text-white" />
-                        </div>
-                        
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-0.5">
-                            <h3 className="text-sm font-semibold text-foreground">
-                              {intent.title}
-                            </h3>
-                            <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-white/10 text-muted-foreground">
-                              {intent.depth}
-                            </Badge>
-                          </div>
-                          <p className="text-xs text-muted-foreground">
-                            {intent.description}
-                          </p>
-                        </div>
 
-                        {/* Checkbox indicator */}
-                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                          isSelected 
-                            ? 'bg-primary border-primary' 
-                            : 'border-muted-foreground/30 bg-transparent'
-                        }`}>
-                          {isSelected && <Check className="w-4 h-4 text-primary-foreground" />}
+                  return (
+                    <BrandSurface
+                      as="button"
+                      key={intent.id}
+                      onClick={() => handleIntentToggle(intent.id)}
+                      className="relative w-full overflow-hidden text-left p-4 flex items-center gap-4 transition-colors"
+                      style={isSelected ? { borderColor: themePrimary, borderWidth: '1.5px' } : undefined}
+                    >
+                      <BrandIcon icon={IconComponent} size={22} />
+
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <h3 className="text-white text-[15px] font-medium">
+                            {intent.title}
+                          </h3>
+                          <span className="text-[10px] uppercase tracking-[0.1em] text-white/45">
+                            {intent.depth}
+                          </span>
                         </div>
+                        <p className="text-white/55 text-[13px] leading-relaxed">
+                          {intent.description}
+                        </p>
                       </div>
-                    </motion.button>
+
+                      {/* Selection indicator */}
+                      <div
+                        className="w-4 h-4 rounded-full border flex items-center justify-center shrink-0"
+                        style={isSelected ? { borderColor: themePrimary } : { borderColor: 'rgba(255,255,255,0.15)' }}
+                      >
+                        {isSelected && (
+                          <Check className="w-3 h-3" style={{ color: themePrimary }} strokeWidth={2.5} />
+                        )}
+                      </div>
+                    </BrandSurface>
                   );
                 })}
 
