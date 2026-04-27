@@ -192,7 +192,7 @@ export function TrendingNowRail({ activeTab }: TrendingNowRailProps) {
   };
 
   return (
-    <div className="bg-background pt-3 pb-3">
+    <div className="bg-background pt-4 pb-6">
       <div className="px-4 mb-2 flex items-center gap-1.5">
         <BrandIcon icon={Flame} size={12} />
         <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-white/55">
