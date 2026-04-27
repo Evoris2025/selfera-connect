@@ -24,6 +24,8 @@ import {
   UserPlus,
   Hash,
   Film,
+  Maximize2,
+  Minimize2,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -263,6 +265,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
   const [mediaSheetOpen, setMediaSheetOpen] = useState(false);
   const [showTopicsError, setShowTopicsError] = useState(false);
   const [dismissedUrls, setDismissedUrls] = useState<Set<string>>(new Set());
+  const [textareaExpanded, setTextareaExpanded] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
 
