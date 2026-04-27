@@ -973,16 +973,18 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           </p>
           <div className="grid grid-cols-3 gap-3">
             <Tile
-              icon={<ImageIcon className="h-6 w-6" />}
+              tone="teal"
+              icon={<ImageIcon className="h-5 w-5" />}
               label="Photo"
               onClick={() => { setAddSheetOpen(false); photoInputRef.current?.click(); }}
             />
             <Tile
-              icon={<VideoIcon className="h-6 w-6" />}
+              tone="teal"
+              icon={<VideoIcon className="h-5 w-5" />}
               label="Video"
               onClick={() => { setAddSheetOpen(false); videoInputRef.current?.click(); }}
             />
-            <TileSlot icon={<Film className="h-6 w-6" />} label="GIF">
+            <TileSlot tone="teal" icon={<Film className="h-5 w-5" />} label="GIF">
               <GifPicker onSelect={(g) => { handleGifSelect(g); setAddSheetOpen(false); }} />
             </TileSlot>
           </div>
@@ -993,7 +995,8 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           </p>
           <div className="grid grid-cols-3 gap-3">
             <Tile
-              icon={<BarChart3 className="h-6 w-6" />}
+              tone="violet"
+              icon={<BarChart3 className="h-5 w-5" />}
               label="Poll"
               active={hasPoll}
               onClick={() => {
@@ -1005,27 +1008,31 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
               }}
             />
             <TileSlot
-              icon={<MapPin className="h-6 w-6" />}
+              tone="violet"
+              icon={<MapPin className="h-5 w-5" />}
               label="Check in"
               active={!!state.checkIn}
             >
               <CheckInPicker value={state.checkIn} onChange={(v) => update({ checkIn: v })} />
             </TileSlot>
             <TileSlot
-              icon={<UserPlus className="h-6 w-6" />}
+              tone="violet"
+              icon={<UserPlus className="h-5 w-5" />}
               label="Tag people"
               active={state.taggedPeople.length > 0}
             >
               <WithPeoplePicker value={state.taggedPeople} onChange={(v) => update({ taggedPeople: v })} />
             </TileSlot>
             <Tile
-              icon={<MessageSquare className="h-6 w-6" />}
+              tone="violet"
+              icon={<MessageSquare className="h-5 w-5" />}
               label="Thread"
               active={hasThread}
               onClick={() => { toggleThreadMode(); }}
             />
             <Tile
-              icon={<Smile className="h-6 w-6" />}
+              tone="violet"
+              icon={<Smile className="h-5 w-5" />}
               label="Feeling"
               active={!!state.feeling}
               onClick={() => { setAddSheetOpen(false); setMediaSheetOpen(true); }}
@@ -1038,7 +1045,8 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           </p>
           <div className="grid grid-cols-3 gap-3">
             <Tile
-              icon={<Hash className="h-6 w-6" />}
+              tone="pink"
+              icon={<Hash className="h-5 w-5" />}
               label="Topics"
               active={state.selectedTags.length > 0}
               onClick={() => {
@@ -1048,13 +1056,15 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
               }}
             />
             <Tile
-              icon={<Shield className="h-6 w-6" />}
+              tone="pink"
+              icon={<Shield className="h-5 w-5" />}
               label="Content warning"
               active={state.contentWarning}
               onClick={() => update({ contentWarning: !state.contentWarning })}
             />
             <Tile
-              icon={<Sparkles className="h-6 w-6" />}
+              tone="pink"
+              icon={<Sparkles className="h-5 w-5" />}
               label="Share as Expression"
               active={state.crossPost.alsoShareAsExpression}
               onClick={() =>
