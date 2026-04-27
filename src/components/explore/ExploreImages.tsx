@@ -197,32 +197,32 @@ export function ExploreImages({ isLoading = false }: ExploreImagesProps) {
           </div>
 
           <ImageSection
-            title="Trending visuals"
-            icon={<TrendingUp className="h-5 w-5 text-rose-500" />}
+            title="TRENDING VISUALS"
+            icon={TrendingUp}
             images={trendingImages}
             isLoading={loading}
             onImageClick={setSelectedImage}
           />
-          
+
           <ImageSection
-            title="Popular this week"
-            icon={<Flame className="h-5 w-5 text-orange-500" />}
+            title="POPULAR THIS WEEK"
+            icon={Flame}
             images={popularWeekImages}
             isLoading={loading}
             onImageClick={setSelectedImage}
           />
-          
+
           <ImageSection
-            title="From communities you follow"
-            icon={<Users className="h-5 w-5 text-emerald-400" />}
+            title="FROM COMMUNITIES YOU FOLLOW"
+            icon={Users}
             images={communityImages}
             isLoading={loading}
             onImageClick={setSelectedImage}
           />
-          
+
           <ImageSection
-            title="Recently added"
-            icon={<Clock className="h-5 w-5 text-muted-foreground" />}
+            title="RECENTLY ADDED"
+            icon={Clock}
             images={recentImages}
             isLoading={loading}
             onImageClick={setSelectedImage}
