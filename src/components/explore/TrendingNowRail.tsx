@@ -86,7 +86,9 @@ function VideoCard({ item, index }: { item: TrendingVideo; index: number }) {
       className="w-[200px] flex-shrink-0 text-left group"
     >
       <div className="relative aspect-video rounded-md overflow-hidden bg-black">
-        <span className="absolute top-2 left-2 z-10"><BrandIcon icon={Flame} className="w-3 h-3" /></span>
+        <span className="absolute top-2 left-2 z-10 flex items-center justify-center w-5 h-5 rounded-full bg-black/40 backdrop-blur-sm">
+          <BrandIcon icon={Flame} className="w-3 h-3" />
+        </span>
         <img src={item.thumbnail} alt={item.title} loading="lazy" className="w-full h-full object-cover" />
         <div className="absolute bottom-1 right-1 px-1.5 py-0.5 bg-black/80 text-[10px] text-white font-medium rounded">
           {item.duration}
