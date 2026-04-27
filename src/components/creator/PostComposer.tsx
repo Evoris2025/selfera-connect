@@ -884,8 +884,8 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       {/* Spacer pushes the Post button into the dead space below. */}
       <div className="flex-1 min-h-0" />
 
-      {/* Post CTA — centered in the gap above the global app navbar */}
-      <div className="shrink-0 flex items-center justify-center px-4 py-6 mb-[72px] lg:mb-0">
+      {/* Post CTA — anchored near the global app navbar with a small breathing gap */}
+      <div className="shrink-0 mt-auto flex items-center justify-center px-4 pt-6 pb-4 mb-[72px] lg:mb-0">
         <Button
           onClick={handleSubmit}
           disabled={!canPost || isSubmitting}
@@ -973,16 +973,18 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           </p>
           <div className="grid grid-cols-3 gap-3">
             <Tile
-              icon={<ImageIcon className="h-6 w-6" />}
+              tone="teal"
+              icon={<ImageIcon className="h-5 w-5" />}
               label="Photo"
               onClick={() => { setAddSheetOpen(false); photoInputRef.current?.click(); }}
             />
             <Tile
-              icon={<VideoIcon className="h-6 w-6" />}
+              tone="teal"
+              icon={<VideoIcon className="h-5 w-5" />}
               label="Video"
               onClick={() => { setAddSheetOpen(false); videoInputRef.current?.click(); }}
             />
-            <TileSlot icon={<Film className="h-6 w-6" />} label="GIF">
+            <TileSlot tone="teal" icon={<Film className="h-5 w-5" />} label="GIF">
               <GifPicker onSelect={(g) => { handleGifSelect(g); setAddSheetOpen(false); }} />
             </TileSlot>
           </div>
@@ -993,7 +995,8 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           </p>
           <div className="grid grid-cols-3 gap-3">
             <Tile
-              icon={<BarChart3 className="h-6 w-6" />}
+              tone="violet"
+              icon={<BarChart3 className="h-5 w-5" />}
               label="Poll"
               active={hasPoll}
               onClick={() => {
@@ -1005,27 +1008,31 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
               }}
             />
             <TileSlot
-              icon={<MapPin className="h-6 w-6" />}
+              tone="violet"
+              icon={<MapPin className="h-5 w-5" />}
               label="Check in"
               active={!!state.checkIn}
             >
               <CheckInPicker value={state.checkIn} onChange={(v) => update({ checkIn: v })} />
             </TileSlot>
             <TileSlot
-              icon={<UserPlus className="h-6 w-6" />}
+              tone="violet"
+              icon={<UserPlus className="h-5 w-5" />}
               label="Tag people"
               active={state.taggedPeople.length > 0}
             >
               <WithPeoplePicker value={state.taggedPeople} onChange={(v) => update({ taggedPeople: v })} />
             </TileSlot>
             <Tile
-              icon={<MessageSquare className="h-6 w-6" />}
+              tone="violet"
+              icon={<MessageSquare className="h-5 w-5" />}
               label="Thread"
               active={hasThread}
               onClick={() => { toggleThreadMode(); }}
             />
             <Tile
-              icon={<Smile className="h-6 w-6" />}
+              tone="violet"
+              icon={<Smile className="h-5 w-5" />}
               label="Feeling"
               active={!!state.feeling}
               onClick={() => { setAddSheetOpen(false); setMediaSheetOpen(true); }}
@@ -1038,7 +1045,8 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           </p>
           <div className="grid grid-cols-3 gap-3">
             <Tile
-              icon={<Hash className="h-6 w-6" />}
+              tone="pink"
+              icon={<Hash className="h-5 w-5" />}
               label="Topics"
               active={state.selectedTags.length > 0}
               onClick={() => {
@@ -1048,13 +1056,15 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
               }}
             />
             <Tile
-              icon={<Shield className="h-6 w-6" />}
+              tone="pink"
+              icon={<Shield className="h-5 w-5" />}
               label="Content warning"
               active={state.contentWarning}
               onClick={() => update({ contentWarning: !state.contentWarning })}
             />
             <Tile
-              icon={<Sparkles className="h-6 w-6" />}
+              tone="pink"
+              icon={<Sparkles className="h-5 w-5" />}
               label="Share as Expression"
               active={state.crossPost.alsoShareAsExpression}
               onClick={() =>
@@ -1278,21 +1288,56 @@ function Chip({
 }
 
 /**
+ * Category tone palette for sheet tiles. Mapped to SelfERA category buckets:
+ * media → teal, social → violet, content → pink/magenta.
+ */
+type TileTone = 'teal' | 'violet' | 'pink';
+
+const TILE_TONE: Record<
+  TileTone,
+  { base: string; hover: string; icon: string; active: string; activeIcon: string }
+> = {
+  teal: {
+    base: 'bg-teal-500/[0.08] border-teal-500/20',
+    hover: 'hover:bg-teal-500/[0.14] hover:border-teal-500/30',
+    icon: 'text-teal-400',
+    active: 'bg-teal-500/[0.18] border-teal-500/50',
+    activeIcon: 'text-teal-300',
+  },
+  violet: {
+    base: 'bg-violet-500/[0.08] border-violet-500/20',
+    hover: 'hover:bg-violet-500/[0.14] hover:border-violet-500/30',
+    icon: 'text-violet-400',
+    active: 'bg-violet-500/[0.18] border-violet-500/50',
+    activeIcon: 'text-violet-300',
+  },
+  pink: {
+    base: 'bg-pink-500/[0.08] border-pink-500/20',
+    hover: 'hover:bg-pink-500/[0.14] hover:border-pink-500/30',
+    icon: 'text-pink-400',
+    active: 'bg-pink-500/[0.18] border-pink-500/50',
+    activeIcon: 'text-pink-300',
+  },
+};
+
+/**
  * Icon-tile button used inside the "Add to your post" bottom sheet.
- * Vertical layout: 24px icon on top, label underneath. Active state shows a
- * gradient ring and a small dot.
+ * Compact 80px tile with category-tinted background + icon.
  */
 function Tile({
   icon,
   label,
   onClick,
   active,
+  tone = 'violet',
 }: {
   icon: React.ReactNode;
   label: string;
   onClick: () => void;
   active?: boolean;
+  tone?: TileTone;
 }) {
+  const t = TILE_TONE[tone];
   return (
     <button
       type="button"
@@ -1300,21 +1345,19 @@ function Tile({
       title={label}
       aria-label={label}
       className={cn(
-        'group flex flex-col items-center justify-center gap-2 aspect-square rounded-2xl p-3 transition cursor-pointer border',
-        active
-          ? 'bg-white/[0.06] border-white/30'
-          : 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06] hover:border-white/[0.12]'
+        'group flex flex-col items-center justify-center gap-1.5 h-20 rounded-xl p-2 transition cursor-pointer border',
+        active ? t.active : cn(t.base, t.hover)
       )}
     >
       <span
         className={cn(
           'flex items-center justify-center transition-colors',
-          active ? 'text-primary' : 'text-white/85'
+          active ? t.activeIcon : t.icon
         )}
       >
         {icon}
       </span>
-      <span className="text-xs text-white/70 leading-tight text-center line-clamp-1">
+      <span className="text-[11px] text-white/75 leading-tight text-center line-clamp-1">
         {label}
       </span>
     </button>
@@ -1322,31 +1365,30 @@ function Tile({
 }
 
 /**
- * Wraps a picker (which renders its own trigger button) as a Tile. Restyles
- * the picker's internal button to match the Tile aesthetic and overlays our
- * own monochrome icon + label.
+ * Wraps a picker (which renders its own trigger button) as a Tile.
  */
 function TileSlot({
   icon,
   label,
   children,
   active,
+  tone = 'violet',
 }: {
   icon: React.ReactNode;
   label: string;
   children: React.ReactNode;
   active?: boolean;
+  tone?: TileTone;
 }) {
+  const t = TILE_TONE[tone];
   return (
     <div
       className={cn(
-        'relative aspect-square rounded-2xl border transition',
-        active
-          ? 'bg-white/[0.06] border-white/30'
-          : 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06] hover:border-white/[0.12]',
+        'relative h-20 rounded-xl border transition',
+        active ? t.active : cn(t.base, t.hover),
         '[&>button]:!w-full [&>button]:!h-full',
-        '[&>button]:!flex [&>button]:!flex-col [&>button]:!items-center [&>button]:!justify-center [&>button]:!gap-2',
-        '[&>button]:!p-3 [&>button]:!rounded-2xl',
+        '[&>button]:!flex [&>button]:!flex-col [&>button]:!items-center [&>button]:!justify-center [&>button]:!gap-1.5',
+        '[&>button]:!p-2 [&>button]:!rounded-xl',
         '[&>button]:!bg-transparent [&>button:hover]:!bg-transparent',
         '[&>button]:!border-0 [&>button]:!shadow-none',
         '[&>button]:!text-transparent',
@@ -1354,16 +1396,16 @@ function TileSlot({
         '[&>button>svg]:hidden'
       )}
     >
-      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 z-10 p-3">
+      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-1.5 z-10 p-2">
         <span
           className={cn(
             'flex items-center justify-center',
-            active ? 'text-primary' : 'text-white/85'
+            active ? t.activeIcon : t.icon
           )}
         >
           {icon}
         </span>
-        <span className="text-xs text-white/70 leading-tight text-center line-clamp-1">
+        <span className="text-[11px] text-white/75 leading-tight text-center line-clamp-1">
           {label}
         </span>
       </div>
