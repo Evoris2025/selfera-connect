@@ -50,10 +50,10 @@ export function ExploreFilters({
         <Button
           variant="outline"
           size="sm"
-          className="gap-2 rounded-xl border-border/50 bg-secondary/50"
+          className="gap-2 rounded-full border-white/15 bg-transparent text-white/80 hover:border-white/30 hover:bg-transparent h-10 px-3"
         >
           <Filter className="h-4 w-4" />
-          <span className="hidden sm:inline">{activeFilterLabel}</span>
+          <span className="hidden sm:inline text-[12px] uppercase tracking-[0.1em]">{activeFilterLabel}</span>
           <ChevronDown className="h-3 w-3" />
         </Button>
       </SheetTrigger>
