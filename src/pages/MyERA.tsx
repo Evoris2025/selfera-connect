@@ -1000,7 +1000,10 @@ export default function MyERA() {
               >
                 {interactionsLoading ? (
                   <div className="flex items-center justify-center py-8">
-                    <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                    <div
+                      className="w-6 h-6 border-2 border-white/30 rounded-full animate-spin"
+                      style={{ borderTopColor: themePrimary }}
+                    />
                   </div>
                 ) : (
                   <InteractionList
