@@ -58,13 +58,25 @@ interface Notification {
 }
 
 const mockNotifications: Notification[] = [
-  { id: '1', type: 'follow', users: [{ name: 'Dr. Sarah', handle: 'drsarah' }], action: 'started following you', time: '1h', read: false, showFollowButton: true, targetType: 'profile', targetId: 'drsarah' },
-  { id: '2', type: 'reaction', users: [{ name: 'Mind Matters', handle: 'mindmatters' }], action: 'liked your post', time: '5h', read: false, targetType: 'post', targetId: '124' },
-  { id: '3', type: 'comment', users: [{ name: 'Jamie', handle: 'jamie_journey' }], action: 'commented on your post', preview: 'This is so helpful, thank you! 💙', time: '1d', read: true, targetType: 'post', targetId: '125' },
-  { id: '4', type: 'mention', users: [{ name: 'Wellness Hub', handle: 'wellnesshub' }], action: 'mentioned you in a comment', preview: '@you Thanks for the tips!', time: '2d', read: true, targetType: 'post', targetId: '126' },
-  { id: '5', type: 'community', users: [{ name: 'Mental Health Support', handle: 'mhsupport' }], action: 'new activity in your community', time: '3d', read: true, targetType: 'community', targetId: 'mhsupport' },
-  { id: '6', type: 'verification', action: 'your verification request was approved', time: '1w', read: true },
-  { id: '7', type: 'follow', users: [{ name: 'Alex Chen', handle: 'alexchen' }], action: 'started following you', time: '2w', read: true },
+  // ── TODAY (4) — 3 unread + 1 read ──────────────────────────────────────
+  { id: '1',  type: 'follow',       users: [{ name: 'Dr. Sarah Lin',    handle: 'drsarahlin',  isVerified: true }],  action: 'started following you',                                       time: '12m', read: false, showFollowButton: true, targetType: 'profile', targetId: 'drsarahlin' },
+  { id: '2',  type: 'reaction',     users: [{ name: 'Mind Matters',     handle: 'mindmatters', isVerified: true }],  action: 'and 12 others liked your post',                                time: '1h',  read: false, targetType: 'post', targetId: '124' },
+  { id: '3',  type: 'comment',      users: [{ name: 'Jamie Rivers',     handle: 'jamie_journey' }],                  action: 'commented on your post',  preview: 'this is so helpful, thank you 💙', time: '3h',  read: false, targetType: 'post', targetId: '125' },
+  { id: '4',  type: 'mention',      users: [{ name: 'Wellness Hub',     handle: 'wellnesshub',  isVerified: true }], action: 'mentioned you in a comment', preview: '@you thanks for the tips!',     time: '6h',  read: true,  targetType: 'post', targetId: '126' },
+
+  // ── THIS WEEK (5) — 1 unread + 4 read ──────────────────────────────────
+  { id: '5',  type: 'follow',       users: [{ name: 'Marcus Patel',     handle: 'marcus.p' }],                       action: 'started following you',                                       time: '1d',  read: false, showFollowButton: true, targetType: 'profile', targetId: 'marcus.p' },
+  { id: '6',  type: 'reaction',     users: [{ name: 'Olivia Brooks',    handle: 'olivia_b' }],                       action: 'liked your reel',                                              time: '2d',  read: true,  targetType: 'post', targetId: '127' },
+  { id: '7',  type: 'comment',      users: [{ name: 'Theo Nakamura',    handle: 'theonakamura' }],                   action: 'replied to your comment', preview: 'totally agree — couldn\u2019t have said it better.', time: '3d', read: true, targetType: 'post', targetId: '128' },
+  { id: '8',  type: 'community',    users: [{ name: 'Mental Health Support', handle: 'mhsupport' }],                 action: 'new activity in your community',                               time: '4d',  read: true,  targetType: 'community', targetId: 'mhsupport' },
+  { id: '9',  type: 'mention',      users: [{ name: 'Calm Collective',  handle: 'calmcollective', isVerified: true }], action: 'tagged you in a post',  preview: 'check out @you\u2019s journal — it really resonated.', time: '5d', read: true, targetType: 'post', targetId: '129' },
+
+  // ── EARLIER (5) — all read ─────────────────────────────────────────────
+  { id: '10', type: 'verification', action: 'your verification request was approved',                                                                                          time: '1w',  read: true },
+  { id: '11', type: 'community',    users: [{ name: 'Anxiety Allies',   handle: 'anxietyallies' }],                  action: 'invited you to a new community',                                time: '2w',  read: true,  targetType: 'community', targetId: 'anxietyallies' },
+  { id: '12', type: 'follow',       users: [{ name: 'Alex Chen',        handle: 'alexchen' }],                       action: 'started following you',                                       time: '3w',  read: true,  showFollowButton: true, targetType: 'profile', targetId: 'alexchen' },
+  { id: '13', type: 'reaction',     users: [{ name: 'Quiet Mornings',   handle: 'quietmornings' }],                  action: 'and 4 others liked your post',                                 time: '4w',  read: true,  targetType: 'post', targetId: '130' },
+  { id: '14', type: 'message',      users: [{ name: 'Priya Desai',      handle: 'priya.d' }],                        action: 'sent you a message',      preview: 'hey — thinking of you today.',  time: '6w',  read: true,  targetType: 'message', targetId: 'priya.d' },
 ];
 
 const getActionIcon = (type: string) => {
