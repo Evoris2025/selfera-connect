@@ -920,7 +920,10 @@ export default function MyERA() {
                             ring={link.status === 'active' ? 'primary' : 'muted'}
                           />
                           {link.status === 'active' && (
-                            <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-primary border-2 border-card" />
+                            <span
+                              className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full"
+                              style={{ backgroundColor: themePrimary }}
+                            />
                           )}
                         </div>
                         
