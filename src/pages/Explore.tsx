@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
-import { Search as SearchIcon } from 'lucide-react';
+import { Search as SearchIcon, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AppLayout } from '@/components/AppLayout';
 import { Input } from '@/components/ui/input';
@@ -14,6 +14,7 @@ import {
   ExploreImages,
   ExplorePosts,
   TrendingNowRail,
+  ExploreSearchOverlay,
   type ExploreTab,
 } from '@/components/explore';
 import {
@@ -32,6 +33,8 @@ export default function Explore() {
   useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState<ExploreTab>(
     (searchParams.get('tab') as ExploreTab) || 'expressions'
   );
@@ -55,6 +58,29 @@ export default function Explore() {
     setIsLoading(true);
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsLoading(false);
+  }, []);
+
+  const dismissSearch = useCallback(() => {
+    setSearchQuery('');
+    setIsSearchFocused(false);
+    searchInputRef.current?.blur();
+  }, []);
+
+  const handleSearchKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        dismissSearch();
+      }
+    },
+    [dismissSearch],
+  );
+
+  const handleOverlaySelect = useCallback((term: string) => {
+    setSearchQuery(term);
+    // Keep overlay open so the user sees their selection reflected; a real
+    // search submit will be wired in a later round.
+    searchInputRef.current?.focus();
   }, []);
 
   const renderTabContent = () => {
@@ -81,47 +107,68 @@ export default function Explore() {
             <BrandSurface className="relative flex-1 flex items-center h-11 px-4 rounded-full">
               <BrandIcon icon={SearchIcon} size={18} />
               <Input
+                ref={searchInputRef}
                 placeholder="search SelfERA"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setIsSearchFocused(true)}
+                onKeyDown={handleSearchKeyDown}
                 className="flex-1 ml-2 bg-transparent border-0 h-full px-0 text-white text-[14px] placeholder:text-white/45 focus-visible:ring-0 focus-visible:ring-offset-0"
               />
+              {isSearchFocused && (
+                <button
+                  type="button"
+                  onClick={dismissSearch}
+                  aria-label="Close search"
+                  className="ml-2 flex items-center justify-center w-6 h-6 rounded-full text-white/70 hover:text-white hover:bg-white/[0.06] transition-colors"
+                >
+                  <X className="w-4 h-4" strokeWidth={1.5} />
+                </button>
+              )}
             </BrandSurface>
-            <ExploreFilters
-              activeTab={activeTab}
-              filters={filters}
-              onChange={setFilters}
-            />
+            {!isSearchFocused && (
+              <ExploreFilters
+                activeTab={activeTab}
+                filters={filters}
+                onChange={setFilters}
+              />
+            )}
           </div>
         </div>
 
-        {/* Brand Underline Tab Bar */}
-        <div className="sticky top-[68px] z-10 bg-background/95 backdrop-blur px-3 border-b border-white/[0.08]">
-          <BrandUnderlineTabs
-            tabs={exploreTabs}
-            value={activeTab}
-            onChange={(tabId) => setActiveTab(tabId as ExploreTab)}
-            ariaLabel="Explore content type"
-          />
-        </div>
+        {isSearchFocused ? (
+          <ExploreSearchOverlay query={searchQuery} onSelect={handleOverlaySelect} />
+        ) : (
+          <>
+            {/* Brand Underline Tab Bar */}
+            <div className="sticky top-[68px] z-10 bg-background/95 backdrop-blur px-3 border-b border-white/[0.08]">
+              <BrandUnderlineTabs
+                tabs={exploreTabs}
+                value={activeTab}
+                onChange={(tabId) => setActiveTab(tabId as ExploreTab)}
+                ariaLabel="Explore content type"
+              />
+            </div>
 
-        {/* TRENDING NOW rail — non-sticky, per-tab native shapes */}
-        <TrendingNowRail activeTab={activeTab} />
+            {/* TRENDING [TAB] rail — non-sticky, per-tab native shapes */}
+            <TrendingNowRail activeTab={activeTab} />
 
-        <PullToRefresh onRefresh={handleRefresh} className="flex-1">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeTab}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
-              className="w-full"
-            >
-              {renderTabContent()}
-            </motion.div>
-          </AnimatePresence>
-        </PullToRefresh>
+            <PullToRefresh onRefresh={handleRefresh} className="flex-1">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeTab}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.2, ease: 'easeOut' }}
+                  className="w-full"
+                >
+                  {renderTabContent()}
+                </motion.div>
+              </AnimatePresence>
+            </PullToRefresh>
+          </>
+        )}
       </div>
     </AppLayout>
   );
