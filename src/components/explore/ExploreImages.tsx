@@ -129,7 +129,7 @@ function ImageViewer({ image, onClose }: ImageViewerProps) {
 
 interface ImageSectionProps {
   title: string;
-  icon: React.ReactNode;
+  icon: React.ElementType;
   images: typeof trendingImages;
   isLoading?: boolean;
   onImageClick: (image: typeof trendingImages[0]) => void;
@@ -141,8 +141,8 @@ function ImageSection({ title, icon, images, isLoading, onImageClick }: ImageSec
   return (
     <section className="space-y-3">
       <div className="flex items-center gap-2 px-4">
-        {icon}
-        <h2 className="font-semibold text-foreground">{title}</h2>
+        <BrandIcon icon={icon} size={16} />
+        <BrandSectionLabel>{title}</BrandSectionLabel>
       </div>
       <div className="grid grid-cols-3 gap-1 px-4">
         {isLoading ? (
@@ -151,9 +151,9 @@ function ImageSection({ title, icon, images, isLoading, onImageClick }: ImageSec
           ))
         ) : (
           images.map((image, index) => (
-            <ImageCard 
-              key={image.id} 
-              image={image} 
+            <ImageCard
+              key={image.id}
+              image={image}
               index={index}
               onClick={() => onImageClick(image)}
             />
