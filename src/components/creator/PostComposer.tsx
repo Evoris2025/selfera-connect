@@ -586,7 +586,13 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         <div className="flex flex-col">
       {/* Hero identity block */}
       <div className="shrink-0 flex flex-col items-center text-center gap-3 px-5 pt-6 pb-6">
-        <div className="rounded-full p-1 bg-gradient-to-br from-fuchsia-500 via-violet-500 to-teal-400 shrink-0">
+        <div
+          className="rounded-full p-1 shrink-0"
+          style={{
+            background:
+              'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-muted)))',
+          }}
+        >
           <Avatar className="h-32 w-32 border-2 border-background">
             <AvatarImage src={avatarUrl} alt={displayName} />
             <AvatarFallback className="bg-secondary text-secondary-foreground text-3xl font-semibold">
