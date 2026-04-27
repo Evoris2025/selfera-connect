@@ -1290,25 +1290,31 @@ function Tile({
       title={label}
       aria-label={label}
       className={cn(
-        'relative flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl hover:bg-white/5 transition',
-        active && 'bg-white/[0.04] ring-1 ring-fuchsia-500/40'
+        'group flex flex-col items-center justify-center gap-2 aspect-square rounded-2xl p-3 transition cursor-pointer border',
+        active
+          ? 'bg-white/[0.06] border-white/30'
+          : 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06] hover:border-white/[0.12]'
       )}
     >
-      {icon}
-      <span className="text-xs text-foreground/80 leading-tight text-center line-clamp-1">
+      <span
+        className={cn(
+          'flex items-center justify-center transition-colors',
+          active ? 'text-primary' : 'text-white/85'
+        )}
+      >
+        {icon}
+      </span>
+      <span className="text-xs text-white/70 leading-tight text-center line-clamp-1">
         {label}
       </span>
-      {active && (
-        <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-fuchsia-400" />
-      )}
     </button>
   );
 }
 
 /**
- * Wraps a picker (which renders its own trigger button) as a Tile. Hides the
- * picker's internal label/icon and overlays our own icon + label so the tile
- * matches sibling Tile components visually while still triggering the picker.
+ * Wraps a picker (which renders its own trigger button) as a Tile. Restyles
+ * the picker's internal button to match the Tile aesthetic and overlays our
+ * own monochrome icon + label.
  */
 function TileSlot({
   icon,
@@ -1324,27 +1330,33 @@ function TileSlot({
   return (
     <div
       className={cn(
-        'relative',
-        '[&>button]:!w-full [&>button]:!h-auto [&>button]:!min-h-[84px]',
-        '[&>button]:!flex [&>button]:!flex-col [&>button]:!items-center [&>button]:!justify-center [&>button]:!gap-1.5',
+        'relative aspect-square rounded-2xl border transition',
+        active
+          ? 'bg-white/[0.06] border-white/30'
+          : 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06] hover:border-white/[0.12]',
+        '[&>button]:!w-full [&>button]:!h-full',
+        '[&>button]:!flex [&>button]:!flex-col [&>button]:!items-center [&>button]:!justify-center [&>button]:!gap-2',
         '[&>button]:!p-3 [&>button]:!rounded-2xl',
-        '[&>button]:!bg-transparent [&>button:hover]:!bg-white/5',
+        '[&>button]:!bg-transparent [&>button:hover]:!bg-transparent',
         '[&>button]:!border-0 [&>button]:!shadow-none',
         '[&>button]:!text-transparent',
         '[&>button>span]:hidden',
-        '[&>button>svg]:hidden',
-        active && '[&>button]:!bg-white/[0.04] [&>button]:!ring-1 [&>button]:!ring-fuchsia-500/40'
+        '[&>button>svg]:hidden'
       )}
     >
-      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-1.5 z-10">
-        {icon}
-        <span className="text-xs text-foreground/80 leading-tight text-center line-clamp-1 px-2">
+      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 z-10 p-3">
+        <span
+          className={cn(
+            'flex items-center justify-center',
+            active ? 'text-primary' : 'text-white/85'
+          )}
+        >
+          {icon}
+        </span>
+        <span className="text-xs text-white/70 leading-tight text-center line-clamp-1">
           {label}
         </span>
       </div>
-      {active && (
-        <span className="pointer-events-none absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-fuchsia-400 z-20" />
-      )}
       {children}
     </div>
   );
