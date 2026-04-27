@@ -431,28 +431,9 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
               </div>
             ) : (
               /* Initial state - tap to start camera */
-              <div className="flex-1 flex flex-col items-center justify-center gap-6 p-8">
-                {/* Header */}
-                <div className="absolute top-0 left-0 right-0 z-10">
-                  <div className="flex items-center justify-between p-4 lg:mx-auto lg:max-w-2xl">
-                  <button
-                    onClick={onBack}
-                    className="p-2 -ml-2 rounded-full hover:bg-white/10 transition-colors"
-                  >
-                    <ArrowLeft className="h-5 w-5 text-white" />
-                  </button>
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-pink-500" />
-                    <h2 className="font-semibold text-white">Expression</h2>
-                  </div>
-                  <button
-                    onClick={onBack}
-                    className="p-2 rounded-full hover:bg-white/10 transition-colors"
-                  >
-                    <X className="h-6 w-6 text-white" />
-                  </button>
-                  </div>
-                </div>
+              <div className="flex-1 flex flex-col bg-background">
+                <CreatorScreenHeader type="expression" onBack={onBack} onClose={onBack} showAudience={false} />
+                <div className="flex-1 flex flex-col items-center justify-center gap-6 p-8">
                 
                 <input
                   ref={fileInputRef}
