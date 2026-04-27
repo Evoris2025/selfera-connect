@@ -170,6 +170,39 @@ function PostCard({ item, index }: { item: TrendingPost; index: number }) {
 }
 
 export function TrendingNowRail({ activeTab }: TrendingNowRailProps) {
+  const railRef = useRef<HTMLDivElement | null>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const updateScrollState = () => {
+    const el = railRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    setCanScrollLeft(scrollLeft > 1);
+    setCanScrollRight(scrollWidth - clientWidth - scrollLeft > 1);
+  };
+
+  useEffect(() => {
+    const el = railRef.current;
+    if (!el) return;
+    // Reset scroll when tab changes
+    el.scrollLeft = 0;
+    updateScrollState();
+    el.addEventListener('scroll', updateScrollState, { passive: true });
+    window.addEventListener('resize', updateScrollState);
+    return () => {
+      el.removeEventListener('scroll', updateScrollState);
+      window.removeEventListener('resize', updateScrollState);
+    };
+  }, [activeTab]);
+
+  const scrollByDirection = (dir: 'left' | 'right') => {
+    const el = railRef.current;
+    if (!el) return;
+    const amount = el.clientWidth * 0.8;
+    el.scrollBy({ left: dir === 'left' ? -amount : amount, behavior: 'smooth' });
+  };
+
   const renderCards = () => {
     switch (activeTab) {
       case 'expressions':
@@ -201,12 +234,68 @@ export function TrendingNowRail({ activeTab }: TrendingNowRailProps) {
           TRENDING NOW
         </p>
       </div>
-      <div
-        role="list"
-        aria-label="Trending now"
-        className="flex gap-2 overflow-x-auto px-4 scrollbar-hide"
-      >
-        {renderCards()}
+      <div className="group relative">
+        <div
+          ref={railRef}
+          role="list"
+          aria-label="Trending now"
+          className="flex gap-2 overflow-x-auto px-4 scrollbar-hide"
+        >
+          {renderCards()}
+        </div>
+
+        {/* Left edge fade */}
+        <div
+          aria-hidden="true"
+          className={cn(
+            'pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-background to-transparent transition-opacity',
+            canScrollLeft ? 'opacity-100' : 'opacity-0'
+          )}
+        />
+        {/* Right edge fade */}
+        <div
+          aria-hidden="true"
+          className={cn(
+            'pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-background to-transparent transition-opacity',
+            canScrollRight ? 'opacity-100' : 'opacity-0'
+          )}
+        />
+
+        {/* Left arrow */}
+        <button
+          type="button"
+          aria-label="Scroll left"
+          onClick={() => scrollByDirection('left')}
+          className={cn(
+            'absolute top-1/2 -translate-y-1/2 z-20 left-2',
+            'hidden md:flex items-center justify-center',
+            'w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm',
+            'border border-white/[0.08]',
+            'opacity-0 group-hover:opacity-100 transition-opacity',
+            'hover:bg-black/80',
+            !canScrollLeft && 'pointer-events-none opacity-0 group-hover:opacity-0'
+          )}
+        >
+          <ChevronLeft className="w-4 h-4 text-white" strokeWidth={2} />
+        </button>
+
+        {/* Right arrow */}
+        <button
+          type="button"
+          aria-label="Scroll right"
+          onClick={() => scrollByDirection('right')}
+          className={cn(
+            'absolute top-1/2 -translate-y-1/2 z-20 right-2',
+            'hidden md:flex items-center justify-center',
+            'w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm',
+            'border border-white/[0.08]',
+            'opacity-0 group-hover:opacity-100 transition-opacity',
+            'hover:bg-black/80',
+            !canScrollRight && 'pointer-events-none opacity-0 group-hover:opacity-0'
+          )}
+        >
+          <ChevronRight className="w-4 h-4 text-white" strokeWidth={2} />
+        </button>
       </div>
     </div>
   );
