@@ -98,8 +98,8 @@ export function GalleryFirstSelector({
               </div>
               
               <div className="text-center space-y-1">
-                <span className="text-base font-semibold text-foreground block">Select multiple photos</span>
-                <span className="text-sm text-muted-foreground block">Select up to {maxImages} images</span>
+                <span className="text-base font-semibold text-foreground block">Select from Gallery</span>
+                <span className="text-sm text-muted-foreground block">Select up to {maxImages} photos</span>
               </div>
 
 
