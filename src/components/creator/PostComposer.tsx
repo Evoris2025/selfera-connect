@@ -577,9 +577,9 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         <div className="h-px w-full bg-gradient-to-r from-transparent via-fuchsia-500/40 to-transparent opacity-60" />
       </div>
 
-      {/* Body region (hero + textarea + Add button). Sized to content so the
+      {/* Body region (hero + textarea + Add row). Sized to content so the
           Post button sits in real whitespace below it. */}
-      <div className="shrink-0 flex flex-col overflow-y-auto max-h-[calc(100dvh-220px)]">
+      <div className="shrink-0 flex flex-col">
         <div className="flex flex-col">
       {/* Hero identity block */}
       <div className="shrink-0 flex flex-col items-center text-center gap-3 px-5 pt-6 pb-6">
