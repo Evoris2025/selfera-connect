@@ -192,7 +192,7 @@ export function ContinueWorkingSheet({
                   onClick={() => setPickerOpen(true)}
                   className="mt-3 w-full text-[11px] font-semibold tracking-wider uppercase text-white/70 hover:text-white transition-colors py-2 rounded-lg border border-white/10 hover:border-white/20"
                 >
-                  Use this prompt
+                  Generate prompt
                 </button>
               ) : (
                 <div className="mt-3">
