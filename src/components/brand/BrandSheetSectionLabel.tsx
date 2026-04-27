@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 
 /**
  * Canonical section label used inside a brand sheet to group rows / tiles.
+ * C1: text-[10px] font-medium uppercase tracking-[0.12em] text-white/55.
  *
  *   <BrandSheetSectionLabel>Recent</BrandSheetSectionLabel>
  */
@@ -16,7 +17,7 @@ export function BrandSheetSectionLabel({
   return (
     <p
       className={cn(
-        'text-[11px] font-medium text-white/40 uppercase tracking-wider px-1 mt-5 mb-3',
+        'text-[10px] font-medium uppercase tracking-[0.12em] text-white/55 px-1 mt-5 mb-3',
         className,
       )}
     >
