@@ -231,10 +231,10 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
 
   return (
     <div
-      className="flex flex-col bg-background overflow-hidden w-full"
-      style={{ height: 'calc(100dvh - env(safe-area-inset-bottom) - 72px)' }}
+      className="flex flex-col bg-background w-full min-h-dvh"
+      style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 72px)' }}
     >
-      <div className="w-full max-w-[640px] mx-auto flex flex-col flex-1 min-h-0">
+      <div className="w-full max-w-[640px] mx-auto flex flex-col flex-1">
         {/* Header — back · logo · close */}
         <div className="flex items-center justify-between h-14 px-3 shrink-0">
           <button
@@ -328,19 +328,20 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
           </button>
         </div>
 
-        {/* Creator rows — bounded 4-row grid that must fill remaining vertical space */}
-        <div className="flex-1 min-h-0 grid grid-rows-4 gap-2 px-5 pb-2">
+        {/* Creator rows — fixed tall rows (doubled height) */}
+        <div className="grid grid-cols-1 gap-3 px-5 pb-2">
           {contentTypes.map((type) => (
-            <CreatorRow
-              key={type.id}
-              icon={type.icon}
-              title={type.title}
-              description={type.description}
-              accentColor={ACCENT[type.id]}
-              activity={tileContext(type.id)}
-              backgroundUrl={bgFor(type.id)}
-              onClick={() => onSelect(type.id)}
-            />
+            <div key={type.id} className="h-[170px]">
+              <CreatorRow
+                icon={type.icon}
+                title={type.title}
+                description={type.description}
+                accentColor={ACCENT[type.id]}
+                activity={tileContext(type.id)}
+                backgroundUrl={bgFor(type.id)}
+                onClick={() => onSelect(type.id)}
+              />
+            </div>
           ))}
         </div>
       </div>
