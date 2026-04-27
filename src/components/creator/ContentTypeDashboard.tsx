@@ -134,7 +134,7 @@ function CreatorRow({
 
 export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboardProps) {
   const navigate = useNavigate();
-  const { drafts, scheduled } = useFeedData();
+  const { drafts, scheduled, posts, expressions } = useFeedData();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerTab, setDrawerTab] = useState<'drafts' | 'scheduled'>('drafts');
 
@@ -255,17 +255,23 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
           <ChevronRight className="h-4 w-4 text-white/40 mt-1 shrink-0" />
         </button>
 
-        {/* 2x2 tile grid */}
-        <div className="grid grid-cols-2 gap-3">
-          {contentTypes.map((type, i) => (
-            <CreateTile
-              key={type.id}
-              type={type}
-              index={i}
-              onClick={() => onSelect(type.id)}
-              contextLine={tileContext(type.id)}
-            />
-          ))}
+        {/* Vertical creator rows */}
+        <div className="flex flex-col gap-3">
+          {contentTypes.map((type) => {
+            const thumb = thumbFor(type.id);
+            return (
+              <CreatorRow
+                key={type.id}
+                icon={type.icon}
+                title={type.title}
+                description={type.description}
+                accentColor={ACCENT[type.id]}
+                activity={tileContext(type.id)}
+                thumbnailUrl={thumb}
+                onClick={() => onSelect(type.id)}
+              />
+            );
+          })}
         </div>
 
         {/* Drafts / Scheduled — subtle ghost links */}
