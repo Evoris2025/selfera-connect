@@ -94,7 +94,7 @@ function CreatorRow({
       onClick={onClick}
       className={cn(
         'group relative w-full text-left',
-        'h-64 rounded-2xl overflow-hidden',
+        'h-[115px] rounded-2xl overflow-hidden',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--primary))]/40'
       )}
       aria-label={`Create ${title}`}
@@ -109,15 +109,15 @@ function CreatorRow({
             loading="lazy"
             onError={() => setImgFailed(true)}
             className="absolute inset-0 w-full h-full object-cover transition-[filter] duration-200"
-            style={{ filter: 'brightness(0.55) saturate(0.9)' }}
+            style={{ filter: 'brightness(0.5) saturate(0.9)' }}
           />
-          {/* Directional scrim — heaviest at bottom-left where text sits */}
+          {/* Strong horizontal scrim — heaviest at left where text sits */}
           <div
             aria-hidden
             className="absolute inset-0"
             style={{
               background:
-                'linear-gradient(110deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.55) 50%, rgba(0,0,0,0.25) 100%)',
+                'linear-gradient(90deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.75) 40%, rgba(0,0,0,0.35) 100%)',
             }}
           />
         </>
@@ -136,27 +136,26 @@ function CreatorRow({
         style={{ background: accentColor }}
       />
 
-      {/* Content layer */}
-      <div className="relative z-10 flex flex-col justify-between h-full p-5">
-        {/* Top row: icon chip (left) + chevron chip (right) */}
-        <div className="flex items-start justify-between">
-          <div className="w-12 h-12 rounded-xl bg-white/[0.10] backdrop-blur-md border border-white/10 flex items-center justify-center">
-            <Icon size={22} strokeWidth={2} style={{ color: accentColor }} aria-hidden />
+      {/* Content layer — horizontal, vertically centered */}
+      <div className="relative z-10 flex items-center gap-3 h-full px-4 py-3">
+        {/* Icon chip */}
+        <div className="w-10 h-10 rounded-xl bg-white/[0.10] backdrop-blur-md border border-white/10 flex items-center justify-center shrink-0">
+          <Icon size={18} strokeWidth={2} style={{ color: accentColor }} aria-hidden />
+        </div>
+
+        {/* Content column */}
+        <div className="flex-1 min-w-0">
+          <div className="text-base font-semibold text-white leading-tight truncate">
+            {title}
           </div>
-          <div className="w-8 h-8 rounded-full bg-white/[0.10] backdrop-blur-md border border-white/10 flex items-center justify-center">
-            <ChevronRight size={16} className="text-white/85" />
+          <div className="text-xs text-white/70 mt-0.5 leading-snug truncate">
+            {description}
           </div>
         </div>
 
-        {/* Bottom-left: title / description / activity */}
-        <div className="flex flex-col">
-          <span className="text-2xl font-bold text-white leading-tight tracking-tight">
-            {title}
-          </span>
-          <span className="text-sm text-white/75 mt-1">{description}</span>
-          {activity && (
-            <span className="text-xs text-white/60 mt-2">{activity}</span>
-          )}
+        {/* Chevron chip */}
+        <div className="w-7 h-7 rounded-full bg-white/[0.08] backdrop-blur-md border border-white/10 flex items-center justify-center shrink-0">
+          <ChevronRight size={14} className="text-white/85" />
         </div>
       </div>
     </motion.button>
@@ -214,87 +213,103 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
     navigate(`/studio/post?prompt=${encodeURIComponent(todayPrompt)}`);
   };
 
+  const showPickup = !!latestDraft;
+  const showPrompt = !!todayPrompt;
+  const onlyOne = showPickup !== showPrompt; // exactly one renders → span full width
+
   return (
-    <div className="flex flex-col min-h-dvh bg-background pb-[calc(env(safe-area-inset-bottom)+72px)]">
-      {/* Header — back · logo · close */}
-      <div className="flex items-center justify-between h-14 px-3 shrink-0">
-        <button
-          onClick={onClose}
-          className="p-2 rounded-full hover:bg-white/5 transition-colors"
-          aria-label="Back"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </button>
-        <BrandMark className="h-7 w-[120px]" />
-        <button
-          onClick={onClose}
-          className="p-2 rounded-full hover:bg-white/5 transition-colors"
-          aria-label="Close"
-        >
-          <X className="h-5 w-5" />
-        </button>
-      </div>
-
-      {/* Page hero (moved out of header) */}
-      <div className="px-5 pt-6 pb-10 text-center">
-        <h1 className="text-4xl font-bold tracking-tight leading-tight">
-          <span className="font-medium text-white">what will you </span>
-          <span
-            className="font-extrabold"
-            style={{
-              backgroundImage: BRAND_GRADIENT,
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              color: 'transparent',
-            }}
-          >
-            CREATE.
-          </span>
-        </h1>
-        <p className="text-base text-white/55 mt-2">Pick a format to begin</p>
-      </div>
-
-      <div className="px-5">
-        {/* Continue-where-you-left-off banner — only when a draft exists */}
-        {latestDraft && (
+    <div className="h-dvh flex flex-col bg-background pb-[calc(env(safe-area-inset-bottom)+72px)] overflow-hidden">
+      <div className="w-full max-w-[640px] mx-auto flex flex-col flex-1 min-h-0">
+        {/* Header — back · logo · close */}
+        <div className="flex items-center justify-between h-14 px-3 shrink-0">
           <button
-            onClick={openDraft}
-            className="w-full rounded-xl bg-white/[0.04] border border-white/[0.08] px-4 py-3 mb-4 flex items-center justify-between hover:bg-white/[0.06] hover:border-white/[0.15] transition"
+            onClick={onClose}
+            className="p-2 rounded-full hover:bg-white/5 transition-colors"
+            aria-label="Back"
           >
-            <span className="flex items-center gap-2 min-w-0">
-              <RefreshCw className="h-4 w-4 shrink-0" style={{ color: 'hsl(var(--primary))' }} />
-              <span className="text-sm text-white/85 truncate">
-                Pick up where you left off
-                <span className="text-white/45"> · {relativeTime(latestDraft.updatedAt)}</span>
-              </span>
-            </span>
-            <span className="text-xs text-white/70 shrink-0 ml-3 flex items-center gap-1">
-              Continue <ChevronRight className="h-3.5 w-3.5" />
-            </span>
+            <ArrowLeft className="h-5 w-5" />
           </button>
+          <BrandMark className="h-7 w-[120px]" />
+          <button
+            onClick={onClose}
+            className="p-2 rounded-full hover:bg-white/5 transition-colors"
+            aria-label="Close"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Page hero */}
+        <div className="px-5 pt-4 pb-6 text-center shrink-0">
+          <h1 className="text-4xl font-bold tracking-tight leading-tight">
+            <span className="font-medium text-white">what will you </span>
+            <span
+              className="font-extrabold"
+              style={{
+                backgroundImage: BRAND_GRADIENT,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                color: 'transparent',
+              }}
+            >
+              CREATE.
+            </span>
+          </h1>
+          <p className="text-sm text-white/55 mt-1.5">Pick a format to begin</p>
+        </div>
+
+        {/* Side-by-side banners — pickup + today's prompt */}
+        {(showPickup || showPrompt) && (
+          <div className="grid grid-cols-2 gap-3 px-5 mb-4 shrink-0">
+            {showPickup && (
+              <button
+                onClick={openDraft}
+                className={cn(
+                  'rounded-xl bg-white/[0.04] border border-white/[0.08] px-3 py-2.5 text-left',
+                  'hover:bg-white/[0.06] hover:border-white/[0.15] transition flex flex-col gap-1',
+                  onlyOne && 'col-span-2'
+                )}
+              >
+                <div className="flex items-center justify-between">
+                  <RefreshCw className="h-3.5 w-3.5 shrink-0" style={{ color: 'hsl(var(--primary))' }} />
+                  <ChevronRight className="h-3.5 w-3.5 text-white/45" />
+                </div>
+                <div className="text-xs font-medium text-white/85 truncate">
+                  Continue
+                </div>
+                <div className="text-[11px] text-white/45 truncate">
+                  {relativeTime(latestDraft!.updatedAt)}
+                </div>
+              </button>
+            )}
+
+            {showPrompt && (
+              <button
+                onClick={openPromptComposer}
+                className={cn(
+                  'rounded-xl bg-white/[0.03] border border-white/[0.08] px-3 py-2.5 text-left',
+                  'hover:bg-white/[0.05] hover:border-white/[0.15] transition flex flex-col gap-1',
+                  onlyOne && 'col-span-2'
+                )}
+                aria-label="Use today's prompt"
+              >
+                <div className="flex items-center gap-1.5">
+                  <Sparkles className="h-3 w-3" style={{ color: 'hsl(var(--primary))' }} />
+                  <span className="text-[10px] uppercase tracking-wider text-white/45">
+                    Today's prompt
+                  </span>
+                </div>
+                <p className="text-xs text-white/85 leading-snug line-clamp-2">
+                  {todayPrompt}
+                </p>
+              </button>
+            )}
+          </div>
         )}
 
-        {/* Today's prompt */}
-        <button
-          onClick={openPromptComposer}
-          className="w-full text-left rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:border-white/[0.15] hover:bg-white/[0.05] p-4 mb-5 transition flex items-start gap-3"
-          aria-label="Use today's prompt"
-        >
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1.5">
-              <Sparkles className="h-3.5 w-3.5" style={{ color: 'hsl(var(--primary))' }} />
-              <span className="text-[11px] uppercase tracking-wider text-white/40">
-                Today's prompt
-              </span>
-            </div>
-            <p className="mt-1.5 text-sm text-white/85 leading-snug">{todayPrompt}</p>
-          </div>
-          <ChevronRight className="h-4 w-4 text-white/40 mt-1 shrink-0" />
-        </button>
-
-        {/* Vertical creator rows */}
-        <div className="flex flex-col gap-3">
+        {/* Creator rows — flex-1 to fill remaining vertical space */}
+        <div className="flex-1 min-h-0 flex flex-col gap-2 px-5">
           {contentTypes.map((type) => (
             <CreatorRow
               key={type.id}
@@ -310,7 +325,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
         </div>
 
         {/* Drafts / Scheduled — subtle ghost links */}
-        <div className="flex justify-center gap-6 mt-6 text-sm text-white/55">
+        <div className="flex justify-center gap-6 mt-4 mb-2 text-sm text-white/55 shrink-0">
           <button
             onClick={() => { setDrawerTab('drafts'); setDrawerOpen(true); }}
             className="hover:text-white/85 transition"
