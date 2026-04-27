@@ -274,7 +274,7 @@ export default function Notifications() {
 
         {/* In-page brand title */}
         <div className="px-4 pt-2 pb-2">
-          <BrandScreenTitle setup="your" emphasis="INBOX" size="screen" />
+          <BrandScreenTitle emphasis="NOTIFICATIONS" size="screen" />
         </div>
 
         {/* Content */}
