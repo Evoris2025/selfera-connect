@@ -144,7 +144,8 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
   const draftsByKind = useMemo(() => {
     const map: Partial<Record<ContentType, number>> = {};
     for (const d of drafts) {
-      const k = d.kind as ContentType;
+      // StudioDraft.kind uses 'photo' for the image studio.
+      const k: ContentType = d.kind === 'photo' ? 'image' : (d.kind as ContentType);
       map[k] = (map[k] ?? 0) + 1;
     }
     return map;
@@ -160,7 +161,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
 
   const openDraft = () => {
     if (!latestDraft) return;
-    const slug = latestDraft.kind === 'image' ? 'photo' : latestDraft.kind;
+    const slug = latestDraft.kind === 'photo' ? 'photo' : latestDraft.kind;
     navigate(`/studio/${slug}?draftId=${latestDraft.id}`);
   };
 
