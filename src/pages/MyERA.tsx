@@ -497,220 +497,218 @@ export default function MyERA() {
             <AnimatePresence mode="wait">
               {/* Not started verification */}
               {!isVerified && !hasVerificationRequest && !showIntentSelection && (
-                <motion.div
+                <BrandSurface
+                  as={motion.div as any}
                   key="verification-cta"
-                  className="relative overflow-hidden bg-card/40 backdrop-blur-lg border border-white/[0.06] min-h-[180px] flex flex-col p-5"
+                  className="relative overflow-hidden min-h-[180px] flex flex-col p-5"
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -10 }}
                   transition={{ ...springGentle, delay: 0.19 }}
                 >
-                  <div className="relative flex flex-col flex-1">
-                    {/* Header with icon and title */}
-                    <div className="flex items-start gap-3 mb-3">
-                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-emerald-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary/20">
-                        <Shield className="w-4 h-4 text-white" />
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-semibold text-foreground leading-tight">
-                          Become ERA Verified
-                        </h3>
-                        <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                          Build trust and connect with the right community.
-                        </p>
-                      </div>
+                  <div className="flex items-start gap-3 mb-3">
+                    <div className="w-9 h-9 rounded-full border border-white/[0.12] flex items-center justify-center flex-shrink-0">
+                      <BrandIcon icon={Shield} size={16} />
                     </div>
-                    
-                    {/* Progress Steps - centered */}
-                    <div className="flex items-center justify-center gap-2 my-auto py-2">
-                      {verificationSteps.map((step, idx) => (
-                        <div key={step.id} className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-full flex items-center justify-center bg-muted/10 border border-white/[0.08] text-muted-foreground">
-                            <step.icon className="w-3 h-3" />
-                          </div>
-                          {idx < verificationSteps.length - 1 && (
-                            <div className="w-6 h-px bg-white/10" />
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                    
-                    {/* CTA Button */}
-                    <div className="mt-auto pt-2">
-                      <Button
-                        size="sm"
-                        className="rounded-full h-9 w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
-                        onClick={() => setShowVerificationFlow(true)}
-                      >
-                        Start Verification
-                        <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
-                      </Button>
+                    <div>
+                      <h3 className="text-[15px] font-medium text-white leading-tight">
+                        Become ERA Verified
+                      </h3>
+                      <p className="text-[13px] text-white/55 mt-1 leading-relaxed">
+                        Build trust and connect with the right community.
+                      </p>
                     </div>
                   </div>
-                </motion.div>
+
+                  <div className="flex items-center justify-center gap-2 my-auto py-2">
+                    {verificationSteps.map((step, idx) => (
+                      <div key={step.id} className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full flex items-center justify-center border border-white/[0.08]">
+                          <step.icon className="w-3 h-3 text-white/45" />
+                        </div>
+                        {idx < verificationSteps.length - 1 && (
+                          <div className="w-6 h-px bg-white/10" />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-auto pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowVerificationFlow(true)}
+                      className="w-full h-9 rounded-full border bg-transparent text-[12px] uppercase tracking-[0.1em] inline-flex items-center justify-center gap-1.5"
+                      style={{ borderColor: themePrimary, color: themePrimary }}
+                    >
+                      Start Verification
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </BrandSurface>
               )}
 
               {/* Verification in progress */}
               {!isVerified && verificationInProgress && (
-                <motion.div
+                <BrandSurface
+                  as={motion.div as any}
                   key="verification-progress"
-                  className="relative overflow-hidden bg-gradient-to-br from-amber-500/20 via-orange-500/10 to-card/40 backdrop-blur-lg border border-amber-500/20 min-h-[180px] flex flex-col"
+                  className="relative overflow-hidden min-h-[180px] flex flex-col p-5"
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -10 }}
                   transition={{ ...springGentle, delay: 0.19 }}
                 >
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-amber-500/20 to-transparent rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-                  
-                  <div className="relative p-5 flex flex-col flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <motion.div 
-                        className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center flex-shrink-0"
-                        animate={{ scale: [1, 1.05, 1] }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                      >
-                        <Clock className="w-5 h-5 text-white" />
-                      </motion.div>
-                      <div>
-                        <h3 className="text-sm font-semibold text-foreground">
-                          In Progress
-                        </h3>
-                        <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30 text-[9px]">
-                          <Clock className="w-2 h-2 mr-0.5" />
-                          Pending
-                        </Badge>
-                      </div>
+                  <span
+                    aria-hidden
+                    className="absolute left-0 top-0 bottom-0 w-[2px]"
+                    style={{ backgroundColor: themePrimary }}
+                  />
+                  <div className="flex items-center gap-3 mb-2">
+                    <motion.div
+                      className="w-10 h-10 rounded-full border border-white/[0.12] flex items-center justify-center flex-shrink-0"
+                      animate={{ scale: [1, 1.05, 1] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                      <BrandIcon icon={Clock} size={18} />
+                    </motion.div>
+                    <div>
+                      <h3 className="text-[15px] font-medium text-white">In Progress</h3>
+                      <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-white/55 mt-0.5">
+                        Pending review
+                      </p>
                     </div>
-                    
-                    <p className="text-xs text-muted-foreground mb-3">
-                      {myRequest?.account_type_requested} verification under review.
-                    </p>
-                    
-                    {/* Animated Progress Steps */}
-                    <div className="flex items-center gap-1.5 mb-2">
-                      {verificationSteps.map((step, idx) => {
-                        const isCompleted = idx < currentVerificationStep;
-                        const isCurrent = idx === currentVerificationStep;
-                        
-                        return (
-                          <div key={step.id} className="flex items-center gap-1.5">
-                            <motion.div 
-                              className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
-                                isCompleted 
-                                  ? 'bg-emerald-500 text-white' 
-                                  : isCurrent 
-                                    ? 'bg-amber-500 text-white' 
-                                    : 'bg-muted/20 text-muted-foreground'
-                              }`}
-                              animate={{ 
-                                scale: isCurrent ? [1, 1.1, 1] : 1
-                              }}
-                              transition={{ 
-                                duration: isCurrent ? 1.5 : 0.3, 
-                                repeat: isCurrent ? Infinity : 0
-                              }}
-                            >
-                              {isCompleted ? (
-                                <Check className="w-3 h-3" />
-                              ) : (
-                                <step.icon className="w-3 h-3" />
-                              )}
-                            </motion.div>
-                            {idx < verificationSteps.length - 1 && (
-                              <div className={`w-6 h-0.5 rounded-full ${isCompleted ? 'bg-emerald-500' : 'bg-muted/30'}`} />
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                    
-                    <p className="text-[10px] text-muted-foreground mt-auto">
-                      Submitted {myRequest?.created_at ? format(new Date(myRequest.created_at), 'MMM d') : '—'}
-                    </p>
                   </div>
-                </motion.div>
+
+                  <p className="text-[13px] text-white/85 leading-relaxed mb-3">
+                    {myRequest?.account_type_requested} verification under review.
+                  </p>
+
+                  <div className="flex items-center gap-1.5 mb-2">
+                    {verificationSteps.map((step, idx) => {
+                      const isCompleted = idx < currentVerificationStep;
+                      const isCurrent = idx === currentVerificationStep;
+                      return (
+                        <div key={step.id} className="flex items-center gap-1.5">
+                          <motion.div
+                            className="w-6 h-6 rounded-full flex items-center justify-center border border-white/[0.12]"
+                            style={
+                              isCompleted || isCurrent
+                                ? { borderColor: themePrimary }
+                                : undefined
+                            }
+                            animate={{ scale: isCurrent ? [1, 1.1, 1] : 1 }}
+                            transition={{
+                              duration: isCurrent ? 1.5 : 0.3,
+                              repeat: isCurrent ? Infinity : 0,
+                            }}
+                          >
+                            {isCompleted ? (
+                              <Check className="w-3 h-3" style={{ color: themePrimary }} />
+                            ) : (
+                              <step.icon
+                                className="w-3 h-3"
+                                style={isCurrent ? { color: themePrimary } : { color: 'rgba(255,255,255,0.45)' }}
+                              />
+                            )}
+                          </motion.div>
+                          {idx < verificationSteps.length - 1 && (
+                            <div
+                              className="w-6 h-px"
+                              style={{
+                                backgroundColor: isCompleted ? themePrimary : 'rgba(255,255,255,0.10)',
+                              }}
+                            />
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-white/45 mt-auto">
+                    Submitted {myRequest?.created_at ? format(new Date(myRequest.created_at), 'MMM d') : '—'}
+                  </p>
+                </BrandSurface>
               )}
 
               {/* Verification rejected */}
               {!isVerified && verificationRejected && (
-                <motion.div
+                <BrandSurface
+                  as={motion.div as any}
                   key="verification-rejected"
-                  className="relative overflow-hidden bg-gradient-to-br from-rose-500/20 via-red-500/10 to-card/40 backdrop-blur-lg border border-rose-500/20 min-h-[180px] flex flex-col"
+                  className="relative overflow-hidden min-h-[180px] flex flex-col p-5"
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -10 }}
                   transition={{ ...springGentle, delay: 0.19 }}
                 >
-                  <div className="relative p-5 flex flex-col flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="w-10 h-10 bg-gradient-to-br from-rose-500 to-red-500 flex items-center justify-center">
-                        <AlertCircle className="w-5 h-5 text-white" />
-                      </div>
-                      <h3 className="text-sm font-semibold text-foreground">
-                        Not Approved
-                      </h3>
+                  <span aria-hidden className="absolute left-0 top-0 bottom-0 w-[2px] bg-white/40" />
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-10 h-10 rounded-full border border-white/[0.12] flex items-center justify-center">
+                      <BrandIcon icon={AlertCircle} size={18} />
                     </div>
-                    <p className="text-xs text-muted-foreground mb-3 flex-1">
-                      {myRequest?.admin_notes || 'Your request was not approved.'}
-                    </p>
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      className="rounded-full h-8 w-full"
-                      onClick={() => navigate('/settings?view=verification')}
-                    >
-                      Try Again
-                    </Button>
+                    <h3 className="text-[15px] font-medium text-white">Not Approved</h3>
                   </div>
-                </motion.div>
+                  <p className="text-[13px] text-white/85 leading-relaxed mb-3 flex-1">
+                    {myRequest?.admin_notes || 'Your request was not approved.'}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => navigate('/settings?view=verification')}
+                    className="w-full h-9 rounded-full border bg-transparent text-[12px] uppercase tracking-[0.1em]"
+                    style={{ borderColor: themePrimary, color: themePrimary }}
+                  >
+                    Try Again
+                  </button>
+                </BrandSurface>
               )}
 
               {/* Verified Status Card */}
               {isVerified && (
-                <motion.div
+                <BrandSurface
+                  as={motion.div as any}
                   key="verified-status"
-                  className="relative overflow-hidden bg-gradient-to-br from-emerald-500/20 via-green-500/10 to-card/40 backdrop-blur-lg border border-emerald-500/20 min-h-[180px] flex flex-col"
+                  className="relative overflow-hidden min-h-[180px] flex flex-col p-5"
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -10 }}
                   transition={{ ...springGentle, delay: 0.19 }}
                 >
-                  <div className="relative p-5 flex flex-col flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <motion.div 
-                        className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center"
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                      >
-                        <UserCheck className="w-5 h-5 text-white" />
-                      </motion.div>
-                      <div>
-                        <h3 className="text-sm font-semibold text-foreground">
-                          ERA Verified
-                        </h3>
-                        <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-[9px]">
-                          <Check className="w-2 h-2 mr-0.5" />
-                          Active
-                        </Badge>
-                      </div>
+                  <span
+                    aria-hidden
+                    className="absolute left-0 top-0 bottom-0 w-[2px]"
+                    style={{ backgroundColor: themePrimary }}
+                  />
+                  <div className="flex items-center gap-3 mb-2">
+                    <motion.div
+                      className="w-10 h-10 rounded-full border border-white/[0.12] flex items-center justify-center"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                    >
+                      <BrandIcon icon={UserCheck} size={18} />
+                    </motion.div>
+                    <div>
+                      <h3 className="text-[15px] font-medium text-white">ERA Verified</h3>
+                      <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-white/55 mt-0.5">
+                        Active
+                      </p>
                     </div>
-                    <ul className="text-xs text-muted-foreground space-y-1.5 mt-2">
-                      <li className="flex items-start gap-1.5">
-                        <Check className="w-3 h-3 text-emerald-400 mt-0.5 flex-shrink-0" />
-                        <span>Verified badge on profile & posts</span>
-                      </li>
-                      <li className="flex items-start gap-1.5">
-                        <Check className="w-3 h-3 text-emerald-400 mt-0.5 flex-shrink-0" />
-                        <span>Increased trust with the community</span>
-                      </li>
-                      <li className="flex items-start gap-1.5">
-                        <Check className="w-3 h-3 text-emerald-400 mt-0.5 flex-shrink-0" />
-                        <span>Priority in directory listings</span>
-                      </li>
-                    </ul>
                   </div>
-                </motion.div>
+                  <ul className="text-[13px] text-white/85 space-y-1.5 mt-2 leading-relaxed">
+                    <li className="flex items-start gap-1.5">
+                      <BrandIcon icon={Check} size={12} className="mt-0.5" />
+                      <span>Verified badge on profile &amp; posts</span>
+                    </li>
+                    <li className="flex items-start gap-1.5">
+                      <BrandIcon icon={Check} size={12} className="mt-0.5" />
+                      <span>Increased trust with the community</span>
+                    </li>
+                    <li className="flex items-start gap-1.5">
+                      <BrandIcon icon={Check} size={12} className="mt-0.5" />
+                      <span>Priority in directory listings</span>
+                    </li>
+                  </ul>
+                </BrandSurface>
               )}
             </AnimatePresence>
           </div>
