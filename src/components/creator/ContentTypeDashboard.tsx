@@ -213,87 +213,103 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
     navigate(`/studio/post?prompt=${encodeURIComponent(todayPrompt)}`);
   };
 
+  const showPickup = !!latestDraft;
+  const showPrompt = !!todayPrompt;
+  const onlyOne = showPickup !== showPrompt; // exactly one renders → span full width
+
   return (
-    <div className="flex flex-col min-h-dvh bg-background pb-[calc(env(safe-area-inset-bottom)+72px)]">
-      {/* Header — back · logo · close */}
-      <div className="flex items-center justify-between h-14 px-3 shrink-0">
-        <button
-          onClick={onClose}
-          className="p-2 rounded-full hover:bg-white/5 transition-colors"
-          aria-label="Back"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </button>
-        <BrandMark className="h-7 w-[120px]" />
-        <button
-          onClick={onClose}
-          className="p-2 rounded-full hover:bg-white/5 transition-colors"
-          aria-label="Close"
-        >
-          <X className="h-5 w-5" />
-        </button>
-      </div>
-
-      {/* Page hero (moved out of header) */}
-      <div className="px-5 pt-6 pb-10 text-center">
-        <h1 className="text-4xl font-bold tracking-tight leading-tight">
-          <span className="font-medium text-white">what will you </span>
-          <span
-            className="font-extrabold"
-            style={{
-              backgroundImage: BRAND_GRADIENT,
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              color: 'transparent',
-            }}
-          >
-            CREATE.
-          </span>
-        </h1>
-        <p className="text-base text-white/55 mt-2">Pick a format to begin</p>
-      </div>
-
-      <div className="px-5">
-        {/* Continue-where-you-left-off banner — only when a draft exists */}
-        {latestDraft && (
+    <div className="h-dvh flex flex-col bg-background pb-[calc(env(safe-area-inset-bottom)+72px)] overflow-hidden">
+      <div className="w-full max-w-[640px] mx-auto flex flex-col flex-1 min-h-0">
+        {/* Header — back · logo · close */}
+        <div className="flex items-center justify-between h-14 px-3 shrink-0">
           <button
-            onClick={openDraft}
-            className="w-full rounded-xl bg-white/[0.04] border border-white/[0.08] px-4 py-3 mb-4 flex items-center justify-between hover:bg-white/[0.06] hover:border-white/[0.15] transition"
+            onClick={onClose}
+            className="p-2 rounded-full hover:bg-white/5 transition-colors"
+            aria-label="Back"
           >
-            <span className="flex items-center gap-2 min-w-0">
-              <RefreshCw className="h-4 w-4 shrink-0" style={{ color: 'hsl(var(--primary))' }} />
-              <span className="text-sm text-white/85 truncate">
-                Pick up where you left off
-                <span className="text-white/45"> · {relativeTime(latestDraft.updatedAt)}</span>
-              </span>
-            </span>
-            <span className="text-xs text-white/70 shrink-0 ml-3 flex items-center gap-1">
-              Continue <ChevronRight className="h-3.5 w-3.5" />
-            </span>
+            <ArrowLeft className="h-5 w-5" />
           </button>
+          <BrandMark className="h-7 w-[120px]" />
+          <button
+            onClick={onClose}
+            className="p-2 rounded-full hover:bg-white/5 transition-colors"
+            aria-label="Close"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Page hero */}
+        <div className="px-5 pt-4 pb-6 text-center shrink-0">
+          <h1 className="text-4xl font-bold tracking-tight leading-tight">
+            <span className="font-medium text-white">what will you </span>
+            <span
+              className="font-extrabold"
+              style={{
+                backgroundImage: BRAND_GRADIENT,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                color: 'transparent',
+              }}
+            >
+              CREATE.
+            </span>
+          </h1>
+          <p className="text-sm text-white/55 mt-1.5">Pick a format to begin</p>
+        </div>
+
+        {/* Side-by-side banners — pickup + today's prompt */}
+        {(showPickup || showPrompt) && (
+          <div className="grid grid-cols-2 gap-3 px-5 mb-4 shrink-0">
+            {showPickup && (
+              <button
+                onClick={openDraft}
+                className={cn(
+                  'rounded-xl bg-white/[0.04] border border-white/[0.08] px-3 py-2.5 text-left',
+                  'hover:bg-white/[0.06] hover:border-white/[0.15] transition flex flex-col gap-1',
+                  onlyOne && 'col-span-2'
+                )}
+              >
+                <div className="flex items-center justify-between">
+                  <RefreshCw className="h-3.5 w-3.5 shrink-0" style={{ color: 'hsl(var(--primary))' }} />
+                  <ChevronRight className="h-3.5 w-3.5 text-white/45" />
+                </div>
+                <div className="text-xs font-medium text-white/85 truncate">
+                  Continue
+                </div>
+                <div className="text-[11px] text-white/45 truncate">
+                  {relativeTime(latestDraft!.updatedAt)}
+                </div>
+              </button>
+            )}
+
+            {showPrompt && (
+              <button
+                onClick={openPromptComposer}
+                className={cn(
+                  'rounded-xl bg-white/[0.03] border border-white/[0.08] px-3 py-2.5 text-left',
+                  'hover:bg-white/[0.05] hover:border-white/[0.15] transition flex flex-col gap-1',
+                  onlyOne && 'col-span-2'
+                )}
+                aria-label="Use today's prompt"
+              >
+                <div className="flex items-center gap-1.5">
+                  <Sparkles className="h-3 w-3" style={{ color: 'hsl(var(--primary))' }} />
+                  <span className="text-[10px] uppercase tracking-wider text-white/45">
+                    Today's prompt
+                  </span>
+                </div>
+                <p className="text-xs text-white/85 leading-snug line-clamp-2">
+                  {todayPrompt}
+                </p>
+              </button>
+            )}
+          </div>
         )}
 
-        {/* Today's prompt */}
-        <button
-          onClick={openPromptComposer}
-          className="w-full text-left rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:border-white/[0.15] hover:bg-white/[0.05] p-4 mb-5 transition flex items-start gap-3"
-          aria-label="Use today's prompt"
-        >
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1.5">
-              <Sparkles className="h-3.5 w-3.5" style={{ color: 'hsl(var(--primary))' }} />
-              <span className="text-[11px] uppercase tracking-wider text-white/40">
-                Today's prompt
-              </span>
-            </div>
-            <p className="mt-1.5 text-sm text-white/85 leading-snug">{todayPrompt}</p>
-          </div>
-          <ChevronRight className="h-4 w-4 text-white/40 mt-1 shrink-0" />
-        </button>
-
-        {/* Vertical creator rows */}
-        <div className="flex flex-col gap-3">
+        {/* Creator rows — flex-1 to fill remaining vertical space */}
+        <div className="flex-1 min-h-0 flex flex-col gap-2 px-5">
           {contentTypes.map((type) => (
             <CreatorRow
               key={type.id}
@@ -309,7 +325,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
         </div>
 
         {/* Drafts / Scheduled — subtle ghost links */}
-        <div className="flex justify-center gap-6 mt-6 text-sm text-white/55">
+        <div className="flex justify-center gap-6 mt-4 mb-2 text-sm text-white/55 shrink-0">
           <button
             onClick={() => { setDrawerTab('drafts'); setDrawerOpen(true); }}
             className="hover:text-white/85 transition"
