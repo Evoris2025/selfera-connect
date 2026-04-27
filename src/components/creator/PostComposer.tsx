@@ -1288,41 +1288,40 @@ function Chip({
 }
 
 /**
- * Category tone palette for sheet tiles. Mapped to SelfERA category buckets:
- * media → teal, social → violet, content → pink/magenta.
+ * Category tone palette for sheet tiles. Mapped to real SelfERA brand tokens
+ * defined in src/index.css:
+ *   media  → --informative  (cool informative blue/teal)
+ *   social → --gradient-end (brand violet)
+ *   content → --gradient-mid (brand magenta/rose)
+ *
+ * Tiles use an outline-only treatment: shared dark surface, brand-coloured
+ * border + matching icon. No filled background tints.
  */
 type TileTone = 'teal' | 'violet' | 'pink';
 
-const TILE_TONE: Record<
-  TileTone,
-  { base: string; hover: string; icon: string; active: string; activeIcon: string }
-> = {
-  teal: {
-    base: 'bg-teal-500/[0.08] border-teal-500/20',
-    hover: 'hover:bg-teal-500/[0.14] hover:border-teal-500/30',
-    icon: 'text-teal-400',
-    active: 'bg-teal-500/[0.18] border-teal-500/50',
-    activeIcon: 'text-teal-300',
-  },
-  violet: {
-    base: 'bg-violet-500/[0.08] border-violet-500/20',
-    hover: 'hover:bg-violet-500/[0.14] hover:border-violet-500/30',
-    icon: 'text-violet-400',
-    active: 'bg-violet-500/[0.18] border-violet-500/50',
-    activeIcon: 'text-violet-300',
-  },
-  pink: {
-    base: 'bg-pink-500/[0.08] border-pink-500/20',
-    hover: 'hover:bg-pink-500/[0.14] hover:border-pink-500/30',
-    icon: 'text-pink-400',
-    active: 'bg-pink-500/[0.18] border-pink-500/50',
-    activeIcon: 'text-pink-300',
-  },
+const TILE_TOKEN: Record<TileTone, string> = {
+  teal: '--informative',
+  violet: '--gradient-end',
+  pink: '--gradient-mid',
 };
+
+function toneStyle(
+  tone: TileTone,
+  active?: boolean
+): { border: React.CSSProperties; icon: React.CSSProperties; box: React.CSSProperties } {
+  const v = TILE_TOKEN[tone];
+  return {
+    border: { borderColor: `hsl(var(${v}) / ${active ? 0.85 : 0.35})` },
+    icon: { color: `hsl(var(${v}))` },
+    box: active
+      ? { boxShadow: `inset 0 0 12px 0 hsl(var(${v}) / 0.15)` }
+      : {},
+  };
+}
 
 /**
  * Icon-tile button used inside the "Add to your post" bottom sheet.
- * Compact 80px tile with category-tinted background + icon.
+ * Compact 80px tile, outline-only, brand-tinted border + icon.
  */
 function Tile({
   icon,
@@ -1337,27 +1336,22 @@ function Tile({
   active?: boolean;
   tone?: TileTone;
 }) {
-  const t = TILE_TONE[tone];
+  const s = toneStyle(tone, active);
   return (
     <button
       type="button"
       onClick={onClick}
       title={label}
       aria-label={label}
+      style={{ ...s.border, ...s.box }}
       className={cn(
-        'group flex flex-col items-center justify-center gap-1.5 h-20 rounded-xl p-2 transition cursor-pointer border',
-        active ? t.active : cn(t.base, t.hover)
+        'group flex flex-col items-center justify-center gap-1.5 h-20 rounded-xl p-2 transition cursor-pointer border bg-white/[0.03] hover:bg-white/[0.05]'
       )}
     >
-      <span
-        className={cn(
-          'flex items-center justify-center transition-colors',
-          active ? t.activeIcon : t.icon
-        )}
-      >
+      <span className="flex items-center justify-center" style={s.icon}>
         {icon}
       </span>
-      <span className="text-[11px] text-white/75 leading-tight text-center line-clamp-1">
+      <span className="text-xs text-white/75 leading-tight text-center line-clamp-1">
         {label}
       </span>
     </button>
@@ -1380,12 +1374,12 @@ function TileSlot({
   active?: boolean;
   tone?: TileTone;
 }) {
-  const t = TILE_TONE[tone];
+  const s = toneStyle(tone, active);
   return (
     <div
+      style={{ ...s.border, ...s.box }}
       className={cn(
-        'relative h-20 rounded-xl border transition',
-        active ? t.active : cn(t.base, t.hover),
+        'relative h-20 rounded-xl border transition bg-white/[0.03] hover:bg-white/[0.05]',
         '[&>button]:!w-full [&>button]:!h-full',
         '[&>button]:!flex [&>button]:!flex-col [&>button]:!items-center [&>button]:!justify-center [&>button]:!gap-1.5',
         '[&>button]:!p-2 [&>button]:!rounded-xl',
@@ -1397,15 +1391,10 @@ function TileSlot({
       )}
     >
       <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-1.5 z-10 p-2">
-        <span
-          className={cn(
-            'flex items-center justify-center',
-            active ? t.activeIcon : t.icon
-          )}
-        >
+        <span className="flex items-center justify-center" style={s.icon}>
           {icon}
         </span>
-        <span className="text-[11px] text-white/75 leading-tight text-center line-clamp-1">
+        <span className="text-xs text-white/75 leading-tight text-center line-clamp-1">
           {label}
         </span>
       </div>
