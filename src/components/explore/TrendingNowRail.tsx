@@ -1,7 +1,9 @@
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Flame, Eye, Heart, Play } from 'lucide-react';
+import { Flame, Eye, Heart, Play, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { BrandIcon } from '@/components/brand';
+import { cn } from '@/lib/utils';
 import type { ExploreTab } from './ExploreFilters';
 import {
   trendingExpressions,
