@@ -78,7 +78,7 @@ function ExpressionTile({ expression, index }: { expression: ExpressionItem; ind
           </AvatarFallback>
         </Avatar>
         <span className="text-white text-[11px] font-medium truncate">@{expression.user.handle}</span>
-        {expression.user.isVerified && <VerifiedBadge size="sm" />}
+        <ExploreVerifiedTick tier={expression.user.tier} size="sm" />
       </div>
 
       {/* Bottom-right: play count */}

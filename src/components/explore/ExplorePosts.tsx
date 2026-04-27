@@ -66,7 +66,7 @@ function PostCard({ post, index }: { post: PostItem; index: number }) {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5">
               <span className="font-semibold text-sm text-white truncate">{post.user.name}</span>
-              {post.user.isVerified && <VerifiedBadge size="sm" />}
+              <ExploreVerifiedTick tier={post.user.tier} size="sm" />
             </div>
             <p className="text-[11px] text-white/45 uppercase tracking-[0.08em]">
               @{post.user.handle} · {post.createdAt}

@@ -112,7 +112,7 @@ function VideoTile({ video, index }: { video: VideoItem; index: number }) {
           </h3>
           <div className="flex items-center gap-1 mt-0.5">
             <span className="text-white/55 text-[11px] truncate">{video.creator.name}</span>
-            {video.creator.isVerified && <VerifiedBadge size="sm" />}
+            <ExploreVerifiedTick tier={video.creator.tier} size="sm" />
           </div>
           <p className="text-white/45 text-[11px] uppercase tracking-[0.08em] mt-0.5">
             {formatViews(video.views)} VIEWS · {video.ageLabel}
