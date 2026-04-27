@@ -481,8 +481,7 @@ export default function MyERA() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...springGentle, delay: 0.17 }}
         >
-          <h2 className="text-lg font-semibold text-foreground mb-4 tracking-tight">Your Account Info</h2>
-          
+          <div className="mb-3"><BrandSectionLabel>YOUR ACCOUNT</BrandSectionLabel></div>
           <div className="grid grid-cols-2 gap-4">
             {/* ERA Account Status Card - Left */}
             <EraAccountStatusCard
