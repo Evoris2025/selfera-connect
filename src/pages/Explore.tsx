@@ -119,7 +119,7 @@ export default function Explore() {
     <AppLayout brandMark>
       <div className="flex flex-col min-h-full">
         {/* Search + Filter Bar (single filter trigger lives here) */}
-        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-white/[0.08]">
+        <div className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-white/[0.08]">
           <div className="p-3 flex items-center gap-2">
             <BrandSurface className="relative flex-1 flex items-center h-11 px-4 rounded-full">
               <BrandIcon icon={SearchIcon} size={18} />
@@ -160,7 +160,7 @@ export default function Explore() {
         ) : (
           <>
             {/* Brand Underline Tab Bar */}
-            <div className="sticky top-[68px] z-10 bg-background/95 backdrop-blur px-3 border-b border-white/[0.08]">
+            <div className="sticky top-[68px] z-20 bg-background/95 backdrop-blur px-3 border-b border-white/[0.08]">
               <BrandUnderlineTabs
                 tabs={exploreTabs}
                 value={activeTab}
