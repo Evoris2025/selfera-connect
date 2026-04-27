@@ -167,62 +167,75 @@ export function DraftManager({ onSelectDraft, filterType, className }: DraftMana
           Drafts ({filteredDrafts.length})
         </Button>
       </SheetTrigger>
-      <SheetContent side="bottom" className="h-[70vh]">
-        <SheetHeader className="flex-row items-center justify-between pr-8">
-          <SheetTitle>Your Drafts</SheetTitle>
+      <BrandSheetContent maxHeight="70vh" className="flex flex-col">
+        <div className="flex items-start justify-between gap-3">
+          <BrandSheetTitle setup="your" emphasis="DRAFTS" srDescription="Saved drafts" />
           {filteredDrafts.length > 0 && (
             <Button
               variant="ghost"
               size="sm"
               onClick={clearAllDrafts}
-              className="text-destructive hover:text-destructive"
+              className="h-7 px-2 text-xs text-white/50 hover:text-destructive shrink-0 mt-2"
             >
-              Clear All
+              Clear all
             </Button>
           )}
-        </SheetHeader>
+        </div>
 
-        <div className="mt-4 space-y-2 overflow-y-auto max-h-[calc(70vh-100px)]">
+        <BrandSheetSectionLabel>Recent</BrandSheetSectionLabel>
+
+        <div className="flex-1 overflow-y-auto space-y-2 pb-2">
           <AnimatePresence>
-            {filteredDrafts.map((draft, index) => (
-              <motion.button
-                key={draft.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ delay: index * 0.05 }}
-                onClick={() => handleSelect(draft)}
-                className="w-full flex items-center gap-3 p-3 rounded-xl bg-secondary/50 hover:bg-secondary transition-colors text-left group"
-              >
-                {/* Type indicator */}
-                <div className={cn('w-10 h-10 rounded-lg flex items-center justify-center text-lg', typeColors[draft.contentType])}>
-                  {typeIcons[draft.contentType]}
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm truncate">
-                    {draft.title}
-                  </p>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
-                    <Clock className="h-3 w-3" />
-                    {formatDistanceToNow(draft.updatedAt, { addSuffix: true })}
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <button
-                  onClick={(e) => handleDelete(e, draft.id)}
-                  className="p-2 rounded-full opacity-0 group-hover:opacity-100 hover:bg-destructive/20 transition-all"
+            {filteredDrafts.map((draft, index) => {
+              const Icon = typeIconMap[draft.contentType];
+              return (
+                <motion.div
+                  key={draft.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ delay: index * 0.05 }}
                 >
-                  <Trash2 className="h-4 w-4 text-destructive" />
-                </button>
-                <ChevronRight className="h-4 w-4 text-muted-foreground" />
-              </motion.button>
-            ))}
+                  <BrandSheetItem
+                    icon={
+                      <Icon
+                        size={22}
+                        strokeWidth={1.6}
+                        stroke="url(#selfera-brand-gradient)"
+                        fill="none"
+                        aria-hidden
+                        style={{ filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.35))' }}
+                      />
+                    }
+                    title={draft.title}
+                    meta={
+                      <span className="inline-flex items-center gap-1">
+                        <Clock size={11} className="text-white/40" />
+                        {formatDistanceToNow(draft.updatedAt, { addSuffix: true })}
+                      </span>
+                    }
+                    right={
+                      <span className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={(e) => handleDelete(e, draft.id)}
+                          aria-label="Delete draft"
+                          className="p-1.5 rounded-full text-white/30 hover:text-destructive hover:bg-destructive/10 transition"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                        <ChevronRight size={16} className="text-white/40" />
+                      </span>
+                    }
+                    accentColor={ROW_ACCENT}
+                    onClick={() => handleSelect(draft)}
+                  />
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
         </div>
-      </SheetContent>
+      </BrandSheetContent>
     </Sheet>
   );
 }
