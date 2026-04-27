@@ -59,7 +59,7 @@ export default function Feed() {
   };
 
   return (
-    <AppLayout title="The Feed">
+    <AppLayout brandMark>
       <PullToRefresh 
         onRefresh={refresh} 
         className="flex flex-col bg-cinematic min-h-dvh"
