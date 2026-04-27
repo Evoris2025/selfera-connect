@@ -230,7 +230,10 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
   
 
   return (
-    <div className="h-dvh flex flex-col bg-background pb-[calc(env(safe-area-inset-bottom)+72px)] overflow-hidden">
+    <div
+      className="flex flex-col bg-background overflow-hidden w-full"
+      style={{ height: 'calc(100dvh - env(safe-area-inset-bottom) - 72px)' }}
+    >
       <div className="w-full max-w-[640px] mx-auto flex flex-col flex-1 min-h-0">
         {/* Header — back · logo · close */}
         <div className="flex items-center justify-between h-14 px-3 shrink-0">
