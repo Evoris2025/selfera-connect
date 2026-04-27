@@ -176,11 +176,11 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
   const navigate = useNavigate();
   const { drafts, scheduled } = useFeedData();
   const backgrounds = useCreatorRowBackgrounds();
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [drawerTab, setDrawerTab] = useState<'drafts' | 'scheduled'>('drafts');
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const draftCount = drafts.length;
   const scheduledCount = scheduled.length;
+  const hasWork = draftCount > 0 || scheduledCount > 0;
 
   // Most-recent draft of any kind for the "continue where you left off" banner
   const latestDraft = useMemo(
@@ -213,19 +213,35 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
     return backgrounds[key] ?? null;
   };
 
-  const openDraft = () => {
-    if (!latestDraft) return;
-    const slug = latestDraft.kind === 'photo' ? 'photo' : latestDraft.kind;
-    navigate(`/studio/${slug}?draftId=${latestDraft.id}`);
-  };
-
-  const openPromptComposer = () => {
-    navigate(`/studio/post?prompt=${encodeURIComponent(todayPrompt)}`);
-  };
-
-  const showPickup = !!latestDraft;
-  const showPrompt = !!todayPrompt;
-  
+  // Adaptive pill content — single source of truth.
+  const pill = useMemo(() => {
+    if (hasWork) {
+      // Primary: continue working
+      const parts: string[] = [];
+      if (draftCount > 0) parts.push(`${draftCount} draft${draftCount === 1 ? '' : 's'}`);
+      if (scheduledCount > 0) parts.push(`${scheduledCount} scheduled`);
+      const subtitle = latestDraft
+        ? `${parts.join(' · ')} · last edited ${relativeTimeShort(latestDraft.updatedAt)} ago`
+        : parts.join(' · ');
+      return {
+        label: 'Continue working',
+        subtitle,
+        Icon: FileText,
+        ariaLabel: `Continue working: ${parts.join(', ')}`,
+      };
+    }
+    if (todayPrompt) {
+      const truncated =
+        todayPrompt.length > 64 ? `${todayPrompt.slice(0, 64).trim()}…` : todayPrompt;
+      return {
+        label: "Try today's prompt",
+        subtitle: truncated,
+        Icon: Sparkles,
+        ariaLabel: "Try today's prompt",
+      };
+    }
+    return null;
+  }, [hasWork, draftCount, scheduledCount, latestDraft, todayPrompt]);
 
   return (
     <div
