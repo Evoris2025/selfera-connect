@@ -637,7 +637,9 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
       exit={{ opacity: 0, x: -20 }}
       className="flex flex-col h-full min-h-dvh bg-background"
     >
-      {/* Header */}
+      <CreatorScreenHeader type="photo" onBack={handleBack} onClose={handleClose} showAudience={false} />
+
+      {/* Step controls bar */}
       <div className="flex items-center justify-between p-4 border-b border-border">
         <div className="flex items-center gap-1">
           <button
