@@ -228,7 +228,11 @@ export function TrendingNowRail({ activeTab }: TrendingNowRailProps) {
       ) {
         loopCountRef.current += 1;
         const seed = getSeedForTab(activeTab);
-        setItems((prev) => [...prev, ...remapIds(seed, loopCountRef.current)]);
+        setState((prev) =>
+          prev.tab === activeTab
+            ? { tab: prev.tab, items: [...prev.items, ...remapIds(seed, loopCountRef.current)] }
+            : prev
+        );
       }
     };
 
