@@ -884,8 +884,8 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       {/* Spacer pushes the Post button into the dead space below. */}
       <div className="flex-1 min-h-0" />
 
-      {/* Post CTA — centered in the gap above the global app navbar */}
-      <div className="shrink-0 flex items-center justify-center px-4 py-6 mb-[72px] lg:mb-0">
+      {/* Post CTA — anchored near the global app navbar with a small breathing gap */}
+      <div className="shrink-0 mt-auto flex items-center justify-center px-4 pt-6 pb-4 mb-[72px] lg:mb-0">
         <Button
           onClick={handleSubmit}
           disabled={!canPost || isSubmitting}
