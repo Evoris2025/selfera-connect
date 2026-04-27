@@ -210,8 +210,8 @@ function NotificationItem({
             >
               {isFollowing ? 'Following' : 'Follow'}
             </Button>
-          ) : notification.thumbnailUrl ? (
-            <div className="w-11 h-11 rounded-md overflow-hidden shrink-0 border border-white/[0.08]">
+          ) : notification.thumbnailUrl && !notification.thumbnailUrl.endsWith('/placeholder.svg') ? (
+            <div className="w-11 h-11 rounded-md overflow-hidden shrink-0 border border-white/[0.08] bg-black">
               <img src={notification.thumbnailUrl} alt="" className="w-full h-full object-cover" />
             </div>
           ) : null}
