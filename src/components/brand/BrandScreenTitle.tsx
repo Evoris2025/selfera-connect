@@ -40,7 +40,16 @@ export function BrandScreenTitle({
           <span className="font-medium text-white">{setup} </span>
         )}
         <span className="font-extrabold text-white">{upper}</span>
-        <span className="text-gradient-brand">.</span>
+        {/* Period: enlarged + inline-block so the 3-stop gradient is visible across its width.
+            background-clip:text only paints over the glyph itself, so the period needs
+            enough width to actually show all three colour stops. */}
+        <span
+          className="text-gradient-brand font-extrabold inline-block leading-none align-baseline ml-[1px]"
+          style={{ fontSize: '1.25em' }}
+          aria-hidden="true"
+        >
+          .
+        </span>
       </h1>
       {subtitle && (
         <p className="text-white/55 text-[13px] mt-1 lowercase">{subtitle}</p>
