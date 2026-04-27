@@ -66,7 +66,7 @@ export function CreatorScreenHeader({
           </button>
           <h1 className="text-base font-bold tracking-tight">
             <span className="font-medium text-white">{framingWord} </span>
-            <span className="bg-gradient-to-r from-fuchsia-500 via-violet-500 to-teal-400 bg-clip-text text-transparent">
+            <span className="text-gradient-brand">
               {TITLES[type]}
             </span>
           </h1>

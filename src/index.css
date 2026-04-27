@@ -44,10 +44,10 @@
 
     --radius: 1.25rem;
 
-    /* SelfERA Brand Palette - Premium warmth */
-    --gradient-start: 12 76% 61%;
-    --gradient-mid: 340 65% 55%;
-    --gradient-end: 270 50% 60%;
+    /* SelfERA Brand Gradient — Blue (#3b82f6) → Purple (#a855f7) → Orange (#f97316) */
+    --gradient-start: 217 91% 60%;  /* #3b82f6 */
+    --gradient-mid: 271 91% 65%;    /* #a855f7 */
+    --gradient-end: 25 95% 53%;     /* #f97316 */
     
     /* Emotional tone colors */
     --support: 155 60% 45%;
@@ -114,9 +114,9 @@
     --primary-muted: 12 60% 50%;
     --accent: 270 50% 60%;
     --ring: 12 76% 61%;
-    --gradient-start: 12 76% 61%;
-    --gradient-mid: 340 65% 55%;
-    --gradient-end: 270 50% 60%;
+    --gradient-start: 217 91% 60%;  /* #3b82f6 */
+    --gradient-mid: 271 91% 65%;    /* #a855f7 */
+    --gradient-end: 25 95% 53%;     /* #f97316 */
     --ambient-primary: 12 76% 61%;
     --sidebar-primary: 12 76% 61%;
     --sidebar-ring: 12 76% 61%;
@@ -331,9 +331,10 @@
     );
   }
 
-  .gradient-brand-text {
-    background: linear-gradient(
-      135deg,
+  .gradient-brand-text,
+  .text-gradient-brand {
+    background-image: linear-gradient(
+      90deg,
       hsl(var(--gradient-start)) 0%,
       hsl(var(--gradient-mid)) 50%,
       hsl(var(--gradient-end)) 100%
@@ -341,6 +342,7 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    color: transparent;
   }
 
   /* Cinematic Ambient Backgrounds */
