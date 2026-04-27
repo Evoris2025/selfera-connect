@@ -166,7 +166,7 @@ function VideoCardSkeleton() {
 
 interface VideoSectionProps {
   title: string;
-  icon: React.ReactNode;
+  icon: LucideIcon;
   videos: typeof forYouVideos;
   isLoading?: boolean;
 }
@@ -178,12 +178,12 @@ function VideoSection({ title, icon, videos, isLoading }: VideoSectionProps) {
     <section className="space-y-3">
       <div className="flex items-center justify-between px-4">
         <div className="flex items-center gap-2">
-          {icon}
-          <h2 className="font-semibold text-foreground">{title}</h2>
+          <BrandIcon icon={icon} size={16} />
+          <BrandSectionLabel>{title}</BrandSectionLabel>
         </div>
-        <button className="flex items-center gap-1 text-sm text-primary hover:text-primary/80 transition-colors">
+        <button className="flex items-center gap-1 text-[11px] uppercase tracking-[0.1em] text-white/55 hover:text-white/80 transition-colors">
           See all
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-3.5 w-3.5" />
         </button>
       </div>
       <div className="grid grid-cols-2 gap-1 px-4">
