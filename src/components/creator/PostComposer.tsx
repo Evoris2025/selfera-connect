@@ -561,12 +561,14 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <div className="flex items-center gap-2">
-            <FileText className="h-4 w-4 text-foreground/60" />
-            <h2 className="text-sm font-semibold gradient-brand-text">
-              {state.scheduledDate ? 'Schedule Post' : 'Create Post'}
-            </h2>
-          </div>
+          <h1 className="text-base font-bold tracking-tight">
+            <span className="font-medium text-white">
+              {state.scheduledDate ? 'schedule ' : 'create '}
+            </span>
+            <span className="bg-gradient-to-r from-fuchsia-500 via-violet-500 to-teal-400 bg-clip-text text-transparent">
+              POST.
+            </span>
+          </h1>
           <button
             onClick={onBack}
             className="p-2 rounded-full hover:bg-white/5 transition-colors"
