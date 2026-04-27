@@ -62,17 +62,23 @@ export function ExpressionsRow() {
               className="flex-shrink-0 flex flex-col items-center gap-2"
             >
               <div className="relative">
-                <CinematicAvatar
-                  src={avatarUrl}
-                  alt={displayName}
-                  size="xl"
-                  ring="muted"
-                />
-                <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full gradient-brand flex items-center justify-center ring-3 ring-background shadow-glow">
-                  <Plus className="h-4 w-4 text-primary-foreground" />
+                <Avatar
+                  className="h-16 w-16"
+                  style={{ boxShadow: `0 0 0 2px ${themePrimary}` }}
+                >
+                  <AvatarImage src={avatarUrl} alt={displayName} />
+                  <AvatarFallback className="bg-white/[0.06] text-white">
+                    {(displayName ?? '?').charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+                <div
+                  className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full flex items-center justify-center border border-black"
+                  style={{ backgroundColor: themePrimary }}
+                >
+                  <Plus className="h-3 w-3 text-white" strokeWidth={2.5} />
                 </div>
               </div>
-              <span className="text-xs text-muted-foreground font-medium">Create Expression</span>
+              <span className="text-[11px] text-white/55 truncate max-w-[72px]">your story</span>
             </motion.button>
 
             {/* Expression Cards from FeedDataContext */}
@@ -87,14 +93,13 @@ export function ExpressionsRow() {
                 onClick={() => handleExpressionClick(index)}
                 className="flex-shrink-0 flex flex-col items-center gap-2"
               >
-                <CinematicAvatar
-                  src={expression.userAvatar}
-                  alt={expression.userName}
-                  fallback={expression.userName.charAt(0)}
-                  size="xl"
-                  ring={getRingType(expression)}
-                />
-                <span className="text-xs text-foreground/80 font-medium max-w-[72px] truncate">
+                <Avatar className="h-16 w-16 border border-white/[0.15]">
+                  <AvatarImage src={expression.userAvatar} alt={expression.userName} />
+                  <AvatarFallback className="bg-white/[0.06] text-white">
+                    {expression.userName.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="text-[11px] text-white/55 truncate max-w-[72px]">
                   {expression.userName}
                 </span>
               </motion.button>
@@ -108,11 +113,12 @@ export function ExpressionsRow() {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.5 }}
-          className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-primary/15 backdrop-blur-md border border-primary/25 flex items-center justify-center shadow-lg hover:bg-primary/20 hover:border-primary/30 transition-all duration-300"
+          className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/[0.12] flex items-center justify-center"
         >
-          <ChevronRight className="h-4 w-4 text-primary" />
+          <BrandIcon icon={ChevronRight} size={16} />
         </motion.button>
       </div>
+
 
       {/* Expression Viewer Modal */}
       <ExpressionViewer
