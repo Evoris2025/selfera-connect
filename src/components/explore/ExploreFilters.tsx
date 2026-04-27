@@ -114,7 +114,8 @@ export function ExploreFilters({
         />
 
         <Button
-          className="w-full rounded-full gradient-brand text-white mt-2"
+          variant="outline"
+          className="w-full rounded-full mt-2 bg-transparent border-white/15 text-white hover:bg-transparent hover:border-white/30 text-[12px] uppercase tracking-[0.1em] h-10"
           onClick={() => setIsOpen(false)}
         >
           Apply
