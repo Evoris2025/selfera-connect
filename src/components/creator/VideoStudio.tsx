@@ -13,6 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { TopicTagSelector } from './shared/TopicTagSelector';
 import { ContentWarningToggle } from './shared/ContentWarningToggle';
+import { CreatorScreenHeader } from './CreatorScreenHeader';
 import { StepPills, StepDots, StepConfig } from './shared/StepPills';
 import { 
   ChapterEditor, 
