@@ -63,6 +63,18 @@ function relativeTime(ts: number): string {
   return `${d}d ago`;
 }
 
+// Compact variant for stat-strip cells (e.g. "27m", "3h", "2d")
+function relativeTimeShort(ts: number): string {
+  const diff = Date.now() - ts;
+  const m = Math.round(diff / 60000);
+  if (m < 1) return 'now';
+  if (m < 60) return `${m}m`;
+  const h = Math.round(m / 60);
+  if (h < 24) return `${h}h`;
+  const d = Math.round(h / 24);
+  return `${d}d`;
+}
+
 function CreatorRow({
   icon: Icon,
   title,
