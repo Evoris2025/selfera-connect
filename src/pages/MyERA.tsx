@@ -41,16 +41,15 @@ import { useInteractionLifecycle } from '@/hooks/useInteractionLifecycle';
 import { InteractionList } from '@/components/interactions';
 import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { EraVerifiedTick } from '@/components/EraVerifiedTick';
 import { AccountTypeBadge, AccountType } from '@/components/AccountTypeBadge';
 import { AppLayout } from '@/components/AppLayout';
 import { VerificationFlow } from '@/components/verification';
-import { 
-  VerifiedDirectoryPicker, 
-  ClientView, 
-  CreatorView, 
-  PractitionerView, 
+import {
+  VerifiedDirectoryPicker,
+  ClientView,
+  CreatorView,
+  PractitionerView,
   OrganisationView,
 } from '@/components/myera';
 import { EraAccountStatusCard } from '@/components/billing';
@@ -63,6 +62,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  BrandScreenTitle,
+  BrandSectionLabel,
+  BrandIcon,
+  BrandSurface,
+  BrandUnderlineTabs,
+} from '@/components/brand';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 const springGentle = { type: "spring" as const, stiffness: 260, damping: 28 };
 
