@@ -220,10 +220,11 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
       </div>
 
       {/* Page hero (moved out of header) */}
-      <div className="px-5 pt-4 pb-6 text-center">
-        <h1 className="text-2xl font-bold tracking-tight">
+      <div className="px-5 pt-6 pb-10 text-center">
+        <h1 className="text-4xl font-bold tracking-tight leading-tight">
           <span className="font-medium text-white">what will you </span>
           <span
+            className="font-extrabold"
             style={{
               backgroundImage: BRAND_GRADIENT,
               WebkitBackgroundClip: 'text',
@@ -235,7 +236,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
             CREATE.
           </span>
         </h1>
-        <p className="text-sm text-white/50 mt-1">Pick a format to begin</p>
+        <p className="text-base text-white/55 mt-2">Pick a format to begin</p>
       </div>
 
       <div className="px-5">
