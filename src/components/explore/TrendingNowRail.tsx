@@ -142,7 +142,9 @@ function PostCard({ item, index }: { item: TrendingPost; index: number }) {
       onClick={() => handleTap('posts', item.id)}
       className="relative w-[240px] flex-shrink-0 text-left rounded-md border border-white/[0.08] p-3 hover:border-white/20 transition-colors"
     >
-      <span className="absolute top-2 right-2 z-10"><BrandIcon icon={Flame} className="w-3 h-3" /></span>
+      <span className="absolute top-2 right-2 z-10 flex items-center justify-center w-5 h-5 rounded-full bg-black/40 backdrop-blur-sm">
+        <BrandIcon icon={Flame} className="w-3 h-3" />
+      </span>
       <p className="text-white/85 text-[12px] leading-snug line-clamp-3 mb-2">
         {item.snippet}
       </p>
