@@ -59,8 +59,8 @@ interface Notification {
 
 const mockNotifications: Notification[] = [
   { id: '1', type: 'follow', users: [{ name: 'Dr. Sarah', handle: 'drsarah' }], action: 'started following you', time: '1h', read: false, showFollowButton: true, targetType: 'profile', targetId: 'drsarah' },
-  { id: '2', type: 'reaction', users: [{ name: 'Mind Matters', handle: 'mindmatters' }], action: 'liked your post', time: '5h', read: false, targetType: 'post', targetId: '124', thumbnailUrl: '/placeholder.svg' },
-  { id: '3', type: 'comment', users: [{ name: 'Jamie', handle: 'jamie_journey' }], action: 'commented on your post', preview: 'This is so helpful, thank you! 💙', time: '1d', read: true, targetType: 'post', targetId: '125', thumbnailUrl: '/placeholder.svg' },
+  { id: '2', type: 'reaction', users: [{ name: 'Mind Matters', handle: 'mindmatters' }], action: 'liked your post', time: '5h', read: false, targetType: 'post', targetId: '124' },
+  { id: '3', type: 'comment', users: [{ name: 'Jamie', handle: 'jamie_journey' }], action: 'commented on your post', preview: 'This is so helpful, thank you! 💙', time: '1d', read: true, targetType: 'post', targetId: '125' },
   { id: '4', type: 'mention', users: [{ name: 'Wellness Hub', handle: 'wellnesshub' }], action: 'mentioned you in a comment', preview: '@you Thanks for the tips!', time: '2d', read: true, targetType: 'post', targetId: '126' },
   { id: '5', type: 'community', users: [{ name: 'Mental Health Support', handle: 'mhsupport' }], action: 'new activity in your community', time: '3d', read: true, targetType: 'community', targetId: 'mhsupport' },
   { id: '6', type: 'verification', action: 'your verification request was approved', time: '1w', read: true },
