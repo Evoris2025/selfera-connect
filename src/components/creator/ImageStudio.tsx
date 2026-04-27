@@ -15,6 +15,7 @@ import { LocationPicker, type Location } from './post/LocationPicker';
 import { SoundPicker } from './SoundPicker';
 import { cn } from '@/lib/utils';
 import { useImageEnhance } from '@/hooks/useImageEnhance';
+import { CreatorScreenHeader } from './CreatorScreenHeader';
 
 // Enhanced imports
 import {
