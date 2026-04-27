@@ -53,6 +53,7 @@ function ExpressionCard({ item, index }: { item: TrendingExpression; index: numb
       onClick={() => handleTap('expressions', item.id)}
       className="relative w-[112px] aspect-[9/16] flex-shrink-0 overflow-hidden rounded-md bg-secondary group"
     >
+      <span className="absolute top-2 left-2 z-10"><BrandIcon icon={Flame} className="w-3 h-3" /></span>
       <img src={item.thumbnail} alt="" loading="lazy" className="w-full h-full object-cover" />
       <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/85 via-black/30 to-transparent pointer-events-none" />
       <div className="absolute bottom-1.5 left-1.5 right-1.5 flex items-center gap-1 min-w-0">
@@ -83,6 +84,7 @@ function VideoCard({ item, index }: { item: TrendingVideo; index: number }) {
       className="w-[200px] flex-shrink-0 text-left group"
     >
       <div className="relative aspect-video rounded-md overflow-hidden bg-black">
+        <span className="absolute top-2 left-2 z-10"><BrandIcon icon={Flame} className="w-3 h-3" /></span>
         <img src={item.thumbnail} alt={item.title} loading="lazy" className="w-full h-full object-cover" />
         <div className="absolute bottom-1 right-1 px-1.5 py-0.5 bg-black/80 text-[10px] text-white font-medium rounded">
           {item.duration}
@@ -97,7 +99,7 @@ function VideoCard({ item, index }: { item: TrendingVideo; index: number }) {
         {item.title}
       </h3>
       <p className="text-white/45 text-[10px] uppercase tracking-[0.08em] mt-0.5">
-        {formatCount(item.views)} VIEWS
+        {formatCount(item.views)}
       </p>
     </motion.button>
   );
@@ -113,6 +115,7 @@ function ImageCard({ item, index }: { item: TrendingImage; index: number }) {
       onClick={() => handleTap('images', item.id)}
       className="relative w-[120px] aspect-square flex-shrink-0 overflow-hidden rounded-md bg-secondary group"
     >
+      <span className="absolute top-2 left-2 z-10"><BrandIcon icon={Flame} className="w-3 h-3" /></span>
       <img src={item.url} alt="" loading="lazy" className="w-full h-full object-cover" />
       <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/70 to-transparent pointer-events-none" />
       <div className="absolute bottom-1.5 left-1.5 flex items-center gap-1">
@@ -131,8 +134,9 @@ function PostCard({ item, index }: { item: TrendingPost; index: number }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: Math.min(index * 0.03, 0.18) }}
       onClick={() => handleTap('posts', item.id)}
-      className="w-[240px] flex-shrink-0 text-left rounded-md border border-white/[0.08] bg-white/[0.03] p-3 hover:bg-white/[0.05] transition-colors"
+      className="relative w-[240px] flex-shrink-0 text-left rounded-md border border-white/[0.08] p-3 hover:border-white/20 transition-colors"
     >
+      <span className="absolute top-2 right-2 z-10"><BrandIcon icon={Flame} className="w-3 h-3" /></span>
       <p className="text-white/85 text-[12px] leading-snug line-clamp-3 mb-2">
         {item.snippet}
       </p>
