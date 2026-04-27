@@ -58,13 +58,21 @@ function saveZoomForMode(mode: PreviewMode, zoom: number): void {
 export function usePreviewZoom() {
   // All hooks must be called unconditionally at the top
   const [isDesktop, setIsDesktop] = useState(false);
-  const [previewWidth, setPreviewWidth] = useState(() => 
+  const [previewWidth, setPreviewWidth] = useState(() =>
     typeof window !== 'undefined' ? window.innerWidth : 430
   );
-  const [zoom, setZoomState] = useState(1); // Start with default, will be set in useEffect
 
-  // Derive current mode from preview width
+  // Derive current mode from preview width (used only for save key + reset).
   const currentMode = useMemo(() => getPreviewMode(previewWidth), [previewWidth]);
+
+  // Initial zoom = whatever was saved for the *initial* mode at first mount.
+  // We deliberately do NOT auto-reload zoom when the mode changes later —
+  // the user's last manual choice should persist across preview resizes.
+  const [zoom, setZoomState] = useState<number>(() => {
+    if (typeof window === 'undefined') return 1;
+    const initialMode = getPreviewMode(window.innerWidth);
+    return loadZoomForMode(initialMode);
+  });
 
   // Check if we're on a desktop-like device (fine pointer = mouse/trackpad)
   useEffect(() => {
@@ -72,27 +80,22 @@ export function usePreviewZoom() {
       const isFinePointer = window.matchMedia('(pointer: fine)').matches;
       setIsDesktop(isFinePointer);
     };
-    
+
     checkPointer();
-    
+
     const mediaQuery = window.matchMedia('(pointer: fine)');
     mediaQuery.addEventListener('change', checkPointer);
-    
+
     return () => mediaQuery.removeEventListener('change', checkPointer);
   }, []);
 
-  // Load saved zoom on mount and when mode changes
-  useEffect(() => {
-    const savedZoom = loadZoomForMode(currentMode);
-    setZoomState(savedZoom);
-  }, [currentMode]);
-
-  // Track preview container width changes (for detecting Lovable preview mode switches)
+  // Track preview container width changes — used only so the Settings UI can
+  // show the active preview mode label. Width changes do NOT touch zoom.
   useEffect(() => {
     if (!isDesktop) return;
 
     let timeoutId: NodeJS.Timeout;
-    
+
     const handleResize = () => {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
@@ -125,7 +128,7 @@ export function usePreviewZoom() {
     saveZoomForMode(currentMode, clamped);
   }, [currentMode]);
 
-  // Reset current mode to its default
+  // Reset current mode to its default (manual action only — Reset button)
   const resetZoom = useCallback(() => {
     const defaultZoom = DEFAULT_ZOOMS[currentMode];
     setZoomState(defaultZoom);
