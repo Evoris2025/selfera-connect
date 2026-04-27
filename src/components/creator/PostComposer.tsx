@@ -56,6 +56,7 @@ import { useStudioDraft } from '@/hooks/useStudioDraft';
 import { useLinkPreview } from '@/hooks/useLinkPreview';
 import { TopicTagSelector } from './shared/TopicTagSelector';
 import { AudienceSelector } from './shared/AudienceSelector';
+import { CreatorScreenHeader } from './CreatorScreenHeader';
 import { CrossPostToggles, type CrossPostState } from './shared/CrossPostToggles';
 import {
   PollCreator,
@@ -89,7 +90,6 @@ import type {
   FeedLinkPreview,
 } from '@/components/feed/CrossroadFeed';
 import { cn } from '@/lib/utils';
-import { CreatorScreenHeader } from './CreatorScreenHeader';
 
 const MAX_CHARACTERS = 500;
 
@@ -558,7 +558,6 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         'flex-1 min-h-0 sm:min-h-0 sm:max-h-[820px]'
       )}
     >
-      {/* Shared identity-forward header (back · create POST. · close + hero) */}
       <CreatorScreenHeader
         type="post"
         framingWord={state.scheduledDate ? 'schedule' : 'create'}
@@ -568,10 +567,6 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         onAudienceChange={handleAudienceChange}
       />
 
-      {/* Body region (textarea + Add row). Sized to content so the
-          Post button sits in real whitespace below it. */}
-      <div className="shrink-0 flex flex-col">
-        <div className="flex flex-col">
       {/* Textarea region — sits directly on the composer background */}
       <div className="relative shrink-0 flex flex-col px-5 py-4">
         {/* Top-right cluster: expand toggle + character counter */}
@@ -862,10 +857,6 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           )}
         </div>
       </div>
-
-        </div>
-      </div>
-      {/* /centered body region */}
 
       {/* Spacer pushes the Post button into the dead space below. */}
       <div className="flex-1 min-h-0" />

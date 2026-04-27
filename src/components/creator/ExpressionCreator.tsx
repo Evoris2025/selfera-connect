@@ -431,9 +431,9 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                 />
               </div>
             ) : (
-              /* Initial state - shared branded header + tap to start camera */
-              <div className="flex-1 flex flex-col">
-                <CreatorScreenHeader type="expression" onBack={onBack} onClose={onBack} />
+              /* Initial state - tap to start camera */
+              <div className="flex-1 flex flex-col bg-background">
+                <CreatorScreenHeader type="expression" onBack={onBack} onClose={onBack} showAudience={false} />
                 <div className="flex-1 flex flex-col items-center justify-center gap-6 p-8">
                 
                 <input

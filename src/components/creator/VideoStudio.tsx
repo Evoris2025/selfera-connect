@@ -13,6 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { TopicTagSelector } from './shared/TopicTagSelector';
 import { ContentWarningToggle } from './shared/ContentWarningToggle';
+import { CreatorScreenHeader } from './CreatorScreenHeader';
 import { StepPills, StepDots, StepConfig } from './shared/StepPills';
 import { 
   ChapterEditor, 
@@ -24,7 +25,6 @@ import {
   EndScreenElement,
 } from './video';
 import { cn } from '@/lib/utils';
-import { CreatorScreenHeader } from './CreatorScreenHeader';
 
 // Simulation mode flag
 const SIMULATION_MODE = true;
@@ -323,8 +323,7 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
       exit={{ opacity: 0, x: -20 }}
       className="flex flex-col h-full min-h-dvh bg-background"
     >
-      {/* Shared identity-forward header */}
-      <CreatorScreenHeader type="video" onBack={goToPrevStep} onClose={onBack} />
+      <CreatorScreenHeader type="video" onBack={goToPrevStep} onClose={onBack} showAudience={false} />
 
       {/* YouTube-style Step Pills */}
       {step !== 'upload' && (

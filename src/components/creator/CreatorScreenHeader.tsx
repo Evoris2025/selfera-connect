@@ -1,21 +1,11 @@
 import { ArrowLeft, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useAuth } from '@/contexts/AuthContext';
 import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
-import { AudienceSelector, type StudioAudience } from './shared/AudienceSelector';
+import { AudienceSelector } from './shared/AudienceSelector';
+import type { StudioAudience } from '@/contexts/FeedDataContext';
 
 export type CreatorType = 'expression' | 'video' | 'photo' | 'post';
-
-interface CreatorScreenHeaderProps {
-  type: CreatorType;
-  onBack?: () => void;
-  onClose?: () => void;
-  /** Override the lowercase prefix word ("create" by default — e.g. "schedule") */
-  framingWord?: string;
-  /** Optional audience chip below the handle. Omit to hide. */
-  audience?: StudioAudience;
-  onAudienceChange?: (a: StudioAudience) => void;
-}
 
 const TITLES: Record<CreatorType, string> = {
   expression: 'EXPRESSION.',
@@ -24,46 +14,48 @@ const TITLES: Record<CreatorType, string> = {
   post: 'POST.',
 };
 
+interface CreatorScreenHeaderProps {
+  type: CreatorType;
+  framingWord?: string; // defaults to "create"
+  onBack?: () => void;
+  onClose?: () => void;
+  audience?: StudioAudience;
+  onAudienceChange?: (a: StudioAudience) => void;
+  showAudience?: boolean;
+}
+
 /**
- * Shared identity-forward hero for all four creator routes.
+ * Shared identity-forward header used across all creator routes.
+ * - Top bar: back / "create [TYPE]." (SelfERA brand gradient on the type word) / close
+ * - Gradient hairline
+ * - Hero: theme-ringed avatar + display name + @handle + ghost audience chip
  *
- *   ─ back · create [TYPE]. · close ──────────────
- *   ──────── SelfERA gradient hairline ──────────
- *
- *           [theme-ringed avatar]
- *
- *               Display Name
- *                @handle
- *               [Public ▾]
- *
- * The gradient on the title word is the FIXED SelfERA brand gradient — the
- * brand always wins on the wordmark, regardless of the user's color theme.
- * The avatar ring uses --primary (the user's theme color), with --primary-muted
- * as a subtle second stop for depth. Falls back to the SelfERA gradient when
- * --primary isn't set (it always is, given ThemeProvider's coral default).
+ * The brand gradient on the type word is FIXED (never themed by the user).
+ * The avatar ring uses the user's theme color via CSS vars.
  */
 export function CreatorScreenHeader({
   type,
+  framingWord = 'create',
   onBack,
   onClose,
-  framingWord = 'create',
-  audience,
+  audience = 'public',
   onAudienceChange,
+  showAudience = true,
 }: CreatorScreenHeaderProps) {
-  const { user } = useAuth();
-  const { avatarUrl, displayName: avatarDisplayName } = useCurrentUserAvatar();
+  const navigate = useNavigate();
+  const { avatarUrl, displayName: rawName } = useCurrentUserAvatar();
 
-  const displayName = avatarDisplayName || user?.email?.split('@')[0] || 'You';
-  const userInitial = displayName.charAt(0).toUpperCase();
+  const displayName = rawName || 'You';
   const handle = displayName.toLowerCase().replace(/\s+/g, '');
+  const initial = displayName.charAt(0).toUpperCase();
 
-  const handleBack = onBack ?? (() => window.history.back());
-  const handleClose = onClose ?? handleBack;
+  const handleBack = onBack ?? (() => navigate(-1));
+  const handleClose = onClose ?? (() => navigate('/studio'));
 
   return (
-    <div className="shrink-0">
+    <div className="shrink-0 flex flex-col">
       {/* Header bar */}
-      <div className="relative">
+      <div className="relative shrink-0">
         <div className="flex items-center justify-between h-14 px-3">
           <button
             onClick={handleBack}
@@ -90,7 +82,7 @@ export function CreatorScreenHeader({
       </div>
 
       {/* Hero identity block */}
-      <div className="flex flex-col items-center text-center gap-3 px-5 pt-6 pb-6">
+      <div className="shrink-0 flex flex-col items-center text-center gap-3 px-5 pt-6 pb-6">
         <div
           className="rounded-full p-1 shrink-0"
           style={{
@@ -101,7 +93,7 @@ export function CreatorScreenHeader({
           <Avatar className="h-32 w-32 border-2 border-background">
             <AvatarImage src={avatarUrl} alt={displayName} />
             <AvatarFallback className="bg-secondary text-secondary-foreground text-3xl font-semibold">
-              {userInitial}
+              {initial}
             </AvatarFallback>
           </Avatar>
         </div>
@@ -110,11 +102,11 @@ export function CreatorScreenHeader({
             {displayName}
           </h2>
           <p className="text-base text-foreground/55 mt-1">@{handle}</p>
-          {audience && onAudienceChange && (
+          {showAudience && (
             <div className="mt-2">
               <AudienceSelector
                 value={audience}
-                onChange={onAudienceChange}
+                onChange={onAudienceChange ?? (() => {})}
                 variant="ghost"
               />
             </div>
@@ -122,8 +114,8 @@ export function CreatorScreenHeader({
         </div>
       </div>
 
-      {/* Branded gradient hairline transition */}
-      <div className="h-px w-full bg-gradient-to-r from-fuchsia-500/40 via-violet-500/40 to-teal-400/40 opacity-60" />
+      {/* Bottom hairline transition */}
+      <div className="h-px w-full bg-gradient-to-r from-fuchsia-500/40 via-violet-500/40 to-teal-400/40 opacity-60 shrink-0" />
     </div>
   );
 }
