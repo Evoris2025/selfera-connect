@@ -17,6 +17,7 @@ import { useFeedData } from '@/contexts/FeedDataContext';
 import { UnifiedDraftsDrawer } from './shared/UnifiedDraftsDrawer';
 import { BrandMark } from '@/components/BrandMark';
 import { getTodayPrompt } from '@/lib/dailyPrompts';
+import { useCreatorRowBackgrounds, type CreatorRowType } from '@/hooks/useCreatorRowBackgrounds';
 
 export type ContentType = 'expression' | 'video' | 'image' | 'post';
 
