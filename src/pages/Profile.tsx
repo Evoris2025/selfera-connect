@@ -379,7 +379,10 @@ export default function Profile() {
             {/* Loading spinner for cover */}
             {isCoverUploading && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="w-10 h-10 border-3 border-white border-t-transparent rounded-full animate-spin" />
+                <div
+                  className="w-10 h-10 border-2 border-white/30 rounded-full animate-spin"
+                  style={{ borderTopColor: themePrimary }}
+                />
               </div>
             )}
             
