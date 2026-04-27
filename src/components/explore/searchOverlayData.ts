@@ -12,85 +12,106 @@ export interface TrendingSearch {
 
 export interface SuggestedCreator {
   id: string;
-  handle: string;
   displayName: string;
-  avatar: string;
-  /** Short reason / category line shown under the name. */
-  reason: string;
+  handle: string;
+  avatarUrl: string;
+  verified: boolean;
+  /** Optional category line — kept in the type but not rendered on cards. */
+  reason?: string;
+}
+
+export type RecentSearchType = 'query' | 'account' | 'tag';
+
+export interface RecentSearch {
+  id: string;
+  type: RecentSearchType;
+  label: string;
 }
 
 export const TRENDING_SEARCHES: TrendingSearch[] = [
-  { id: 'ts-1', term: 'mindfulness', count: 12400 },
+  { id: 'ts-1', term: 'mindfulness', count: 1_200_000 },
   { id: 'ts-2', term: 'self compassion', count: 8900 },
   { id: 'ts-3', term: 'sleep routines', count: 6200 },
   { id: 'ts-4', term: 'breathwork', count: 4100 },
   { id: 'ts-5', term: 'gratitude journaling', count: 3300 },
 ];
 
+// Reuse the Unsplash photo pool already referenced in trendingNowData.ts to
+// avoid introducing new external image hosts.
+const AVA = (seed: string) => `https://images.unsplash.com/${seed}?w=160&h=160&fit=crop`;
+
 export const SUGGESTED_CREATORS: SuggestedCreator[] = [
   {
     id: 'sc-1',
-    handle: 'mayaquiet',
     displayName: 'Maya Quiet',
-    avatar: 'https://i.pravatar.cc/120?img=47',
+    handle: 'mayaquiet',
+    avatarUrl: AVA('photo-1494790108377-be9c29b29330'),
+    verified: true,
     reason: 'Calm voice · meditation',
   },
   {
     id: 'sc-2',
-    handle: 'drnoor',
     displayName: 'Dr. Noor',
-    avatar: 'https://i.pravatar.cc/120?img=12',
+    handle: 'drnoor',
+    avatarUrl: AVA('photo-1517021897933-0e0319cfbc28'),
+    verified: true,
     reason: 'Therapist · ERA Verified',
   },
   {
     id: 'sc-3',
-    handle: 'leoinmotion',
     displayName: 'Leo in Motion',
-    avatar: 'https://i.pravatar.cc/120?img=33',
+    handle: 'leoinmotion',
+    avatarUrl: AVA('photo-1504593811423-6dd665756598'),
+    verified: false,
     reason: 'Movement · breathwork',
   },
   {
     id: 'sc-4',
-    handle: 'aria.notes',
     displayName: 'Aria Notes',
-    avatar: 'https://i.pravatar.cc/120?img=21',
+    handle: 'aria.notes',
+    avatarUrl: AVA('photo-1488521787991-ed7bbaae773c'),
+    verified: true,
     reason: 'Journaling prompts',
   },
   {
     id: 'sc-5',
-    handle: 'kaitherapy',
     displayName: 'Kai',
-    avatar: 'https://i.pravatar.cc/120?img=8',
+    handle: 'kaitherapy',
+    avatarUrl: AVA('photo-1531123897727-8f129e1688ce'),
+    verified: false,
     reason: 'Anxiety support · creator',
   },
   {
     id: 'sc-6',
-    handle: 'ines.sleeps',
     displayName: 'Inés',
-    avatar: 'https://i.pravatar.cc/120?img=44',
+    handle: 'ines.sleeps',
+    avatarUrl: AVA('photo-1541781774459-bb2af2f05b55'),
+    verified: true,
     reason: 'Sleep · nervous system',
   },
   {
     id: 'sc-7',
-    handle: 'sammurmurs',
     displayName: 'Sam Murmurs',
-    avatar: 'https://i.pravatar.cc/120?img=15',
+    handle: 'sammurmurs',
+    avatarUrl: AVA('photo-1507003211169-0a1dd7228f2d'),
+    verified: false,
     reason: 'ASMR · voice notes',
   },
   {
     id: 'sc-8',
-    handle: 'rivkahheals',
     displayName: 'Rivkah',
-    avatar: 'https://i.pravatar.cc/120?img=26',
+    handle: 'rivkahheals',
+    avatarUrl: AVA('photo-1499209974431-9dddcece7f88'),
+    verified: true,
     reason: 'Practitioner · grief',
   },
 ];
 
-export const DEFAULT_RECENT_SEARCHES: string[] = [
-  'morning anxiety',
-  'self worth',
-  'guided breathwork',
+export const DEFAULT_RECENT_SEARCHES: RecentSearch[] = [
+  { id: 'r1', type: 'query', label: 'mindfulness' },
+  { id: 'r2', type: 'account', label: 'drsarah' },
+  { id: 'r3', type: 'tag', label: 'healingjourney' },
 ];
 
-export const RECENT_SEARCHES_STORAGE_KEY = 'selfera.explore.recentSearches';
+export const RECENT_SEARCHES_STORAGE_KEY = 'selfera:recent-searches';
 export const RECENT_SEARCHES_MAX = 8;
