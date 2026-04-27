@@ -85,7 +85,7 @@ function ExpressionCardSkeleton() {
 
 interface ExpressionSectionProps {
   title: string;
-  icon: React.ReactNode;
+  icon: LucideIcon;
   expressions: typeof forYouExpressions;
   isLoading?: boolean;
 }
@@ -96,8 +96,8 @@ function ExpressionSection({ title, icon, expressions, isLoading }: ExpressionSe
   return (
     <section className="space-y-3">
       <div className="flex items-center gap-2 px-4">
-        {icon}
-        <h2 className="font-semibold text-foreground">{title}</h2>
+        <BrandIcon icon={icon} size={16} />
+        <BrandSectionLabel>{title}</BrandSectionLabel>
       </div>
       <div className="flex gap-1 overflow-x-auto px-4 pb-2 scrollbar-hide">
         {isLoading ? (
