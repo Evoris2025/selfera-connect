@@ -20,9 +20,9 @@ import { getTodayPrompt } from '@/lib/dailyPrompts';
 
 export type ContentType = 'expression' | 'video' | 'image' | 'post';
 
-// Per-category SelfERA brand color (HEX) — used ONLY for the icon container tint
-// and the soft radial corner glow. Never used as a tile fill.
-const CATEGORY_COLORS: Record<ContentType, string> = {
+// Per-category SelfERA brand accents — used for the left-edge bar and icon tint.
+// NOT user theme — user theme is reserved for personal identity surfaces.
+const ACCENT: Record<ContentType, string> = {
   expression: '#d946ef', // SelfERA magenta
   video:      '#8b5cf6', // SelfERA violet
   image:      '#f59e0b', // SelfERA amber (Photo)
@@ -49,13 +49,7 @@ interface ContentTypeDashboardProps {
 }
 
 // Fixed SelfERA brand gradient — used only for the page hero typography.
-// Never used for tile borders (those follow the user's theme color).
 const BRAND_GRADIENT = 'linear-gradient(135deg, #d946ef, #8b5cf6, #2dd4bf)';
-
-// Single-hue gradient built from the user's theme color (--primary).
-// HSL CSS vars + the modern hsl(...) syntax let us add alpha on the fly.
-const themeBorderGradient =
-  'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.4), hsl(var(--primary) / 0.7), hsl(var(--primary)))';
 
 function relativeTime(ts: number): string {
   const diff = Date.now() - ts;
@@ -68,87 +62,71 @@ function relativeTime(ts: number): string {
   return `${d}d ago`;
 }
 
-function CreateTile({
-  type,
-  index,
+function CreatorRow({
+  icon: Icon,
+  title,
+  description,
+  accentColor,
+  activity,
+  thumbnailUrl,
   onClick,
-  contextLine,
 }: {
-  type: ContentTypeCard;
-  index: number;
+  icon: typeof Sparkles;
+  title: string;
+  description: string;
+  accentColor: string;
+  activity?: string;
+  thumbnailUrl?: string;
   onClick: () => void;
-  contextLine?: string;
 }) {
-  const Icon = type.icon;
-  const categoryColor = CATEGORY_COLORS[type.id];
   return (
     <motion.button
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.15 + index * 0.06, type: 'spring', stiffness: 280, damping: 24 }}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+      whileHover={{ x: 2 }}
+      whileTap={{ scale: 0.99 }}
       onClick={onClick}
       className={cn(
-        'group relative overflow-hidden rounded-2xl p-5 aspect-[4/5]',
-        'bg-white/[0.03] hover:bg-white/[0.05] active:bg-white/[0.06]',
-        'transition-colors text-left flex flex-col',
+        'group relative w-full text-left flex items-center gap-4',
+        'bg-white/[0.025] hover:bg-white/[0.05]',
+        'rounded-2xl px-4 py-4 transition-colors duration-200',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--primary))]/40'
       )}
-      style={{
-        backgroundImage: `linear-gradient(hsl(var(--background)), hsl(var(--background))), ${themeBorderGradient}`,
-        backgroundOrigin: 'border-box',
-        backgroundClip: 'padding-box, border-box',
-        border: '1px solid transparent',
-      }}
-      aria-label={`Create ${type.title}`}
+      aria-label={`Create ${title}`}
     >
-      {/* Soft radial corner glow — atmosphere, not fill */}
+      {/* Left-edge accent bar */}
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 transition-opacity duration-300"
-        style={{
-          background: `radial-gradient(circle at 100% 100%, ${categoryColor}22 0%, transparent 60%)`,
-          opacity: 0.6,
-        }}
-      />
-      <span
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        style={{
-          background: `radial-gradient(circle at 100% 100%, ${categoryColor}33 0%, transparent 60%)`,
-        }}
+        className="absolute left-0 top-2 bottom-2 w-[3px] rounded-full transition-opacity duration-200 opacity-60 group-hover:opacity-100"
+        style={{ background: accentColor }}
       />
 
-      {/* Sheen overlay */}
-      <span
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-[700ms] ease-out"
-        style={{
-          background:
-            'linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.06) 50%, transparent 70%)',
-        }}
-      />
-
-      {/* Icon container — top-left */}
+      {/* Icon container */}
       <div
-        className="relative w-12 h-12 rounded-xl flex items-center justify-center"
-        style={{ backgroundColor: `${categoryColor}1a` }}
+        className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+        style={{ backgroundColor: `${accentColor}1a` }}
       >
-        <Icon size={22} strokeWidth={2} style={{ color: categoryColor }} aria-hidden />
+        <Icon size={22} strokeWidth={2} style={{ color: accentColor }} aria-hidden />
       </div>
 
-      <span className="relative mt-3 text-lg font-semibold text-white tracking-tight">
-        {type.title}
-      </span>
-      <span className="relative mt-1 text-xs text-white/55 leading-snug">
-        {type.description}
-      </span>
+      {/* Content column */}
+      <div className="flex-1 flex flex-col min-w-0 gap-0.5">
+        <span className="text-base font-semibold text-white leading-tight truncate">{title}</span>
+        <span className="text-xs text-white/55 leading-snug truncate">{description}</span>
+        {activity && (
+          <span className="text-[11px] text-white/40 mt-1 truncate">{activity}</span>
+        )}
+      </div>
 
-      {/* Activity context + chevron — pinned to bottom */}
-      <div className="relative mt-auto pt-3 border-t border-white/[0.06] flex items-center justify-between text-[11px] text-white/45">
-        <span className="truncate">{contextLine ?? ''}</span>
-        <ChevronRight size={14} className="text-white/35 shrink-0 ml-2" />
+      {/* Right cluster: optional recent thumbnail + chevron */}
+      <div className="flex items-center gap-2 shrink-0">
+        {thumbnailUrl && (
+          <img
+            src={thumbnailUrl}
+            alt=""
+            aria-hidden
+            className="w-7 h-7 rounded-md object-cover bg-white/5"
+          />
+        )}
+        <ChevronRight size={18} className="text-white/30" />
       </div>
     </motion.button>
   );
