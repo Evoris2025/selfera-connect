@@ -25,6 +25,7 @@ import {
   AddToHighlightPrompt,
   Highlight,
 } from './expressions';
+import { CreatorScreenHeader } from './CreatorScreenHeader';
 
 // Simulation mode flag - when true, uses FeedDataContext instead of Supabase
 const SIMULATION_MODE = true;
