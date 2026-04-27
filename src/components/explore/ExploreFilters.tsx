@@ -146,7 +146,7 @@ function ListRow<T extends string>({ option, active, themePrimary, onClick }: Li
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className="relative overflow-hidden flex items-center justify-between w-full px-4 h-10 cursor-pointer rounded-md transition-colors hover:bg-white/[0.04] focus:outline-none focus-visible:bg-white/[0.04]"
+      className="relative overflow-hidden flex items-center px-4 h-10 cursor-pointer rounded-md transition-colors hover:bg-white/[0.04] focus:outline-none focus-visible:bg-white/[0.04]"
     >
       {active && (
         <span
@@ -155,11 +155,11 @@ function ListRow<T extends string>({ option, active, themePrimary, onClick }: Li
           style={{ backgroundColor: themePrimary }}
         />
       )}
-      <span className="text-white text-[14px]">{option.label}</span>
+      <span className="flex-1 text-center text-white text-[14px]">{option.label}</span>
       {active && (
         <span
           aria-hidden
-          className="inline-flex items-center justify-center h-4 w-4 rounded-full"
+          className="absolute right-4 inline-flex items-center justify-center h-4 w-4 rounded-full"
           style={{ backgroundColor: themePrimary }}
         >
           <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />
