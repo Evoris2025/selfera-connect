@@ -17,18 +17,11 @@ export function ExpressionsRow() {
   const { expressions, markExpressionSeen } = useFeedData();
   const { hideNavbar, showNavbar } = useNavbar();
   const { isCloseFriend } = useCloseFriends();
+  const themePrimary = useThemeColor().primary;
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerInitialIndex, setViewerInitialIndex] = useState(0);
   const [creatorOpen, setCreatorOpen] = useState(false);
 
-  // Determine ring type based on close friend status and seen status
-  const getRingType = (expression: typeof expressions[0]) => {
-    const isClose = isCloseFriend(expression.userId);
-    if (isClose) {
-      return 'closeFriends'; // Green ring for close friends
-    }
-    return expression.hasUnseenExpression ? 'gradient' : 'muted';
-  };
 
   // Hide navbar when expression viewer is open
   useEffect(() => {
