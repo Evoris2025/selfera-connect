@@ -35,12 +35,14 @@ const trendingExpressions = forYouExpressions.map((e) => ({ ...e, id: `t-${e.id}
 const recentExpressions = forYouExpressions.slice(0, 5).map((e) => ({ ...e, id: `r-${e.id}` }));
 const communityExpressions = forYouExpressions.slice(2, 7).map((e) => ({ ...e, id: `c-${e.id}` }));
 
-const CHIP_TO_DATA: Record<string, ExpressionItem[]> = {
+import type { ExpressionsFilters, SortBy } from './ExploreFilters';
+
+const SORT_TO_DATA: Record<SortBy, ExpressionItem[]> = {
   'for-you': forYouExpressions,
   'following': followingExpressions,
   'trending': trendingExpressions,
-  'recent': recentExpressions,
-  'community': communityExpressions,
+  'most-recent': recentExpressions,
+  'most-liked': communityExpressions,
 };
 
 function formatCount(n: number): string {
@@ -95,17 +97,19 @@ function TileSkeleton() {
 
 export function ExploreExpressions({
   isLoading = false,
-  activeChip = 'for-you',
+  filters,
 }: {
   isLoading?: boolean;
-  activeChip?: string;
+  filters?: ExpressionsFilters;
 }) {
   const { primary: themePrimary } = useThemeColor();
-  const source = CHIP_TO_DATA[activeChip] ?? CHIP_TO_DATA['for-you'];
+  const sortBy = filters?.sortBy ?? 'for-you';
+  const source = SORT_TO_DATA[sortBy] ?? SORT_TO_DATA['for-you'];
+  const resetKey = `${sortBy}|${filters?.timePeriod ?? 'all-time'}|${filters?.origin ?? 'all'}`;
   const { items, sentinelRef, isLoadingMore, hasMore } = useInfiniteList({
     source,
     pageSize: 10,
-    resetKey: activeChip,
+    resetKey,
   });
 
   if (isLoading) {
