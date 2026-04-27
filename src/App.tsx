@@ -15,6 +15,7 @@ import { ViewportDebugOverlay } from "@/components/dev/ViewportDebugOverlay";
 import { usePreviewZoom } from "@/hooks/usePreviewZoom";
 import { useDeviceMetricSync } from "@/hooks/useDeviceMetricSync";
 import logo from '@/assets/selfera-logo.png';
+import { BrandGradientDefs } from '@/components/ui/sheet-system';
 
 import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
@@ -135,6 +136,7 @@ const App = () => {
                 <TooltipProvider>
                   <Toaster />
                   <Sonner />
+                  <BrandGradientDefs />
                   <BrowserRouter>
                     <AppRoutes />
                   </BrowserRouter>

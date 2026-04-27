@@ -48,6 +48,7 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet';
+import { BrandSheetContent, BrandSheetTitle } from '@/components/ui/sheet-system';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
 import { useFeedData, type StudioAudience, type PostBackground } from '@/contexts/FeedDataContext';
@@ -934,15 +935,9 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
 
       {/* Add to your post — bottom sheet with icon-tile grid */}
       <Sheet open={addSheetOpen} onOpenChange={setAddSheetOpen}>
-        <SheetContent
-          side="bottom"
-          className="rounded-t-2xl bg-background/95 backdrop-blur-md border-white/10 px-5 pt-1 pb-[calc(env(safe-area-inset-bottom)+32px)] max-h-[80vh] overflow-y-auto [&>button]:hidden"
-        >
-          <div className="w-10 h-1 rounded-full bg-white/20 mx-auto mt-3 mb-4" />
-          <SheetHeader className="text-left mb-1">
-            <SheetTitle className="text-lg font-semibold text-white">Add to your post</SheetTitle>
-            <SheetDescription className="sr-only">Pick what to add</SheetDescription>
-          </SheetHeader>
+        <BrandSheetContent maxHeight="80vh">
+          <BrandSheetTitle setup="add to your" emphasis="POST" srDescription="Pick what to add" />
+
 
           {/* Media */}
           <p className="text-[11px] font-medium text-white/40 uppercase tracking-wider px-1 mb-3 mt-3">
@@ -1063,7 +1058,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           >
             More
           </button>
-        </SheetContent>
+        </BrandSheetContent>
       </Sheet>
 
 
@@ -1086,19 +1081,16 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
 
       {/* Extras sheet (Feeling / Schedule / Life event / Fundraiser) */}
       <Sheet open={mediaSheetOpen} onOpenChange={setMediaSheetOpen}>
-        <SheetContent side="bottom" className="rounded-t-2xl bg-background/95 backdrop-blur-md border-white/10">
-          <SheetHeader className="text-left">
-            <SheetTitle>More</SheetTitle>
-            <SheetDescription>Add a feeling, schedule, life event or fundraiser.</SheetDescription>
-          </SheetHeader>
-          <div className="mt-4 grid grid-cols-2 gap-3">
-            <div className="flex items-center justify-center gap-2 p-3 rounded-xl bg-white/[0.04]">
+        <BrandSheetContent>
+          <BrandSheetTitle setup="add" emphasis="MORE" subtitle="Feeling, schedule, life event or fundraiser." />
+          <div className="mt-2 grid grid-cols-2 gap-3">
+            <div className="flex items-center justify-center gap-2 p-3 rounded-xl bg-white/[0.03] border border-white/10">
               <FeelingActivityPicker
                 value={state.feeling}
                 onChange={(v) => { update({ feeling: v }); setMediaSheetOpen(false); }}
               />
             </div>
-            <div className="flex items-center justify-center gap-2 p-3 rounded-xl bg-white/[0.04]">
+            <div className="flex items-center justify-center gap-2 p-3 rounded-xl bg-white/[0.03] border border-white/10">
               <ScheduleSelector
                 value={state.scheduledDate ? new Date(state.scheduledDate) : null}
                 onChange={(d) => { update({ scheduledDate: d ? d.getTime() : null }); setMediaSheetOpen(false); }}
@@ -1106,31 +1098,25 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
             </div>
             <button
               onClick={() => { setMediaSheetOpen(false); setLifeEventOpen(true); }}
-              className="flex items-center justify-center gap-2 p-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-sm"
+              className="flex items-center justify-center gap-2 p-3 rounded-xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.06] text-sm text-white/85"
             >
-              <PartyPopper className="h-4 w-4" /> Life event
+              <PartyPopper size={16} strokeWidth={1.6} stroke="url(#selfera-brand-gradient)" fill="none" /> Life event
             </button>
             <button
               onClick={() => { setMediaSheetOpen(false); setFundraiserOpen(true); }}
-              className="flex items-center justify-center gap-2 p-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-sm"
+              className="flex items-center justify-center gap-2 p-3 rounded-xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.06] text-sm text-white/85"
             >
-              <Sparkles className="h-4 w-4" /> Fundraiser
+              <Sparkles size={16} strokeWidth={1.6} stroke="url(#selfera-brand-gradient)" fill="none" /> Fundraiser
             </button>
           </div>
-        </SheetContent>
+        </BrandSheetContent>
       </Sheet>
 
       {/* Topics sheet */}
       <Sheet open={topicsOpen} onOpenChange={setTopicsOpen}>
-        <SheetContent
-          side="bottom"
-          className="rounded-t-2xl bg-background/95 backdrop-blur-md border-white/10 max-h-[85dvh] overflow-y-auto"
-        >
-          <SheetHeader className="text-left">
-            <SheetTitle>Add topics</SheetTitle>
-            <SheetDescription>Pick up to 5 topics to help others find your post.</SheetDescription>
-          </SheetHeader>
-          <div className="mt-4">
+        <BrandSheetContent maxHeight="85dvh">
+          <BrandSheetTitle setup="add" emphasis="TOPICS" subtitle="Pick up to 5 topics to help others find your post." />
+          <div className="mt-2">
             <TopicTagSelector
               selectedTags={state.selectedTags}
               onTagsChange={(tags) => {
@@ -1149,17 +1135,14 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
               Done
             </Button>
           </div>
-        </SheetContent>
+        </BrandSheetContent>
       </Sheet>
 
       {/* Advanced sheet */}
       <Sheet open={advancedOpen} onOpenChange={setAdvancedOpen}>
-        <SheetContent side="bottom" className="rounded-t-2xl bg-background/95 backdrop-blur-md border-white/10">
-          <SheetHeader className="text-left">
-            <SheetTitle>Advanced</SheetTitle>
-            <SheetDescription>Fine-tune comments, reactions and cross-posting.</SheetDescription>
-          </SheetHeader>
-          <div className="mt-4 space-y-4">
+        <BrandSheetContent>
+          <BrandSheetTitle setup="post" emphasis="ADVANCED" subtitle="Fine-tune comments, reactions and cross-posting." />
+          <div className="mt-2 space-y-4">
             <div className="space-y-1.5">
               <Label className="text-sm">Who can comment</Label>
               <Select
@@ -1214,7 +1197,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
               />
             </div>
           </div>
-        </SheetContent>
+        </BrandSheetContent>
       </Sheet>
 
       {/* Dialogs */}
