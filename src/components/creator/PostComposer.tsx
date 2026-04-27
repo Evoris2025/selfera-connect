@@ -1197,7 +1197,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
               />
             </div>
           </div>
-        </SheetContent>
+        </BrandSheetContent>
       </Sheet>
 
       {/* Dialogs */}
