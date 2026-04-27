@@ -267,6 +267,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
 
   // ---- Resume from draft ----
   const draftIdParam = searchParams.get('draftId') || undefined;
+  const promptParam = searchParams.get('prompt') || undefined;
   useEffect(() => {
     if (!draftIdParam) return;
     const draft = getDraft(draftIdParam);
@@ -274,6 +275,11 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
     const data = draft.data as Partial<ComposerState>;
     setState((prev) => ({ ...prev, ...DEFAULT_STATE, ...data }));
   }, [draftIdParam, getDraft]);
+  useEffect(() => {
+    if (!promptParam) return;
+    setState((s) => (s.content ? s : { ...s, content: promptParam }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [promptParam]);
 
   // ---- Link preview ----
   const { preview, loading: previewLoading, clear: clearPreview } = useLinkPreview(state.content);
