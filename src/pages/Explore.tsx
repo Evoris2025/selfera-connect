@@ -15,6 +15,7 @@ import {
   ExplorePosts,
   TrendingNowRail,
   ExploreSearchOverlay,
+  ExploreSearchResults,
   type ExploreTab,
 } from '@/components/explore';
 import {
@@ -34,6 +35,8 @@ export default function Explore() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [searchSubmitted, setSearchSubmitted] = useState(false);
+  const [submissionId, setSubmissionId] = useState(0);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState<ExploreTab>(
     (searchParams.get('tab') as ExploreTab) || 'expressions'
@@ -63,7 +66,17 @@ export default function Explore() {
   const dismissSearch = useCallback(() => {
     setSearchQuery('');
     setIsSearchFocused(false);
+    setSearchSubmitted(false);
     searchInputRef.current?.blur();
+  }, []);
+
+  const handleSearchSubmit = useCallback((term: string) => {
+    const t = term.trim();
+    if (!t) return;
+    setSearchQuery(t);
+    setSearchSubmitted(true);
+    setSubmissionId((n) => n + 1);
+    searchInputRef.current?.focus();
   }, []);
 
   const handleSearchKeyDown = useCallback(
@@ -71,17 +84,21 @@ export default function Explore() {
       if (e.key === 'Escape') {
         e.preventDefault();
         dismissSearch();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        handleSearchSubmit(searchQuery);
       }
     },
-    [dismissSearch],
+    [dismissSearch, handleSearchSubmit, searchQuery],
   );
 
-  const handleOverlaySelect = useCallback((term: string) => {
-    setSearchQuery(term);
-    // Keep overlay open so the user sees their selection reflected; a real
-    // search submit will be wired in a later round.
-    searchInputRef.current?.focus();
-  }, []);
+  // Bridge from ExploreSearchOverlay row taps → submit results.
+  const handleOverlaySelect = useCallback(
+    (term: string) => {
+      handleSearchSubmit(term);
+    },
+    [handleSearchSubmit],
+  );
 
   const renderTabContent = () => {
     switch (activeTab) {
