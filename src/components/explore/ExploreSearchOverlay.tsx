@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
-import { Hash, TrendingUp, ArrowUpRight, X } from 'lucide-react';
+import { Hash, AtSign, Search, ArrowUpRight, X, BadgeCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { BrandIcon } from '@/components/brand';
+import { BrandSectionLabel } from '@/components/brand';
 import { cn } from '@/lib/utils';
 import {
   TRENDING_SEARCHES,
@@ -10,20 +10,13 @@ import {
   DEFAULT_RECENT_SEARCHES,
   RECENT_SEARCHES_STORAGE_KEY,
   RECENT_SEARCHES_MAX,
+  type RecentSearch,
+  type SuggestedCreator,
 } from './searchOverlayData';
 
 /**
  * ExploreSearchOverlay — pre-search panel shown when the Explore search
  * input is focused. Replaces the rail + tabs + grid until dismissed.
- *
- * Three sections:
- *   1. Recent searches (persisted to localStorage; seeded with defaults)
- *   2. Trending searches (static mock)
- *   3. Suggested creators (static mock)
- *
- * Tapping a recent / trending row calls onSelect(term) so the parent can
- * push it into the search query (and later run a real search). Selecting
- * also adds the term to the recent list. Tapping a creator is a stub.
  */
 
 interface ExploreSearchOverlayProps {
@@ -37,13 +30,24 @@ function formatSearchCount(n: number): string {
   return `${n} searches`;
 }
 
-function loadRecent(): string[] {
+function loadRecent(): RecentSearch[] {
   try {
     const raw = localStorage.getItem(RECENT_SEARCHES_STORAGE_KEY);
     if (!raw) return DEFAULT_RECENT_SEARCHES;
     const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed) && parsed.every((x) => typeof x === 'string')) {
-      return parsed;
+    // Migration: legacy plain string[] → reset to defaults.
+    if (
+      Array.isArray(parsed) &&
+      parsed.every(
+        (x) =>
+          x &&
+          typeof x === 'object' &&
+          typeof x.id === 'string' &&
+          typeof x.label === 'string' &&
+          (x.type === 'query' || x.type === 'account' || x.type === 'tag'),
+      )
+    ) {
+      return parsed as RecentSearch[];
     }
     return DEFAULT_RECENT_SEARCHES;
   } catch {
@@ -51,7 +55,7 @@ function loadRecent(): string[] {
   }
 }
 
-function saveRecent(list: string[]) {
+function saveRecent(list: RecentSearch[]) {
   try {
     localStorage.setItem(RECENT_SEARCHES_STORAGE_KEY, JSON.stringify(list));
   } catch {
@@ -59,31 +63,101 @@ function saveRecent(list: string[]) {
   }
 }
 
-function SectionLabel({ children }: { children: React.ReactNode }) {
+function inferRecent(input: string): RecentSearch | null {
+  const raw = input.trim();
+  if (!raw) return null;
+  if (raw.startsWith('@')) {
+    const label = raw.slice(1).trim();
+    if (!label) return null;
+    return { id: `r-${Date.now()}`, type: 'account', label };
+  }
+  if (raw.startsWith('#')) {
+    const label = raw.slice(1).trim();
+    if (!label) return null;
+    return { id: `r-${Date.now()}`, type: 'tag', label };
+  }
+  return { id: `r-${Date.now()}`, type: 'query', label: raw };
+}
+
+function recentDisplay(r: RecentSearch): string {
+  if (r.type === 'account') return `@${r.label}`;
+  if (r.type === 'tag') return `#${r.label}`;
+  return r.label;
+}
+
+function FollowButton({ creatorId }: { creatorId: string }) {
+  const [isFollowing, setIsFollowing] = useState(false);
   return (
-    <p className="px-4 mb-2 text-[10px] font-medium uppercase tracking-[0.12em] text-white/55">
-      {children}
-    </p>
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        setIsFollowing((v) => !v);
+        // eslint-disable-next-line no-console
+        console.log('[ExploreSearchOverlay] toggle follow', creatorId);
+      }}
+      className={cn(
+        'w-full px-3 py-1.5 rounded-full text-[10px] font-medium uppercase tracking-[0.08em] transition-colors',
+        isFollowing
+          ? 'border border-white/20 text-white/60 bg-transparent'
+          : 'border border-[hsl(var(--primary))] text-[hsl(var(--primary))] hover:bg-[hsl(var(--primary)/0.08)]',
+      )}
+    >
+      {isFollowing ? 'Following' : 'Follow'}
+    </button>
+  );
+}
+
+function SuggestedCreatorCard({ c }: { c: SuggestedCreator }) {
+  return (
+    <div className="flex-shrink-0 w-28 snap-start flex flex-col items-center">
+      <button
+        type="button"
+        onClick={() => {
+          // eslint-disable-next-line no-console
+          console.log('[ExploreSearchOverlay] tap creator', c.handle);
+        }}
+        className="flex flex-col items-center gap-2 w-full"
+        aria-label={`Open ${c.displayName} profile`}
+      >
+        <Avatar className="w-16 h-16">
+          <AvatarImage src={c.avatarUrl} alt="" />
+          <AvatarFallback>{c.displayName.charAt(0)}</AvatarFallback>
+        </Avatar>
+        <div className="flex items-center gap-1 max-w-full">
+          <span className="text-[12px] text-white/90 truncate">{c.displayName}</span>
+          {c.verified && (
+            <BadgeCheck className="w-3 h-3 text-[hsl(var(--primary))] flex-shrink-0" strokeWidth={2} />
+          )}
+        </div>
+        <span className="text-[10px] text-white/45 truncate max-w-full">@{c.handle}</span>
+      </button>
+      <div className="mt-2 w-full">
+        <FollowButton creatorId={c.id} />
+      </div>
+    </div>
   );
 }
 
 export function ExploreSearchOverlay({ query, onSelect }: ExploreSearchOverlayProps) {
-  const [recent, setRecent] = useState<string[]>(() => loadRecent());
+  const [recent, setRecent] = useState<RecentSearch[]>(() => loadRecent());
 
   useEffect(() => {
     setRecent(loadRecent());
   }, []);
 
   const addToRecent = useCallback((term: string) => {
-    const clean = term.trim();
-    if (!clean) return;
+    const next = inferRecent(term);
+    if (!next) return;
     setRecent((prev) => {
-      const next = [clean, ...prev.filter((t) => t.toLowerCase() !== clean.toLowerCase())].slice(
-        0,
-        RECENT_SEARCHES_MAX,
-      );
-      saveRecent(next);
-      return next;
+      const merged = [
+        next,
+        ...prev.filter(
+          (t) => !(t.type === next.type && t.label.toLowerCase() === next.label.toLowerCase()),
+        ),
+      ].slice(0, RECENT_SEARCHES_MAX);
+      saveRecent(merged);
+      return merged;
     });
   }, []);
 
@@ -95,9 +169,16 @@ export function ExploreSearchOverlay({ query, onSelect }: ExploreSearchOverlayPr
     [addToRecent, onSelect],
   );
 
-  const handleRemoveRecent = useCallback((term: string) => {
+  const handleSelectRecent = useCallback(
+    (r: RecentSearch) => {
+      handleSelectTerm(recentDisplay(r));
+    },
+    [handleSelectTerm],
+  );
+
+  const handleRemoveRecent = useCallback((id: string) => {
     setRecent((prev) => {
-      const next = prev.filter((t) => t !== term);
+      const next = prev.filter((t) => t.id !== id);
       saveRecent(next);
       return next;
     });
@@ -108,14 +189,14 @@ export function ExploreSearchOverlay({ query, onSelect }: ExploreSearchOverlayPr
     saveRecent([]);
   }, []);
 
-  // Lightweight filter when user is typing — narrows recent + trending.
   const q = query.trim().toLowerCase();
   const filteredRecent = useMemo(
-    () => (q ? recent.filter((t) => t.toLowerCase().includes(q)) : recent),
+    () => (q ? recent.filter((t) => t.label.toLowerCase().includes(q)) : recent),
     [recent, q],
   );
   const filteredTrending = useMemo(
-    () => (q ? TRENDING_SEARCHES.filter((t) => t.term.toLowerCase().includes(q)) : TRENDING_SEARCHES),
+    () =>
+      q ? TRENDING_SEARCHES.filter((t) => t.term.toLowerCase().includes(q)) : TRENDING_SEARCHES,
     [q],
   );
 
@@ -132,9 +213,7 @@ export function ExploreSearchOverlay({ query, onSelect }: ExploreSearchOverlayPr
       {filteredRecent.length > 0 && (
         <section className="mb-6">
           <div className="px-4 mb-2 flex items-center justify-between">
-            <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-white/55">
-              Recent
-            </p>
+            <BrandSectionLabel>RECENT</BrandSectionLabel>
             {recent.length > 0 && !q && (
               <button
                 type="button"
@@ -146,27 +225,37 @@ export function ExploreSearchOverlay({ query, onSelect }: ExploreSearchOverlayPr
             )}
           </div>
           <ul role="list">
-            {filteredRecent.map((term) => (
-              <li key={term}>
+            {filteredRecent.map((r) => (
+              <li key={r.id}>
                 <div className="flex items-center w-full pr-2">
                   <button
                     type="button"
-                    onClick={() => handleSelectTerm(term)}
+                    onClick={() => handleSelectRecent(r)}
                     className={cn(
                       'flex-1 flex items-center gap-3 px-4 py-2.5 text-left',
                       'hover:bg-white/[0.04] transition-colors',
                     )}
                   >
                     <span className="flex items-center justify-center w-7 h-7 rounded-full bg-white/[0.06]">
-                      <BrandIcon icon={Hash} size={14} />
+                      {r.type === 'query' && (
+                        <Search className="w-3.5 h-3.5 text-white/60" strokeWidth={1.5} />
+                      )}
+                      {r.type === 'account' && (
+                        <AtSign className="w-3.5 h-3.5 text-white/60" strokeWidth={1.5} />
+                      )}
+                      {r.type === 'tag' && (
+                        <Hash className="w-3.5 h-3.5 text-white/60" strokeWidth={1.5} />
+                      )}
                     </span>
-                    <span className="flex-1 text-[14px] text-white/90 truncate">{term}</span>
+                    <span className="flex-1 text-[14px] text-white/90 truncate">
+                      {recentDisplay(r)}
+                    </span>
                     <ArrowUpRight className="w-4 h-4 text-white/40" strokeWidth={1.5} />
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleRemoveRecent(term)}
-                    aria-label={`Remove ${term} from recent searches`}
+                    onClick={() => handleRemoveRecent(r.id)}
+                    aria-label={`Remove ${recentDisplay(r)} from recent searches`}
                     className="ml-1 flex items-center justify-center w-7 h-7 rounded-full text-white/40 hover:text-white/85 hover:bg-white/[0.04] transition-colors"
                   >
                     <X className="w-3.5 h-3.5" strokeWidth={1.5} />
@@ -181,9 +270,11 @@ export function ExploreSearchOverlay({ query, onSelect }: ExploreSearchOverlayPr
       {/* Trending */}
       {filteredTrending.length > 0 && (
         <section className="mb-6">
-          <SectionLabel>Trending searches</SectionLabel>
+          <div className="px-4 mb-2">
+            <BrandSectionLabel>TRENDING SEARCHES</BrandSectionLabel>
+          </div>
           <ul role="list">
-            {filteredTrending.map((t) => (
+            {filteredTrending.map((t, idx) => (
               <li key={t.id}>
                 <button
                   type="button"
@@ -193,16 +284,12 @@ export function ExploreSearchOverlay({ query, onSelect }: ExploreSearchOverlayPr
                     'hover:bg-white/[0.04] transition-colors',
                   )}
                 >
-                  <span className="flex items-center justify-center w-7 h-7 rounded-full bg-white/[0.06]">
-                    <BrandIcon icon={TrendingUp} size={14} />
+                  <span className="w-5 text-white/40 text-xs font-medium tabular-nums">
+                    {idx + 1}
                   </span>
-                  <span className="flex-1 min-w-0">
-                    <span className="block text-[14px] text-white/90 truncate">{t.term}</span>
-                    <span className="block text-[11px] text-white/45">
-                      {formatSearchCount(t.count)}
-                    </span>
-                  </span>
-                  <ArrowUpRight className="w-4 h-4 text-white/40" strokeWidth={1.5} />
+                  <span className="flex-1 text-white text-sm truncate">{t.term}</span>
+                  <span className="text-white/40 text-[10px]">{formatSearchCount(t.count)}</span>
+                  <ArrowUpRight className="w-3.5 h-3.5 text-white/30" strokeWidth={1.5} />
                 </button>
               </li>
             ))}
@@ -210,40 +297,16 @@ export function ExploreSearchOverlay({ query, onSelect }: ExploreSearchOverlayPr
         </section>
       )}
 
-      {/* Suggested creators */}
+      {/* Suggested creators — horizontal carousel */}
       <section>
-        <SectionLabel>Suggested creators</SectionLabel>
-        <ul role="list">
+        <div className="px-4 mb-3">
+          <BrandSectionLabel>SUGGESTED CREATORS</BrandSectionLabel>
+        </div>
+        <div className="flex gap-3 overflow-x-auto px-4 pb-2 snap-x snap-mandatory scrollbar-hide">
           {SUGGESTED_CREATORS.map((c) => (
-            <li key={c.id}>
-              <button
-                type="button"
-                onClick={() => {
-                  // Stub for round-2: tapping a creator is a no-op besides
-                  // logging. Wire to profile route later.
-                  // eslint-disable-next-line no-console
-                  console.log('[ExploreSearchOverlay] tap creator', c.handle);
-                }}
-                className={cn(
-                  'w-full flex items-center gap-3 px-4 py-2.5 text-left',
-                  'hover:bg-white/[0.04] transition-colors',
-                )}
-              >
-                <Avatar className="w-9 h-9">
-                  <AvatarImage src={c.avatar} alt="" />
-                  <AvatarFallback>{c.displayName.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <span className="flex-1 min-w-0">
-                  <span className="block text-[14px] text-white/90 truncate">
-                    {c.displayName}
-                    <span className="text-white/45 font-normal"> · @{c.handle}</span>
-                  </span>
-                  <span className="block text-[11px] text-white/55 truncate">{c.reason}</span>
-                </span>
-              </button>
-            </li>
+            <SuggestedCreatorCard key={c.id} c={c} />
           ))}
-        </ul>
+        </div>
       </section>
     </motion.div>
   );
