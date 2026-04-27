@@ -198,23 +198,10 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
 
   const todayPrompt = useMemo(() => getTodayPrompt(), []);
 
-  // Most recent thumbnail per content type — pulled from existing feed data.
-  // Returns undefined when nothing matches; we never fabricate.
-  const thumbFor = (id: ContentType): string | undefined => {
-    if (id === 'expression') {
-      const e = expressions.find((x) => x.mediaType === 'image' || x.mediaType === 'video');
-      return e?.thumbnailUrl || e?.mediaUrl;
-    }
-    if (id === 'video') {
-      const p = posts.find((x) => x.media?.type === 'video');
-      return p?.media?.thumbnail || p?.media?.url;
-    }
-    if (id === 'image') {
-      const p = posts.find((x) => x.media?.type === 'image');
-      return p?.media?.url;
-    }
-    // post (text-only): no media thumbnail
-    return undefined;
+  // Map ContentType ('image') -> hook's CreatorRowType ('photo')
+  const bgFor = (id: ContentType): string | null => {
+    const key: CreatorRowType = id === 'image' ? 'photo' : (id as CreatorRowType);
+    return backgrounds[key] ?? null;
   };
 
   const openDraft = () => {
