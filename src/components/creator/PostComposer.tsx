@@ -89,6 +89,7 @@ import type {
   FeedLinkPreview,
 } from '@/components/feed/CrossroadFeed';
 import { cn } from '@/lib/utils';
+import { CreatorScreenHeader } from './CreatorScreenHeader';
 
 const MAX_CHARACTERS = 500;
 
