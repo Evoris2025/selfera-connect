@@ -1,14 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
-import { FileText, Trash2, Clock, ChevronRight } from 'lucide-react';
+import { FileText, Trash2, Clock, ChevronRight, Sparkles, Video, Image as ImageIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { Sheet, SheetTrigger } from '@/components/ui/sheet';
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
+  BrandSheetContent,
+  BrandSheetTitle,
+  BrandSheetSectionLabel,
+  BrandSheetItem,
+} from '@/components/ui/sheet-system';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
 
@@ -118,19 +118,14 @@ function generateDraftTitle(type: ContentType, data: Record<string, unknown>): s
   return typeLabels[type];
 }
 
-const typeIcons: Record<ContentType, string> = {
-  expression: '✨',
-  video: '🎬',
-  image: '📷',
-  post: '📝',
+const typeIconMap: Record<ContentType, typeof Sparkles> = {
+  expression: Sparkles,
+  video: Video,
+  image: ImageIcon,
+  post: FileText,
 };
 
-const typeColors: Record<ContentType, string> = {
-  expression: 'bg-rose-500/20 text-rose-400',
-  video: 'bg-blue-500/20 text-blue-400',
-  image: 'bg-amber-500/20 text-amber-400',
-  post: 'bg-emerald-500/20 text-emerald-400',
-};
+const ROW_ACCENT = 'hsl(271 91% 65%)'; // brand purple — matches "Your work" rows
 
 interface DraftManagerProps {
   onSelectDraft?: (draft: Draft) => void;
