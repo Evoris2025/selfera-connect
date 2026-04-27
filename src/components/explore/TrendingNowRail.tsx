@@ -1,7 +1,9 @@
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Flame, Eye, Heart, Play } from 'lucide-react';
+import { Flame, Eye, Heart, Play, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { BrandIcon } from '@/components/brand';
+import { cn } from '@/lib/utils';
 import type { ExploreTab } from './ExploreFilters';
 import {
   trendingExpressions,
@@ -53,20 +55,20 @@ function ExpressionCard({ item, index }: { item: TrendingExpression; index: numb
       onClick={() => handleTap('expressions', item.id)}
       className="relative w-[112px] aspect-[9/16] flex-shrink-0 overflow-hidden rounded-md bg-secondary group"
     >
-      <span className="absolute top-2 left-2 z-10 flex items-center justify-center w-5 h-5 rounded-full bg-black/40 backdrop-blur-sm">
+      <span className="absolute top-2 left-2 z-10 flex items-center justify-center size-5 rounded-full bg-black/40 backdrop-blur-sm">
         <BrandIcon icon={Flame} className="w-3 h-3" />
       </span>
       <img src={item.thumbnail} alt="" loading="lazy" className="w-full h-full object-cover" />
       <div className="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black/85 via-black/30 to-transparent pointer-events-none" />
-      <div className="absolute bottom-1.5 left-1.5 right-12 flex items-center gap-1 min-w-0">
-        <Avatar className="h-4 w-4 ring-1 ring-white/30 flex-shrink-0">
+      <span className="absolute bottom-2 left-2 z-10 flex items-center gap-1.5 text-white text-[10px] font-medium">
+        <Avatar className="h-4 w-4 flex-shrink-0">
           <AvatarImage src={item.user.avatar} alt={item.user.handle} />
           <AvatarFallback className="text-[7px] bg-white/[0.08] text-white/70">
             {item.user.handle.charAt(0)}
           </AvatarFallback>
         </Avatar>
-        <span className="text-white text-[10px] font-medium truncate">@{item.user.handle}</span>
-      </div>
+        <span className="truncate max-w-[60px]">{item.user.handle}</span>
+      </span>
       <span className="absolute bottom-2 right-2 z-10 flex items-center gap-1 text-white/90 text-[10px] font-medium">
         <Eye className="w-2.5 h-2.5" strokeWidth={1.5} />
         {formatCount(item.views)}
@@ -86,7 +88,7 @@ function VideoCard({ item, index }: { item: TrendingVideo; index: number }) {
       className="w-[200px] flex-shrink-0 text-left group"
     >
       <div className="relative aspect-video rounded-md overflow-hidden bg-black">
-        <span className="absolute top-2 left-2 z-10 flex items-center justify-center w-5 h-5 rounded-full bg-black/40 backdrop-blur-sm">
+        <span className="absolute top-2 left-2 z-10 flex items-center justify-center size-5 rounded-full bg-black/40 backdrop-blur-sm">
           <BrandIcon icon={Flame} className="w-3 h-3" />
         </span>
         <img src={item.thumbnail} alt={item.title} loading="lazy" className="w-full h-full object-cover" />
@@ -119,7 +121,7 @@ function ImageCard({ item, index }: { item: TrendingImage; index: number }) {
       onClick={() => handleTap('images', item.id)}
       className="relative w-[120px] aspect-square flex-shrink-0 overflow-hidden rounded-md bg-secondary group"
     >
-      <span className="absolute top-2 left-2 z-10 flex items-center justify-center w-5 h-5 rounded-full bg-black/40 backdrop-blur-sm">
+      <span className="absolute top-2 left-2 z-10 flex items-center justify-center size-5 rounded-full bg-black/40 backdrop-blur-sm">
         <BrandIcon icon={Flame} className="w-3 h-3" />
       </span>
       <img src={item.url} alt="" loading="lazy" className="w-full h-full object-cover" />
@@ -142,7 +144,7 @@ function PostCard({ item, index }: { item: TrendingPost; index: number }) {
       onClick={() => handleTap('posts', item.id)}
       className="relative w-[240px] flex-shrink-0 text-left rounded-md border border-white/[0.08] p-3 hover:border-white/20 transition-colors"
     >
-      <span className="absolute top-2 right-2 z-10 flex items-center justify-center w-5 h-5 rounded-full bg-black/40 backdrop-blur-sm">
+      <span className="absolute top-2 right-2 z-10 flex items-center justify-center size-5 rounded-full bg-black/40 backdrop-blur-sm">
         <BrandIcon icon={Flame} className="w-3 h-3" />
       </span>
       <p className="text-white/85 text-[12px] leading-snug line-clamp-3 mb-2">
@@ -156,7 +158,7 @@ function PostCard({ item, index }: { item: TrendingPost; index: number }) {
               {item.user.handle.charAt(0)}
             </AvatarFallback>
           </Avatar>
-          <span className="text-white/55 text-[10px] truncate">@{item.user.handle}</span>
+          <span className="text-white/55 text-[10px] truncate">{item.user.handle}</span>
         </div>
         <div className="flex items-center gap-1 text-white/55 flex-shrink-0">
           <Heart className="h-2.5 w-2.5" />
@@ -168,6 +170,39 @@ function PostCard({ item, index }: { item: TrendingPost; index: number }) {
 }
 
 export function TrendingNowRail({ activeTab }: TrendingNowRailProps) {
+  const railRef = useRef<HTMLDivElement | null>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const updateScrollState = () => {
+    const el = railRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    setCanScrollLeft(scrollLeft > 1);
+    setCanScrollRight(scrollWidth - clientWidth - scrollLeft > 1);
+  };
+
+  useEffect(() => {
+    const el = railRef.current;
+    if (!el) return;
+    // Reset scroll when tab changes
+    el.scrollLeft = 0;
+    updateScrollState();
+    el.addEventListener('scroll', updateScrollState, { passive: true });
+    window.addEventListener('resize', updateScrollState);
+    return () => {
+      el.removeEventListener('scroll', updateScrollState);
+      window.removeEventListener('resize', updateScrollState);
+    };
+  }, [activeTab]);
+
+  const scrollByDirection = (dir: 'left' | 'right') => {
+    const el = railRef.current;
+    if (!el) return;
+    const amount = el.clientWidth * 0.8;
+    el.scrollBy({ left: dir === 'left' ? -amount : amount, behavior: 'smooth' });
+  };
+
   const renderCards = () => {
     switch (activeTab) {
       case 'expressions':
@@ -199,12 +234,68 @@ export function TrendingNowRail({ activeTab }: TrendingNowRailProps) {
           TRENDING NOW
         </p>
       </div>
-      <div
-        role="list"
-        aria-label="Trending now"
-        className="flex gap-2 overflow-x-auto px-4 scrollbar-hide"
-      >
-        {renderCards()}
+      <div className="group relative">
+        <div
+          ref={railRef}
+          role="list"
+          aria-label="Trending now"
+          className="flex gap-2 overflow-x-auto px-4 scrollbar-hide"
+        >
+          {renderCards()}
+        </div>
+
+        {/* Left edge fade */}
+        <div
+          aria-hidden="true"
+          className={cn(
+            'pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-background to-transparent transition-opacity',
+            canScrollLeft ? 'opacity-100' : 'opacity-0'
+          )}
+        />
+        {/* Right edge fade */}
+        <div
+          aria-hidden="true"
+          className={cn(
+            'pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-background to-transparent transition-opacity',
+            canScrollRight ? 'opacity-100' : 'opacity-0'
+          )}
+        />
+
+        {/* Left arrow */}
+        <button
+          type="button"
+          aria-label="Scroll left"
+          onClick={() => scrollByDirection('left')}
+          className={cn(
+            'absolute top-1/2 -translate-y-1/2 z-20 left-2',
+            'hidden md:flex items-center justify-center',
+            'w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm',
+            'border border-white/[0.08]',
+            'opacity-0 group-hover:opacity-100 transition-opacity',
+            'hover:bg-black/80',
+            !canScrollLeft && 'pointer-events-none opacity-0 group-hover:opacity-0'
+          )}
+        >
+          <ChevronLeft className="w-4 h-4 text-white" strokeWidth={2} />
+        </button>
+
+        {/* Right arrow */}
+        <button
+          type="button"
+          aria-label="Scroll right"
+          onClick={() => scrollByDirection('right')}
+          className={cn(
+            'absolute top-1/2 -translate-y-1/2 z-20 right-2',
+            'hidden md:flex items-center justify-center',
+            'w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm',
+            'border border-white/[0.08]',
+            'opacity-0 group-hover:opacity-100 transition-opacity',
+            'hover:bg-black/80',
+            !canScrollRight && 'pointer-events-none opacity-0 group-hover:opacity-0'
+          )}
+        >
+          <ChevronRight className="w-4 h-4 text-white" strokeWidth={2} />
+        </button>
       </div>
     </div>
   );
