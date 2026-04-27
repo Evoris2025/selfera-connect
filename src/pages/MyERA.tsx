@@ -826,77 +826,31 @@ export default function MyERA() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...springGentle, delay: 0.35 }}
         >
-          <div className="mb-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-foreground tracking-tight">MyERA Network</h2>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="text-primary h-8 px-3"
-                onClick={() => setShowDirectoryPicker(true)}
-              >
-                <Plus className="w-4 h-4 mr-1" />
-                Add
-              </Button>
-            </div>
+          <div className="mb-3 flex items-center justify-between">
+            <BrandSectionLabel>MYERA NETWORK</BrandSectionLabel>
+            <button
+              type="button"
+              onClick={() => setShowDirectoryPicker(true)}
+              className="h-8 px-3 rounded-full border bg-transparent text-[11px] uppercase tracking-[0.1em] inline-flex items-center gap-1"
+              style={{ borderColor: themePrimary, color: themePrimary }}
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Add
+            </button>
           </div>
 
-          {/* Network Tabs - Clean Square Edge Style */}
-          <div className="flex items-center bg-[hsl(240,10%,8%)] border border-border/30 mb-5">
-            <button
-              className={`relative flex-1 py-2.5 text-sm font-medium transition-all text-center ${
-                activeNetworkTab === 'discover'
-                  ? 'text-primary'
-                  : 'text-muted-foreground hover:text-foreground/70'
-              }`}
-              onClick={() => setActiveNetworkTab('discover')}
-            >
-              {activeNetworkTab === 'discover' && (
-                <motion.div
-                  layoutId="networkTabIndicator"
-                  className="absolute inset-0 border border-primary bg-primary/5"
-                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                />
-              )}
-              <span className="relative z-10">Discover</span>
-            </button>
-            <button
-              className={`relative flex-1 py-2.5 text-sm font-medium transition-all text-center ${
-                activeNetworkTab === 'mylist'
-                  ? 'text-primary'
-                  : 'text-muted-foreground hover:text-foreground/70'
-              }`}
-              onClick={() => setActiveNetworkTab('mylist')}
-            >
-              {activeNetworkTab === 'mylist' && (
-                <motion.div
-                  layoutId="networkTabIndicator"
-                  className="absolute inset-0 border border-primary bg-primary/5"
-                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                />
-              )}
-              <span className="relative z-10">My List</span>
-            </button>
-            <button
-              className={`relative flex-1 py-2.5 text-sm font-medium transition-all text-center ${
-                activeNetworkTab === 'interactions'
-                  ? 'text-primary'
-                  : 'text-muted-foreground hover:text-foreground/70'
-              }`}
-              onClick={() => setActiveNetworkTab('interactions')}
-            >
-              {activeNetworkTab === 'interactions' && (
-                <motion.div
-                  layoutId="networkTabIndicator"
-                  className="absolute inset-0 border border-primary bg-primary/5"
-                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                />
-              )}
-              <span className="relative z-10">Interactions</span>
-              {activeNetworkTab !== 'interactions' && (
-                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-              )}
-            </button>
+          {/* Network Tabs — brand underline */}
+          <div className="mb-5 border-b border-white/[0.08]">
+            <BrandUnderlineTabs
+              tabs={[
+                { id: 'discover', label: 'Discover' },
+                { id: 'mylist', label: 'My List' },
+                { id: 'interactions', label: 'Interactions' },
+              ]}
+              value={activeNetworkTab}
+              onChange={(id) => setActiveNetworkTab(id as typeof activeNetworkTab)}
+              ariaLabel="MyERA network sections"
+            />
           </div>
 
           <AnimatePresence mode="wait">
