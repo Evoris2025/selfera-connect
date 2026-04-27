@@ -5,7 +5,7 @@ import {
   Video,
   Image as ImageIcon,
   FileText,
-  Clock,
+  
   ArrowLeft,
   X,
   ChevronRight,
