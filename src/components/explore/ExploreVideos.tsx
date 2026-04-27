@@ -94,16 +94,17 @@ interface VideoCardProps {
 }
 
 function VideoCard({ video, index }: VideoCardProps) {
+  const { primary: themePrimary } = useThemeColor();
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
     >
-      <Card className="overflow-hidden cursor-pointer group hover:border-primary/30 transition-all w-full">
-        <div className="relative aspect-video bg-secondary overflow-hidden">
-          <img 
-            src={video.thumbnail} 
+      <Card className="overflow-hidden cursor-pointer group transition-all w-full bg-black border border-white/[0.08] rounded-md hover:border-white/20">
+        <div className="relative aspect-video bg-black overflow-hidden">
+          <img
+            src={video.thumbnail}
             alt={video.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
@@ -112,8 +113,11 @@ function VideoCard({ video, index }: VideoCardProps) {
             {video.duration}
           </div>
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <div className="w-14 h-14 bg-primary/90 flex items-center justify-center">
-              <Play className="h-6 w-6 text-primary-foreground fill-current ml-1" />
+            <div
+              className="w-14 h-14 rounded-full bg-black/60 flex items-center justify-center border"
+              style={{ borderColor: themePrimary }}
+            >
+              <Play className="h-6 w-6 fill-current ml-1" style={{ color: themePrimary }} />
             </div>
           </div>
         </div>
@@ -122,19 +126,19 @@ function VideoCard({ video, index }: VideoCardProps) {
           <div className="flex gap-3">
             <Avatar className="h-9 w-9 flex-shrink-0">
               <AvatarImage src={video.creator.avatar} alt={video.creator.name} />
-              <AvatarFallback className="bg-secondary text-xs">
+              <AvatarFallback className="bg-white/[0.06] text-xs text-white/70">
                 {video.creator.name.charAt(0)}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <h3 className="font-medium text-sm text-foreground line-clamp-2 leading-tight">
+              <h3 className="font-medium text-sm text-white line-clamp-2 leading-tight">
                 {video.title}
               </h3>
               <div className="flex items-center gap-1 mt-1">
-                <span className="text-xs text-muted-foreground">{video.creator.name}</span>
+                <span className="text-xs text-white/55">{video.creator.name}</span>
                 {video.creator.isVerified && <VerifiedBadge size="sm" />}
               </div>
-              <span className="text-xs text-muted-foreground">{formatViews(video.views)} views</span>
+              <span className="text-xs text-white/55">{formatViews(video.views)} views</span>
             </div>
           </div>
         </div>
