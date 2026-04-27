@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { Search as SearchIcon } from 'lucide-react';
@@ -9,15 +9,16 @@ import { PullToRefresh } from '@/components/ui/PullToRefresh';
 import { BrandSurface, BrandIcon, BrandUnderlineTabs } from '@/components/brand';
 import {
   ExploreFilters,
-  ExploreChipRow,
-  type ExploreChip,
   ExploreExpressions,
   ExploreVideos,
   ExploreImages,
   ExplorePosts,
-  type DateRange,
   type ExploreTab,
 } from '@/components/explore';
+import {
+  DEFAULT_FILTERS,
+  type ExploreFiltersState,
+} from '@/components/explore/ExploreFilters';
 
 const exploreTabs = [
   { id: 'expressions', label: 'Expressions' },
@@ -25,36 +26,6 @@ const exploreTabs = [
   { id: 'images', label: 'Images' },
   { id: 'posts', label: 'Posts' },
 ];
-
-const CHIPS_PER_TAB: Record<ExploreTab, ExploreChip[]> = {
-  expressions: [
-    { id: 'for-you', label: 'For You' },
-    { id: 'following', label: 'Following' },
-    { id: 'trending', label: 'Trending' },
-    { id: 'recent', label: 'Recent' },
-    { id: 'community', label: 'Community' },
-  ],
-  videos: [
-    { id: 'for-you', label: 'For You' },
-    { id: 'following', label: 'Following' },
-    { id: 'trending', label: 'Trending' },
-    { id: 'most-watched', label: 'Most Watched' },
-    { id: 'recent', label: 'Recent' },
-  ],
-  images: [
-    { id: 'trending', label: 'Trending' },
-    { id: 'popular-week', label: 'Popular This Week' },
-    { id: 'community', label: 'Community' },
-    { id: 'recent', label: 'Recent' },
-  ],
-  posts: [
-    { id: 'for-you', label: 'For You' },
-    { id: 'trending', label: 'Trending' },
-    { id: 'most-liked', label: 'Most Liked' },
-    { id: 'most-commented', label: 'Most Commented' },
-    { id: 'newest', label: 'Newest' },
-  ],
-};
 
 export default function Explore() {
   useTranslation();
@@ -65,21 +36,9 @@ export default function Explore() {
   );
   const [isLoading, setIsLoading] = useState(true);
 
-  // Active chip per tab — defaults to first chip for that tab
-  const [activeChipPerTab, setActiveChipPerTab] = useState<Record<ExploreTab, string>>({
-    expressions: CHIPS_PER_TAB.expressions[0].id,
-    videos: CHIPS_PER_TAB.videos[0].id,
-    images: CHIPS_PER_TAB.images[0].id,
-    posts: CHIPS_PER_TAB.posts[0].id,
-  });
-
-  // Date range per tab (advanced filter sheet)
-  const [dateRangePerTab, setDateRangePerTab] = useState<Record<ExploreTab, DateRange>>({
-    expressions: 'all',
-    videos: 'all',
-    images: 'all',
-    posts: 'all',
-  });
+  // Single filter state, persisted per tab. Switching tabs preserves each
+  // tab's filters; ExploreFilters operates on the active tab's slice only.
+  const [filters, setFilters] = useState<ExploreFiltersState>(DEFAULT_FILTERS);
 
   useEffect(() => {
     setIsLoading(true);
@@ -93,37 +52,20 @@ export default function Explore() {
 
   const handleRefresh = useCallback(async () => {
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsLoading(false);
   }, []);
-
-  const chips = CHIPS_PER_TAB[activeTab];
-  const activeChip = activeChipPerTab[activeTab];
-  const dateRange = dateRangePerTab[activeTab];
-
-  const triggerLabel = useMemo(() => {
-    const found = chips.find((c) => c.id === activeChip);
-    return found?.label ?? 'Filter';
-  }, [chips, activeChip]);
-
-  const handleChipChange = (id: string) => {
-    setActiveChipPerTab((prev) => ({ ...prev, [activeTab]: id }));
-  };
-
-  const handleDateRangeChange = (range: DateRange) => {
-    setDateRangePerTab((prev) => ({ ...prev, [activeTab]: range }));
-  };
 
   const renderTabContent = () => {
     switch (activeTab) {
       case 'expressions':
-        return <ExploreExpressions isLoading={isLoading} activeChip={activeChip} />;
+        return <ExploreExpressions isLoading={isLoading} filters={filters.expressions} />;
       case 'videos':
-        return <ExploreVideos isLoading={isLoading} activeChip={activeChip} />;
+        return <ExploreVideos isLoading={isLoading} filters={filters.videos} />;
       case 'images':
-        return <ExploreImages isLoading={isLoading} activeChip={activeChip} />;
+        return <ExploreImages isLoading={isLoading} filters={filters.images} />;
       case 'posts':
-        return <ExplorePosts isLoading={isLoading} activeChip={activeChip} />;
+        return <ExplorePosts isLoading={isLoading} filters={filters.posts} />;
       default:
         return null;
     }
@@ -146,14 +88,13 @@ export default function Explore() {
             </BrandSurface>
             <ExploreFilters
               activeTab={activeTab}
-              dateRange={dateRange}
-              onDateRangeChange={handleDateRangeChange}
-              triggerLabel={triggerLabel}
+              filters={filters}
+              onChange={setFilters}
             />
           </div>
         </div>
 
-        {/* Brand Underline Tab Bar — flex w-full, tabs flex-1 */}
+        {/* Brand Underline Tab Bar */}
         <div className="sticky top-[68px] z-10 bg-background/95 backdrop-blur px-3 border-b border-white/[0.08]">
           <BrandUnderlineTabs
             tabs={exploreTabs}
@@ -163,20 +104,10 @@ export default function Explore() {
           />
         </div>
 
-        {/* TikTok-style chip row — context per tab */}
-        <div className="sticky top-[110px] z-10 bg-background/95 backdrop-blur border-b border-white/[0.08]">
-          <ExploreChipRow
-            chips={chips}
-            value={activeChip}
-            onChange={handleChipChange}
-            ariaLabel={`${activeTab} filters`}
-          />
-        </div>
-
         <PullToRefresh onRefresh={handleRefresh} className="flex-1">
           <AnimatePresence mode="wait">
             <motion.div
-              key={`${activeTab}-${activeChip}`}
+              key={activeTab}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
