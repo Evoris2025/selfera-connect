@@ -347,7 +347,6 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       mediaPreviewUrls: [...state.mediaPreviewUrls, ...newUrls].slice(0, 4),
       mediaTypes: [...state.mediaTypes, ...newTypes].slice(0, 4),
       selectedGifUrl: null,
-      background: null,
     });
     event.target.value = '';
   };
