@@ -916,6 +916,46 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         <p className="text-xs text-destructive px-5 pb-2">Please select at least one topic.</p>
       )}
 
+      {/* Background — bottom sheet swatch picker */}
+      <Sheet open={bgSheetOpen} onOpenChange={setBgSheetOpen}>
+        <SheetContent
+          side="bottom"
+          className="rounded-t-2xl bg-background/95 backdrop-blur-md border-white/10 px-5 pt-3 pb-[calc(env(safe-area-inset-bottom)+24px)]"
+        >
+          <div className="w-10 h-1 rounded-full bg-white/20 mx-auto mt-2" />
+          <div className="text-[11px] text-white/40 uppercase tracking-wide mb-3 mt-4">Background</div>
+          <div className="grid grid-cols-5 gap-3">
+            <button
+              type="button"
+              onClick={() => { update({ background: null }); setBgSheetOpen(false); }}
+              className={cn(
+                'h-14 w-14 rounded-full flex items-center justify-center transition bg-secondary',
+                !state.background ? 'ring-2 ring-white' : 'hover:ring-2 hover:ring-white/30'
+              )}
+              aria-label="Plain background"
+            >
+              <TypeIcon className="h-5 w-5" />
+            </button>
+            {POST_BACKGROUND_PRESETS.map((preset, i) => {
+              const active = state.background?.value === preset.value;
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => { update({ background: preset }); setBgSheetOpen(false); }}
+                  className={cn(
+                    'h-14 w-14 rounded-full transition',
+                    active ? 'ring-2 ring-white' : 'hover:ring-2 hover:ring-white/30'
+                  )}
+                  style={{ background: preset.value }}
+                  aria-label={`Background ${i + 1}`}
+                />
+              );
+            })}
+          </div>
+        </SheetContent>
+      </Sheet>
+
       {/* Add to your post — bottom sheet with icon-tile grid */}
       <Sheet open={addSheetOpen} onOpenChange={setAddSheetOpen}>
         <SheetContent
