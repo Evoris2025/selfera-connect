@@ -1,12 +1,14 @@
 import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Play, Clock, Users, Compass, ChevronRight, TrendingUp, Eye, Upload } from 'lucide-react';
+import { Play, Clock, Users, Compass, ChevronRight, TrendingUp, Eye, Upload, type LucideIcon } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
 import { PullToRefresh } from '@/components/ui/PullToRefresh';
 import { ExploreFilters, FilterType, DateRange } from './ExploreFilters';
+import { BrandSectionLabel, BrandIcon } from '@/components/brand';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 // Mock video data
 const forYouVideos = [
@@ -92,16 +94,17 @@ interface VideoCardProps {
 }
 
 function VideoCard({ video, index }: VideoCardProps) {
+  const { primary: themePrimary } = useThemeColor();
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
     >
-      <Card className="overflow-hidden cursor-pointer group hover:border-primary/30 transition-all w-full">
-        <div className="relative aspect-video bg-secondary overflow-hidden">
-          <img 
-            src={video.thumbnail} 
+      <Card className="overflow-hidden cursor-pointer group transition-all w-full bg-black border border-white/[0.08] rounded-md hover:border-white/20">
+        <div className="relative aspect-video bg-black overflow-hidden">
+          <img
+            src={video.thumbnail}
             alt={video.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
@@ -110,8 +113,11 @@ function VideoCard({ video, index }: VideoCardProps) {
             {video.duration}
           </div>
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <div className="w-14 h-14 bg-primary/90 flex items-center justify-center">
-              <Play className="h-6 w-6 text-primary-foreground fill-current ml-1" />
+            <div
+              className="w-14 h-14 rounded-full bg-black/60 flex items-center justify-center border"
+              style={{ borderColor: themePrimary }}
+            >
+              <Play className="h-6 w-6 fill-current ml-1" style={{ color: themePrimary }} />
             </div>
           </div>
         </div>
@@ -120,19 +126,19 @@ function VideoCard({ video, index }: VideoCardProps) {
           <div className="flex gap-3">
             <Avatar className="h-9 w-9 flex-shrink-0">
               <AvatarImage src={video.creator.avatar} alt={video.creator.name} />
-              <AvatarFallback className="bg-secondary text-xs">
+              <AvatarFallback className="bg-white/[0.06] text-xs text-white/70">
                 {video.creator.name.charAt(0)}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <h3 className="font-medium text-sm text-foreground line-clamp-2 leading-tight">
+              <h3 className="font-medium text-sm text-white line-clamp-2 leading-tight">
                 {video.title}
               </h3>
               <div className="flex items-center gap-1 mt-1">
-                <span className="text-xs text-muted-foreground">{video.creator.name}</span>
+                <span className="text-xs text-white/55">{video.creator.name}</span>
                 {video.creator.isVerified && <VerifiedBadge size="sm" />}
               </div>
-              <span className="text-xs text-muted-foreground">{formatViews(video.views)} views</span>
+              <span className="text-xs text-white/55">{formatViews(video.views)} views</span>
             </div>
           </div>
         </div>
@@ -160,7 +166,7 @@ function VideoCardSkeleton() {
 
 interface VideoSectionProps {
   title: string;
-  icon: React.ReactNode;
+  icon: LucideIcon;
   videos: typeof forYouVideos;
   isLoading?: boolean;
 }
@@ -172,12 +178,12 @@ function VideoSection({ title, icon, videos, isLoading }: VideoSectionProps) {
     <section className="space-y-3">
       <div className="flex items-center justify-between px-4">
         <div className="flex items-center gap-2">
-          {icon}
-          <h2 className="font-semibold text-foreground">{title}</h2>
+          <BrandIcon icon={icon} size={16} />
+          <BrandSectionLabel>{title}</BrandSectionLabel>
         </div>
-        <button className="flex items-center gap-1 text-sm text-primary hover:text-primary/80 transition-colors">
+        <button className="flex items-center gap-1 text-[11px] uppercase tracking-[0.1em] text-white/55 hover:text-white/80 transition-colors">
           See all
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-3.5 w-3.5" />
         </button>
       </div>
       <div className="grid grid-cols-2 gap-1 px-4">
@@ -225,40 +231,11 @@ export function ExploreVideos({ isLoading = false }: ExploreVideosProps) {
           />
         </div>
 
-        <VideoSection
-          title="For you right now"
-          icon={<Compass className="h-5 w-5 text-primary" />}
-          videos={forYouVideos}
-          isLoading={loading}
-        />
-        
-        <VideoSection
-          title="Creators you follow"
-          icon={<Users className="h-5 w-5 text-emerald-400" />}
-          videos={followingVideos}
-          isLoading={loading}
-        />
-        
-        <VideoSection
-          title="Trending videos"
-          icon={<TrendingUp className="h-5 w-5 text-rose-500" />}
-          videos={trendingVideos}
-          isLoading={loading}
-        />
-        
-        <VideoSection
-          title="Most watched"
-          icon={<Eye className="h-5 w-5 text-accent" />}
-          videos={mostWatchedVideos}
-          isLoading={loading}
-        />
-        
-        <VideoSection
-          title="Recently uploaded"
-          icon={<Upload className="h-5 w-5 text-muted-foreground" />}
-          videos={recentVideos}
-          isLoading={loading}
-        />
+        <VideoSection title="FOR YOU RIGHT NOW" icon={Compass} videos={forYouVideos} isLoading={loading} />
+        <VideoSection title="CREATORS YOU FOLLOW" icon={Users} videos={followingVideos} isLoading={loading} />
+        <VideoSection title="TRENDING VIDEOS" icon={TrendingUp} videos={trendingVideos} isLoading={loading} />
+        <VideoSection title="MOST WATCHED" icon={Eye} videos={mostWatchedVideos} isLoading={loading} />
+        <VideoSection title="RECENTLY UPLOADED" icon={Upload} videos={recentVideos} isLoading={loading} />
       </div>
     </PullToRefresh>
   );

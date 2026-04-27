@@ -1,12 +1,13 @@
 import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, TrendingUp, Clock, Users } from 'lucide-react';
+import { Sparkles, TrendingUp, Clock, Users, type LucideIcon } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
 import { PullToRefresh } from '@/components/ui/PullToRefresh';
 import { ExploreFilters, FilterType, DateRange } from './ExploreFilters';
+import { BrandSectionLabel, BrandIcon } from '@/components/brand';
 import { cn } from '@/lib/utils';
 
 // Mock data for expressions
@@ -56,19 +57,19 @@ function ExpressionCard({ expression, index }: ExpressionCardProps) {
           <div className="flex items-center gap-1.5">
             <Avatar className="h-6 w-6 ring-2 ring-white/30">
               <AvatarImage src={expression.user.avatar} />
-              <AvatarFallback className="text-[10px] bg-primary/80">
-                {expression.user.name.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
-            <span className="text-white text-xs font-medium truncate">
-              {expression.user.name}
-            </span>
-            {expression.user.isVerified && <VerifiedBadge size="sm" />}
-          </div>
+            <AvatarFallback className="text-[10px] bg-white/[0.08] text-white/70">
+              {expression.user.name.charAt(0)}
+            </AvatarFallback>
+          </Avatar>
+          <span className="text-white text-xs font-medium truncate">
+            {expression.user.name}
+          </span>
+          {expression.user.isVerified && <VerifiedBadge size="sm" />}
         </div>
+      </div>
 
-        {/* Ring indicator */}
-        <div className="absolute inset-0 ring-2 ring-inset ring-primary/50 opacity-0 group-hover:opacity-100 transition-opacity" />
+      {/* Ring indicator */}
+      <div className="absolute inset-0 ring-2 ring-inset ring-white/30 opacity-0 group-hover:opacity-100 transition-opacity" />
       </div>
     </motion.div>
   );
@@ -84,7 +85,7 @@ function ExpressionCardSkeleton() {
 
 interface ExpressionSectionProps {
   title: string;
-  icon: React.ReactNode;
+  icon: LucideIcon;
   expressions: typeof forYouExpressions;
   isLoading?: boolean;
 }
@@ -95,8 +96,8 @@ function ExpressionSection({ title, icon, expressions, isLoading }: ExpressionSe
   return (
     <section className="space-y-3">
       <div className="flex items-center gap-2 px-4">
-        {icon}
-        <h2 className="font-semibold text-foreground">{title}</h2>
+        <BrandIcon icon={icon} size={16} />
+        <BrandSectionLabel>{title}</BrandSectionLabel>
       </div>
       <div className="flex gap-1 overflow-x-auto px-4 pb-2 scrollbar-hide">
         {isLoading ? (
@@ -144,33 +145,10 @@ export function ExploreExpressions({ isLoading = false }: ExploreExpressionsProp
           />
         </div>
 
-        <ExpressionSection
-          title="For You"
-          icon={<Sparkles className="h-5 w-5 text-primary" />}
-          expressions={forYouExpressions}
-          isLoading={loading}
-        />
-        
-        <ExpressionSection
-          title="Trending Expressions"
-          icon={<TrendingUp className="h-5 w-5 text-rose-500" />}
-          expressions={trendingExpressions}
-          isLoading={loading}
-        />
-        
-        <ExpressionSection
-          title="Recent Expressions"
-          icon={<Clock className="h-5 w-5 text-accent" />}
-          expressions={recentExpressions}
-          isLoading={loading}
-        />
-        
-        <ExpressionSection
-          title="From Communities You Follow"
-          icon={<Users className="h-5 w-5 text-emerald-400" />}
-          expressions={communityExpressions}
-          isLoading={loading}
-        />
+        <ExpressionSection title="FOR YOU" icon={Sparkles} expressions={forYouExpressions} isLoading={loading} />
+        <ExpressionSection title="TRENDING EXPRESSIONS" icon={TrendingUp} expressions={trendingExpressions} isLoading={loading} />
+        <ExpressionSection title="RECENT EXPRESSIONS" icon={Clock} expressions={recentExpressions} isLoading={loading} />
+        <ExpressionSection title="FROM COMMUNITIES YOU FOLLOW" icon={Users} expressions={communityExpressions} isLoading={loading} />
       </div>
     </PullToRefresh>
   );

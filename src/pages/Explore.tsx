@@ -1,29 +1,29 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
-import { Search as SearchIcon, Sparkles, Play, Image, FileText } from 'lucide-react';
+import { Search as SearchIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AppLayout } from '@/components/AppLayout';
 import { Input } from '@/components/ui/input';
-import { PolishedTabBar, type TabItem } from '@/components/ui/PolishedTabBar';
 import { PullToRefresh } from '@/components/ui/PullToRefresh';
-import { 
-  ExploreFilters, 
-  ExploreExpressions, 
-  ExploreVideos, 
-  ExploreImages, 
+import { BrandSurface, BrandIcon, BrandUnderlineTabs } from '@/components/brand';
+import {
+  ExploreFilters,
+  ExploreExpressions,
+  ExploreVideos,
+  ExploreImages,
   ExplorePosts,
   type FilterType,
-  type DateRange 
+  type DateRange,
 } from '@/components/explore';
 
 type ExploreTab = 'expressions' | 'videos' | 'images' | 'posts';
 
-const exploreTabs: TabItem[] = [
-  { id: 'expressions', label: 'Expressions', icon: Sparkles },
-  { id: 'videos', label: 'Videos', icon: Play },
-  { id: 'images', label: 'Images', icon: Image },
-  { id: 'posts', label: 'Posts', icon: FileText },
+const exploreTabs = [
+  { id: 'expressions', label: 'Expressions' },
+  { id: 'videos', label: 'Videos' },
+  { id: 'images', label: 'Images' },
+  { id: 'posts', label: 'Posts' },
 ];
 
 export default function Explore() {
@@ -72,7 +72,6 @@ export default function Explore() {
   // Pull-to-refresh handler
   const handleRefresh = useCallback(async () => {
     setIsLoading(true);
-    // Simulate network request delay
     await new Promise(resolve => setTimeout(resolve, 1000));
     setIsLoading(false);
   }, []);
@@ -98,17 +97,17 @@ export default function Explore() {
     <AppLayout title={t('nav.explore')}>
       <div className="flex flex-col min-h-full">
         {/* Search + Filter Bar */}
-        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-border">
+        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-white/[0.08]">
           <div className="p-3 flex items-center gap-2">
-            <div className="relative flex-1">
-              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <BrandSurface className="relative flex-1 flex items-center h-11 px-4 rounded-full">
+              <BrandIcon icon={SearchIcon} size={18} />
               <Input
-                placeholder="Search..."
+                placeholder="search SelfERA"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-secondary border-none h-10 rounded-xl"
+                className="flex-1 ml-2 bg-transparent border-0 h-full px-0 text-white text-[14px] placeholder:text-white/45 focus-visible:ring-0 focus-visible:ring-offset-0"
               />
-            </div>
+            </BrandSurface>
             <ExploreFilters
               activeFilter={currentFilters.filter}
               dateRange={currentFilters.dateRange}
@@ -118,14 +117,13 @@ export default function Explore() {
           </div>
         </div>
 
-        {/* Polished Tab Bar */}
-        <div className="sticky top-[61px] z-10 bg-background/95 backdrop-blur px-3 py-2 border-b border-border">
-          <PolishedTabBar
+        {/* Brand Underline Tab Bar */}
+        <div className="sticky top-[68px] z-10 bg-background/95 backdrop-blur px-3 border-b border-white/[0.08]">
+          <BrandUnderlineTabs
             tabs={exploreTabs}
-            activeTab={activeTab}
-            onTabChange={(tabId) => setActiveTab(tabId as ExploreTab)}
-            showLabelsOnHover
-            showLabelsOnLargeScreens
+            value={activeTab}
+            onChange={(tabId) => setActiveTab(tabId as ExploreTab)}
+            ariaLabel="Explore content type"
           />
         </div>
 

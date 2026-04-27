@@ -1,11 +1,13 @@
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { TrendingUp, Flame, Users, Clock, Heart, X, Share2, Bookmark } from 'lucide-react';
+import { TrendingUp, Flame, Users, Clock, Heart, X, Share2, Bookmark, type LucideIcon } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { PullToRefresh } from '@/components/ui/PullToRefresh';
 import { ExploreFilters, FilterType, DateRange } from './ExploreFilters';
+import { BrandSectionLabel, BrandIcon } from '@/components/brand';
+import { useThemeColor } from '@/hooks/useThemeColor';
 import { cn } from '@/lib/utils';
 
 // Mock image data
@@ -50,12 +52,12 @@ function ImageCard({ image, index, onClick }: ImageCardProps) {
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: index * 0.03 }}
-      className="relative group cursor-pointer overflow-hidden aspect-square"
+      className="relative group cursor-pointer overflow-hidden aspect-square border border-white/[0.08] rounded-md"
       onClick={onClick}
     >
-      <img 
-        src={image.url} 
-        alt="" 
+      <img
+        src={image.url}
+        alt=""
         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
       />
       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
@@ -127,7 +129,7 @@ function ImageViewer({ image, onClose }: ImageViewerProps) {
 
 interface ImageSectionProps {
   title: string;
-  icon: React.ReactNode;
+  icon: LucideIcon;
   images: typeof trendingImages;
   isLoading?: boolean;
   onImageClick: (image: typeof trendingImages[0]) => void;
@@ -139,8 +141,8 @@ function ImageSection({ title, icon, images, isLoading, onImageClick }: ImageSec
   return (
     <section className="space-y-3">
       <div className="flex items-center gap-2 px-4">
-        {icon}
-        <h2 className="font-semibold text-foreground">{title}</h2>
+        <BrandIcon icon={icon} size={16} />
+        <BrandSectionLabel>{title}</BrandSectionLabel>
       </div>
       <div className="grid grid-cols-3 gap-1 px-4">
         {isLoading ? (
@@ -149,9 +151,9 @@ function ImageSection({ title, icon, images, isLoading, onImageClick }: ImageSec
           ))
         ) : (
           images.map((image, index) => (
-            <ImageCard 
-              key={image.id} 
-              image={image} 
+            <ImageCard
+              key={image.id}
+              image={image}
               index={index}
               onClick={() => onImageClick(image)}
             />
@@ -195,32 +197,32 @@ export function ExploreImages({ isLoading = false }: ExploreImagesProps) {
           </div>
 
           <ImageSection
-            title="Trending visuals"
-            icon={<TrendingUp className="h-5 w-5 text-rose-500" />}
+            title="TRENDING VISUALS"
+            icon={TrendingUp}
             images={trendingImages}
             isLoading={loading}
             onImageClick={setSelectedImage}
           />
-          
+
           <ImageSection
-            title="Popular this week"
-            icon={<Flame className="h-5 w-5 text-orange-500" />}
+            title="POPULAR THIS WEEK"
+            icon={Flame}
             images={popularWeekImages}
             isLoading={loading}
             onImageClick={setSelectedImage}
           />
-          
+
           <ImageSection
-            title="From communities you follow"
-            icon={<Users className="h-5 w-5 text-emerald-400" />}
+            title="FROM COMMUNITIES YOU FOLLOW"
+            icon={Users}
             images={communityImages}
             isLoading={loading}
             onImageClick={setSelectedImage}
           />
-          
+
           <ImageSection
-            title="Recently added"
-            icon={<Clock className="h-5 w-5 text-muted-foreground" />}
+            title="RECENTLY ADDED"
+            icon={Clock}
             images={recentImages}
             isLoading={loading}
             onImageClick={setSelectedImage}

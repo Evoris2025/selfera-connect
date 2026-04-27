@@ -1,12 +1,13 @@
 import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, TrendingUp, Heart, MessageCircle, Clock, ChevronRight } from 'lucide-react';
+import { Sparkles, TrendingUp, Heart, MessageCircle, Clock, ChevronRight, type LucideIcon } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
 import { PullToRefresh } from '@/components/ui/PullToRefresh';
 import { ExploreFilters, FilterType, DateRange } from './ExploreFilters';
+import { BrandSectionLabel, BrandIcon } from '@/components/brand';
 import { cn } from '@/lib/utils';
 
 // Mock post data
@@ -91,7 +92,7 @@ function PostCard({ post, index }: PostCardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
     >
-      <Card className="p-4 hover:border-primary/30 transition-colors cursor-pointer">
+      <Card className="p-4 bg-black border border-white/[0.08] rounded-md hover:border-white/20 transition-colors cursor-pointer">
         {/* Header */}
         <div className="flex items-center gap-3 mb-3">
           <Avatar className="h-10 w-10">
@@ -154,7 +155,7 @@ function PostCardSkeleton() {
 
 interface PostSectionProps {
   title: string;
-  icon: React.ReactNode;
+  icon: LucideIcon;
   posts: typeof forYouPosts;
   isLoading?: boolean;
   showViewAll?: boolean;
@@ -167,13 +168,13 @@ function PostSection({ title, icon, posts, isLoading, showViewAll = true }: Post
     <section className="space-y-3">
       <div className="flex items-center justify-between px-4">
         <div className="flex items-center gap-2">
-          {icon}
-          <h2 className="font-semibold text-foreground">{title}</h2>
+          <BrandIcon icon={icon} size={16} />
+          <BrandSectionLabel>{title}</BrandSectionLabel>
         </div>
         {showViewAll && (
-          <button className="flex items-center gap-1 text-sm text-primary hover:text-primary/80 transition-colors">
+          <button className="flex items-center gap-1 text-[11px] uppercase tracking-[0.1em] text-white/55 hover:text-white/80 transition-colors">
             See all
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-3.5 w-3.5" />
           </button>
         )}
       </div>
@@ -222,40 +223,11 @@ export function ExplorePosts({ isLoading = false }: ExplorePostsProps) {
           />
         </div>
 
-        <PostSection
-          title="For you"
-          icon={<Sparkles className="h-5 w-5 text-primary" />}
-          posts={forYouPosts}
-          isLoading={loading}
-        />
-        
-        <PostSection
-          title="Trending posts"
-          icon={<TrendingUp className="h-5 w-5 text-rose-500" />}
-          posts={trendingPosts}
-          isLoading={loading}
-        />
-        
-        <PostSection
-          title="Most liked"
-          icon={<Heart className="h-5 w-5 text-rose-500" />}
-          posts={mostLikedPosts}
-          isLoading={loading}
-        />
-        
-        <PostSection
-          title="Most commented"
-          icon={<MessageCircle className="h-5 w-5 text-accent" />}
-          posts={mostCommentedPosts}
-          isLoading={loading}
-        />
-        
-        <PostSection
-          title="Newest"
-          icon={<Clock className="h-5 w-5 text-muted-foreground" />}
-          posts={newestPosts}
-          isLoading={loading}
-        />
+        <PostSection title="FOR YOU" icon={Sparkles} posts={forYouPosts} isLoading={loading} />
+        <PostSection title="TRENDING POSTS" icon={TrendingUp} posts={trendingPosts} isLoading={loading} />
+        <PostSection title="MOST LIKED" icon={Heart} posts={mostLikedPosts} isLoading={loading} />
+        <PostSection title="MOST COMMENTED" icon={MessageCircle} posts={mostCommentedPosts} isLoading={loading} />
+        <PostSection title="NEWEST" icon={Clock} posts={newestPosts} isLoading={loading} />
       </div>
     </PullToRefresh>
   );
