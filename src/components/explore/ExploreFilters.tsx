@@ -129,6 +129,14 @@ const ORIGIN_OPTIONS: { value: Origin; label: string }[] = [
   { value: 'verified', label: 'Verified creators only' },
 ];
 
+const TIER_OPTIONS: { value: VerificationTier; label: string }[] = [
+  { value: 'orange', label: 'Creator' },
+  { value: 'purple', label: 'Practitioner' },
+  { value: 'blue', label: 'Organisation' },
+  { value: 'green', label: 'Supporter' },
+  { value: 'pink', label: 'Founder' },
+];
+
 const TAB_TITLE: Record<ExploreTab, string> = {
   expressions: 'EXPRESSIONS',
   videos: 'VIDEOS',
