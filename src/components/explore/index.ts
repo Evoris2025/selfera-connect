@@ -5,3 +5,5 @@ export { ExploreImages } from './ExploreImages';
 export { ExplorePosts } from './ExplorePosts';
 export { TrendingNowRail } from './TrendingNowRail';
 export { ExploreSearchOverlay } from './ExploreSearchOverlay';
+export { ExploreSearchResults } from './ExploreSearchResults';
+export { ExploreVerifiedTick } from './ExploreVerifiedTick';
