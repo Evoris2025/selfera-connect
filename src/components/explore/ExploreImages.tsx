@@ -110,19 +110,16 @@ function ImageViewer({ image, onClose }: { image: ImageItem | null; onClose: () 
 export function ExploreImages({
   isLoading = false,
   filters,
-  topic = null,
 }: {
   isLoading?: boolean;
   filters?: ImagesFilters;
-  /** Selected trending topic from ExploreTopicChips. TODO(round-2): wire to data filter. */
-  topic?: string | null;
 }) {
   const { primary: themePrimary } = useThemeColor();
   const [selected, setSelected] = useState<ImageItem | null>(null);
   const sortBy = filters?.sortBy ?? 'for-you';
   const format = filters?.format ?? 'all';
   const source = applyFormat(SORT_TO_DATA[sortBy] ?? SORT_TO_DATA['for-you'], format);
-  const resetKey = `${sortBy}|${filters?.timePeriod ?? 'all-time'}|${format}|${filters?.origin ?? 'all'}|${topic ?? 'none'}`;
+  const resetKey = `${sortBy}|${filters?.timePeriod ?? 'all-time'}|${format}|${filters?.origin ?? 'all'}`;
   const { items, sentinelRef, isLoadingMore, hasMore } = useInfiniteList({
     source,
     pageSize: 12,
