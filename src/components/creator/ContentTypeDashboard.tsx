@@ -26,9 +26,12 @@ interface ContentTypeDashboardProps {
   onClose: () => void;
 }
 
-// SelfERA brand gradient — same stops used on the composer hero, avatar ring,
-// and the "create POST." title.
-const BRAND_GRADIENT = 'linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-mid)), hsl(var(--gradient-end)))';
+// Fixed SelfERA brand gradient (magenta → violet → teal). Stays constant
+// regardless of the user's selected color theme — it's app identity, not
+// personal identity. Matches the gradient used on the composer's
+// `create POST.` title, the hairline divider, and the avatar ring fallback.
+const BRAND_GRADIENT =
+  'linear-gradient(135deg, #d946ef, #8b5cf6, #2dd4bf)';
 
 function CreateTile({
   type,
