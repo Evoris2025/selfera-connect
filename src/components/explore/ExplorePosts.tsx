@@ -223,40 +223,11 @@ export function ExplorePosts({ isLoading = false }: ExplorePostsProps) {
           />
         </div>
 
-        <PostSection
-          title="For you"
-          icon={<Sparkles className="h-5 w-5 text-primary" />}
-          posts={forYouPosts}
-          isLoading={loading}
-        />
-        
-        <PostSection
-          title="Trending posts"
-          icon={<TrendingUp className="h-5 w-5 text-rose-500" />}
-          posts={trendingPosts}
-          isLoading={loading}
-        />
-        
-        <PostSection
-          title="Most liked"
-          icon={<Heart className="h-5 w-5 text-rose-500" />}
-          posts={mostLikedPosts}
-          isLoading={loading}
-        />
-        
-        <PostSection
-          title="Most commented"
-          icon={<MessageCircle className="h-5 w-5 text-accent" />}
-          posts={mostCommentedPosts}
-          isLoading={loading}
-        />
-        
-        <PostSection
-          title="Newest"
-          icon={<Clock className="h-5 w-5 text-muted-foreground" />}
-          posts={newestPosts}
-          isLoading={loading}
-        />
+        <PostSection title="FOR YOU" icon={Sparkles} posts={forYouPosts} isLoading={loading} />
+        <PostSection title="TRENDING POSTS" icon={TrendingUp} posts={trendingPosts} isLoading={loading} />
+        <PostSection title="MOST LIKED" icon={Heart} posts={mostLikedPosts} isLoading={loading} />
+        <PostSection title="MOST COMMENTED" icon={MessageCircle} posts={mostCommentedPosts} isLoading={loading} />
+        <PostSection title="NEWEST" icon={Clock} posts={newestPosts} isLoading={loading} />
       </div>
     </PullToRefresh>
   );
