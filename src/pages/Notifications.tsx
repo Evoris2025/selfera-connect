@@ -59,8 +59,8 @@ interface Notification {
 
 const mockNotifications: Notification[] = [
   { id: '1', type: 'follow', users: [{ name: 'Dr. Sarah', handle: 'drsarah' }], action: 'started following you', time: '1h', read: false, showFollowButton: true, targetType: 'profile', targetId: 'drsarah' },
-  { id: '2', type: 'reaction', users: [{ name: 'Mind Matters', handle: 'mindmatters' }], action: 'liked your post', time: '5h', read: false, targetType: 'post', targetId: '124', thumbnailUrl: '/placeholder.svg' },
-  { id: '3', type: 'comment', users: [{ name: 'Jamie', handle: 'jamie_journey' }], action: 'commented on your post', preview: 'This is so helpful, thank you! 💙', time: '1d', read: true, targetType: 'post', targetId: '125', thumbnailUrl: '/placeholder.svg' },
+  { id: '2', type: 'reaction', users: [{ name: 'Mind Matters', handle: 'mindmatters' }], action: 'liked your post', time: '5h', read: false, targetType: 'post', targetId: '124' },
+  { id: '3', type: 'comment', users: [{ name: 'Jamie', handle: 'jamie_journey' }], action: 'commented on your post', preview: 'This is so helpful, thank you! 💙', time: '1d', read: true, targetType: 'post', targetId: '125' },
   { id: '4', type: 'mention', users: [{ name: 'Wellness Hub', handle: 'wellnesshub' }], action: 'mentioned you in a comment', preview: '@you Thanks for the tips!', time: '2d', read: true, targetType: 'post', targetId: '126' },
   { id: '5', type: 'community', users: [{ name: 'Mental Health Support', handle: 'mhsupport' }], action: 'new activity in your community', time: '3d', read: true, targetType: 'community', targetId: 'mhsupport' },
   { id: '6', type: 'verification', action: 'your verification request was approved', time: '1w', read: true },
@@ -199,19 +199,23 @@ function NotificationItem({
           </div>
 
           {notification.showFollowButton ? (
-            <Button
-              size="sm"
-              variant={isFollowing ? 'outline' : 'default'}
-              className={cn(
-                'shrink-0 h-8 px-4 rounded-lg text-[13px] font-semibold',
-                isFollowing && 'border-white/[0.12] bg-transparent',
-              )}
+            <button
+              type="button"
               onClick={(e) => { e.stopPropagation(); setIsFollowing(!isFollowing); }}
+              className={cn(
+                'shrink-0 h-8 px-3.5 rounded-full border bg-transparent text-[12px] uppercase tracking-[0.1em]',
+                isFollowing && 'border-white/15 text-white/55',
+              )}
+              style={
+                isFollowing
+                  ? undefined
+                  : { borderColor: primaryColor, color: primaryColor }
+              }
             >
               {isFollowing ? 'Following' : 'Follow'}
-            </Button>
-          ) : notification.thumbnailUrl ? (
-            <div className="w-11 h-11 rounded-md overflow-hidden shrink-0 border border-white/[0.08]">
+            </button>
+          ) : notification.thumbnailUrl && !notification.thumbnailUrl.endsWith('/placeholder.svg') ? (
+            <div className="w-11 h-11 rounded-md overflow-hidden shrink-0 border border-white/[0.08] bg-black">
               <img src={notification.thumbnailUrl} alt="" className="w-full h-full object-cover" />
             </div>
           ) : null}
@@ -274,7 +278,7 @@ export default function Notifications() {
 
         {/* In-page brand title */}
         <div className="px-4 pt-2 pb-2">
-          <BrandScreenTitle setup="your" emphasis="INBOX" size="screen" />
+          <BrandScreenTitle emphasis="NOTIFICATIONS" size="screen" />
         </div>
 
         {/* Content */}
