@@ -9,26 +9,17 @@ import {
   ArrowLeft,
   X,
   ChevronRight,
-  RefreshCw,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useFeedData } from '@/contexts/FeedDataContext';
-import { UnifiedDraftsDrawer } from './shared/UnifiedDraftsDrawer';
+import { ContinueWorkingSheet } from './shared/ContinueWorkingSheet';
 import { BrandMark } from '@/components/BrandMark';
 import { getTodayPrompt } from '@/lib/dailyPrompts';
 import { useCreatorRowBackgrounds, type CreatorRowType } from '@/hooks/useCreatorRowBackgrounds';
+import { ACCENT, type ContentType } from './shared/contentTypeAccents';
 
-export type ContentType = 'expression' | 'video' | 'image' | 'post';
-
-// Per-category SelfERA brand accents — used for the left-edge bar and icon tint.
-// NOT user theme — user theme is reserved for personal identity surfaces.
-const ACCENT: Record<ContentType, string> = {
-  expression: '#d946ef', // SelfERA magenta
-  video:      '#8b5cf6', // SelfERA violet
-  image:      '#f59e0b', // SelfERA amber (Photo)
-  post:       '#2dd4bf', // SelfERA teal
-};
+export type { ContentType };
 
 interface ContentTypeCard {
   id: ContentType;
