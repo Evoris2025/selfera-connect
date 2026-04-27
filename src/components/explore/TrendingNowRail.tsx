@@ -168,32 +168,69 @@ function PostCard({ item, index }: { item: TrendingPost; index: number }) {
   );
 }
 
+type AnyItem = TrendingExpression | TrendingVideo | TrendingImage | TrendingPost;
+
+const MAX_LOOPS = 5;
+const NEAR_EDGE_PX = 200;
+
+function getSeedForTab(tab: ExploreTab): AnyItem[] {
+  switch (tab) {
+    case 'expressions': return trendingExpressions;
+    case 'videos': return trendingVideos;
+    case 'images': return trendingImages;
+    case 'posts': return trendingPosts;
+    default: return [];
+  }
+}
+
+function remapIds(seed: AnyItem[], loop: number): AnyItem[] {
+  return seed.map((it) => ({ ...it, id: `${it.id}-loop${loop}` }) as AnyItem);
+}
+
 export function TrendingNowRail({ activeTab }: TrendingNowRailProps) {
   const railRef = useRef<HTMLDivElement | null>(null);
+  const loopCountRef = useRef<number>(1);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const [items, setItems] = useState<AnyItem[]>(() => getSeedForTab(activeTab));
 
-  const updateScrollState = () => {
+  // Reset items + scroll position whenever tab changes.
+  useEffect(() => {
+    loopCountRef.current = 1;
+    setItems(getSeedForTab(activeTab));
     const el = railRef.current;
-    if (!el) return;
-    const { scrollLeft, scrollWidth, clientWidth } = el;
-    setCanScrollLeft(scrollLeft > 1);
-    setCanScrollRight(scrollWidth - clientWidth - scrollLeft > 1);
-  };
+    if (el) el.scrollLeft = 0;
+  }, [activeTab]);
 
+  // Scroll-state listener + near-edge append. Recomputes when items grow.
   useEffect(() => {
     const el = railRef.current;
     if (!el) return;
-    // Reset scroll when tab changes
-    el.scrollLeft = 0;
-    updateScrollState();
-    el.addEventListener('scroll', updateScrollState, { passive: true });
-    window.addEventListener('resize', updateScrollState);
-    return () => {
-      el.removeEventListener('scroll', updateScrollState);
-      window.removeEventListener('resize', updateScrollState);
+
+    const update = () => {
+      const { scrollLeft, scrollWidth, clientWidth } = el;
+      setCanScrollLeft(scrollLeft > 1);
+      setCanScrollRight(scrollWidth - clientWidth - scrollLeft > 1);
+
+      // Near right edge → silently append another copy of the seed (capped).
+      if (
+        scrollWidth - clientWidth - scrollLeft < NEAR_EDGE_PX &&
+        loopCountRef.current < MAX_LOOPS
+      ) {
+        loopCountRef.current += 1;
+        const seed = getSeedForTab(activeTab);
+        setItems((prev) => [...prev, ...remapIds(seed, loopCountRef.current)]);
+      }
     };
-  }, [activeTab]);
+
+    update();
+    el.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    return () => {
+      el.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
+    };
+  }, [activeTab, items.length]);
 
   const scrollByDirection = (dir: 'left' | 'right') => {
     const el = railRef.current;
@@ -205,19 +242,19 @@ export function TrendingNowRail({ activeTab }: TrendingNowRailProps) {
   const renderCards = () => {
     switch (activeTab) {
       case 'expressions':
-        return trendingExpressions.map((item, i) => (
+        return (items as TrendingExpression[]).map((item, i) => (
           <ExpressionCard key={item.id} item={item} index={i} />
         ));
       case 'videos':
-        return trendingVideos.map((item, i) => (
+        return (items as TrendingVideo[]).map((item, i) => (
           <VideoCard key={item.id} item={item} index={i} />
         ));
       case 'images':
-        return trendingImages.map((item, i) => (
+        return (items as TrendingImage[]).map((item, i) => (
           <ImageCard key={item.id} item={item} index={i} />
         ));
       case 'posts':
-        return trendingPosts.map((item, i) => (
+        return (items as TrendingPost[]).map((item, i) => (
           <PostCard key={item.id} item={item} index={i} />
         ));
       default:
