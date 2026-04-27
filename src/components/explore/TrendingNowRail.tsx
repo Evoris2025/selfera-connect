@@ -60,14 +60,13 @@ function ExpressionCard({ item, index }: { item: TrendingExpression; index: numb
       </span>
       <img src={item.thumbnail} alt="" loading="lazy" className="w-full h-full object-cover" />
       <div className="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black/85 via-black/30 to-transparent pointer-events-none" />
-      <span className="absolute bottom-2 left-2 z-10 flex items-center gap-1.5 text-white text-[10px] font-medium">
-        <Avatar className="h-4 w-4 flex-shrink-0">
-          <AvatarImage src={item.user.avatar} alt={item.user.handle} />
-          <AvatarFallback className="text-[7px] bg-white/[0.08] text-white/70">
-            {item.user.handle.charAt(0)}
-          </AvatarFallback>
-        </Avatar>
-        <span className="truncate max-w-[60px]">{item.user.handle}</span>
+      <span className="absolute bottom-2 left-2 z-10 flex items-center gap-1.5">
+        <img
+          src={item.user.avatar}
+          alt=""
+          loading="lazy"
+          className="w-4 h-4 rounded-full object-cover"
+        />
       </span>
       <span className="absolute bottom-2 right-2 z-10 flex items-center gap-1 text-white/90 text-[10px] font-medium">
         <Eye className="w-2.5 h-2.5" strokeWidth={1.5} />
