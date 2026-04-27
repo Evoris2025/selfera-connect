@@ -470,6 +470,7 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                 <p className="text-xs text-white/50 text-center max-w-[240px]">
                   Expressions disappear after 24 hours. Share moments that matter to you.
                 </p>
+                </div>
               </div>
             )}
           </motion.div>
