@@ -831,92 +831,90 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         )}
       </div>
 
-      {/* Bottom-right icon row inside textarea region: Feeling · More · Aa */}
-      <div className="shrink-0 px-5 -mt-1 mb-2 flex items-center justify-end gap-1.5">
-        <button
-          type="button"
-          onClick={() => setMediaSheetOpen(true)}
-          title="Feeling"
-          aria-label="Feeling"
-          className="w-9 h-9 rounded-full flex items-center justify-center text-foreground/60 hover:text-foreground hover:bg-white/5 transition"
-        >
-          <Smile className="h-[18px] w-[18px]" />
-        </button>
-        <button
-          type="button"
-          onClick={() => setAdvancedOpen(true)}
-          title="More"
-          aria-label="More"
-          className="w-9 h-9 rounded-full flex items-center justify-center text-foreground/60 hover:text-foreground hover:bg-white/5 transition"
-        >
-          <Settings2 className="h-[18px] w-[18px]" />
-        </button>
-        {canShowBackground && state.composerMode === 'simple' && (
-          <Popover>
-            <PopoverTrigger asChild>
-              <button
-                className={cn(
-                  'w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold transition',
-                  state.background
-                    ? 'ring-2 ring-fuchsia-500/60'
-                    : 'text-foreground/60 hover:text-foreground hover:bg-white/5'
-                )}
-                style={state.background ? backgroundStyle : undefined}
-                aria-label="Background style"
-                title="Background"
-              >
-                Aa
-              </button>
-            </PopoverTrigger>
-            <PopoverContent
-              align="end"
-              className="w-auto p-3 bg-background/95 backdrop-blur-md border-white/10"
-            >
-              <div className="grid grid-cols-5 gap-2">
-                <button
-                  type="button"
-                  onClick={() => update({ background: null })}
-                  className={cn(
-                    'h-9 w-9 rounded-lg border-2 flex items-center justify-center transition bg-secondary',
-                    !state.background ? 'border-fuchsia-500' : 'border-transparent hover:border-foreground/30'
-                  )}
-                  title="Plain"
-                  aria-label="Plain background"
-                >
-                  <TypeIcon className="h-4 w-4" />
-                </button>
-                {POST_BACKGROUND_PRESETS.map((preset, i) => {
-                  const active = state.background?.value === preset.value;
-                  return (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={() => update({ background: preset })}
-                      className={cn(
-                        'h-9 w-9 rounded-lg border-2 transition',
-                        active ? 'border-fuchsia-500' : 'border-transparent hover:border-foreground/30'
-                      )}
-                      style={{ background: preset.value }}
-                      aria-label={`Background ${i + 1}`}
-                    />
-                  );
-                })}
-              </div>
-            </PopoverContent>
-          </Popover>
-        )}
-      </div>
-
-      {/* Add to your post — opens bottom sheet */}
-      <div className="shrink-0 px-5 pt-1 pb-2">
+      {/* Action bar: Add to your post (flex-1) + Feeling / More / Aa button group */}
+      <div className="shrink-0 px-4 pt-1 pb-2 flex items-center gap-2">
         <Button
           variant="outline"
           onClick={() => setAddSheetOpen(true)}
-          className="w-full justify-between rounded-2xl h-12 px-4 bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06] hover:shadow-[0_0_24px_-8px_rgba(217,70,239,0.4)] transition-all"
+          className="flex-1 justify-between rounded-2xl h-11 px-4 bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06] hover:shadow-[0_0_24px_-8px_rgba(217,70,239,0.4)] transition-all"
         >
           <span className="text-sm font-medium text-foreground/85">Add to your post</span>
           <Plus className="h-4 w-4 text-foreground/60" />
         </Button>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => setMediaSheetOpen(true)}
+            title="Feeling"
+            aria-label="Feeling"
+            className="h-11 w-11 rounded-2xl flex items-center justify-center bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] text-foreground/70 hover:text-foreground transition"
+          >
+            <Smile className="h-[18px] w-[18px]" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setAdvancedOpen(true)}
+            title="More"
+            aria-label="More"
+            className="h-11 w-11 rounded-2xl flex items-center justify-center bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] text-foreground/70 hover:text-foreground transition"
+          >
+            <Settings2 className="h-[18px] w-[18px]" />
+          </button>
+          {canShowBackground && state.composerMode === 'simple' && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  className={cn(
+                    'h-11 w-11 rounded-2xl flex items-center justify-center text-sm font-bold transition border',
+                    state.background
+                      ? 'border-fuchsia-500/60 ring-2 ring-fuchsia-500/40'
+                      : 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06] text-foreground/70 hover:text-foreground'
+                  )}
+                  style={state.background ? backgroundStyle : undefined}
+                  aria-label="Background style"
+                  title="Background"
+                >
+                  Aa
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="end"
+                className="w-auto p-3 bg-background/95 backdrop-blur-md border-white/10"
+              >
+                <div className="grid grid-cols-5 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => update({ background: null })}
+                    className={cn(
+                      'h-9 w-9 rounded-lg border-2 flex items-center justify-center transition bg-secondary',
+                      !state.background ? 'border-fuchsia-500' : 'border-transparent hover:border-foreground/30'
+                    )}
+                    title="Plain"
+                    aria-label="Plain background"
+                  >
+                    <TypeIcon className="h-4 w-4" />
+                  </button>
+                  {POST_BACKGROUND_PRESETS.map((preset, i) => {
+                    const active = state.background?.value === preset.value;
+                    return (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => update({ background: preset })}
+                        className={cn(
+                          'h-9 w-9 rounded-lg border-2 transition',
+                          active ? 'border-fuchsia-500' : 'border-transparent hover:border-foreground/30'
+                        )}
+                        style={{ background: preset.value }}
+                        aria-label={`Background ${i + 1}`}
+                      />
+                    );
+                  })}
+                </div>
+              </PopoverContent>
+            </Popover>
+          )}
+        </div>
       </div>
 
         </div>
