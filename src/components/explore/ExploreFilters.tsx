@@ -146,7 +146,7 @@ function ListRow<T extends string>({ option, active, themePrimary, onClick }: Li
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className="relative overflow-hidden flex items-center justify-between w-full px-4 h-10 cursor-pointer rounded-md transition-colors hover:bg-white/[0.04] focus:outline-none focus-visible:bg-white/[0.04]"
+      className="relative overflow-hidden flex items-center px-4 h-10 cursor-pointer rounded-md transition-colors hover:bg-white/[0.04] focus:outline-none focus-visible:bg-white/[0.04]"
     >
       {active && (
         <span
@@ -155,11 +155,11 @@ function ListRow<T extends string>({ option, active, themePrimary, onClick }: Li
           style={{ backgroundColor: themePrimary }}
         />
       )}
-      <span className="text-white text-[14px]">{option.label}</span>
+      <span className="flex-1 text-center text-white text-[14px]">{option.label}</span>
       {active && (
         <span
           aria-hidden
-          className="inline-flex items-center justify-center h-4 w-4 rounded-full"
+          className="absolute right-4 inline-flex items-center justify-center h-4 w-4 rounded-full"
           style={{ backgroundColor: themePrimary }}
         >
           <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />
@@ -280,9 +280,9 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
       {/* Override BrandSheetContent's default px/overflow so we can manage
           sticky header + scrollable body + sticky footer ourselves. */}
       <BrandSheetContent
-        maxHeight="85vh"
+        maxHeight="90vh"
         hideHandle
-        className="!px-0 !pb-0 overflow-hidden flex flex-col"
+        className="!px-0 !pb-0 overflow-hidden flex flex-col h-[90vh]"
       >
         {/* Sticky header */}
         <div className="shrink-0 sticky top-0 z-10 bg-background/95 backdrop-blur px-5 pt-1 pb-3">
