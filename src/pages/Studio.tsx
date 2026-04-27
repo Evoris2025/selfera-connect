@@ -111,9 +111,10 @@ export default function Studio() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
+              className="min-h-dvh flex flex-col"
             >
               <AppLayout showHeader={false}>
-                <div className="flex justify-center sm:px-4 sm:py-6">
+                <div className="flex-1 min-h-0 flex flex-col justify-center sm:px-4 sm:py-6">
                   <PostComposer onBack={handleBack} onSuccess={studio.success} />
                 </div>
               </AppLayout>
