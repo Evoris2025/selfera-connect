@@ -310,37 +310,39 @@ export function TrendingNowRail({ activeTab }: TrendingNowRailProps) {
           )}
         />
 
-        {/* Left arrow */}
+        {/* Left arrow — visible whenever there is content to scroll back to */}
         <button
           type="button"
           aria-label="Scroll left"
           onClick={() => scrollByDirection('left')}
           className={cn(
             'absolute top-1/2 -translate-y-1/2 z-20 left-2',
-            'hidden md:flex items-center justify-center',
-            'w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm',
+            'flex items-center justify-center',
+            'w-8 h-8 rounded-full',
+            'bg-black/60 backdrop-blur-sm',
             'border border-white/[0.08]',
-            'opacity-0 group-hover:opacity-100 transition-opacity',
+            'transition-opacity',
             'hover:bg-black/80',
-            !canScrollLeft && 'pointer-events-none opacity-0 group-hover:opacity-0'
+            canScrollLeft ? 'opacity-100' : 'opacity-0 pointer-events-none'
           )}
         >
-          <ChevronLeft className="w-4 h-4 text-white" strokeWidth={2} />
+          <ChevronLeft className="w-4 h-4 text-white" strokeWidth={1.5} />
         </button>
 
-        {/* Right arrow */}
+        {/* Right arrow — visible whenever there is more content to the right */}
         <button
           type="button"
           aria-label="Scroll right"
           onClick={() => scrollByDirection('right')}
           className={cn(
             'absolute top-1/2 -translate-y-1/2 z-20 right-2',
-            'hidden md:flex items-center justify-center',
-            'w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm',
+            'flex items-center justify-center',
+            'w-8 h-8 rounded-full',
+            'bg-black/60 backdrop-blur-sm',
             'border border-white/[0.08]',
-            'opacity-0 group-hover:opacity-100 transition-opacity',
+            'transition-opacity',
             'hover:bg-black/80',
-            !canScrollRight && 'pointer-events-none opacity-0 group-hover:opacity-0'
+            canScrollRight ? 'opacity-100' : 'opacity-0 pointer-events-none'
           )}
         >
           <ChevronRight className="w-4 h-4 text-white" strokeWidth={2} />
