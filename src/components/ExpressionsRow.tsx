@@ -2,13 +2,15 @@ import { useState, useEffect } from 'react';
 import { Plus, ChevronRight } from 'lucide-react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { motion } from 'framer-motion';
-import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
 import { useFeedData } from '@/contexts/FeedDataContext';
 import { useNavbar } from '@/contexts/NavbarContext';
 import { useCloseFriends } from '@/hooks/useCloseFriends';
 import { ExpressionViewer } from '@/components/ExpressionViewer';
 import { CreatorStudio } from '@/components/creator';
+import { BrandIcon } from '@/components/brand';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 export function ExpressionsRow() {
   const { avatarUrl, displayName } = useCurrentUserAvatar();
