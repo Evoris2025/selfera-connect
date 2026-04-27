@@ -15,7 +15,7 @@ import { ViewportDebugOverlay } from "@/components/dev/ViewportDebugOverlay";
 import { usePreviewZoom } from "@/hooks/usePreviewZoom";
 import { useDeviceMetricSync } from "@/hooks/useDeviceMetricSync";
 import logo from '@/assets/selfera-logo.png';
-import { BrandGradientDefs } from '@/components/ui/sheet-system';
+import { BrandGradientDefs } from '@/components/brand';
 
 import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
@@ -36,6 +36,7 @@ import Guidelines from "./pages/Guidelines";
 import CreatorDashboard from "./pages/CreatorDashboard";
 import Studio from "./pages/Studio";
 import NotFound from "./pages/NotFound";
+import DebugBrand from "./pages/DebugBrand";
 
 const queryClient = new QueryClient();
 
@@ -113,6 +114,7 @@ function AppRoutes() {
         <Route path="/crisis" element={<CrisisSupport />} />
         <Route path="/transparency" element={<Transparency />} />
         <Route path="/guidelines" element={<Guidelines />} />
+        <Route path="/debug/brand" element={<DebugBrand />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

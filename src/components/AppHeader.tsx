@@ -16,9 +16,11 @@ import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
 
 interface AppHeaderProps {
   title?: string;
+  /** When true, renders only the SelfERA brand lockup (no text title). */
+  brandMark?: boolean;
 }
 
-export function AppHeader({ title }: AppHeaderProps) {
+export function AppHeader({ title, brandMark = false }: AppHeaderProps) {
   const { t } = useTranslation();
   const { signOut } = useAuth();
   const navigate = useNavigate();
@@ -37,7 +39,7 @@ export function AppHeader({ title }: AppHeaderProps) {
         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <BrandMark imgClassName="-translate-x-5" />
           </motion.div>
-          {title && (
+          {!brandMark && title && (
             <motion.span
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
