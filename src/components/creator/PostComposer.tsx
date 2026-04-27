@@ -927,11 +927,16 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           onClick={handleSubmit}
           disabled={!canPost || isSubmitting}
           className={cn(
-            'w-full h-14 rounded-2xl text-base font-semibold text-white transition active:scale-[0.99]',
+            'w-full h-14 rounded-2xl text-base font-semibold text-primary-foreground transition active:scale-[0.99]',
             canPost && !isSubmitting
-              ? 'gradient-brand shadow-lg shadow-violet-500/20 hover:opacity-95'
-              : 'bg-white/10 opacity-40 cursor-not-allowed'
+              ? 'bg-primary hover:opacity-95'
+              : 'bg-white/10 text-white/40 opacity-100 cursor-not-allowed'
           )}
+          style={
+            canPost && !isSubmitting
+              ? { boxShadow: '0 8px 24px -8px hsl(var(--primary) / 0.5)' }
+              : undefined
+          }
         >
           {isSubmitting ? (
             <Loader2 className="h-5 w-5 animate-spin" />
