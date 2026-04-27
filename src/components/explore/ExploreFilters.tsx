@@ -393,6 +393,46 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
             </section>
           )}
 
+          {/* Section — Creator tier (multi-select chip grid). Hidden on Images. */}
+          {activeTab !== 'images' && (
+            <section>
+              <BrandSectionLabel className="px-5 mb-2">CREATOR TIER</BrandSectionLabel>
+              <div className="grid grid-cols-3 gap-2 px-4">
+                <Chip
+                  option={{ value: 'all', label: 'All' }}
+                  active={(tabSlice as { creatorTier: CreatorTier }).creatorTier === 'all'}
+                  themePrimary={themePrimary}
+                  onClick={() => updateTabSlice('creatorTier' as never, 'all' as never)}
+                />
+                {TIER_OPTIONS.map((opt) => {
+                  const current = (tabSlice as { creatorTier: CreatorTier }).creatorTier;
+                  const selected = Array.isArray(current) && current.includes(opt.value);
+                  return (
+                    <Chip
+                      key={opt.value}
+                      option={opt}
+                      active={selected}
+                      themePrimary={themePrimary}
+                      onClick={() => {
+                        let next: CreatorTier;
+                        if (current === 'all') {
+                          next = [opt.value];
+                        } else {
+                          const exists = current.includes(opt.value);
+                          const updated = exists
+                            ? current.filter((t) => t !== opt.value)
+                            : [...current, opt.value];
+                          next = updated.length === 0 ? 'all' : updated;
+                        }
+                        updateTabSlice('creatorTier' as never, next as never);
+                      }}
+                    />
+                  );
+                })}
+              </div>
+            </section>
+          )}
+
           {/* Section 4 — Origin (vertical list) */}
           <section>
             <BrandSectionLabel className="px-5 mb-2">ORIGIN</BrandSectionLabel>
