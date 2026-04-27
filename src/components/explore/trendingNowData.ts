@@ -39,38 +39,125 @@ export interface TrendingPost {
   likes: number;
 }
 
-export const trendingExpressions: TrendingExpression[] = [
-  { id: 'tn-e1', thumbnail: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400&h=700&fit=crop', user: { handle: 'drsarah', avatar: 'https://i.pravatar.cc/100?img=47' }, views: 12400 },
-  { id: 'tn-e2', thumbnail: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=400&h=700&fit=crop', user: { handle: 'wellnesshub', avatar: 'https://i.pravatar.cc/100?img=32' }, views: 8900 },
-  { id: 'tn-e3', thumbnail: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=400&h=700&fit=crop', user: { handle: 'jamie_j', avatar: 'https://i.pravatar.cc/100?img=12' }, views: 5600 },
-  { id: 'tn-e4', thumbnail: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=400&h=700&fit=crop', user: { handle: 'mindmatters', avatar: 'https://i.pravatar.cc/100?img=14' }, views: 23400 },
-  { id: 'tn-e5', thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=700&fit=crop', user: { handle: 'calmspace', avatar: 'https://i.pravatar.cc/100?img=9' }, views: 18700 },
-  { id: 'tn-e6', thumbnail: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=700&fit=crop', user: { handle: 'alex_w', avatar: 'https://i.pravatar.cc/100?img=33' }, views: 4300 },
+// Reused image pool — same Unsplash photos already referenced elsewhere in the codebase.
+const VERT = (seed: string) => `https://images.unsplash.com/${seed}?w=400&h=700&fit=crop`;
+const WIDE = (seed: string) => `https://images.unsplash.com/${seed}?w=800&h=450&fit=crop`;
+const SQ = (seed: string) => `https://images.unsplash.com/${seed}?w=600&h=600&fit=crop`;
+
+const PHOTOS = [
+  'photo-1506126613408-eca07ce68773',
+  'photo-1499209974431-9dddcece7f88',
+  'photo-1518495973542-4542c06a5843',
+  'photo-1541781774459-bb2af2f05b55',
+  'photo-1507003211169-0a1dd7228f2d',
+  'photo-1494790108377-be9c29b29330',
+  'photo-1517021897933-0e0319cfbc28',
+  'photo-1488521787991-ed7bbaae773c',
+  'photo-1504593811423-6dd665756598',
+  'photo-1531123897727-8f129e1688ce',
 ];
 
-export const trendingVideos: TrendingVideo[] = [
-  { id: 'tn-v1', thumbnail: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&h=450&fit=crop', duration: '12:34', title: 'Understanding Anxiety: A Complete Guide', views: 45200 },
-  { id: 'tn-v2', thumbnail: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=800&h=450&fit=crop', duration: '8:15', title: 'Morning Meditation for Calm', views: 23100 },
-  { id: 'tn-v3', thumbnail: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=800&h=450&fit=crop', duration: '15:22', title: 'My Recovery Journey: 6 Month Update', views: 8900 },
-  { id: 'tn-v4', thumbnail: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=800&h=450&fit=crop', duration: '45:00', title: 'The Science of Sleep and Mental Health', views: 67800 },
-  { id: 'tn-v5', thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=450&fit=crop', duration: '1:02:15', title: 'Building Resilience: A Workshop', views: 34500 },
-  { id: 'tn-v6', thumbnail: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&h=450&fit=crop', duration: '18:45', title: 'How to Start Your Wellness Journey', views: 156000 },
+const USERS = [
+  { handle: 'drsarah', avatar: 'https://i.pravatar.cc/100?img=47' },
+  { handle: 'wellnesshub', avatar: 'https://i.pravatar.cc/100?img=32' },
+  { handle: 'jamie_j', avatar: 'https://i.pravatar.cc/100?img=12' },
+  { handle: 'mindmatters', avatar: 'https://i.pravatar.cc/100?img=14' },
+  { handle: 'calmspace', avatar: 'https://i.pravatar.cc/100?img=9' },
+  { handle: 'alex_w', avatar: 'https://i.pravatar.cc/100?img=33' },
+  { handle: 'newstart24', avatar: 'https://i.pravatar.cc/100?img=51' },
+  { handle: 'breathe.daily', avatar: 'https://i.pravatar.cc/100?img=22' },
+  { handle: 'soft_landing', avatar: 'https://i.pravatar.cc/100?img=5' },
+  { handle: 'kindredspirit', avatar: 'https://i.pravatar.cc/100?img=18' },
 ];
 
-export const trendingImages: TrendingImage[] = [
-  { id: 'tn-i1', url: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=600&h=600&fit=crop', likes: 12400 },
-  { id: 'tn-i2', url: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=600&h=600&fit=crop', likes: 8900 },
-  { id: 'tn-i3', url: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=600&h=600&fit=crop', likes: 15600 },
-  { id: 'tn-i4', url: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=600&h=600&fit=crop', likes: 23400 },
-  { id: 'tn-i5', url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=600&fit=crop', likes: 18700 },
-  { id: 'tn-i6', url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&h=600&fit=crop', likes: 5600 },
+const VIEWS = [12400, 8900, 5600, 23400, 18700, 4300, 67800, 156000, 34500, 9800, 2100, 45200, 11300, 7600, 88400, 3400, 19200, 5500, 27800, 6100];
+const LIKES = [2340, 1890, 5670, 12400, 3200, 234, 9800, 4500, 760, 15600, 870, 2210, 6700, 3300, 18200, 540, 2900, 1100, 7400, 980];
+
+const VIDEO_TITLES = [
+  'Understanding Anxiety: A Complete Guide',
+  'Morning Meditation for Calm',
+  'My Recovery Journey: 6 Month Update',
+  'The Science of Sleep and Mental Health',
+  'Building Resilience: A Workshop',
+  'How to Start Your Wellness Journey',
+  'Breathing Techniques That Actually Work',
+  'Talking to a Therapist for the First Time',
+  'Why Rest Is Productive',
+  'Letting Go of Perfectionism',
+  'Reframing Negative Self-Talk',
+  'A Gentle Guide to Journaling',
+  'Healing in Community',
+  'Burnout Recovery: What Helped Me',
+  'Setting Boundaries Without Guilt',
+  'The Truth About Antidepressants',
+  'Grounding Exercises for Panic',
+  'Slow Mornings, Soft Days',
+  'Hope Is a Practice',
+  'You Are Allowed to Take Up Space',
 ];
 
-export const trendingPosts: TrendingPost[] = [
-  { id: 'tn-p1', snippet: "Healing isn't linear. Some days will be harder. What matters is showing up for yourself.", user: { handle: 'drsarah', avatar: 'https://i.pravatar.cc/100?img=47' }, likes: 2340 },
-  { id: 'tn-p2', snippet: "Setting boundaries isn't selfish — it's self-care. Protect your peace. 💙", user: { handle: 'wellnesshub', avatar: 'https://i.pravatar.cc/100?img=32' }, likes: 1890 },
-  { id: 'tn-p3', snippet: "Spent the morning journaling and it shifted my mindset. What's your reflection practice?", user: { handle: 'mindmatters', avatar: 'https://i.pravatar.cc/100?img=14' }, likes: 5670 },
-  { id: 'tn-p4', snippet: 'Six months sober today. Never thought I would make it this far. Thank you all.', user: { handle: 'jamie_journey', avatar: 'https://i.pravatar.cc/100?img=12' }, likes: 12400 },
-  { id: 'tn-p5', snippet: 'One small thing for your mental health today? I took a 10-minute walk outside.', user: { handle: 'calmspace', avatar: 'https://i.pravatar.cc/100?img=9' }, likes: 3200 },
-  { id: 'tn-p6', snippet: 'Just joined this community and feeling hopeful for the first time in a while.', user: { handle: 'newstart2024', avatar: 'https://i.pravatar.cc/100?img=51' }, likes: 234 },
+const VIDEO_DURATIONS = ['12:34', '8:15', '15:22', '45:00', '1:02:15', '18:45', '6:30', '22:10', '4:50', '11:25', '9:40', '14:55', '7:20', '33:18', '19:02', '5:14', '8:48', '16:30', '10:05', '24:42'];
+
+const POST_SNIPPETS = [
+  "Healing isn't linear. Some days will be harder. What matters is showing up for yourself.",
+  "Setting boundaries isn't selfish — it's self-care. Protect your peace. 💙",
+  "Spent the morning journaling and it shifted my mindset. What's your reflection practice?",
+  'Six months sober today. Never thought I would make it this far. Thank you all.',
+  'One small thing for your mental health today? I took a 10-minute walk outside.',
+  'Just joined this community and feeling hopeful for the first time in a while.',
+  'Reminder: rest is not a reward. You don\'t have to earn it.',
+  'Therapy is hard work but it changes you. Worth every session.',
+  'Your nervous system needs safety, not pressure. Be gentle today.',
+  'Quiet wins still count. Got out of bed, drank water, sent the email.',
+  'You can love someone and still need space from them.',
+  'Recovery is not pretty. It is messy and slow. And it is real.',
+  'Started saying no this year. Best decision I have made.',
+  'Anxiety lies. Take the deep breath. You are safe right now.',
+  'Healing the relationship with myself first. Everything else follows.',
+  'Some days the win is just not giving up.',
+  'Letting myself feel hard things instead of running from them.',
+  'Community is medicine. Thank you for being here.',
+  'Trying to be the friend I needed when I was younger.',
+  'Soft life is not a trend, it is a recovery plan.',
 ];
+
+function buildExpressions(): TrendingExpression[] {
+  return Array.from({ length: 20 }, (_, i) => ({
+    id: `tn-e${i + 1}`,
+    thumbnail: VERT(PHOTOS[i % PHOTOS.length]),
+    user: USERS[i % USERS.length],
+    views: VIEWS[i],
+  }));
+}
+
+function buildVideos(): TrendingVideo[] {
+  return Array.from({ length: 20 }, (_, i) => ({
+    id: `tn-v${i + 1}`,
+    thumbnail: WIDE(PHOTOS[i % PHOTOS.length]),
+    duration: VIDEO_DURATIONS[i],
+    title: VIDEO_TITLES[i],
+    views: VIEWS[i],
+  }));
+}
+
+function buildImages(): TrendingImage[] {
+  return Array.from({ length: 20 }, (_, i) => ({
+    id: `tn-i${i + 1}`,
+    url: SQ(PHOTOS[i % PHOTOS.length]),
+    likes: LIKES[i],
+  }));
+}
+
+function buildPosts(): TrendingPost[] {
+  return Array.from({ length: 20 }, (_, i) => ({
+    id: `tn-p${i + 1}`,
+    snippet: POST_SNIPPETS[i],
+    user: USERS[i % USERS.length],
+    likes: LIKES[i],
+  }));
+}
+
+export const trendingExpressions: TrendingExpression[] = buildExpressions();
+export const trendingVideos: TrendingVideo[] = buildVideos();
+export const trendingImages: TrendingImage[] = buildImages();
+export const trendingPosts: TrendingPost[] = buildPosts();
