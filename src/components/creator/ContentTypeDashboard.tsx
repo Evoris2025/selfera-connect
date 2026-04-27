@@ -106,7 +106,7 @@ function CreatorRow({
       onClick={onClick}
       className={cn(
         'group relative w-full text-left',
-        'flex-1 min-h-[110px] rounded-2xl overflow-hidden',
+        'h-full min-h-0 rounded-2xl overflow-hidden',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--primary))]/40'
       )}
       aria-label={`Create ${title}`}
@@ -337,8 +337,8 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
           </button>
         </div>
 
-        {/* Creator rows — flex-1 to fill remaining vertical space */}
-        <div className="flex-1 min-h-0 flex flex-col gap-2 px-5 pb-2">
+        {/* Creator rows — bounded 4-row grid that must fill remaining vertical space */}
+        <div className="flex-1 min-h-0 grid grid-rows-4 gap-2 px-5 pb-2">
           {contentTypes.map((type) => (
             <CreatorRow
               key={type.id}
