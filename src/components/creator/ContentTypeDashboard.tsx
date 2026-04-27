@@ -241,6 +241,17 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
       className="flex flex-col bg-background w-full min-h-dvh"
       style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 72px)' }}
     >
+      {/* Shared SelfERA brand gradient — referenced by all row icons via stroke="url(#selfera-brand-gradient)" */}
+      <svg width="0" height="0" aria-hidden focusable="false" style={{ position: 'absolute' }}>
+        <defs>
+          <linearGradient id="selfera-brand-gradient" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="hsl(var(--gradient-start))" />
+            <stop offset="50%" stopColor="hsl(var(--gradient-mid))" />
+            <stop offset="100%" stopColor="hsl(var(--gradient-end))" />
+          </linearGradient>
+        </defs>
+      </svg>
+
       <div className="w-full max-w-[640px] mx-auto flex flex-col flex-1">
         {/* Header — back · logo · close */}
         <div className="flex items-center justify-between h-14 px-3 shrink-0">
