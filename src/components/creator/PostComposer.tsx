@@ -48,6 +48,7 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet';
+import { BrandSheetContent, BrandSheetTitle } from '@/components/ui/sheet-system';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
 import { useFeedData, type StudioAudience, type PostBackground } from '@/contexts/FeedDataContext';
