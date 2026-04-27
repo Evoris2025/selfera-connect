@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ExploreVerifiedTick } from './ExploreVerifiedTick';
 import type { VerificationTier } from './ExploreVerifiedTick';
-import { BrandIcon } from '@/components/brand';
+
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useInfiniteList } from '@/hooks/useInfiniteList';
 
