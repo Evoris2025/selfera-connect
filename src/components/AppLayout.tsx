@@ -10,9 +10,14 @@ interface AppLayoutProps {
   children: ReactNode;
   title?: string;
   showHeader?: boolean;
+  /**
+   * When true, the header center renders the SelfERA <BrandMark/> lockup
+   * instead of the text title. Additive — does not affect existing call sites.
+   */
+  brandMark?: boolean;
 }
 
-export function AppLayout({ children, title, showHeader = true }: AppLayoutProps) {
+export function AppLayout({ children, title, showHeader = true, brandMark = false }: AppLayoutProps) {
   const { pendingCount } = useFollowRequests();
   const { isNavbarVisible } = useNavbar();
 
@@ -25,7 +30,7 @@ export function AppLayout({ children, title, showHeader = true }: AppLayoutProps
       
       {/* Main content area */}
       <div className="flex-1 flex flex-col lg:ml-16">
-        {showHeader && <AppHeader title={title} />}
+        {showHeader && <AppHeader title={title} brandMark={brandMark} />}
         
         {/* 
           Mobile: max-w-lg (phone width)
