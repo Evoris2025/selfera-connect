@@ -41,6 +41,7 @@ import { useInteractionLifecycle } from '@/hooks/useInteractionLifecycle';
 import { InteractionList } from '@/components/interactions';
 import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { EraVerifiedTick } from '@/components/EraVerifiedTick';
 import { AccountTypeBadge, AccountType } from '@/components/AccountTypeBadge';
 import { AppLayout } from '@/components/AppLayout';
