@@ -145,33 +145,10 @@ export function ExploreExpressions({ isLoading = false }: ExploreExpressionsProp
           />
         </div>
 
-        <ExpressionSection
-          title="For You"
-          icon={<Sparkles className="h-5 w-5 text-primary" />}
-          expressions={forYouExpressions}
-          isLoading={loading}
-        />
-        
-        <ExpressionSection
-          title="Trending Expressions"
-          icon={<TrendingUp className="h-5 w-5 text-rose-500" />}
-          expressions={trendingExpressions}
-          isLoading={loading}
-        />
-        
-        <ExpressionSection
-          title="Recent Expressions"
-          icon={<Clock className="h-5 w-5 text-accent" />}
-          expressions={recentExpressions}
-          isLoading={loading}
-        />
-        
-        <ExpressionSection
-          title="From Communities You Follow"
-          icon={<Users className="h-5 w-5 text-emerald-400" />}
-          expressions={communityExpressions}
-          isLoading={loading}
-        />
+        <ExpressionSection title="FOR YOU" icon={Sparkles} expressions={forYouExpressions} isLoading={loading} />
+        <ExpressionSection title="TRENDING EXPRESSIONS" icon={TrendingUp} expressions={trendingExpressions} isLoading={loading} />
+        <ExpressionSection title="RECENT EXPRESSIONS" icon={Clock} expressions={recentExpressions} isLoading={loading} />
+        <ExpressionSection title="FROM COMMUNITIES YOU FOLLOW" icon={Users} expressions={communityExpressions} isLoading={loading} />
       </div>
     </PullToRefresh>
   );
