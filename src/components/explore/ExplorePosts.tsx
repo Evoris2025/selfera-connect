@@ -1,91 +1,102 @@
-import { useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, TrendingUp, Heart, MessageCircle, Clock, ChevronRight, type LucideIcon } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import { Heart, MessageCircle, Share2 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
-import { PullToRefresh } from '@/components/ui/PullToRefresh';
-import { BrandSectionLabel, BrandIcon } from '@/components/brand';
+import { BrandSurface } from '@/components/brand';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { useInfiniteList } from '@/hooks/useInfiniteList';
 
-const forYouPosts = [
-  { id: 'p1', content: 'Remember: healing is not linear. Some days will be harder than others, and that\'s completely okay. What matters is that you keep showing up for yourself.', user: { name: 'Dr. Sarah Mitchell', handle: 'drsarah', avatar: 'https://i.pravatar.cc/100?img=47', isVerified: true }, likes: 2340, comments: 156, createdAt: '2h ago' },
-  { id: 'p2', content: 'Today I learned that setting boundaries isn\'t selfish—it\'s self-care. Protecting your peace is a form of self-love. 💙', user: { name: 'Wellness Hub', handle: 'wellnesshub', avatar: 'https://i.pravatar.cc/100?img=32', isVerified: true }, likes: 1890, comments: 89, createdAt: '4h ago' },
-];
-
-const trendingPosts = [
-  { id: 'p3', content: 'Spent the morning journaling and it completely shifted my mindset. Sometimes we need to write it out to work it out. What\'s your go-to reflection practice?', user: { name: 'Mind Matters', handle: 'mindmatters', avatar: 'https://i.pravatar.cc/100?img=14', isVerified: true }, likes: 5670, comments: 423, createdAt: '6h ago' },
-];
-
-const mostLikedPosts = [
-  { id: 'p4', content: 'Six months sober today. Never thought I\'d make it this far. Thank you to everyone in this community who believed in me when I couldn\'t believe in myself.', user: { name: 'Jamie', handle: 'jamie_journey', avatar: 'https://i.pravatar.cc/100?img=12', isVerified: false }, likes: 12400, comments: 890, createdAt: '1d ago' },
-];
-
-const mostCommentedPosts = [
-  { id: 'p5', content: 'What\'s one small thing you did today to take care of your mental health? I\'ll start: I took a 10-minute walk outside.', user: { name: 'Calm Space', handle: 'calmspace', avatar: 'https://i.pravatar.cc/100?img=9', isVerified: true }, likes: 3200, comments: 1567, createdAt: '12h ago' },
-];
-
-const newestPosts = [
-  { id: 'p6', content: 'Just joined this community and feeling hopeful for the first time in a while. Looking forward to connecting with others on similar journeys.', user: { name: 'NewStart', handle: 'newstart2024', avatar: 'https://i.pravatar.cc/100?img=51', isVerified: false }, likes: 234, comments: 45, createdAt: '15m ago' },
-];
-
-function formatCount(count: number): string {
-  if (count >= 1000000) return `${(count / 1000000).toFixed(1)}M`;
-  if (count >= 1000) return `${(count / 1000).toFixed(1)}K`;
-  return count.toString();
+interface PostItem {
+  id: string;
+  content: string;
+  user: { name: string; handle: string; avatar: string; isVerified: boolean };
+  likes: number;
+  comments: number;
+  shares: number;
+  createdAt: string;
 }
 
-interface PostCardProps {
-  post: typeof forYouPosts[0];
-  index: number;
+const forYouPosts: PostItem[] = [
+  { id: 'p1', content: 'Remember: healing is not linear. Some days will be harder than others, and that\'s completely okay. What matters is that you keep showing up for yourself.', user: { name: 'Dr. Sarah Mitchell', handle: 'drsarah', avatar: 'https://i.pravatar.cc/100?img=47', isVerified: true }, likes: 2340, comments: 156, shares: 42, createdAt: '2h' },
+  { id: 'p2', content: 'Today I learned that setting boundaries isn\'t selfish — it\'s self-care. Protecting your peace is a form of self-love. 💙', user: { name: 'Wellness Hub', handle: 'wellnesshub', avatar: 'https://i.pravatar.cc/100?img=32', isVerified: true }, likes: 1890, comments: 89, shares: 31, createdAt: '4h' },
+  { id: 'p3', content: 'Spent the morning journaling and it completely shifted my mindset. Sometimes we need to write it out to work it out. What\'s your go-to reflection practice?', user: { name: 'Mind Matters', handle: 'mindmatters', avatar: 'https://i.pravatar.cc/100?img=14', isVerified: true }, likes: 5670, comments: 423, shares: 88, createdAt: '6h' },
+  { id: 'p4', content: 'Six months sober today. Never thought I\'d make it this far. Thank you to everyone in this community who believed in me when I couldn\'t believe in myself.', user: { name: 'Jamie', handle: 'jamie_journey', avatar: 'https://i.pravatar.cc/100?img=12', isVerified: false }, likes: 12400, comments: 890, shares: 210, createdAt: '1d' },
+  { id: 'p5', content: 'What\'s one small thing you did today to take care of your mental health? I\'ll start: I took a 10-minute walk outside.', user: { name: 'Calm Space', handle: 'calmspace', avatar: 'https://i.pravatar.cc/100?img=9', isVerified: true }, likes: 3200, comments: 1567, shares: 60, createdAt: '12h' },
+  { id: 'p6', content: 'Just joined this community and feeling hopeful for the first time in a while. Looking forward to connecting with others on similar journeys.', user: { name: 'NewStart', handle: 'newstart2024', avatar: 'https://i.pravatar.cc/100?img=51', isVerified: false }, likes: 234, comments: 45, shares: 8, createdAt: '15m' },
+];
+
+const trendingPosts = forYouPosts.map((p) => ({ ...p, id: `t-${p.id}` }));
+const mostLikedPosts = forYouPosts.slice().sort((a, b) => b.likes - a.likes).map((p) => ({ ...p, id: `ml-${p.id}` }));
+const mostCommentedPosts = forYouPosts.slice().sort((a, b) => b.comments - a.comments).map((p) => ({ ...p, id: `mc-${p.id}` }));
+const newestPosts = forYouPosts.slice(0, 5).map((p) => ({ ...p, id: `n-${p.id}` }));
+
+const CHIP_TO_DATA: Record<string, PostItem[]> = {
+  'for-you': forYouPosts,
+  'trending': trendingPosts,
+  'most-liked': mostLikedPosts,
+  'most-commented': mostCommentedPosts,
+  'newest': newestPosts,
+};
+
+function formatCount(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+  return String(n);
 }
 
-function PostCard({ post, index }: PostCardProps) {
+function PostCard({ post, index }: { post: PostItem; index: number }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05 }}
+      transition={{ delay: Math.min(index * 0.02, 0.2) }}
     >
-      <Card className="p-4 bg-black border border-white/[0.08] rounded-md hover:border-white/20 transition-colors cursor-pointer">
+      <BrandSurface className="rounded-2xl border border-white/[0.08] p-4 cursor-pointer">
         <div className="flex items-center gap-3 mb-3">
           <Avatar className="h-10 w-10">
             <AvatarImage src={post.user.avatar} alt={post.user.name} />
-            <AvatarFallback className="bg-secondary">
+            <AvatarFallback className="bg-white/[0.06] text-white/70 text-xs">
               {post.user.name.charAt(0)}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-sm text-foreground truncate">{post.user.name}</span>
+              <span className="font-semibold text-sm text-white truncate">{post.user.name}</span>
               {post.user.isVerified && <VerifiedBadge size="sm" />}
             </div>
-            <p className="text-xs text-muted-foreground">@{post.user.handle} · {post.createdAt}</p>
+            <p className="text-[11px] text-white/45 uppercase tracking-[0.08em]">
+              @{post.user.handle} · {post.createdAt}
+            </p>
           </div>
         </div>
 
-        <p className="text-sm text-foreground leading-relaxed mb-3">
+        <p className="text-[14px] text-white/85 leading-relaxed mb-3 whitespace-pre-line">
           {post.content}
         </p>
 
-        <div className="flex items-center gap-4 text-muted-foreground">
+        <div className="flex items-center gap-5 text-white/55">
           <div className="flex items-center gap-1.5">
             <Heart className="h-4 w-4" />
-            <span className="text-xs">{formatCount(post.likes)}</span>
+            <span className="text-[11px] tabular-nums">{formatCount(post.likes)}</span>
           </div>
           <div className="flex items-center gap-1.5">
             <MessageCircle className="h-4 w-4" />
-            <span className="text-xs">{formatCount(post.comments)}</span>
+            <span className="text-[11px] tabular-nums">{formatCount(post.comments)}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Share2 className="h-4 w-4" />
+            <span className="text-[11px] tabular-nums">{formatCount(post.shares)}</span>
           </div>
         </div>
-      </Card>
+      </BrandSurface>
     </motion.div>
   );
 }
 
 function PostCardSkeleton() {
   return (
-    <Card className="p-4">
+    <BrandSurface className="rounded-2xl border border-white/[0.08] p-4">
       <div className="flex items-center gap-3 mb-3">
         <Skeleton shimmer className="h-10 w-10 rounded-full" />
         <div className="flex-1 space-y-2">
@@ -101,80 +112,53 @@ function PostCardSkeleton() {
         <Skeleton shimmer className="h-4 w-12" />
         <Skeleton shimmer className="h-4 w-12" />
       </div>
-    </Card>
+    </BrandSurface>
   );
 }
 
-interface PostSectionProps {
-  title: string;
-  icon: LucideIcon;
-  posts: typeof forYouPosts;
-  isLoading?: boolean;
-  showViewAll?: boolean;
-}
-
-function PostSection({ title, icon, posts, isLoading, showViewAll = false }: PostSectionProps) {
-  if (!isLoading && posts.length === 0) return null;
-
-  return (
-    <section className="space-y-3">
-      <div className="flex items-center justify-between px-4">
-        <div className="flex items-center gap-2">
-          <BrandIcon icon={icon} size={16} />
-          <BrandSectionLabel>{title}</BrandSectionLabel>
-        </div>
-        {showViewAll && (
-          <button className="flex items-center gap-1 text-[11px] uppercase tracking-[0.1em] text-white/55 hover:text-white/80 transition-colors">
-            See all
-            <ChevronRight className="h-3.5 w-3.5" />
-          </button>
-        )}
-      </div>
-      <div className="px-4 space-y-3">
-        {isLoading ? (
-          Array.from({ length: 2 }).map((_, i) => (
-            <PostCardSkeleton key={i} />
-          ))
-        ) : (
-          posts.map((post, index) => (
-            <PostCard key={post.id} post={post} index={index} />
-          ))
-        )}
-      </div>
-    </section>
-  );
-}
-
-interface ExplorePostsProps {
+export function ExplorePosts({
+  isLoading = false,
+  activeChip = 'for-you',
+}: {
   isLoading?: boolean;
   activeChip?: string;
-}
+}) {
+  const { primary: themePrimary } = useThemeColor();
+  const source = CHIP_TO_DATA[activeChip] ?? CHIP_TO_DATA['for-you'];
+  const { items, sentinelRef, isLoadingMore, hasMore } = useInfiniteList({
+    source,
+    pageSize: 6,
+    resetKey: activeChip,
+  });
 
-const CHIP_TO_DATA: Record<string, { title: string; icon: LucideIcon; data: typeof forYouPosts }> = {
-  'for-you': { title: 'FOR YOU', icon: Sparkles, data: forYouPosts },
-  'trending': { title: 'TRENDING POSTS', icon: TrendingUp, data: trendingPosts },
-  'most-liked': { title: 'MOST LIKED', icon: Heart, data: mostLikedPosts },
-  'most-commented': { title: 'MOST COMMENTED', icon: MessageCircle, data: mostCommentedPosts },
-  'newest': { title: 'NEWEST', icon: Clock, data: newestPosts },
-};
-
-export function ExplorePosts({ isLoading = false, activeChip = 'for-you' }: ExplorePostsProps) {
-  const [isRefreshing, setIsRefreshing] = useState(false);
-
-  const handleRefresh = useCallback(async () => {
-    setIsRefreshing(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setIsRefreshing(false);
-  }, []);
-
-  const loading = isLoading || isRefreshing;
-  const section = CHIP_TO_DATA[activeChip] ?? CHIP_TO_DATA['for-you'];
+  if (isLoading) {
+    return (
+      <div className="space-y-3 px-3 py-3">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <PostCardSkeleton key={i} />
+        ))}
+      </div>
+    );
+  }
 
   return (
-    <PullToRefresh onRefresh={handleRefresh} className="h-full">
-      <div className="py-4 space-y-6">
-        <PostSection title={section.title} icon={section.icon} posts={section.data} isLoading={loading} />
+    <div className="py-3">
+      <div className="space-y-3 px-3">
+        {items.map((post, index) => (
+          <PostCard key={post.__key} post={post} index={index} />
+        ))}
       </div>
-    </PullToRefresh>
+
+      {hasMore && (
+        <div ref={sentinelRef} className="flex items-center justify-center py-6">
+          {isLoadingMore && (
+            <div
+              className="h-6 w-6 rounded-full border-2 border-white/30 animate-spin"
+              style={{ borderTopColor: themePrimary }}
+            />
+          )}
+        </div>
+      )}
+    </div>
   );
 }

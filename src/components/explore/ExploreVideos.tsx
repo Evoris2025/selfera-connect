@@ -1,185 +1,165 @@
-import { useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Play, Clock, Users, Compass, ChevronRight, TrendingUp, Eye, type LucideIcon } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import { Play } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
-import { PullToRefresh } from '@/components/ui/PullToRefresh';
-import { BrandSectionLabel, BrandIcon } from '@/components/brand';
+import { BrandIcon } from '@/components/brand';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { useInfiniteList } from '@/hooks/useInfiniteList';
 
-const forYouVideos = [
-  { id: 'v1', title: 'Understanding Anxiety: A Complete Guide', thumbnail: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&h=450&fit=crop', duration: '12:34', views: 45200, creator: { name: 'Dr. Sarah Mitchell', handle: 'drsarah', avatar: 'https://i.pravatar.cc/100?img=47', isVerified: true } },
-  { id: 'v2', title: 'Morning Meditation for Calm', thumbnail: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=800&h=450&fit=crop', duration: '8:15', views: 23100, creator: { name: 'Mindful Moments', handle: 'mindfulmoments', avatar: 'https://i.pravatar.cc/100?img=32', isVerified: true } },
-];
-
-const followingVideos = [
-  { id: 'v3', title: 'My Recovery Journey: 6 Month Update', thumbnail: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=800&h=450&fit=crop', duration: '15:22', views: 8900, creator: { name: 'Jamie', handle: 'jamie_journey', avatar: 'https://i.pravatar.cc/100?img=12', isVerified: false } },
-];
-
-const trendingVideos = [
-  { id: 'v4', title: 'The Science of Sleep and Mental Health', thumbnail: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=800&h=450&fit=crop', duration: '45:00', views: 67800, creator: { name: 'Wellness Academy', handle: 'wellnessacademy', avatar: 'https://i.pravatar.cc/100?img=14', isVerified: true } },
-  { id: 'v5', title: 'Building Resilience: A Workshop', thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=450&fit=crop', duration: '1:02:15', views: 34500, creator: { name: 'Mental Health Foundation', handle: 'mhfoundation', avatar: 'https://i.pravatar.cc/100?img=9', isVerified: true } },
-];
-
-const mostWatchedVideos = [
-  { id: 'v6', title: 'How to Start Your Wellness Journey', thumbnail: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&h=450&fit=crop', duration: '18:45', views: 156000, creator: { name: 'Wellness Guide', handle: 'wellnessguide', avatar: 'https://i.pravatar.cc/100?img=33', isVerified: true } },
-];
-
-const recentVideos = [
-  { id: 'v7', title: 'Daily Check-in: How Are You Today?', thumbnail: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=800&h=450&fit=crop', duration: '5:30', views: 1200, creator: { name: 'Mind Check', handle: 'mindcheck', avatar: 'https://i.pravatar.cc/100?img=51', isVerified: false } },
-];
-
-function formatViews(views: number): string {
-  if (views >= 1000000) return `${(views / 1000000).toFixed(1)}M`;
-  if (views >= 1000) return `${(views / 1000).toFixed(1)}K`;
-  return views.toString();
+interface VideoItem {
+  id: string;
+  title: string;
+  thumbnail: string;
+  duration: string;
+  views: number;
+  ageLabel: string;
+  creator: { name: string; handle: string; avatar: string; isVerified: boolean };
 }
 
-interface VideoCardProps {
-  video: typeof forYouVideos[0];
-  index: number;
+const forYouVideos: VideoItem[] = [
+  { id: 'v1', title: 'Understanding Anxiety: A Complete Guide', thumbnail: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&h=450&fit=crop', duration: '12:34', views: 45200, ageLabel: '2D AGO', creator: { name: 'Dr. Sarah Mitchell', handle: 'drsarah', avatar: 'https://i.pravatar.cc/100?img=47', isVerified: true } },
+  { id: 'v2', title: 'Morning Meditation for Calm', thumbnail: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=800&h=450&fit=crop', duration: '8:15', views: 23100, ageLabel: '4D AGO', creator: { name: 'Mindful Moments', handle: 'mindfulmoments', avatar: 'https://i.pravatar.cc/100?img=32', isVerified: true } },
+  { id: 'v3', title: 'My Recovery Journey: 6 Month Update', thumbnail: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=800&h=450&fit=crop', duration: '15:22', views: 8900, ageLabel: '1W AGO', creator: { name: 'Jamie', handle: 'jamie_journey', avatar: 'https://i.pravatar.cc/100?img=12', isVerified: false } },
+  { id: 'v4', title: 'The Science of Sleep and Mental Health', thumbnail: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=800&h=450&fit=crop', duration: '45:00', views: 67800, ageLabel: '2W AGO', creator: { name: 'Wellness Academy', handle: 'wellnessacademy', avatar: 'https://i.pravatar.cc/100?img=14', isVerified: true } },
+  { id: 'v5', title: 'Building Resilience: A Workshop', thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=450&fit=crop', duration: '1:02:15', views: 34500, ageLabel: '3W AGO', creator: { name: 'Mental Health Foundation', handle: 'mhfoundation', avatar: 'https://i.pravatar.cc/100?img=9', isVerified: true } },
+  { id: 'v6', title: 'How to Start Your Wellness Journey', thumbnail: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&h=450&fit=crop', duration: '18:45', views: 156000, ageLabel: '1MO AGO', creator: { name: 'Wellness Guide', handle: 'wellnessguide', avatar: 'https://i.pravatar.cc/100?img=33', isVerified: true } },
+  { id: 'v7', title: 'Daily Check-in: How Are You Today?', thumbnail: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=800&h=450&fit=crop', duration: '5:30', views: 1200, ageLabel: '5H AGO', creator: { name: 'Mind Check', handle: 'mindcheck', avatar: 'https://i.pravatar.cc/100?img=51', isVerified: false } },
+];
+
+const followingVideos = forYouVideos.slice(0, 4).map((v) => ({ ...v, id: `f-${v.id}` }));
+const trendingVideos = forYouVideos.map((v) => ({ ...v, id: `t-${v.id}` }));
+const mostWatchedVideos = forYouVideos.slice().sort((a, b) => b.views - a.views).map((v) => ({ ...v, id: `mw-${v.id}` }));
+const recentVideos = forYouVideos.slice(0, 5).map((v) => ({ ...v, id: `r-${v.id}` }));
+
+const CHIP_TO_DATA: Record<string, VideoItem[]> = {
+  'for-you': forYouVideos,
+  'following': followingVideos,
+  'trending': trendingVideos,
+  'most-watched': mostWatchedVideos,
+  'recent': recentVideos,
+};
+
+function formatViews(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+  return String(n);
 }
 
-function VideoCard({ video, index }: VideoCardProps) {
+function VideoTile({ video, index }: { video: VideoItem; index: number }) {
   const { primary: themePrimary } = useThemeColor();
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05 }}
+      transition={{ delay: Math.min(index * 0.02, 0.2) }}
+      className="cursor-pointer group"
     >
-      <Card className="overflow-hidden cursor-pointer group transition-all w-full bg-black border border-white/[0.08] rounded-md hover:border-white/20">
-        <div className="relative aspect-video bg-black overflow-hidden">
-          <img
-            src={video.thumbnail}
-            alt={video.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-          <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
-          <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-black/80 text-xs text-white font-medium">
-            {video.duration}
-          </div>
-          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <div
-              className="w-14 h-14 rounded-full bg-black/60 flex items-center justify-center border"
-              style={{ borderColor: themePrimary }}
-            >
-              <Play className="h-6 w-6 fill-current ml-1" style={{ color: themePrimary }} />
-            </div>
+      {/* Media */}
+      <div className="relative aspect-video rounded-md overflow-hidden bg-black">
+        <img
+          src={video.thumbnail}
+          alt={video.title}
+          loading="lazy"
+          className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
+        />
+        <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
+        <div className="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 bg-black/80 text-[10px] text-white font-medium rounded">
+          {video.duration}
+        </div>
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+          <div
+            className="w-12 h-12 rounded-full bg-black/60 flex items-center justify-center border"
+            style={{ borderColor: themePrimary }}
+          >
+            <BrandIcon icon={Play} size={20} />
           </div>
         </div>
+      </div>
 
-        <div className="p-3">
-          <div className="flex gap-3">
-            <Avatar className="h-9 w-9 flex-shrink-0">
-              <AvatarImage src={video.creator.avatar} alt={video.creator.name} />
-              <AvatarFallback className="bg-white/[0.06] text-xs text-white/70">
-                {video.creator.name.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <h3 className="font-medium text-sm text-white line-clamp-2 leading-tight">
-                {video.title}
-              </h3>
-              <div className="flex items-center gap-1 mt-1">
-                <span className="text-xs text-white/55">{video.creator.name}</span>
-                {video.creator.isVerified && <VerifiedBadge size="sm" />}
-              </div>
-              <span className="text-xs text-white/55">{formatViews(video.views)} views</span>
-            </div>
+      {/* Below: avatar + title + meta */}
+      <div className="flex gap-2 pt-2">
+        <Avatar className="h-7 w-7 flex-shrink-0">
+          <AvatarImage src={video.creator.avatar} alt={video.creator.name} />
+          <AvatarFallback className="bg-white/[0.06] text-[10px] text-white/70">
+            {video.creator.name.charAt(0)}
+          </AvatarFallback>
+        </Avatar>
+        <div className="flex-1 min-w-0">
+          <h3 className="text-white text-[13px] font-medium leading-snug line-clamp-2">
+            {video.title}
+          </h3>
+          <div className="flex items-center gap-1 mt-0.5">
+            <span className="text-white/55 text-[11px] truncate">{video.creator.name}</span>
+            {video.creator.isVerified && <VerifiedBadge size="sm" />}
           </div>
+          <p className="text-white/45 text-[11px] uppercase tracking-[0.08em] mt-0.5">
+            {formatViews(video.views)} VIEWS · {video.ageLabel}
+          </p>
         </div>
-      </Card>
+      </div>
     </motion.div>
   );
 }
 
-function VideoCardSkeleton() {
+function VideoTileSkeleton() {
   return (
-    <Card className="overflow-hidden w-full">
-      <Skeleton shimmer className="aspect-video" />
-      <div className="p-3">
-        <div className="flex gap-3">
-          <Skeleton shimmer className="h-9 w-9" />
-          <div className="flex-1 space-y-2">
-            <Skeleton shimmer className="h-4 w-full" />
-            <Skeleton shimmer className="h-3 w-24" />
-          </div>
+    <div>
+      <Skeleton shimmer className="aspect-video rounded-md" />
+      <div className="flex gap-2 pt-2">
+        <Skeleton shimmer className="h-7 w-7 rounded-full" />
+        <div className="flex-1 space-y-1.5">
+          <Skeleton shimmer className="h-3 w-full" />
+          <Skeleton shimmer className="h-2.5 w-2/3" />
         </div>
       </div>
-    </Card>
+    </div>
   );
 }
 
-interface VideoSectionProps {
-  title: string;
-  icon: LucideIcon;
-  videos: typeof forYouVideos;
-  isLoading?: boolean;
-}
-
-function VideoSection({ title, icon, videos, isLoading }: VideoSectionProps) {
-  if (!isLoading && videos.length === 0) return null;
-
-  return (
-    <section className="space-y-3">
-      <div className="flex items-center justify-between px-4">
-        <div className="flex items-center gap-2">
-          <BrandIcon icon={icon} size={16} />
-          <BrandSectionLabel>{title}</BrandSectionLabel>
-        </div>
-        <button className="flex items-center gap-1 text-[11px] uppercase tracking-[0.1em] text-white/55 hover:text-white/80 transition-colors">
-          See all
-          <ChevronRight className="h-3.5 w-3.5" />
-        </button>
-      </div>
-      <div className="grid grid-cols-2 gap-1 px-4">
-        {isLoading ? (
-          Array.from({ length: 2 }).map((_, i) => (
-            <VideoCardSkeleton key={i} />
-          ))
-        ) : (
-          videos.map((video, index) => (
-            <VideoCard key={video.id} video={video} index={index} />
-          ))
-        )}
-      </div>
-    </section>
-  );
-}
-
-interface ExploreVideosProps {
+export function ExploreVideos({
+  isLoading = false,
+  activeChip = 'for-you',
+}: {
   isLoading?: boolean;
   activeChip?: string;
-}
+}) {
+  const { primary: themePrimary } = useThemeColor();
+  const source = CHIP_TO_DATA[activeChip] ?? CHIP_TO_DATA['for-you'];
+  const { items, sentinelRef, isLoadingMore, hasMore } = useInfiniteList({
+    source,
+    pageSize: 8,
+    resetKey: activeChip,
+  });
 
-const CHIP_TO_DATA: Record<string, { title: string; icon: LucideIcon; data: typeof forYouVideos }> = {
-  'for-you': { title: 'FOR YOU RIGHT NOW', icon: Compass, data: forYouVideos },
-  'following': { title: 'CREATORS YOU FOLLOW', icon: Users, data: followingVideos },
-  'trending': { title: 'TRENDING VIDEOS', icon: TrendingUp, data: trendingVideos },
-  'most-watched': { title: 'MOST WATCHED', icon: Eye, data: mostWatchedVideos },
-  'recent': { title: 'RECENTLY UPLOADED', icon: Clock, data: recentVideos },
-};
-
-export function ExploreVideos({ isLoading = false, activeChip = 'for-you' }: ExploreVideosProps) {
-  const [isRefreshing, setIsRefreshing] = useState(false);
-
-  const handleRefresh = useCallback(async () => {
-    setIsRefreshing(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setIsRefreshing(false);
-  }, []);
-
-  const loading = isLoading || isRefreshing;
-  const section = CHIP_TO_DATA[activeChip] ?? CHIP_TO_DATA['for-you'];
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-2 gap-3 px-3 py-3">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <VideoTileSkeleton key={i} />
+        ))}
+      </div>
+    );
+  }
 
   return (
-    <PullToRefresh onRefresh={handleRefresh} className="h-full">
-      <div className="py-4 space-y-6">
-        <VideoSection title={section.title} icon={section.icon} videos={section.data} isLoading={loading} />
+    <div className="py-3">
+      <div className="grid grid-cols-2 gap-3 px-3">
+        {items.map((video, index) => (
+          <VideoTile key={video.__key} video={video} index={index} />
+        ))}
       </div>
-    </PullToRefresh>
+
+      {hasMore && (
+        <div ref={sentinelRef} className="flex items-center justify-center py-6">
+          {isLoadingMore && (
+            <div
+              className="h-6 w-6 rounded-full border-2 border-white/30 animate-spin"
+              style={{ borderTopColor: themePrimary }}
+            />
+          )}
+        </div>
+      )}
+    </div>
   );
 }
