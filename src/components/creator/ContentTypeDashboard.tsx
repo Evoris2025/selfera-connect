@@ -94,7 +94,7 @@ function CreatorRow({
       onClick={onClick}
       className={cn(
         'group relative w-full text-left',
-        'h-[115px] rounded-2xl overflow-hidden',
+        'flex-1 min-h-[110px] rounded-2xl overflow-hidden',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--primary))]/40'
       )}
       aria-label={`Create ${title}`}
