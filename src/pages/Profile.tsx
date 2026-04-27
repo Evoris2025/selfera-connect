@@ -618,7 +618,7 @@ export default function Profile() {
                 label="Following" 
                 onClick={() => openListModal('following')}
               />
-              <div className="w-px h-10 bg-border/50" />
+              <div className="w-px self-stretch bg-white/[0.08]" />
               <CardStatItem 
                 count={normalizedStats.communityCount} 
                 label="Community" 
