@@ -165,7 +165,8 @@ function CreatorRow({
 
 export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboardProps) {
   const navigate = useNavigate();
-  const { drafts, scheduled, posts, expressions } = useFeedData();
+  const { drafts, scheduled } = useFeedData();
+  const backgrounds = useCreatorRowBackgrounds();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerTab, setDrawerTab] = useState<'drafts' | 'scheduled'>('drafts');
 
