@@ -129,7 +129,7 @@ function ImageViewer({ image, onClose }: ImageViewerProps) {
 
 interface ImageSectionProps {
   title: string;
-  icon: React.ComponentType<{ className?: string; size?: number | string }>;
+  icon: LucideIcon;
   images: typeof trendingImages;
   isLoading?: boolean;
   onImageClick: (image: typeof trendingImages[0]) => void;
