@@ -342,7 +342,11 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
         </div>
       </div>
 
-      <UnifiedDraftsDrawer open={drawerOpen} onOpenChange={setDrawerOpen} initialTab={drawerTab} />
+      <ContinueWorkingSheet
+        open={sheetOpen}
+        onOpenChange={setSheetOpen}
+        todayPrompt={todayPrompt}
+      />
     </div>
   );
 }
