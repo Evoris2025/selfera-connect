@@ -53,10 +53,12 @@ function ExpressionCard({ item, index }: { item: TrendingExpression; index: numb
       onClick={() => handleTap('expressions', item.id)}
       className="relative w-[112px] aspect-[9/16] flex-shrink-0 overflow-hidden rounded-md bg-secondary group"
     >
-      <span className="absolute top-2 left-2 z-10"><BrandIcon icon={Flame} className="w-3 h-3" /></span>
+      <span className="absolute top-2 left-2 z-10 flex items-center justify-center w-5 h-5 rounded-full bg-black/40 backdrop-blur-sm">
+        <BrandIcon icon={Flame} className="w-3 h-3" />
+      </span>
       <img src={item.thumbnail} alt="" loading="lazy" className="w-full h-full object-cover" />
-      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/85 via-black/30 to-transparent pointer-events-none" />
-      <div className="absolute bottom-1.5 left-1.5 right-1.5 flex items-center gap-1 min-w-0">
+      <div className="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black/85 via-black/30 to-transparent pointer-events-none" />
+      <div className="absolute bottom-1.5 left-1.5 right-12 flex items-center gap-1 min-w-0">
         <Avatar className="h-4 w-4 ring-1 ring-white/30 flex-shrink-0">
           <AvatarImage src={item.user.avatar} alt={item.user.handle} />
           <AvatarFallback className="text-[7px] bg-white/[0.08] text-white/70">
@@ -65,10 +67,10 @@ function ExpressionCard({ item, index }: { item: TrendingExpression; index: numb
         </Avatar>
         <span className="text-white text-[10px] font-medium truncate">@{item.user.handle}</span>
       </div>
-      <div className="absolute top-1.5 right-1.5 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-black/55 backdrop-blur-sm">
-        <Eye className="h-2.5 w-2.5 text-white" />
-        <span className="text-white text-[9px] font-medium tabular-nums">{formatCount(item.views)}</span>
-      </div>
+      <span className="absolute bottom-2 right-2 z-10 flex items-center gap-1 text-white/90 text-[10px] font-medium">
+        <Eye className="w-2.5 h-2.5" strokeWidth={1.5} />
+        {formatCount(item.views)}
+      </span>
     </motion.button>
   );
 }
