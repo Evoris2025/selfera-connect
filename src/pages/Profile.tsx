@@ -89,13 +89,13 @@ function formatCount(count: number): string {
 }
 
 // Clickable stat item for the card profile
-function CardStatItem({ 
-  count, 
-  label, 
-  onClick 
-}: { 
-  count: number; 
-  label: string; 
+function CardStatItem({
+  count,
+  label,
+  onClick,
+}: {
+  count: number;
+  label: string;
   onClick?: () => void;
 }) {
   return (
@@ -103,12 +103,14 @@ function CardStatItem({
       onClick={onClick}
       disabled={!onClick}
       className={cn(
-        "text-center flex-1 py-3 px-2 rounded-xl transition-all duration-300",
-        onClick && "hover:bg-primary/5 active:scale-[0.97] cursor-pointer"
+        'text-center flex-1 py-3 px-2 transition-colors duration-200',
+        onClick && 'hover:bg-white/[0.04] active:scale-[0.97] cursor-pointer',
       )}
     >
-      <p className="text-lg sm:text-xl font-bold text-foreground tracking-tight">{formatCount(count)}</p>
-      <p className="text-xs text-muted-foreground mt-1 font-medium uppercase tracking-wider">{label}</p>
+      <p className="text-white text-[18px] font-medium leading-none">{formatCount(count)}</p>
+      <div className="mt-1.5 flex justify-center">
+        <BrandSectionLabel>{label}</BrandSectionLabel>
+      </div>
     </button>
   );
 }
@@ -119,13 +121,13 @@ function renderBioWithHashtags(bio: string) {
     part.startsWith('#') ? (
       <span
         key={index}
-        className="text-primary hover:text-primary/80 cursor-pointer transition-colors"
+        className="text-gradient-brand cursor-pointer"
       >
         {part}
       </span>
     ) : (
       <span key={index}>{part}</span>
-    )
+    ),
   );
 }
 
