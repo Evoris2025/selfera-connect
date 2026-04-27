@@ -577,34 +577,13 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
               {state.scheduledDate ? 'Schedule Post' : 'Create Post'}
             </h2>
           </div>
-          <div className="flex items-center gap-1">
-            <Button
-              size="sm"
-              onClick={handleSubmit}
-              disabled={!canPost || isSubmitting}
-              className={cn(
-                'h-8 px-4 rounded-full text-xs font-semibold transition-all',
-                canPost && !isSubmitting
-                  ? 'gradient-brand text-white shadow-md shadow-fuchsia-500/20'
-                  : 'bg-white/5 text-foreground/40 hover:bg-white/5'
-              )}
-            >
-              {isSubmitting ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : state.scheduledDate ? (
-                'Schedule'
-              ) : (
-                'Post'
-              )}
-            </Button>
-            <button
-              onClick={onBack}
-              className="p-2 rounded-full hover:bg-white/5 transition-colors"
-              aria-label="Close"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
+          <button
+            onClick={onBack}
+            className="p-2 rounded-full hover:bg-white/5 transition-colors"
+            aria-label="Close"
+          >
+            <X className="h-5 w-5" />
+          </button>
         </div>
         <div className="h-px w-full bg-gradient-to-r from-transparent via-fuchsia-500/40 to-transparent opacity-60" />
       </div>
