@@ -17,6 +17,7 @@ import { useFeedData } from '@/contexts/FeedDataContext';
 import { UnifiedDraftsDrawer } from './shared/UnifiedDraftsDrawer';
 import { BrandMark } from '@/components/BrandMark';
 import { getTodayPrompt } from '@/lib/dailyPrompts';
+import { useCreatorRowBackgrounds, type CreatorRowType } from '@/hooks/useCreatorRowBackgrounds';
 
 export type ContentType = 'expression' | 'video' | 'image' | 'post';
 
@@ -68,7 +69,7 @@ function CreatorRow({
   description,
   accentColor,
   activity,
-  thumbnailUrl,
+  backgroundUrl,
   onClick,
 }: {
   icon: typeof Sparkles;
@@ -76,57 +77,87 @@ function CreatorRow({
   description: string;
   accentColor: string;
   activity?: string;
-  thumbnailUrl?: string;
+  backgroundUrl: string | null;
   onClick: () => void;
 }) {
+  const [imgFailed, setImgFailed] = useState(false);
+  const showPhoto = !!backgroundUrl && !imgFailed;
+
+  // Empty-state gradient — accent at top-left fading to dark base.
+  const fallbackGradient = `linear-gradient(135deg, ${accentColor}40 0%, ${accentColor}10 60%, #0a0a0a 100%)`;
+
   return (
     <motion.button
-      whileHover={{ x: 2 }}
+      whileHover={{ scale: 1.01 }}
       whileTap={{ scale: 0.99 }}
+      transition={{ duration: 0.2 }}
       onClick={onClick}
       className={cn(
-        'group relative w-full text-left flex items-center gap-4',
-        'bg-white/[0.025] hover:bg-white/[0.05]',
-        'rounded-2xl px-4 py-4 transition-colors duration-200',
+        'group relative w-full text-left',
+        'h-64 rounded-2xl overflow-hidden',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--primary))]/40'
       )}
       aria-label={`Create ${title}`}
     >
+      {/* Background layer */}
+      {showPhoto ? (
+        <>
+          <img
+            src={backgroundUrl!}
+            alt=""
+            aria-hidden
+            loading="lazy"
+            onError={() => setImgFailed(true)}
+            className="absolute inset-0 w-full h-full object-cover transition-[filter] duration-200"
+            style={{ filter: 'brightness(0.55) saturate(0.9)' }}
+          />
+          {/* Directional scrim — heaviest at bottom-left where text sits */}
+          <div
+            aria-hidden
+            className="absolute inset-0"
+            style={{
+              background:
+                'linear-gradient(110deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.55) 50%, rgba(0,0,0,0.25) 100%)',
+            }}
+          />
+        </>
+      ) : (
+        <div
+          aria-hidden
+          className="absolute inset-0"
+          style={{ background: fallbackGradient }}
+        />
+      )}
+
       {/* Left-edge accent bar */}
       <span
         aria-hidden
-        className="absolute left-0 top-2 bottom-2 w-[3px] rounded-full transition-opacity duration-200 opacity-60 group-hover:opacity-100"
+        className="absolute left-0 top-0 bottom-0 w-[3px] transition-opacity duration-200 opacity-80 group-hover:opacity-100"
         style={{ background: accentColor }}
       />
 
-      {/* Icon container */}
-      <div
-        className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
-        style={{ backgroundColor: `${accentColor}1a` }}
-      >
-        <Icon size={22} strokeWidth={2} style={{ color: accentColor }} aria-hidden />
-      </div>
+      {/* Content layer */}
+      <div className="relative z-10 flex flex-col justify-between h-full p-5">
+        {/* Top row: icon chip (left) + chevron chip (right) */}
+        <div className="flex items-start justify-between">
+          <div className="w-12 h-12 rounded-xl bg-white/[0.10] backdrop-blur-md border border-white/10 flex items-center justify-center">
+            <Icon size={22} strokeWidth={2} style={{ color: accentColor }} aria-hidden />
+          </div>
+          <div className="w-8 h-8 rounded-full bg-white/[0.10] backdrop-blur-md border border-white/10 flex items-center justify-center">
+            <ChevronRight size={16} className="text-white/85" />
+          </div>
+        </div>
 
-      {/* Content column */}
-      <div className="flex-1 flex flex-col min-w-0 gap-0.5">
-        <span className="text-base font-semibold text-white leading-tight truncate">{title}</span>
-        <span className="text-xs text-white/55 leading-snug truncate">{description}</span>
-        {activity && (
-          <span className="text-[11px] text-white/40 mt-1 truncate">{activity}</span>
-        )}
-      </div>
-
-      {/* Right cluster: optional recent thumbnail + chevron */}
-      <div className="flex items-center gap-2 shrink-0">
-        {thumbnailUrl && (
-          <img
-            src={thumbnailUrl}
-            alt=""
-            aria-hidden
-            className="w-7 h-7 rounded-md object-cover bg-white/5"
-          />
-        )}
-        <ChevronRight size={18} className="text-white/30" />
+        {/* Bottom-left: title / description / activity */}
+        <div className="flex flex-col">
+          <span className="text-2xl font-bold text-white leading-tight tracking-tight">
+            {title}
+          </span>
+          <span className="text-sm text-white/75 mt-1">{description}</span>
+          {activity && (
+            <span className="text-xs text-white/60 mt-2">{activity}</span>
+          )}
+        </div>
       </div>
     </motion.button>
   );
@@ -134,7 +165,8 @@ function CreatorRow({
 
 export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboardProps) {
   const navigate = useNavigate();
-  const { drafts, scheduled, posts, expressions } = useFeedData();
+  const { drafts, scheduled } = useFeedData();
+  const backgrounds = useCreatorRowBackgrounds();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerTab, setDrawerTab] = useState<'drafts' | 'scheduled'>('drafts');
 
@@ -166,23 +198,10 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
 
   const todayPrompt = useMemo(() => getTodayPrompt(), []);
 
-  // Most recent thumbnail per content type — pulled from existing feed data.
-  // Returns undefined when nothing matches; we never fabricate.
-  const thumbFor = (id: ContentType): string | undefined => {
-    if (id === 'expression') {
-      const e = expressions.find((x) => x.mediaType === 'image' || x.mediaType === 'video');
-      return e?.thumbnailUrl || e?.mediaUrl;
-    }
-    if (id === 'video') {
-      const p = posts.find((x) => x.media?.type === 'video');
-      return p?.media?.thumbnail || p?.media?.url;
-    }
-    if (id === 'image') {
-      const p = posts.find((x) => x.media?.type === 'image');
-      return p?.media?.url;
-    }
-    // post (text-only): no media thumbnail
-    return undefined;
+  // Map ContentType ('image') -> hook's CreatorRowType ('photo')
+  const bgFor = (id: ContentType): string | null => {
+    const key: CreatorRowType = id === 'image' ? 'photo' : (id as CreatorRowType);
+    return backgrounds[key] ?? null;
   };
 
   const openDraft = () => {
@@ -276,21 +295,18 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
 
         {/* Vertical creator rows */}
         <div className="flex flex-col gap-3">
-          {contentTypes.map((type) => {
-            const thumb = thumbFor(type.id);
-            return (
-              <CreatorRow
-                key={type.id}
-                icon={type.icon}
-                title={type.title}
-                description={type.description}
-                accentColor={ACCENT[type.id]}
-                activity={tileContext(type.id)}
-                thumbnailUrl={thumb}
-                onClick={() => onSelect(type.id)}
-              />
-            );
-          })}
+          {contentTypes.map((type) => (
+            <CreatorRow
+              key={type.id}
+              icon={type.icon}
+              title={type.title}
+              description={type.description}
+              accentColor={ACCENT[type.id]}
+              activity={tileContext(type.id)}
+              backgroundUrl={bgFor(type.id)}
+              onClick={() => onSelect(type.id)}
+            />
+          ))}
         </div>
 
         {/* Drafts / Scheduled — subtle ghost links */}
