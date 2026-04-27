@@ -345,7 +345,7 @@ export function TrendingNowRail({ activeTab }: TrendingNowRailProps) {
             canScrollRight ? 'opacity-100' : 'opacity-0 pointer-events-none'
           )}
         >
-          <ChevronRight className="w-4 h-4 text-white" strokeWidth={2} />
+          <ChevronRight className="w-4 h-4 text-white" strokeWidth={1.5} />
         </button>
       </div>
     </div>
