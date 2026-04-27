@@ -143,7 +143,7 @@ const DraggableTab = memo(function DraggableTab({
         'relative flex-1 flex items-center justify-center py-2.5 transition-all duration-200',
         isRearrangeMode && 'cursor-grab active:cursor-grabbing animate-jiggle',
         isDragging && 'z-50',
-        isActive && !isRearrangeMode && 'text-gradient-brand',
+        isActive && !isRearrangeMode && 'text-white',
         !isActive && !isRearrangeMode && 'text-white/45 hover:text-white/70',
       )}
       onClick={handleClick}
