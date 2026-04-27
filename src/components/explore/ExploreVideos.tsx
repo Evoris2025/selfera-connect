@@ -1,12 +1,14 @@
 import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Play, Clock, Users, Compass, ChevronRight, TrendingUp, Eye, Upload } from 'lucide-react';
+import { Play, Clock, Users, Compass, ChevronRight, TrendingUp, Eye, Upload, type LucideIcon } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
 import { PullToRefresh } from '@/components/ui/PullToRefresh';
 import { ExploreFilters, FilterType, DateRange } from './ExploreFilters';
+import { BrandSectionLabel, BrandIcon } from '@/components/brand';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 // Mock video data
 const forYouVideos = [
