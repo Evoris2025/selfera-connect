@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, TrendingUp, Heart, MessageCircle, Clock, ChevronRight, type LucideIcon } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -6,72 +6,27 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { VerifiedBadge } from '@/components/VerifiedBadge';
 import { PullToRefresh } from '@/components/ui/PullToRefresh';
-import { ExploreFilters, FilterType, DateRange } from './ExploreFilters';
 import { BrandSectionLabel, BrandIcon } from '@/components/brand';
-import { cn } from '@/lib/utils';
 
-// Mock post data
 const forYouPosts = [
-  {
-    id: 'p1',
-    content: 'Remember: healing is not linear. Some days will be harder than others, and that\'s completely okay. What matters is that you keep showing up for yourself.',
-    user: { name: 'Dr. Sarah Mitchell', handle: 'drsarah', avatar: '', isVerified: true },
-    likes: 2340,
-    comments: 156,
-    createdAt: '2h ago',
-  },
-  {
-    id: 'p2',
-    content: 'Today I learned that setting boundaries isn\'t selfish—it\'s self-care. Protecting your peace is a form of self-love. 💙',
-    user: { name: 'Wellness Hub', handle: 'wellnesshub', avatar: '', isVerified: true },
-    likes: 1890,
-    comments: 89,
-    createdAt: '4h ago',
-  },
+  { id: 'p1', content: 'Remember: healing is not linear. Some days will be harder than others, and that\'s completely okay. What matters is that you keep showing up for yourself.', user: { name: 'Dr. Sarah Mitchell', handle: 'drsarah', avatar: 'https://i.pravatar.cc/100?img=47', isVerified: true }, likes: 2340, comments: 156, createdAt: '2h ago' },
+  { id: 'p2', content: 'Today I learned that setting boundaries isn\'t selfish—it\'s self-care. Protecting your peace is a form of self-love. 💙', user: { name: 'Wellness Hub', handle: 'wellnesshub', avatar: 'https://i.pravatar.cc/100?img=32', isVerified: true }, likes: 1890, comments: 89, createdAt: '4h ago' },
 ];
 
 const trendingPosts = [
-  {
-    id: 'p3',
-    content: 'Spent the morning journaling and it completely shifted my mindset. Sometimes we need to write it out to work it out. What\'s your go-to reflection practice?',
-    user: { name: 'Mind Matters', handle: 'mindmatters', avatar: '', isVerified: true },
-    likes: 5670,
-    comments: 423,
-    createdAt: '6h ago',
-  },
+  { id: 'p3', content: 'Spent the morning journaling and it completely shifted my mindset. Sometimes we need to write it out to work it out. What\'s your go-to reflection practice?', user: { name: 'Mind Matters', handle: 'mindmatters', avatar: 'https://i.pravatar.cc/100?img=14', isVerified: true }, likes: 5670, comments: 423, createdAt: '6h ago' },
 ];
 
 const mostLikedPosts = [
-  {
-    id: 'p4',
-    content: 'Six months sober today. Never thought I\'d make it this far. Thank you to everyone in this community who believed in me when I couldn\'t believe in myself.',
-    user: { name: 'Jamie', handle: 'jamie_journey', avatar: '', isVerified: false },
-    likes: 12400,
-    comments: 890,
-    createdAt: '1d ago',
-  },
+  { id: 'p4', content: 'Six months sober today. Never thought I\'d make it this far. Thank you to everyone in this community who believed in me when I couldn\'t believe in myself.', user: { name: 'Jamie', handle: 'jamie_journey', avatar: 'https://i.pravatar.cc/100?img=12', isVerified: false }, likes: 12400, comments: 890, createdAt: '1d ago' },
 ];
 
 const mostCommentedPosts = [
-  {
-    id: 'p5',
-    content: 'What\'s one small thing you did today to take care of your mental health? I\'ll start: I took a 10-minute walk outside.',
-    user: { name: 'Calm Space', handle: 'calmspace', avatar: '', isVerified: true },
-    likes: 3200,
-    comments: 1567,
-    createdAt: '12h ago',
-  },
+  { id: 'p5', content: 'What\'s one small thing you did today to take care of your mental health? I\'ll start: I took a 10-minute walk outside.', user: { name: 'Calm Space', handle: 'calmspace', avatar: 'https://i.pravatar.cc/100?img=9', isVerified: true }, likes: 3200, comments: 1567, createdAt: '12h ago' },
 ];
 
 const newestPosts = [
-  {
-    id: 'p6',
-    content: 'Just joined this community and feeling hopeful for the first time in a while. Looking forward to connecting with others on similar journeys.',
-    user: { name: 'NewStart', handle: 'newstart2024', avatar: '', isVerified: false },
-    likes: 234,
-    comments: 45,
-    createdAt: '15m ago',
-  },
+  { id: 'p6', content: 'Just joined this community and feeling hopeful for the first time in a while. Looking forward to connecting with others on similar journeys.', user: { name: 'NewStart', handle: 'newstart2024', avatar: 'https://i.pravatar.cc/100?img=51', isVerified: false }, likes: 234, comments: 45, createdAt: '15m ago' },
 ];
 
 function formatCount(count: number): string {
@@ -93,7 +48,6 @@ function PostCard({ post, index }: PostCardProps) {
       transition={{ delay: index * 0.05 }}
     >
       <Card className="p-4 bg-black border border-white/[0.08] rounded-md hover:border-white/20 transition-colors cursor-pointer">
-        {/* Header */}
         <div className="flex items-center gap-3 mb-3">
           <Avatar className="h-10 w-10">
             <AvatarImage src={post.user.avatar} alt={post.user.name} />
@@ -110,12 +64,10 @@ function PostCard({ post, index }: PostCardProps) {
           </div>
         </div>
 
-        {/* Content */}
         <p className="text-sm text-foreground leading-relaxed mb-3">
           {post.content}
         </p>
 
-        {/* Stats */}
         <div className="flex items-center gap-4 text-muted-foreground">
           <div className="flex items-center gap-1.5">
             <Heart className="h-4 w-4" />
@@ -161,7 +113,7 @@ interface PostSectionProps {
   showViewAll?: boolean;
 }
 
-function PostSection({ title, icon, posts, isLoading, showViewAll = true }: PostSectionProps) {
+function PostSection({ title, icon, posts, isLoading, showViewAll = false }: PostSectionProps) {
   if (!isLoading && posts.length === 0) return null;
 
   return (
@@ -195,11 +147,18 @@ function PostSection({ title, icon, posts, isLoading, showViewAll = true }: Post
 
 interface ExplorePostsProps {
   isLoading?: boolean;
+  activeChip?: string;
 }
 
-export function ExplorePosts({ isLoading = false }: ExplorePostsProps) {
-  const [activeFilter, setActiveFilter] = useState<FilterType>('trending');
-  const [dateRange, setDateRange] = useState<DateRange>('7d');
+const CHIP_TO_DATA: Record<string, { title: string; icon: LucideIcon; data: typeof forYouPosts }> = {
+  'for-you': { title: 'FOR YOU', icon: Sparkles, data: forYouPosts },
+  'trending': { title: 'TRENDING POSTS', icon: TrendingUp, data: trendingPosts },
+  'most-liked': { title: 'MOST LIKED', icon: Heart, data: mostLikedPosts },
+  'most-commented': { title: 'MOST COMMENTED', icon: MessageCircle, data: mostCommentedPosts },
+  'newest': { title: 'NEWEST', icon: Clock, data: newestPosts },
+};
+
+export function ExplorePosts({ isLoading = false, activeChip = 'for-you' }: ExplorePostsProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const handleRefresh = useCallback(async () => {
@@ -209,25 +168,12 @@ export function ExplorePosts({ isLoading = false }: ExplorePostsProps) {
   }, []);
 
   const loading = isLoading || isRefreshing;
+  const section = CHIP_TO_DATA[activeChip] ?? CHIP_TO_DATA['for-you'];
 
   return (
     <PullToRefresh onRefresh={handleRefresh} className="h-full">
       <div className="py-4 space-y-6">
-        {/* Filter bar */}
-        <div className="px-4">
-          <ExploreFilters
-            activeFilter={activeFilter}
-            dateRange={dateRange}
-            onFilterChange={setActiveFilter}
-            onDateRangeChange={setDateRange}
-          />
-        </div>
-
-        <PostSection title="FOR YOU" icon={Sparkles} posts={forYouPosts} isLoading={loading} />
-        <PostSection title="TRENDING POSTS" icon={TrendingUp} posts={trendingPosts} isLoading={loading} />
-        <PostSection title="MOST LIKED" icon={Heart} posts={mostLikedPosts} isLoading={loading} />
-        <PostSection title="MOST COMMENTED" icon={MessageCircle} posts={mostCommentedPosts} isLoading={loading} />
-        <PostSection title="NEWEST" icon={Clock} posts={newestPosts} isLoading={loading} />
+        <PostSection title={section.title} icon={section.icon} posts={section.data} isLoading={loading} />
       </div>
     </PullToRefresh>
   );

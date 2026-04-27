@@ -34,24 +34,34 @@ export function BrandUnderlineTabs({
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [indicator, setIndicator] = React.useState<{ left: number; width: number } | null>(null);
 
-  React.useLayoutEffect(() => {
+  const measure = React.useCallback(() => {
     const container = containerRef.current;
     if (!container) return;
     const activeBtn = container.querySelector<HTMLButtonElement>(
       `[data-tab-id="${value}"]`,
     );
     if (!activeBtn) return;
-    const cRect = container.getBoundingClientRect();
-    const aRect = activeBtn.getBoundingClientRect();
-    setIndicator({ left: aRect.left - cRect.left, width: aRect.width });
-  }, [value, tabs]);
+    // Use offsetLeft/offsetWidth relative to the container (which is the offsetParent
+    // since it's `relative`). This avoids any padding/transform mismatch from getBoundingClientRect.
+    setIndicator({ left: activeBtn.offsetLeft, width: activeBtn.offsetWidth });
+  }, [value]);
+
+  React.useLayoutEffect(() => {
+    measure();
+  }, [measure, tabs]);
+
+  React.useEffect(() => {
+    const handle = () => measure();
+    window.addEventListener('resize', handle);
+    return () => window.removeEventListener('resize', handle);
+  }, [measure]);
 
   return (
     <div
       ref={containerRef}
       role="tablist"
       aria-label={ariaLabel}
-      className={cn('relative flex items-end', className)}
+      className={cn('relative flex w-full items-end', className)}
     >
       {tabs.map((tab) => {
         const active = tab.id === value;
@@ -64,6 +74,7 @@ export function BrandUnderlineTabs({
             data-tab-id={tab.id}
             onClick={() => onChange(tab.id)}
             className={cn(
+              'flex-1 justify-center inline-flex',
               'px-3 py-2 text-[12px] uppercase tracking-[0.1em] font-medium',
               'transition-colors duration-150',
               'focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--primary))]/40 rounded-sm',

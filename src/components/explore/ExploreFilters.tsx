@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Filter, TrendingUp, Eye, Clock, Calendar, ChevronDown } from 'lucide-react';
+import { Filter, Calendar, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetTrigger } from '@/components/ui/sheet';
 import {
@@ -8,25 +8,18 @@ import {
   BrandSheetSectionLabel,
   BrandSegmentedControl,
 } from '@/components/ui/sheet-system';
-import { cn } from '@/lib/utils';
 
 export type FilterType = 'trending' | 'popular' | 'viewed' | 'newest' | 'oldest';
 export type DateRange = '7d' | '30d' | 'all';
+export type ExploreTab = 'expressions' | 'videos' | 'images' | 'posts';
 
 interface ExploreFiltersProps {
-  activeFilter: FilterType;
+  activeTab: ExploreTab;
   dateRange: DateRange;
-  onFilterChange: (filter: FilterType) => void;
   onDateRangeChange: (range: DateRange) => void;
+  /** Optional: label to show on the trigger (active chip label for current tab). */
+  triggerLabel?: string;
 }
-
-const filters: { id: FilterType; label: string; icon: React.ReactNode }[] = [
-  { id: 'trending', label: 'Trending', icon: <TrendingUp size={16} strokeWidth={1.6} stroke="url(#selfera-brand-gradient)" fill="none" /> },
-  { id: 'popular', label: 'Most Popular', icon: <TrendingUp size={16} strokeWidth={1.6} stroke="url(#selfera-brand-gradient)" fill="none" /> },
-  { id: 'viewed', label: 'Most Viewed', icon: <Eye size={16} strokeWidth={1.6} stroke="url(#selfera-brand-gradient)" fill="none" /> },
-  { id: 'newest', label: 'Newest', icon: <Clock size={16} strokeWidth={1.6} stroke="url(#selfera-brand-gradient)" fill="none" /> },
-  { id: 'oldest', label: 'Oldest', icon: <Clock size={16} strokeWidth={1.6} stroke="url(#selfera-brand-gradient)" fill="none" /> },
-];
 
 const dateRanges: { value: DateRange; label: string }[] = [
   { value: '7d', label: '7 days' },
@@ -34,15 +27,21 @@ const dateRanges: { value: DateRange; label: string }[] = [
   { value: 'all', label: 'All time' },
 ];
 
+const TAB_TITLE: Record<ExploreTab, string> = {
+  expressions: 'EXPRESSIONS',
+  videos: 'VIDEOS',
+  images: 'IMAGES',
+  posts: 'POSTS',
+};
+
 export function ExploreFilters({
-  activeFilter,
+  activeTab,
   dateRange,
-  onFilterChange,
   onDateRangeChange,
+  triggerLabel,
 }: ExploreFiltersProps) {
   const [isOpen, setIsOpen] = useState(false);
-
-  const activeFilterLabel = filters.find((f) => f.id === activeFilter)?.label || 'Filter';
+  const label = triggerLabel || 'Filter';
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -53,52 +52,12 @@ export function ExploreFilters({
           className="gap-2 rounded-full border-white/15 bg-transparent text-white/80 hover:border-white/30 hover:bg-transparent h-10 px-3"
         >
           <Filter className="h-4 w-4" />
-          <span className="hidden sm:inline text-[12px] uppercase tracking-[0.1em]">{activeFilterLabel}</span>
+          <span className="hidden sm:inline text-[12px] uppercase tracking-[0.1em]">{label}</span>
           <ChevronDown className="h-3 w-3" />
         </Button>
       </SheetTrigger>
-      <BrandSheetContent maxHeight="80vh">
-        <BrandSheetTitle setup="filter" emphasis="EXPLORE" subtitle="Tune what you see and when from." />
-
-        <BrandSheetSectionLabel>Sort by</BrandSheetSectionLabel>
-        <div className="grid grid-cols-2 gap-2">
-          {filters.map((filter) => {
-            const active = activeFilter === filter.id;
-            return (
-              <button
-                key={filter.id}
-                type="button"
-                onClick={() => onFilterChange(filter.id)}
-                className={cn(
-                  'flex items-center gap-2 px-3 py-2.5 rounded-xl text-left',
-                  'bg-white/[0.03] border transition-colors',
-                  active ? 'border-white/30' : 'border-white/10 hover:border-white/20',
-                )}
-                style={
-                  active
-                    ? {
-                        backgroundImage:
-                          'linear-gradient(hsl(var(--background)), hsl(var(--background))), linear-gradient(90deg, hsl(var(--gradient-start)), hsl(var(--gradient-mid)), hsl(var(--gradient-end)))',
-                        backgroundOrigin: 'border-box',
-                        backgroundClip: 'padding-box, border-box',
-                        border: '1px solid transparent',
-                      }
-                    : undefined
-                }
-              >
-                {filter.icon}
-                <span
-                  className={cn(
-                    'text-sm font-semibold',
-                    active ? 'text-gradient-brand' : 'text-white/80',
-                  )}
-                >
-                  {filter.label}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+      <BrandSheetContent maxHeight="60vh">
+        <BrandSheetTitle setup="filter" emphasis={TAB_TITLE[activeTab]} subtitle="Tune what you see and when from." />
 
         <BrandSheetSectionLabel>
           <span className="inline-flex items-center gap-1.5">
