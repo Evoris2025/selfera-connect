@@ -304,8 +304,8 @@ export default function MyERA() {
         >
           {/* Cover Image */}
           <div className="relative h-40 sm:h-48 overflow-hidden">
-            <motion.div 
-              className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/20 to-background"
+            <motion.div
+              className="absolute inset-0 bg-black"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             />
