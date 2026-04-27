@@ -113,7 +113,7 @@ export default function Studio() {
               exit={{ opacity: 0, x: -20 }}
             >
               <AppLayout showHeader={false}>
-                <div className="flex justify-center sm:px-4 sm:py-6 pb-[calc(env(safe-area-inset-bottom)+88px)] lg:pb-6">
+                <div className="flex justify-center sm:px-4 sm:py-6">
                   <PostComposer onBack={handleBack} onSuccess={studio.success} />
                 </div>
               </AppLayout>
