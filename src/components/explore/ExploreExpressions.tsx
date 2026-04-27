@@ -57,19 +57,19 @@ function ExpressionCard({ expression, index }: ExpressionCardProps) {
           <div className="flex items-center gap-1.5">
             <Avatar className="h-6 w-6 ring-2 ring-white/30">
               <AvatarImage src={expression.user.avatar} />
-              <AvatarFallback className="text-[10px] bg-primary/80">
-                {expression.user.name.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
-            <span className="text-white text-xs font-medium truncate">
-              {expression.user.name}
-            </span>
-            {expression.user.isVerified && <VerifiedBadge size="sm" />}
-          </div>
+            <AvatarFallback className="text-[10px] bg-white/[0.08] text-white/70">
+              {expression.user.name.charAt(0)}
+            </AvatarFallback>
+          </Avatar>
+          <span className="text-white text-xs font-medium truncate">
+            {expression.user.name}
+          </span>
+          {expression.user.isVerified && <VerifiedBadge size="sm" />}
         </div>
+      </div>
 
-        {/* Ring indicator */}
-        <div className="absolute inset-0 ring-2 ring-inset ring-primary/50 opacity-0 group-hover:opacity-100 transition-opacity" />
+      {/* Ring indicator */}
+      <div className="absolute inset-0 ring-2 ring-inset ring-white/30 opacity-0 group-hover:opacity-100 transition-opacity" />
       </div>
     </motion.div>
   );
