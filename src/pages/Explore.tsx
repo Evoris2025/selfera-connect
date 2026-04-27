@@ -100,6 +100,12 @@ export default function Explore() {
           </div>
         </div>
 
+        {/* Trending topic chips — sits between search and tab strip. Not sticky. */}
+        <div className="bg-background pt-3 mb-4">
+          <BrandSectionLabel className="px-4 mb-2">TRENDING ON SELFERA</BrandSectionLabel>
+          <ExploreTopicChips selected={selectedTopic} onSelect={setSelectedTopic} />
+        </div>
+
         {/* Brand Underline Tab Bar */}
         <div className="sticky top-[68px] z-10 bg-background/95 backdrop-blur px-3 border-b border-white/[0.08]">
           <BrandUnderlineTabs
