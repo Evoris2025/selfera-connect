@@ -295,21 +295,18 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
 
         {/* Vertical creator rows */}
         <div className="flex flex-col gap-3">
-          {contentTypes.map((type) => {
-            const thumb = thumbFor(type.id);
-            return (
-              <CreatorRow
-                key={type.id}
-                icon={type.icon}
-                title={type.title}
-                description={type.description}
-                accentColor={ACCENT[type.id]}
-                activity={tileContext(type.id)}
-                thumbnailUrl={thumb}
-                onClick={() => onSelect(type.id)}
-              />
-            );
-          })}
+          {contentTypes.map((type) => (
+            <CreatorRow
+              key={type.id}
+              icon={type.icon}
+              title={type.title}
+              description={type.description}
+              accentColor={ACCENT[type.id]}
+              activity={tileContext(type.id)}
+              backgroundUrl={bgFor(type.id)}
+              onClick={() => onSelect(type.id)}
+            />
+          ))}
         </div>
 
         {/* Drafts / Scheduled — subtle ghost links */}
