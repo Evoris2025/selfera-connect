@@ -1058,7 +1058,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           >
             More
           </button>
-        </SheetContent>
+        </BrandSheetContent>
       </Sheet>
 
 
