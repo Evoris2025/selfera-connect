@@ -303,7 +303,9 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
   const hasPoll = !!state.poll;
   const hasThread = state.composerMode === 'thread';
   const hasLinkPreview = showLinkPreview;
-  const canShowBackground = !hasMedia && !hasPoll && !hasLinkPreview && !hasThread;
+  // Background tints the textarea region only — media renders on its own neutral surface,
+  // so Aa stays available even when media is attached.
+  const canShowBackground = !hasPoll && !hasLinkPreview && !hasThread;
 
   const hasContent =
     state.composerMode === 'thread'
