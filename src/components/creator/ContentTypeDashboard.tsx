@@ -213,35 +213,18 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
     return backgrounds[key] ?? null;
   };
 
-  // Adaptive pill content — single source of truth.
-  const pill = useMemo(() => {
-    if (hasWork) {
-      // Primary: continue working
-      const parts: string[] = [];
-      if (draftCount > 0) parts.push(`${draftCount} draft${draftCount === 1 ? '' : 's'}`);
-      if (scheduledCount > 0) parts.push(`${scheduledCount} scheduled`);
-      const subtitle = latestDraft
-        ? `${parts.join(' · ')} · last edited ${relativeTimeShort(latestDraft.updatedAt)} ago`
-        : parts.join(' · ');
-      return {
-        label: 'Continue working',
-        subtitle,
-        Icon: FileText,
-        ariaLabel: `Continue working: ${parts.join(', ')}`,
-      };
-    }
-    if (todayPrompt) {
-      const truncated =
-        todayPrompt.length > 64 ? `${todayPrompt.slice(0, 64).trim()}…` : todayPrompt;
-      return {
-        label: "Try today's prompt",
-        subtitle: truncated,
-        Icon: Sparkles,
-        ariaLabel: "Try today's prompt",
-      };
-    }
-    return null;
-  }, [hasWork, draftCount, scheduledCount, latestDraft, todayPrompt]);
+  // Slim resume strip content — hidden entirely when no drafts and no scheduled.
+  const resumeStrip = useMemo(() => {
+    if (!hasWork) return null;
+    const metaParts: string[] = [];
+    if (draftCount > 0) metaParts.push(`${draftCount} draft${draftCount === 1 ? '' : 's'}`);
+    if (scheduledCount > 0) metaParts.push(`${scheduledCount} scheduled`);
+    if (latestDraft) metaParts.push(`${relativeTimeShort(latestDraft.updatedAt)} ago`);
+    return {
+      meta: metaParts.join(' · '),
+      ariaLabel: `Continue working: ${metaParts.join(', ')}`,
+    };
+  }, [hasWork, draftCount, scheduledCount, latestDraft]);
 
   return (
     <div
