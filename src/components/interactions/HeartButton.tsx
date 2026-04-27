@@ -118,7 +118,7 @@ export function HeartButton({ count, active, onClick, size = 'md', layout = 'hor
                   y: Math.sin(particle.angle * Math.PI / 180) * 20,
                 }}
                 transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-                className="absolute left-1/2 top-1/2 w-1.5 h-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary"
+                className="absolute left-1/2 top-1/2 w-1.5 h-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/70"
               />
             ))}
           </AnimatePresence>

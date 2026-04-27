@@ -61,7 +61,7 @@ export function CommentButton({ count, onClick, size = 'md', hasNewComments = fa
             initial={{ scale: 1, opacity: 0.6 }}
             animate={{ scale: 1.5, opacity: 0 }}
             transition={{ duration: 1, repeat: 2 }}
-            className="absolute inset-0 rounded-full bg-primary/30 pointer-events-none"
+            className="absolute inset-0 rounded-full bg-white/[0.2] pointer-events-none"
           />
         )}
       </div>

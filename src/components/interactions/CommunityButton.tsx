@@ -74,7 +74,7 @@ export function CommunityButton({ authorId, authorName, size = 'md' }: Community
       className={cn('flex items-center relative touch-none select-none p-1', isInCommunity ? 'text-primary' : 'text-foreground hover:text-foreground/70', isLoading && 'opacity-50')}
       aria-label={isInCommunity ? 'Remove from community' : 'Add to community'}
     >
-      <IconComponent className={cn(sizeClasses[size], isInCommunity && 'fill-primary/20')} />
+      <IconComponent className={cn(sizeClasses[size], isInCommunity && 'fill-current opacity-30')} />
       <AnimatePresence>
         {showSuccess && isInCommunity && (
           <motion.div

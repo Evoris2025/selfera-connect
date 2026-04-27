@@ -92,7 +92,7 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
                 onMouseLeave={() => setHoveredReaction(null)}
                 className={cn(
                   'relative p-2 rounded-full transition-colors',
-                  currentReaction === reaction.type && 'bg-primary/20'
+                  currentReaction === reaction.type && 'bg-white/[0.1]'
                 )}
               >
                 <motion.div
@@ -170,7 +170,7 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
                 {currentReaction === reaction.type && (
                   <motion.div
                     layoutId="selectedReaction"
-                    className="absolute inset-0 rounded-full bg-primary/15 -z-10"
+                    className="absolute inset-0 rounded-full bg-white/[0.08] -z-10"
                     transition={springTransitions.smooth}
                   />
                 )}

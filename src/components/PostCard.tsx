@@ -195,7 +195,7 @@ function PostCardBase(props: PostCardProps) {
         </p>
       )}
       {checkIn && (
-        <div className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full bg-primary/10 text-xs">
+        <div className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full bg-white/[0.06] text-xs">
           <MapPin className="h-3 w-3 text-primary" />
           <span className="font-medium">at {checkIn.name}</span>
           {checkIn.category && <span className="text-muted-foreground">· {checkIn.category}</span>}
@@ -260,7 +260,7 @@ function PostCardBase(props: PostCardProps) {
               disabled={pollClosed}
               className={cn(
                 'w-full flex items-center gap-3 px-3 py-2 rounded-lg border text-left transition',
-                selected ? 'border-primary bg-primary/10' : 'border-border hover:bg-secondary',
+                selected ? 'border-white/30 bg-white/[0.06]' : 'border-border hover:bg-secondary',
                 pollClosed && 'opacity-60 cursor-not-allowed'
               )}
             >
@@ -291,7 +291,7 @@ function PostCardBase(props: PostCardProps) {
       {thread.map((item, i) => (
         <div key={item.id} className="rounded-xl border border-border bg-secondary/30 p-3">
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-medium text-primary">{i + 1}</span>
+            <span className="h-5 w-5 rounded-full bg-white/[0.06] flex items-center justify-center text-[10px] font-medium text-white/80">{i + 1}</span>
             <span className="text-xs text-muted-foreground">in thread</span>
           </div>
           <p className="text-[15px] text-foreground leading-relaxed">{renderContent(item.content)}</p>
