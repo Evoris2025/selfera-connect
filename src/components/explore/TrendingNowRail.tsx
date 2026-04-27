@@ -59,17 +59,17 @@ function ExpressionCard({ item, index }: { item: TrendingExpression; index: numb
         <BrandIcon icon={Flame} className="w-3 h-3" />
       </span>
       <img src={item.thumbnail} alt="" loading="lazy" className="w-full h-full object-cover" />
-      <div className="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black/85 via-black/30 to-transparent pointer-events-none" />
+      <div className="absolute inset-x-0 bottom-0 h-full bg-gradient-to-t from-black/85 via-black/40 to-transparent pointer-events-none" />
       <span className="absolute bottom-2 left-2 z-10 flex items-center gap-1.5">
         <img
           src={item.user.avatar}
           alt=""
           loading="lazy"
-          className="w-4 h-4 rounded-full object-cover"
+          className="w-5 h-5 rounded-full object-cover"
         />
       </span>
-      <span className="absolute bottom-2 right-2 z-10 flex items-center gap-1 text-white/90 text-[10px] font-medium">
-        <Eye className="w-2.5 h-2.5" strokeWidth={1.5} />
+      <span className="absolute bottom-2 right-2 z-10 flex items-center gap-1 text-white text-[11px] font-medium px-1.5 py-0.5 rounded-full bg-black/40 backdrop-blur-sm">
+        <Eye className="w-3 h-3" strokeWidth={1.5} />
         {formatCount(item.views)}
       </span>
     </motion.button>

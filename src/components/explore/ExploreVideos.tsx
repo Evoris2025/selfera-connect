@@ -111,10 +111,10 @@ function VideoTile({ video, index }: { video: VideoItem; index: number }) {
             {video.title}
           </h3>
           <div className="flex items-center gap-1 mt-0.5">
-            <span className="text-white/55 text-[11px] truncate">{video.creator.name}</span>
+            <span className="text-white/55 text-xs truncate">{video.creator.name}</span>
             <ExploreVerifiedTick tier={video.creator.tier} size="sm" />
           </div>
-          <p className="text-white/45 text-[11px] uppercase tracking-[0.08em] mt-0.5">
+          <p className="text-white/80 text-[11px] uppercase tracking-[0.08em] mt-0.5">
             {formatViews(video.views)} VIEWS · {video.ageLabel}
           </p>
         </div>
@@ -148,8 +148,16 @@ export function ExploreVideos({
   const { primary: themePrimary } = useThemeColor();
   const sortBy = filters?.sortBy ?? 'for-you';
   const duration = filters?.duration ?? 'all';
-  const source = applyDuration(SORT_TO_DATA[sortBy] ?? SORT_TO_DATA['for-you'], duration);
-  const resetKey = `${sortBy}|${filters?.timePeriod ?? 'all-time'}|${duration}|${filters?.origin ?? 'all'}`;
+  const creatorTier = filters?.creatorTier ?? 'all';
+  const afterDuration = applyDuration(SORT_TO_DATA[sortBy] ?? SORT_TO_DATA['for-you'], duration);
+  const source =
+    creatorTier === 'all'
+      ? afterDuration
+      : afterDuration.filter(
+          (v) => v.creator.tier !== null && creatorTier.includes(v.creator.tier),
+        );
+  const tierKey = creatorTier === 'all' ? 'all' : creatorTier.slice().sort().join(',');
+  const resetKey = `${sortBy}|${filters?.timePeriod ?? 'all-time'}|${duration}|${tierKey}|${filters?.origin ?? 'all'}`;
   const { items, sentinelRef, isLoadingMore, hasMore } = useInfiniteList({
     source,
     pageSize: 8,

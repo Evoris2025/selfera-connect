@@ -9,6 +9,7 @@ import {
 import { BrandSectionLabel } from '@/components/brand';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { cn } from '@/lib/utils';
+import type { VerificationTier } from './ExploreVerifiedTick';
 
 export type ExploreTab = 'expressions' | 'videos' | 'images' | 'posts';
 
@@ -29,16 +30,19 @@ export type TimePeriod =
 export type Origin = 'all' | 'follow' | 'communities' | 'verified';
 export type Duration = 'all' | 'under-5' | '5-20' | 'over-20';
 export type Format = 'all' | 'photos' | 'illustrations';
+export type CreatorTier = 'all' | VerificationTier[];
 
 export interface ExpressionsFilters {
   sortBy: SortBy;
   timePeriod: TimePeriod;
+  creatorTier: CreatorTier;
   origin: Origin;
 }
 export interface VideosFilters {
   sortBy: SortBy;
   timePeriod: TimePeriod;
   duration: Duration;
+  creatorTier: CreatorTier;
   origin: Origin;
 }
 export interface ImagesFilters {
@@ -50,6 +54,7 @@ export interface ImagesFilters {
 export interface PostsFilters {
   sortBy: SortBy;
   timePeriod: TimePeriod;
+  creatorTier: CreatorTier;
   origin: Origin;
 }
 
@@ -61,10 +66,10 @@ export interface ExploreFiltersState {
 }
 
 export const DEFAULT_FILTERS: ExploreFiltersState = {
-  expressions: { sortBy: 'for-you', timePeriod: 'all-time', origin: 'all' },
-  videos: { sortBy: 'for-you', timePeriod: 'all-time', duration: 'all', origin: 'all' },
+  expressions: { sortBy: 'for-you', timePeriod: 'all-time', creatorTier: 'all', origin: 'all' },
+  videos: { sortBy: 'for-you', timePeriod: 'all-time', duration: 'all', creatorTier: 'all', origin: 'all' },
   images: { sortBy: 'for-you', timePeriod: 'all-time', format: 'all', origin: 'all' },
-  posts: { sortBy: 'for-you', timePeriod: 'all-time', origin: 'all' },
+  posts: { sortBy: 'for-you', timePeriod: 'all-time', creatorTier: 'all', origin: 'all' },
 };
 
 export function isTabFiltersDefault(tab: ExploreTab, filters: ExploreFiltersState): boolean {
@@ -122,6 +127,14 @@ const ORIGIN_OPTIONS: { value: Origin; label: string }[] = [
   { value: 'follow', label: 'From people I follow' },
   { value: 'communities', label: 'From my communities' },
   { value: 'verified', label: 'Verified creators only' },
+];
+
+const TIER_OPTIONS: { value: VerificationTier; label: string }[] = [
+  { value: 'orange', label: 'Creator' },
+  { value: 'purple', label: 'Practitioner' },
+  { value: 'blue', label: 'Organisation' },
+  { value: 'green', label: 'Supporter' },
+  { value: 'pink', label: 'Founder' },
 ];
 
 const TAB_TITLE: Record<ExploreTab, string> = {
@@ -376,6 +389,46 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
                     onClick={() => updateTabSlice('format' as never, opt.value as never)}
                   />
                 ))}
+              </div>
+            </section>
+          )}
+
+          {/* Section — Creator tier (multi-select chip grid). Hidden on Images. */}
+          {activeTab !== 'images' && (
+            <section>
+              <BrandSectionLabel className="px-5 mb-2">CREATOR TIER</BrandSectionLabel>
+              <div className="grid grid-cols-3 gap-2 px-4">
+                <Chip
+                  option={{ value: 'all', label: 'All' }}
+                  active={(tabSlice as { creatorTier: CreatorTier }).creatorTier === 'all'}
+                  themePrimary={themePrimary}
+                  onClick={() => updateTabSlice('creatorTier' as never, 'all' as never)}
+                />
+                {TIER_OPTIONS.map((opt) => {
+                  const current = (tabSlice as { creatorTier: CreatorTier }).creatorTier;
+                  const selected = Array.isArray(current) && current.includes(opt.value);
+                  return (
+                    <Chip
+                      key={opt.value}
+                      option={opt}
+                      active={selected}
+                      themePrimary={themePrimary}
+                      onClick={() => {
+                        let next: CreatorTier;
+                        if (current === 'all') {
+                          next = [opt.value];
+                        } else {
+                          const exists = current.includes(opt.value);
+                          const updated = exists
+                            ? current.filter((t) => t !== opt.value)
+                            : [...current, opt.value];
+                          next = updated.length === 0 ? 'all' : updated;
+                        }
+                        updateTabSlice('creatorTier' as never, next as never);
+                      }}
+                    />
+                  );
+                })}
               </div>
             </section>
           )}

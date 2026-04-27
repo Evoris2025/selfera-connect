@@ -1,10 +1,10 @@
 import { motion } from 'framer-motion';
-import { Play } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ExploreVerifiedTick } from './ExploreVerifiedTick';
 import type { VerificationTier } from './ExploreVerifiedTick';
-import { BrandIcon } from '@/components/brand';
+
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useInfiniteList } from '@/hooks/useInfiniteList';
 
@@ -67,7 +67,7 @@ function ExpressionTile({ expression, index }: { expression: ExpressionItem; ind
         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
       />
       {/* Bottom gradient for legibility */}
-      <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none" />
+      <div className="absolute inset-x-0 bottom-0 h-full bg-gradient-to-t from-black/85 via-black/40 to-transparent pointer-events-none" />
 
       {/* Bottom-left: avatar + handle + verified */}
       <div className="absolute bottom-2 left-2 right-12 flex items-center gap-1.5 min-w-0">
@@ -81,12 +81,10 @@ function ExpressionTile({ expression, index }: { expression: ExpressionItem; ind
         <ExploreVerifiedTick tier={expression.user.tier} size="sm" />
       </div>
 
-      {/* Bottom-right: play count */}
-      <div className="absolute bottom-2 right-2 flex items-center gap-1">
-        <BrandIcon icon={Play} size={10} />
-        <span className="text-white text-[10px] font-medium tabular-nums">
-          {formatCount(expression.views)}
-        </span>
+      {/* Bottom-right: view count pill */}
+      <div className="absolute bottom-2 right-2 flex items-center gap-1 text-white text-[12px] font-medium px-1.5 py-0.5 rounded-full bg-black/40 backdrop-blur-sm">
+        <Eye className="w-3.5 h-3.5" strokeWidth={1.5} />
+        <span className="tabular-nums">{formatCount(expression.views)}</span>
       </div>
     </motion.div>
   );
@@ -105,8 +103,14 @@ export function ExploreExpressions({
 }) {
   const { primary: themePrimary } = useThemeColor();
   const sortBy = filters?.sortBy ?? 'for-you';
-  const source = SORT_TO_DATA[sortBy] ?? SORT_TO_DATA['for-you'];
-  const resetKey = `${sortBy}|${filters?.timePeriod ?? 'all-time'}|${filters?.origin ?? 'all'}`;
+  const creatorTier = filters?.creatorTier ?? 'all';
+  const baseSource = SORT_TO_DATA[sortBy] ?? SORT_TO_DATA['for-you'];
+  const source =
+    creatorTier === 'all'
+      ? baseSource
+      : baseSource.filter((e) => e.user.tier !== null && creatorTier.includes(e.user.tier));
+  const tierKey = creatorTier === 'all' ? 'all' : creatorTier.slice().sort().join(',');
+  const resetKey = `${sortBy}|${filters?.timePeriod ?? 'all-time'}|${tierKey}|${filters?.origin ?? 'all'}`;
   const { items, sentinelRef, isLoadingMore, hasMore } = useInfiniteList({
     source,
     pageSize: 10,
