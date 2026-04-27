@@ -29,12 +29,21 @@ const popularWeekImages = trendingImages.slice().sort((a, b) => b.likes - a.like
 const communityImages = trendingImages.slice(2, 8).map((i) => ({ ...i, id: `c-${i.id}` }));
 const recentImages = trendingImages.slice(0, 6).map((i) => ({ ...i, id: `r-${i.id}` }));
 
-const CHIP_TO_DATA: Record<string, ImageItem[]> = {
+import type { ImagesFilters, SortBy, Format } from './ExploreFilters';
+
+const SORT_TO_DATA: Record<SortBy, ImageItem[]> = {
+  'for-you': trendingImages,
+  'following': communityImages,
   'trending': trendingImages,
-  'popular-week': popularWeekImages,
-  'community': communityImages,
-  'recent': recentImages,
+  'most-recent': recentImages,
+  'most-liked': popularWeekImages,
 };
+
+function applyFormat(items: ImageItem[], fmt: Format): ImageItem[] {
+  if (fmt === 'all') return items;
+  // Mock partition: even index -> photos, odd index -> illustrations.
+  return items.filter((_, i) => (fmt === 'photos' ? i % 2 === 0 : i % 2 === 1));
+}
 
 function ImageTile({ image, index, onClick }: { image: ImageItem; index: number; onClick: () => void }) {
   return (
@@ -100,18 +109,21 @@ function ImageViewer({ image, onClose }: { image: ImageItem | null; onClose: () 
 
 export function ExploreImages({
   isLoading = false,
-  activeChip = 'trending',
+  filters,
 }: {
   isLoading?: boolean;
-  activeChip?: string;
+  filters?: ImagesFilters;
 }) {
   const { primary: themePrimary } = useThemeColor();
   const [selected, setSelected] = useState<ImageItem | null>(null);
-  const source = CHIP_TO_DATA[activeChip] ?? CHIP_TO_DATA['trending'];
+  const sortBy = filters?.sortBy ?? 'for-you';
+  const format = filters?.format ?? 'all';
+  const source = applyFormat(SORT_TO_DATA[sortBy] ?? SORT_TO_DATA['for-you'], format);
+  const resetKey = `${sortBy}|${filters?.timePeriod ?? 'all-time'}|${format}|${filters?.origin ?? 'all'}`;
   const { items, sentinelRef, isLoadingMore, hasMore } = useInfiniteList({
     source,
     pageSize: 12,
-    resetKey: activeChip,
+    resetKey,
   });
 
   if (isLoading) {

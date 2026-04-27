@@ -31,12 +31,14 @@ const mostLikedPosts = forYouPosts.slice().sort((a, b) => b.likes - a.likes).map
 const mostCommentedPosts = forYouPosts.slice().sort((a, b) => b.comments - a.comments).map((p) => ({ ...p, id: `mc-${p.id}` }));
 const newestPosts = forYouPosts.slice(0, 5).map((p) => ({ ...p, id: `n-${p.id}` }));
 
-const CHIP_TO_DATA: Record<string, PostItem[]> = {
+import type { PostsFilters, SortBy } from './ExploreFilters';
+
+const SORT_TO_DATA: Record<SortBy, PostItem[]> = {
   'for-you': forYouPosts,
+  'following': forYouPosts,
   'trending': trendingPosts,
+  'most-recent': newestPosts,
   'most-liked': mostLikedPosts,
-  'most-commented': mostCommentedPosts,
-  'newest': newestPosts,
 };
 
 function formatCount(n: number): string {
@@ -118,17 +120,19 @@ function PostCardSkeleton() {
 
 export function ExplorePosts({
   isLoading = false,
-  activeChip = 'for-you',
+  filters,
 }: {
   isLoading?: boolean;
-  activeChip?: string;
+  filters?: PostsFilters;
 }) {
   const { primary: themePrimary } = useThemeColor();
-  const source = CHIP_TO_DATA[activeChip] ?? CHIP_TO_DATA['for-you'];
+  const sortBy = filters?.sortBy ?? 'for-you';
+  const source = SORT_TO_DATA[sortBy] ?? SORT_TO_DATA['for-you'];
+  const resetKey = `${sortBy}|${filters?.timePeriod ?? 'all-time'}|${filters?.origin ?? 'all'}`;
   const { items, sentinelRef, isLoadingMore, hasMore } = useInfiniteList({
     source,
     pageSize: 6,
-    resetKey: activeChip,
+    resetKey,
   });
 
   if (isLoading) {
