@@ -1254,20 +1254,21 @@ function Chip({
   );
 }
 
-function ToolbarIcon({
+/**
+ * Icon-tile button used inside the "Add to your post" bottom sheet.
+ * Vertical layout: 24px icon on top, label underneath. Active state shows a
+ * gradient ring and a small dot.
+ */
+function Tile({
   icon,
   label,
-  active,
   onClick,
-  dot,
-  ringError,
+  active,
 }: {
   icon: React.ReactNode;
   label: string;
-  active?: boolean;
   onClick: () => void;
-  dot?: boolean;
-  ringError?: boolean;
+  active?: boolean;
 }) {
   return (
     <button
@@ -1276,15 +1277,15 @@ function ToolbarIcon({
       title={label}
       aria-label={label}
       className={cn(
-        'relative w-9 h-9 rounded-full flex items-center justify-center transition-colors',
-        active
-          ? 'text-fuchsia-300 bg-fuchsia-500/10'
-          : 'text-foreground/60 hover:text-foreground hover:bg-white/5',
-        ringError && 'ring-1 ring-destructive/60'
+        'relative flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl hover:bg-white/5 transition',
+        active && 'bg-white/[0.04] ring-1 ring-fuchsia-500/40'
       )}
     >
       {icon}
-      {dot && (
+      <span className="text-xs text-foreground/80 leading-tight text-center line-clamp-1">
+        {label}
+      </span>
+      {active && (
         <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-fuchsia-400" />
       )}
     </button>
@@ -1292,76 +1293,44 @@ function ToolbarIcon({
 }
 
 /**
- * Wraps a picker component (which renders its own trigger button) so it
- * visually matches the toolbar: 36px circular ghost button, icon-only.
+ * Wraps a picker (which renders its own trigger button) as a Tile. Hides the
+ * picker's internal label/icon and overlays our own icon + label so the tile
+ * matches sibling Tile components visually while still triggering the picker.
  */
-function ToolbarSlot({
-  children,
-  label,
-  active,
-}: {
-  children: React.ReactNode;
-  label: string;
-  active?: boolean;
-}) {
-  return (
-    <div
-      title={label}
-      aria-label={label}
-      className={cn(
-        'inline-flex items-center justify-center',
-        '[&>button]:!w-9 [&>button]:!h-9 [&>button]:!p-0 [&>button]:!rounded-full',
-        '[&>button]:!bg-transparent [&>button:hover]:!bg-white/5',
-        '[&>button]:!border-0 [&>button]:!shadow-none [&>button]:!gap-0',
-        '[&>button>span]:hidden',
-        '[&_svg]:h-5 [&_svg]:w-5',
-        active
-          ? '[&>button]:!text-fuchsia-300 [&>button]:!bg-fuchsia-500/10'
-          : '[&>button]:!text-foreground/60 [&>button:hover]:!text-foreground'
-      )}
-    >
-      {children}
-    </div>
-  );
-}
-
-/**
- * Renders a picker (which has its own trigger button) as a full-width menu row
- * styled like a DropdownMenuItem. Restyles the picker's internal trigger via
- * descendant selectors and overlays our own icon + label.
- */
-function MenuRowSlot({
+function TileSlot({
   icon,
   label,
   children,
-  activeIndicator,
+  active,
 }: {
   icon: React.ReactNode;
   label: string;
   children: React.ReactNode;
-  activeIndicator?: boolean;
+  active?: boolean;
 }) {
   return (
     <div
       className={cn(
-        'relative w-full',
-        '[&>button]:!w-full [&>button]:!h-auto [&>button]:!justify-start',
-        '[&>button]:!px-3 [&>button]:!py-2.5 [&>button]:!rounded-lg',
+        'relative',
+        '[&>button]:!w-full [&>button]:!h-auto [&>button]:!min-h-[84px]',
+        '[&>button]:!flex [&>button]:!flex-col [&>button]:!items-center [&>button]:!justify-center [&>button]:!gap-1.5',
+        '[&>button]:!p-3 [&>button]:!rounded-2xl',
         '[&>button]:!bg-transparent [&>button:hover]:!bg-white/5',
         '[&>button]:!border-0 [&>button]:!shadow-none',
-        '[&>button]:!text-sm [&>button]:!font-normal [&>button]:!text-transparent',
+        '[&>button]:!text-transparent',
         '[&>button>span]:hidden',
         '[&>button>svg]:hidden',
+        active && '[&>button]:!bg-white/[0.04] [&>button]:!ring-1 [&>button]:!ring-fuchsia-500/40'
       )}
     >
-      <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center gap-3 z-10 text-sm text-foreground/85">
+      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-1.5 z-10">
         {icon}
-        <span>{label}</span>
-      </div>
-      {activeIndicator && (
-        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 z-10">
-          <Check className="h-4 w-4 text-fuchsia-400" />
+        <span className="text-xs text-foreground/80 leading-tight text-center line-clamp-1 px-2">
+          {label}
         </span>
+      </div>
+      {active && (
+        <span className="pointer-events-none absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-fuchsia-400 z-20" />
       )}
       {children}
     </div>
