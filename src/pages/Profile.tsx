@@ -518,7 +518,8 @@ export default function Profile() {
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button
-                        className="absolute bottom-0 right-0 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md border-[1.5px] border-background hover:bg-primary/90 active:scale-95 transition-all"
+                        className="absolute bottom-0 right-0 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-black flex items-center justify-center active:scale-95 transition-all"
+                        style={{ border: `1.5px solid ${themePrimary}`, color: themePrimary }}
                       >
                         <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </button>
