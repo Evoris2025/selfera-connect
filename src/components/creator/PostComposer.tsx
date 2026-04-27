@@ -270,6 +270,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
   const [fundraiserOpen, setFundraiserOpen] = useState(false);
   const [topicsOpen, setTopicsOpen] = useState(false);
   const [advancedOpen, setAdvancedOpen] = useState(false);
+  const [addSheetOpen, setAddSheetOpen] = useState(false);
   const [mediaSheetOpen, setMediaSheetOpen] = useState(false);
   const [showTopicsError, setShowTopicsError] = useState(false);
   const [dismissedUrls, setDismissedUrls] = useState<Set<string>>(new Set());
