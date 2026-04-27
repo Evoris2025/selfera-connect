@@ -105,8 +105,14 @@ export function ExploreExpressions({
 }) {
   const { primary: themePrimary } = useThemeColor();
   const sortBy = filters?.sortBy ?? 'for-you';
-  const source = SORT_TO_DATA[sortBy] ?? SORT_TO_DATA['for-you'];
-  const resetKey = `${sortBy}|${filters?.timePeriod ?? 'all-time'}|${filters?.origin ?? 'all'}`;
+  const creatorTier = filters?.creatorTier ?? 'all';
+  const baseSource = SORT_TO_DATA[sortBy] ?? SORT_TO_DATA['for-you'];
+  const source =
+    creatorTier === 'all'
+      ? baseSource
+      : baseSource.filter((e) => e.user.tier !== null && creatorTier.includes(e.user.tier));
+  const tierKey = creatorTier === 'all' ? 'all' : creatorTier.slice().sort().join(',');
+  const resetKey = `${sortBy}|${filters?.timePeriod ?? 'all-time'}|${tierKey}|${filters?.origin ?? 'all'}`;
   const { items, sentinelRef, isLoadingMore, hasMore } = useInfiniteList({
     source,
     pageSize: 10,
