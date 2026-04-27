@@ -10,7 +10,7 @@ export interface TrendingSearch {
   count: number;
 }
 
-import type { VerificationTier } from '@/components/EraVerifiedTick';
+import type { VerificationTier } from './ExploreVerifiedTick';
 
 export interface SuggestedCreator {
   id: string;

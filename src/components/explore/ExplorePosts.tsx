@@ -3,7 +3,7 @@ import { Heart, MessageCircle, Share2 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ExploreVerifiedTick } from './ExploreVerifiedTick';
-import type { VerificationTier } from '@/components/EraVerifiedTick';
+import type { VerificationTier } from './ExploreVerifiedTick';
 import { BrandSurface } from '@/components/brand';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useInfiniteList } from '@/hooks/useInfiniteList';

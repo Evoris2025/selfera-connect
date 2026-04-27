@@ -1,6 +1,10 @@
 import { EraVerifiedTick, type VerificationTier } from '@/components/EraVerifiedTick';
 import { cn } from '@/lib/utils';
 
+// Re-export so Explore-only files can import the tier type from the wrapper
+// module rather than reaching into the underlying badge component directly.
+export type { VerificationTier };
+
 /**
  * Explore-only wrapper around <EraVerifiedTick />.
  *

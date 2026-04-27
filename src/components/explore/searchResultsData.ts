@@ -3,7 +3,7 @@
  * All static seeds for round-3a; wire to real search later.
  */
 
-import type { VerificationTier } from '@/components/EraVerifiedTick';
+import type { VerificationTier } from './ExploreVerifiedTick';
 
 const AVA = (seed: string) => `https://images.unsplash.com/${seed}?w=160&h=160&fit=crop`;
 
