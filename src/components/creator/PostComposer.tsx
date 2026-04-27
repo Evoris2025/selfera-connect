@@ -589,6 +589,9 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         <div className="h-px w-full bg-gradient-to-r from-transparent via-fuchsia-500/40 to-transparent opacity-60" />
       </div>
 
+      {/* Centered body region (hero + textarea + Add button) */}
+      <div className="flex-1 min-h-0 flex flex-col overflow-y-auto">
+        <div className="flex-1 flex flex-col justify-center">
       {/* Hero identity block */}
       <div className="shrink-0 flex flex-col items-center text-center gap-3 px-5 pt-6 pb-6">
         <div className="rounded-full p-1 bg-gradient-to-br from-fuchsia-500 via-violet-500 to-teal-400 shrink-0">
