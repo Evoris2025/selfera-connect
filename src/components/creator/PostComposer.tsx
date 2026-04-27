@@ -886,7 +886,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       {/* /centered body region */}
 
       {/* Sticky bottom Post CTA — sits above the global app navbar */}
-      <div className="sticky bottom-0 px-4 pt-3 pb-3 bg-background/80 backdrop-blur border-t border-white/5 mb-[72px] lg:mb-0 shrink-0">
+      <div className="sticky bottom-0 px-4 pt-4 pb-4 mb-[72px] lg:mb-0 shrink-0">
         <Button
           onClick={handleSubmit}
           disabled={!canPost || isSubmitting}
