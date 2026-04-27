@@ -10,12 +10,15 @@ export interface TrendingSearch {
   count: number;
 }
 
+import type { VerificationTier } from '@/components/EraVerifiedTick';
+
 export interface SuggestedCreator {
   id: string;
   displayName: string;
   handle: string;
   avatarUrl: string;
-  verified: boolean;
+  /** Tier drives badge color via ExploreVerifiedTick; null = unverified (no badge). */
+  tier: VerificationTier | null;
   /** Optional category line — kept in the type but not rendered on cards. */
   reason?: string;
 }
@@ -46,7 +49,7 @@ export const SUGGESTED_CREATORS: SuggestedCreator[] = [
     displayName: 'Maya Quiet',
     handle: 'mayaquiet',
     avatarUrl: AVA('photo-1494790108377-be9c29b29330'),
-    verified: true,
+    tier: 'purple',
     reason: 'Calm voice · meditation',
   },
   {
@@ -54,7 +57,7 @@ export const SUGGESTED_CREATORS: SuggestedCreator[] = [
     displayName: 'Dr. Noor',
     handle: 'drnoor',
     avatarUrl: AVA('photo-1517021897933-0e0319cfbc28'),
-    verified: true,
+    tier: 'orange',
     reason: 'Therapist · ERA Verified',
   },
   {
@@ -62,7 +65,7 @@ export const SUGGESTED_CREATORS: SuggestedCreator[] = [
     displayName: 'Leo in Motion',
     handle: 'leoinmotion',
     avatarUrl: AVA('photo-1504593811423-6dd665756598'),
-    verified: false,
+    tier: null,
     reason: 'Movement · breathwork',
   },
   {
@@ -70,7 +73,7 @@ export const SUGGESTED_CREATORS: SuggestedCreator[] = [
     displayName: 'Aria Notes',
     handle: 'aria.notes',
     avatarUrl: AVA('photo-1488521787991-ed7bbaae773c'),
-    verified: true,
+    tier: 'green',
     reason: 'Journaling prompts',
   },
   {
@@ -78,7 +81,7 @@ export const SUGGESTED_CREATORS: SuggestedCreator[] = [
     displayName: 'Kai',
     handle: 'kaitherapy',
     avatarUrl: AVA('photo-1531123897727-8f129e1688ce'),
-    verified: false,
+    tier: 'pink',
     reason: 'Anxiety support · creator',
   },
   {
@@ -86,7 +89,7 @@ export const SUGGESTED_CREATORS: SuggestedCreator[] = [
     displayName: 'Inés',
     handle: 'ines.sleeps',
     avatarUrl: AVA('photo-1541781774459-bb2af2f05b55'),
-    verified: true,
+    tier: 'blue',
     reason: 'Sleep · nervous system',
   },
   {
@@ -94,7 +97,7 @@ export const SUGGESTED_CREATORS: SuggestedCreator[] = [
     displayName: 'Sam Murmurs',
     handle: 'sammurmurs',
     avatarUrl: AVA('photo-1507003211169-0a1dd7228f2d'),
-    verified: false,
+    tier: null,
     reason: 'ASMR · voice notes',
   },
   {
@@ -102,7 +105,7 @@ export const SUGGESTED_CREATORS: SuggestedCreator[] = [
     displayName: 'Rivkah',
     handle: 'rivkahheals',
     avatarUrl: AVA('photo-1499209974431-9dddcece7f88'),
-    verified: true,
+    tier: 'green',
     reason: 'Practitioner · grief',
   },
 ];

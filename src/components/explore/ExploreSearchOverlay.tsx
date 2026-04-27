@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
-import { Hash, AtSign, Search, ArrowUpRight, X, BadgeCheck } from 'lucide-react';
+import { Hash, AtSign, Search, ArrowUpRight, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { BrandSectionLabel } from '@/components/brand';
 import { cn } from '@/lib/utils';
+import { ExploreVerifiedTick } from './ExploreVerifiedTick';
 import {
   TRENDING_SEARCHES,
   SUGGESTED_CREATORS,
@@ -108,15 +109,18 @@ function FollowButton({ creatorId }: { creatorId: string }) {
   );
 }
 
-function SuggestedCreatorCard({ c }: { c: SuggestedCreator }) {
+function SuggestedCreatorCard({
+  c,
+  onTap,
+}: {
+  c: SuggestedCreator;
+  onTap: (handle: string) => void;
+}) {
   return (
     <div className="flex-shrink-0 w-28 snap-start flex flex-col items-center">
       <button
         type="button"
-        onClick={() => {
-          // eslint-disable-next-line no-console
-          console.log('[ExploreSearchOverlay] tap creator', c.handle);
-        }}
+        onClick={() => onTap(c.handle)}
         className="flex flex-col items-center gap-2 w-full"
         aria-label={`Open ${c.displayName} profile`}
       >
@@ -126,9 +130,7 @@ function SuggestedCreatorCard({ c }: { c: SuggestedCreator }) {
         </Avatar>
         <div className="flex items-center gap-1 max-w-full">
           <span className="text-[12px] text-white/90 truncate">{c.displayName}</span>
-          {c.verified && (
-            <BadgeCheck className="w-3 h-3 text-[hsl(var(--primary))] flex-shrink-0" strokeWidth={2} />
-          )}
+          <ExploreVerifiedTick tier={c.tier} size="sm" />
         </div>
         <span className="text-[10px] text-white/45 truncate max-w-full">@{c.handle}</span>
       </button>
