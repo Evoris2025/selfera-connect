@@ -489,24 +489,28 @@ export default function Profile() {
                   className="hidden"
                 />
                 
-                <div className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full p-[3px] gradient-brand shadow-glow">
-                  <div className="w-full h-full rounded-full overflow-hidden border-[3px] border-background relative">
-                    <img
-                      src={isOwnProfile ? avatarUrl : mockUser.avatar}
-                      alt={mockUser.name}
-                      className={cn(
-                        "w-full h-full object-cover img-cinematic transition-opacity",
-                        (isUploading || isCoverUploading) && "opacity-50"
-                      )}
-                    />
-                    
-                    {/* Loading spinner */}
-                    {(isUploading || isCoverUploading) && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                        <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      </div>
+                <div
+                  className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full overflow-hidden relative bg-black"
+                  style={{ boxShadow: `0 0 0 2px ${themePrimary}` }}
+                >
+                  <img
+                    src={isOwnProfile ? avatarUrl : mockUser.avatar}
+                    alt={mockUser.name}
+                    className={cn(
+                      'w-full h-full object-cover img-cinematic transition-opacity',
+                      (isUploading || isCoverUploading) && 'opacity-50',
                     )}
-                  </div>
+                  />
+
+                  {/* Loading spinner */}
+                  {(isUploading || isCoverUploading) && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                      <div
+                        className="w-8 h-8 border-2 border-white/30 rounded-full animate-spin"
+                        style={{ borderTopColor: themePrimary }}
+                      />
+                    </div>
+                  )}
                 </div>
                 
                 {/* Plus button with dropdown menu - only on own profile */}
