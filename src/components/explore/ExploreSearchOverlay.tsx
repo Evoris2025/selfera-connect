@@ -306,7 +306,11 @@ export function ExploreSearchOverlay({ query, onSelect }: ExploreSearchOverlayPr
         </div>
         <div className="flex gap-3 overflow-x-auto px-4 pb-2 snap-x snap-mandatory scrollbar-hide">
           {SUGGESTED_CREATORS.map((c) => (
-            <SuggestedCreatorCard key={c.id} c={c} />
+            <SuggestedCreatorCard
+              key={c.id}
+              c={c}
+              onTap={(handle) => handleSelectTerm(`@${handle}`)}
+            />
           ))}
         </div>
       </section>
