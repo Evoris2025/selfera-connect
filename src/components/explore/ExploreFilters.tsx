@@ -282,7 +282,7 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
       <BrandSheetContent
         maxHeight="90vh"
         hideHandle
-        className="!px-0 !pb-0 overflow-hidden flex flex-col"
+        className="!px-0 !pb-0 overflow-hidden flex flex-col h-[90vh]"
       >
         {/* Sticky header */}
         <div className="shrink-0 sticky top-0 z-10 bg-background/95 backdrop-blur px-5 pt-1 pb-3">
