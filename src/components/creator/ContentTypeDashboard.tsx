@@ -5,7 +5,7 @@ import {
   Video,
   Image as ImageIcon,
   FileText,
-  Clock,
+  
   ArrowLeft,
   X,
   ChevronRight,
@@ -29,10 +29,10 @@ interface ContentTypeCard {
 }
 
 const contentTypes: ContentTypeCard[] = [
-  { id: 'expression', icon: Sparkles, title: 'Expression', description: 'Moments that fade in 24h' },
-  { id: 'video', icon: Video, title: 'Video', description: 'Long-form content' },
-  { id: 'image', icon: ImageIcon, title: 'Photo', description: 'Share with style' },
-  { id: 'post', icon: FileText, title: 'Post', description: 'Thoughts & polls' },
+  { id: 'expression', icon: Sparkles, title: 'Expression', description: 'A moment, not a record' },
+  { id: 'video', icon: Video, title: 'Video', description: 'Stories worth the time' },
+  { id: 'image', icon: ImageIcon, title: 'Photo', description: 'A frame of your world' },
+  { id: 'post', icon: FileText, title: 'Post', description: "What's on your mind" },
 ];
 
 interface ContentTypeDashboardProps {
@@ -213,35 +213,18 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
     return backgrounds[key] ?? null;
   };
 
-  // Adaptive pill content — single source of truth.
-  const pill = useMemo(() => {
-    if (hasWork) {
-      // Primary: continue working
-      const parts: string[] = [];
-      if (draftCount > 0) parts.push(`${draftCount} draft${draftCount === 1 ? '' : 's'}`);
-      if (scheduledCount > 0) parts.push(`${scheduledCount} scheduled`);
-      const subtitle = latestDraft
-        ? `${parts.join(' · ')} · last edited ${relativeTimeShort(latestDraft.updatedAt)} ago`
-        : parts.join(' · ');
-      return {
-        label: 'Continue working',
-        subtitle,
-        Icon: FileText,
-        ariaLabel: `Continue working: ${parts.join(', ')}`,
-      };
-    }
-    if (todayPrompt) {
-      const truncated =
-        todayPrompt.length > 64 ? `${todayPrompt.slice(0, 64).trim()}…` : todayPrompt;
-      return {
-        label: "Try today's prompt",
-        subtitle: truncated,
-        Icon: Sparkles,
-        ariaLabel: "Try today's prompt",
-      };
-    }
-    return null;
-  }, [hasWork, draftCount, scheduledCount, latestDraft, todayPrompt]);
+  // Slim resume strip content — hidden entirely when no drafts and no scheduled.
+  const resumeStrip = useMemo(() => {
+    if (!hasWork) return null;
+    const metaParts: string[] = [];
+    if (draftCount > 0) metaParts.push(`${draftCount} draft${draftCount === 1 ? '' : 's'}`);
+    if (scheduledCount > 0) metaParts.push(`${scheduledCount} scheduled`);
+    if (latestDraft) metaParts.push(`${relativeTimeShort(latestDraft.updatedAt)} ago`);
+    return {
+      meta: metaParts.join(' · '),
+      ariaLabel: `Continue working: ${metaParts.join(', ')}`,
+    };
+  }, [hasWork, draftCount, scheduledCount, latestDraft]);
 
   return (
     <div
@@ -279,47 +262,37 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
               CREATE.
             </span>
           </h1>
-          <p className="text-sm text-white/55 mt-1.5">Pick a format to begin</p>
+          <p className="text-sm text-white/55 mt-1.5">choose how you show up today</p>
         </div>
 
-        {/* Adaptive pill — opens the continue WORKING. sheet */}
-        {pill && (
-          <div className="px-5 mt-2 mb-4 shrink-0">
+        {/* Slim resume strip — opens the continue WORKING. sheet. Hidden when no work. */}
+        {resumeStrip && (
+          <div className="px-5 mt-4 mb-3 shrink-0">
             <button
               type="button"
               onClick={() => setSheetOpen(true)}
-              aria-label={pill.ariaLabel}
+              aria-label={resumeStrip.ariaLabel}
               className={cn(
-                'group relative w-full flex items-center gap-3 px-4 py-3 rounded-full',
-                'bg-white/[0.03] border border-white/[0.08]',
-                'hover:bg-white/[0.05] hover:border-white/[0.14] transition-colors',
-                'focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--primary))]/40',
+                'w-full flex items-center gap-3 px-1 h-9',
+                'focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--primary))]/40 rounded-sm',
               )}
             >
-              <pill.Icon
-                size={20}
+              <FileText
+                size={16}
                 strokeWidth={1.6}
                 stroke="url(#selfera-brand-gradient)"
                 fill="none"
                 aria-hidden
                 className="shrink-0"
-                style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.4))' }}
               />
-              <span className="flex-1 min-w-0 flex flex-col items-start text-left">
-                <span className="text-sm font-semibold text-white leading-tight truncate w-full">
-                  {pill.label}
-                </span>
-                <span className="text-[11px] text-white/55 leading-tight truncate w-full mt-0.5">
-                  {pill.subtitle}
-                </span>
+              <span className="text-[13px] tracking-[0.02em] text-white shrink-0">
+                continue WORKING<span className="text-gradient-brand">.</span>
               </span>
-              {hasWork && scheduledCount > 0 && (
-                <span className="shrink-0 inline-flex items-center gap-1 text-[11px] font-medium text-white/65">
-                  <Clock size={11} className="text-white/55" />
-                  {scheduledCount}
-                </span>
-              )}
-              <ChevronRight size={16} className="shrink-0 text-white/40" />
+              <span aria-hidden className="shrink-0 w-[3px] h-[3px] rounded-full bg-white/30" />
+              <span className="flex-1 min-w-0 truncate text-[11px] uppercase tracking-[0.08em] text-white/50 text-left">
+                {resumeStrip.meta}
+              </span>
+              <ChevronRight size={14} className="shrink-0 text-white/40" />
             </button>
           </div>
         )}
