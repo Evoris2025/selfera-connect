@@ -876,29 +876,28 @@ export default function MyERA() {
 
                 {/* Empty state */}
                 {!supportLinksLoading && !supportLinksError && activeProviders.length === 0 && pendingProviders.length === 0 && (
-                  <motion.div 
-                    className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-rose-500/10 via-pink-500/10 to-fuchsia-500/10 border border-white/5 p-6"
-                    whileHover={{ scale: 1.01 }}
-                  >
-                    <div className="text-center">
-                      <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-500 flex items-center justify-center">
-                        <Heart className="w-7 h-7 text-white" />
+                  <BrandSurface className="p-8">
+                    <div className="text-center flex flex-col items-center">
+                      <div className="mb-4">
+                        <BrandIcon icon={Heart} size={28} />
                       </div>
-                      <h3 className="text-base font-medium text-foreground mb-1">
-                        Your support connections
+                      <h3 className="text-white/85 text-[15px] lowercase mb-2">
+                        your support connections
                       </h3>
-                      <p className="text-sm text-muted-foreground mb-4 max-w-[240px] mx-auto">
-                        Find support when you're ready. Connect with verified professionals on SelfERA.
+                      <p className="text-white/55 text-[13px] leading-relaxed max-w-[260px] mx-auto mb-5">
+                        find support when you're ready. connect with verified professionals on selfera.
                       </p>
-                      <Button
-                        className="rounded-full px-6"
+                      <button
+                        type="button"
                         onClick={() => navigate('/directory')}
+                        className="inline-flex items-center gap-2 bg-transparent border h-9 px-4 rounded-full text-[12px] uppercase tracking-[0.1em]"
+                        style={{ borderColor: themePrimary, color: themePrimary }}
                       >
-                        <Compass className="w-4 h-4 mr-2" />
+                        <Compass className="w-3.5 h-3.5" />
                         Explore Directory
-                      </Button>
+                      </button>
                     </div>
-                  </motion.div>
+                  </BrandSurface>
                 )}
 
                 {/* List of providers */}
