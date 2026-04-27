@@ -98,8 +98,8 @@ export function GalleryFirstSelector({
               </div>
               
               <div className="text-center space-y-1">
-                <span className="text-base font-semibold text-foreground block">Select multiple photos</span>
-                <span className="text-sm text-muted-foreground block">Select up to {maxImages} images</span>
+                <span className="text-base font-semibold text-foreground block">Select from Gallery</span>
+                <span className="text-sm text-muted-foreground block">Select up to {maxImages} photos</span>
               </div>
 
 
@@ -214,19 +214,6 @@ export function GalleryFirstSelector({
         )}
       </AnimatePresence>
 
-      {/* Empty State Footer */}
-      {images.length === 0 && (
-        <div className="p-4 border-t border-border">
-          <Button
-            onClick={() => fileInputRef.current?.click()}
-            variant="outline"
-            className="w-full"
-          >
-            <Images className="h-4 w-4 mr-2" />
-            Select from Gallery
-          </Button>
-        </div>
-      )}
     </div>
   );
 }
