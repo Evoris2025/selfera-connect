@@ -94,7 +94,7 @@ function CreatorRow({
       onClick={onClick}
       className={cn(
         'group relative w-full text-left',
-        'h-64 rounded-2xl overflow-hidden',
+        'h-[115px] rounded-2xl overflow-hidden',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--primary))]/40'
       )}
       aria-label={`Create ${title}`}
@@ -109,15 +109,15 @@ function CreatorRow({
             loading="lazy"
             onError={() => setImgFailed(true)}
             className="absolute inset-0 w-full h-full object-cover transition-[filter] duration-200"
-            style={{ filter: 'brightness(0.55) saturate(0.9)' }}
+            style={{ filter: 'brightness(0.5) saturate(0.9)' }}
           />
-          {/* Directional scrim — heaviest at bottom-left where text sits */}
+          {/* Strong horizontal scrim — heaviest at left where text sits */}
           <div
             aria-hidden
             className="absolute inset-0"
             style={{
               background:
-                'linear-gradient(110deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.55) 50%, rgba(0,0,0,0.25) 100%)',
+                'linear-gradient(90deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.75) 40%, rgba(0,0,0,0.35) 100%)',
             }}
           />
         </>
@@ -136,27 +136,26 @@ function CreatorRow({
         style={{ background: accentColor }}
       />
 
-      {/* Content layer */}
-      <div className="relative z-10 flex flex-col justify-between h-full p-5">
-        {/* Top row: icon chip (left) + chevron chip (right) */}
-        <div className="flex items-start justify-between">
-          <div className="w-12 h-12 rounded-xl bg-white/[0.10] backdrop-blur-md border border-white/10 flex items-center justify-center">
-            <Icon size={22} strokeWidth={2} style={{ color: accentColor }} aria-hidden />
+      {/* Content layer — horizontal, vertically centered */}
+      <div className="relative z-10 flex items-center gap-3 h-full px-4 py-3">
+        {/* Icon chip */}
+        <div className="w-10 h-10 rounded-xl bg-white/[0.10] backdrop-blur-md border border-white/10 flex items-center justify-center shrink-0">
+          <Icon size={18} strokeWidth={2} style={{ color: accentColor }} aria-hidden />
+        </div>
+
+        {/* Content column */}
+        <div className="flex-1 min-w-0">
+          <div className="text-base font-semibold text-white leading-tight truncate">
+            {title}
           </div>
-          <div className="w-8 h-8 rounded-full bg-white/[0.10] backdrop-blur-md border border-white/10 flex items-center justify-center">
-            <ChevronRight size={16} className="text-white/85" />
+          <div className="text-xs text-white/70 mt-0.5 leading-snug truncate">
+            {description}
           </div>
         </div>
 
-        {/* Bottom-left: title / description / activity */}
-        <div className="flex flex-col">
-          <span className="text-2xl font-bold text-white leading-tight tracking-tight">
-            {title}
-          </span>
-          <span className="text-sm text-white/75 mt-1">{description}</span>
-          {activity && (
-            <span className="text-xs text-white/60 mt-2">{activity}</span>
-          )}
+        {/* Chevron chip */}
+        <div className="w-7 h-7 rounded-full bg-white/[0.08] backdrop-blur-md border border-white/10 flex items-center justify-center shrink-0">
+          <ChevronRight size={14} className="text-white/85" />
         </div>
       </div>
     </motion.button>
