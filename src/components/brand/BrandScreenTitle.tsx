@@ -2,8 +2,8 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 
 interface BrandScreenTitleProps {
-  /** Lowercase setup word(s), e.g. "your" in "your INBOX." */
-  setup: string;
+  /** Optional lowercase setup word(s), e.g. "your" in "your INBOX.". Omit for tab titles. */
+  setup?: string;
   /** Emphasis word, rendered UPPERCASE, e.g. "INBOX". */
   emphasis: string;
   /** Optional subtitle line. Rendered lowercase per C4. */
@@ -15,9 +15,12 @@ interface BrandScreenTitleProps {
 
 /**
  * Screen-level brand title following the SelfERA logo's typographic logic:
- *   <setup> <EMPHASIS><gradient .>
+ *   <setup?> <EMPHASIS><gradient .>
  *
  * The brand gradient is reserved for the trailing period only.
+ * When `setup` is empty/undefined, the setup span and trailing space are skipped
+ * so tab titles render as e.g. "NOTIFICATIONS." with no leading word.
+ *
  * For the sheet-scoped equivalent, use <BrandSheetTitle>.
  */
 export function BrandScreenTitle({
@@ -29,10 +32,13 @@ export function BrandScreenTitle({
 }: BrandScreenTitleProps) {
   const upper = emphasis.toUpperCase();
   const sizeClass = size === 'hero' ? 'text-4xl' : 'text-2xl';
+  const hasSetup = typeof setup === 'string' && setup.trim().length > 0;
   return (
     <div className={cn('flex flex-col', className)}>
       <h1 className={cn(sizeClass, 'font-bold tracking-tight leading-tight')}>
-        <span className="font-medium text-white">{setup} </span>
+        {hasSetup && (
+          <span className="font-medium text-white">{setup} </span>
+        )}
         <span className="font-extrabold text-white">{upper}</span>
         <span className="text-gradient-brand">.</span>
       </h1>
