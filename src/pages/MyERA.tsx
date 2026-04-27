@@ -940,9 +940,7 @@ export default function MyERA() {
                         </div>
 
                         {link.status === 'pending' && (
-                          <Badge className="bg-amber-500/20 text-amber-400 text-[10px]">
-                            Pending
-                          </Badge>
+                          <BrandSectionLabel>PENDING</BrandSectionLabel>
                         )}
                         
                         <Button
