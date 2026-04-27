@@ -935,15 +935,9 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
 
       {/* Add to your post — bottom sheet with icon-tile grid */}
       <Sheet open={addSheetOpen} onOpenChange={setAddSheetOpen}>
-        <SheetContent
-          side="bottom"
-          className="rounded-t-2xl bg-background/95 backdrop-blur-md border-white/10 px-5 pt-1 pb-[calc(env(safe-area-inset-bottom)+32px)] max-h-[80vh] overflow-y-auto [&>button]:hidden"
-        >
-          <div className="w-10 h-1 rounded-full bg-white/20 mx-auto mt-3 mb-4" />
-          <SheetHeader className="text-left mb-1">
-            <SheetTitle className="text-lg font-semibold text-white">Add to your post</SheetTitle>
-            <SheetDescription className="sr-only">Pick what to add</SheetDescription>
-          </SheetHeader>
+        <BrandSheetContent maxHeight="80vh">
+          <BrandSheetTitle setup="add to your" emphasis="POST" srDescription="Pick what to add" />
+
 
           {/* Media */}
           <p className="text-[11px] font-medium text-white/40 uppercase tracking-wider px-1 mb-3 mt-3">
