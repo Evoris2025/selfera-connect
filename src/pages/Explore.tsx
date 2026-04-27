@@ -6,13 +6,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AppLayout } from '@/components/AppLayout';
 import { Input } from '@/components/ui/input';
 import { PullToRefresh } from '@/components/ui/PullToRefresh';
-import { BrandSurface, BrandIcon, BrandUnderlineTabs } from '@/components/brand';
+import { BrandSurface, BrandIcon, BrandUnderlineTabs, BrandSectionLabel } from '@/components/brand';
 import {
   ExploreFilters,
   ExploreExpressions,
   ExploreVideos,
   ExploreImages,
   ExplorePosts,
+  ExploreTopicChips,
   type ExploreTab,
 } from '@/components/explore';
 import {
@@ -40,8 +41,13 @@ export default function Explore() {
   // tab's filters; ExploreFilters operates on the active tab's slice only.
   const [filters, setFilters] = useState<ExploreFiltersState>(DEFAULT_FILTERS);
 
+  // Trending topic chip selection. Component-state only (no persistence).
+  // Resets on tab switch so each content type starts fresh.
+  const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
+
   useEffect(() => {
     setIsLoading(true);
+    setSelectedTopic(null);
     const timer = setTimeout(() => setIsLoading(false), 500);
     return () => clearTimeout(timer);
   }, [activeTab]);
@@ -59,13 +65,13 @@ export default function Explore() {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'expressions':
-        return <ExploreExpressions isLoading={isLoading} filters={filters.expressions} />;
+        return <ExploreExpressions isLoading={isLoading} filters={filters.expressions} topic={selectedTopic} />;
       case 'videos':
-        return <ExploreVideos isLoading={isLoading} filters={filters.videos} />;
+        return <ExploreVideos isLoading={isLoading} filters={filters.videos} topic={selectedTopic} />;
       case 'images':
-        return <ExploreImages isLoading={isLoading} filters={filters.images} />;
+        return <ExploreImages isLoading={isLoading} filters={filters.images} topic={selectedTopic} />;
       case 'posts':
-        return <ExplorePosts isLoading={isLoading} filters={filters.posts} />;
+        return <ExplorePosts isLoading={isLoading} filters={filters.posts} topic={selectedTopic} />;
       default:
         return null;
     }
@@ -92,6 +98,12 @@ export default function Explore() {
               onChange={setFilters}
             />
           </div>
+        </div>
+
+        {/* Trending topic chips — sits between search and tab strip. Not sticky. */}
+        <div className="bg-background pt-3 mb-4">
+          <BrandSectionLabel className="px-4 mb-2">TRENDING ON SELFERA</BrandSectionLabel>
+          <ExploreTopicChips selected={selectedTopic} onSelect={setSelectedTopic} />
         </div>
 
         {/* Brand Underline Tab Bar */}
