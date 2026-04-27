@@ -141,10 +141,10 @@ function FounderAdminMenuItem() {
   return (
     <>
       <DropdownMenuSeparator />
-      <DropdownMenuItem className="flex items-center gap-2 cursor-pointer text-primary" onClick={() => navigate('/admin')}>
+      <DropdownMenuItem className="flex items-center gap-2 cursor-pointer text-white" onClick={() => navigate('/admin')}>
         <Shield className="h-4 w-4 flex-shrink-0" />
         <span className="flex-1">Admin Console</span>
-        <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-primary/10 text-primary border-0 flex-shrink-0">
+        <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-white/[0.08] text-white/70 border-0 flex-shrink-0">
           STAFF
         </Badge>
       </DropdownMenuItem>
