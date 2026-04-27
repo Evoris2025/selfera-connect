@@ -231,40 +231,11 @@ export function ExploreVideos({ isLoading = false }: ExploreVideosProps) {
           />
         </div>
 
-        <VideoSection
-          title="For you right now"
-          icon={<Compass className="h-5 w-5 text-primary" />}
-          videos={forYouVideos}
-          isLoading={loading}
-        />
-        
-        <VideoSection
-          title="Creators you follow"
-          icon={<Users className="h-5 w-5 text-emerald-400" />}
-          videos={followingVideos}
-          isLoading={loading}
-        />
-        
-        <VideoSection
-          title="Trending videos"
-          icon={<TrendingUp className="h-5 w-5 text-rose-500" />}
-          videos={trendingVideos}
-          isLoading={loading}
-        />
-        
-        <VideoSection
-          title="Most watched"
-          icon={<Eye className="h-5 w-5 text-accent" />}
-          videos={mostWatchedVideos}
-          isLoading={loading}
-        />
-        
-        <VideoSection
-          title="Recently uploaded"
-          icon={<Upload className="h-5 w-5 text-muted-foreground" />}
-          videos={recentVideos}
-          isLoading={loading}
-        />
+        <VideoSection title="FOR YOU RIGHT NOW" icon={Compass} videos={forYouVideos} isLoading={loading} />
+        <VideoSection title="CREATORS YOU FOLLOW" icon={Users} videos={followingVideos} isLoading={loading} />
+        <VideoSection title="TRENDING VIDEOS" icon={TrendingUp} videos={trendingVideos} isLoading={loading} />
+        <VideoSection title="MOST WATCHED" icon={Eye} videos={mostWatchedVideos} isLoading={loading} />
+        <VideoSection title="RECENTLY UPLOADED" icon={Upload} videos={recentVideos} isLoading={loading} />
       </div>
     </PullToRefresh>
   );
