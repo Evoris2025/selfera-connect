@@ -65,7 +65,9 @@ export default function Studio() {
               exit={{ opacity: 0 }}
               className="h-full min-h-dvh"
             >
-              <ContentTypeDashboard onSelect={handleSelect} onClose={studio.close} />
+              <AppLayout showHeader={false}>
+                <ContentTypeDashboard onSelect={handleSelect} onClose={studio.close} />
+              </AppLayout>
             </motion.div>
           )}
 
