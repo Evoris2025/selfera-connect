@@ -24,6 +24,7 @@ import {
   EndScreenElement,
 } from './video';
 import { cn } from '@/lib/utils';
+import { CreatorScreenHeader } from './CreatorScreenHeader';
 
 // Simulation mode flag
 const SIMULATION_MODE = true;
