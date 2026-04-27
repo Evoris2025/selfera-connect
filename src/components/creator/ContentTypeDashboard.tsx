@@ -28,7 +28,7 @@ interface ContentTypeDashboardProps {
 
 // SelfERA brand gradient — same stops used on the composer hero, avatar ring,
 // and the "create POST." title.
-const BRAND_GRADIENT = 'linear-gradient(135deg, hsl(var(--gradient-start, 320 91% 60%)), hsl(var(--gradient-mid, 270 91% 65%)), hsl(var(--gradient-end, 175 70% 50%)))';
+const BRAND_GRADIENT = 'linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-mid)), hsl(var(--gradient-end)))';
 
 function CreateTile({
   type,
