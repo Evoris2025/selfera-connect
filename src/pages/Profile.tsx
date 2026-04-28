@@ -38,7 +38,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { BrandSectionLabel, BrandIcon } from '@/components/brand';
+import { BrandIcon } from '@/components/brand';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
 // Mock user data with full social metrics
@@ -103,13 +103,15 @@ function CardStatItem({
       onClick={onClick}
       disabled={!onClick}
       className={cn(
-        'snap-start shrink-0 text-center py-3 px-4 min-w-[5rem] transition-colors duration-200',
+        'flex-1 min-w-0 flex flex-col items-center text-center py-3 px-1 transition-colors duration-200',
         onClick && 'hover:bg-white/[0.04] active:scale-[0.97] cursor-pointer',
       )}
     >
       <p className="text-white text-title font-medium leading-none">{formatCount(count)}</p>
-      <div className="mt-1.5 flex justify-center">
-        <BrandSectionLabel>{label}</BrandSectionLabel>
+      <div className="mt-1.5 w-full">
+        <p className="text-caption font-medium uppercase tracking-wider text-white/55 truncate w-full text-center">
+          {label}
+        </p>
       </div>
     </button>
   );
@@ -601,10 +603,9 @@ export default function Profile() {
               {renderBioWithHashtags(displayProfile.bio || mockUser.bio)}
             </motion.p>
 
-            {/* Stats Row — horizontal snap rail to handle column-density at max-w-md */}
+            {/* Stats Row — fits 4 stats natively across the 28rem column (no scroll) */}
             <motion.div
-              className="mt-6 -mx-4 flex items-stretch overflow-x-auto snap-x snap-mandatory scrollbar-hide rail-fade-right pl-2 pr-8"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              className="mt-6 flex w-full items-stretch gap-1"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
