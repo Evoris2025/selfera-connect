@@ -29,7 +29,8 @@ const popularWeekImages = trendingImages.slice().sort((a, b) => b.likes - a.like
 const communityImages = trendingImages.slice(2, 8).map((i) => ({ ...i, id: `c-${i.id}` }));
 const recentImages = trendingImages.slice(0, 6).map((i) => ({ ...i, id: `r-${i.id}` }));
 
-import type { ImagesFilters, SortBy, Format } from './ExploreFilters';
+import type { ImagesFilters, SortBy } from './ExploreFilters';
+import { applyFormat } from './exploreFilterUtils';
 
 const SORT_TO_DATA: Record<SortBy, ImageItem[]> = {
   'for-you': trendingImages,
@@ -38,12 +39,6 @@ const SORT_TO_DATA: Record<SortBy, ImageItem[]> = {
   'most-recent': recentImages,
   'most-liked': popularWeekImages,
 };
-
-function applyFormat(items: ImageItem[], fmt: Format): ImageItem[] {
-  if (fmt === 'all') return items;
-  // Mock partition: even index -> photos, odd index -> illustrations.
-  return items.filter((_, i) => (fmt === 'photos' ? i % 2 === 0 : i % 2 === 1));
-}
 
 function ImageTile({ image, index, onClick }: { image: ImageItem; index: number; onClick: () => void }) {
   return (
