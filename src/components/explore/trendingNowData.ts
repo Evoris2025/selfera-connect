@@ -11,14 +11,14 @@
  * TrendingNowRail component stays component-only.
  */
 
+export type TrendingVideoTier = 'orange' | 'purple' | 'blue' | 'green' | 'pink' | null;
+
 export interface TrendingExpression {
   id: string;
   thumbnail: string;
-  user: { handle: string; avatar: string };
+  user: { handle: string; avatar: string; tier: TrendingVideoTier };
   views: number;
 }
-
-export type TrendingVideoTier = 'orange' | 'purple' | 'blue' | 'green' | 'pink' | null;
 
 export interface TrendingVideo {
   id: string;
