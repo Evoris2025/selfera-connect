@@ -129,12 +129,20 @@ const ORIGIN_OPTIONS: { value: Origin; label: string }[] = [
   { value: 'verified', label: 'Verified creators only' },
 ];
 
+const TIER_HEX: Record<VerificationTier, string> = {
+  orange: '#f97316',
+  purple: '#a855f7',
+  blue: '#3b82f6',
+  green: '#10b981',
+  pink: '#ec4899',
+};
+
 const TIER_OPTIONS: { value: VerificationTier; label: string }[] = [
-  { value: 'orange', label: 'Creator' },
-  { value: 'purple', label: 'Practitioner' },
-  { value: 'blue', label: 'Organisation' },
-  { value: 'green', label: 'Supporter' },
-  { value: 'pink', label: 'Founder' },
+  { value: 'orange', label: 'Orange' },
+  { value: 'purple', label: 'Purple' },
+  { value: 'blue', label: 'Blue' },
+  { value: 'green', label: 'Green' },
+  { value: 'pink', label: 'Pink' },
 ];
 
 const TAB_TITLE: Record<ExploreTab, string> = {
@@ -144,54 +152,17 @@ const TAB_TITLE: Record<ExploreTab, string> = {
   posts: 'POSTS',
 };
 
-// ----- List row (Sort / Origin) -----
-
-interface ListRowProps<T extends string> {
-  option: { value: T; label: string };
-  active: boolean;
-  themePrimary: string;
-  onClick: () => void;
-}
-
-function ListRow<T extends string>({ option, active, themePrimary, onClick }: ListRowProps<T>) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
-      className="relative overflow-hidden flex items-center px-4 h-10 cursor-pointer rounded-md transition-colors hover:bg-white/[0.04] focus:outline-none focus-visible:bg-white/[0.04]"
-    >
-      {active && (
-        <span
-          aria-hidden
-          className="absolute left-0 top-0 bottom-0 w-[2px]"
-          style={{ backgroundColor: themePrimary }}
-        />
-      )}
-      <span className="flex-1 text-center text-white text-[14px]">{option.label}</span>
-      {active && (
-        <span
-          aria-hidden
-          className="absolute right-4 inline-flex items-center justify-center h-4 w-4 rounded-full"
-          style={{ backgroundColor: themePrimary }}
-        >
-          <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />
-        </span>
-      )}
-    </button>
-  );
-}
-
-// ----- Chip (Time / Duration / Format) -----
+// ----- Chip (Sort / Time / Duration / Format / Origin / Tier) -----
 
 interface ChipProps<T extends string> {
   option: { value: T; label: string; disabled?: boolean };
   active: boolean;
   themePrimary: string;
   onClick: () => void;
+  leftDot?: ReactNode;
 }
 
-function Chip<T extends string>({ option, active, themePrimary, onClick }: ChipProps<T>) {
+function Chip<T extends string>({ option, active, themePrimary, onClick, leftDot }: ChipProps<T>) {
   return (
     <button
       type="button"
@@ -199,7 +170,7 @@ function Chip<T extends string>({ option, active, themePrimary, onClick }: ChipP
       disabled={option.disabled}
       aria-pressed={active}
       className={cn(
-        'h-9 rounded-full text-[12px] uppercase tracking-[0.08em] flex items-center justify-center transition-colors',
+        'h-9 px-3 rounded-full text-[12px] uppercase tracking-[0.08em] flex items-center justify-center gap-2 transition-colors',
         active
           ? 'text-white'
           : 'border border-white/[0.15] text-white/55 bg-transparent hover:border-white/30',
@@ -207,6 +178,7 @@ function Chip<T extends string>({ option, active, themePrimary, onClick }: ChipP
       )}
       style={active ? { backgroundColor: themePrimary } : undefined}
     >
+      {leftDot}
       {option.label}
     </button>
   );
