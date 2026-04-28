@@ -64,24 +64,22 @@ function ExpressionCard({ item, index }: { item: TrendingExpression; index: numb
       onClick={() => handleTap('expressions', item.id)}
       className="relative w-[112px] h-[199px] flex-shrink-0 overflow-hidden rounded-md bg-white/[0.04] group"
     >
-      <BrandIconBadge icon={Flame} className="absolute top-2 left-2 z-10" aria-label="Trending" />
       <img src={item.thumbnail} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
-      <div className="absolute inset-x-0 bottom-0 h-full bg-gradient-to-t from-black/85 via-black/40 to-transparent pointer-events-none" />
-      <span className="absolute bottom-2 left-2 z-10 flex items-center gap-1">
-        <img
-          src={item.user.avatar}
-          alt=""
-          loading="lazy"
-          className="w-5 h-5 rounded-full object-cover"
-        />
+      {/* Top-left: avatar + tier badge (no backing pill, drop-shadow only) */}
+      <div className="absolute top-2 left-2 flex items-center gap-1 [filter:drop-shadow(0_2px_4px_rgba(0,0,0,0.6))]">
+        <Avatar className="h-10 w-10 ring-2 ring-black/40">
+          <AvatarImage src={item.user.avatar} alt={item.user.name} />
+          <AvatarFallback className="text-[10px]">{item.user.name.charAt(0)}</AvatarFallback>
+        </Avatar>
         <ExploreVerifiedTick tier={item.user.tier} className="shrink-0" />
-      </span>
-      <BrandStatPill
-        icon={Eye}
-        value={formatCount(item.views)}
-        className="absolute bottom-2 right-2 z-10"
-        aria-label={`${formatCount(item.views)} views`}
-      />
+      </div>
+      {/* Top-right: views (naked icon + number, no pill) */}
+      <div className="absolute top-2 right-2 flex items-center gap-1 [filter:drop-shadow(0_2px_4px_rgba(0,0,0,0.6))]">
+        <BrandIcon icon={Eye} size={16} />
+        <span className="text-[12px] font-medium text-white tabular-nums leading-none">
+          {formatCount(item.views)}
+        </span>
+      </div>
     </motion.button>
   );
 }
@@ -97,7 +95,6 @@ function VideoCard({ item, index }: { item: TrendingVideo; index: number }) {
       className="w-[200px] flex-shrink-0 text-left group"
     >
       <div className="relative w-[200px] h-[112px] rounded-md overflow-hidden bg-white/[0.04]">
-        <BrandIconBadge icon={Flame} className="absolute top-2 left-2 z-10" aria-label="Trending" />
         <img src={item.thumbnail} alt={item.title} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute bottom-1 right-1 px-1.5 h-5 inline-flex items-center bg-black/55 border border-white/10 text-[10px] text-white font-medium rounded-md tabular-nums">
           {item.duration}
@@ -142,7 +139,6 @@ function ImageCard({ item, index }: { item: TrendingImage; index: number }) {
       onClick={() => handleTap('images', item.id)}
       className="relative w-[120px] h-[120px] flex-shrink-0 overflow-hidden rounded-md bg-white/[0.04] group"
     >
-      <BrandIconBadge icon={Flame} className="absolute top-2 left-2 z-10" aria-label="Trending" />
       <img src={item.url} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
       <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/70 to-transparent pointer-events-none" />
       <BrandStatPill
@@ -165,7 +161,6 @@ function PostCard({ item, index }: { item: TrendingPost; index: number }) {
       onClick={() => handleTap('posts', item.id)}
       className="relative w-[240px] h-[120px] flex-shrink-0 flex flex-col text-left rounded-md border border-white/[0.08] p-3 hover:border-white/20 transition-colors"
     >
-      <BrandIconBadge icon={Flame} className="absolute top-2 right-2 z-10" aria-label="Trending" />
       <p className="text-white/85 text-[12px] leading-snug line-clamp-3 flex-1 pr-7">
         {item.snippet}
       </p>

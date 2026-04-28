@@ -16,7 +16,7 @@ export type TrendingVideoTier = 'orange' | 'purple' | 'blue' | 'green' | 'pink' 
 export interface TrendingExpression {
   id: string;
   thumbnail: string;
-  user: { handle: string; avatar: string; tier: TrendingVideoTier };
+  user: { handle: string; name: string; avatar: string; tier: TrendingVideoTier };
   views: number;
 }
 
@@ -64,17 +64,17 @@ const PHOTOS = [
   'photo-1531123897727-8f129e1688ce',
 ];
 
-const USERS: { handle: string; avatar: string; tier: TrendingVideoTier }[] = [
-  { handle: 'drsarah', avatar: 'https://i.pravatar.cc/100?img=47', tier: 'orange' },
-  { handle: 'wellnesshub', avatar: 'https://i.pravatar.cc/100?img=32', tier: 'green' },
-  { handle: 'jamie_j', avatar: 'https://i.pravatar.cc/100?img=12', tier: 'blue' },
-  { handle: 'mindmatters', avatar: 'https://i.pravatar.cc/100?img=14', tier: 'purple' },
-  { handle: 'calmspace', avatar: 'https://i.pravatar.cc/100?img=9', tier: null },
-  { handle: 'alex_w', avatar: 'https://i.pravatar.cc/100?img=33', tier: 'pink' },
-  { handle: 'newstart24', avatar: 'https://i.pravatar.cc/100?img=51', tier: 'orange' },
-  { handle: 'breathe.daily', avatar: 'https://i.pravatar.cc/100?img=22', tier: 'purple' },
-  { handle: 'soft_landing', avatar: 'https://i.pravatar.cc/100?img=5', tier: 'green' },
-  { handle: 'kindredspirit', avatar: 'https://i.pravatar.cc/100?img=18', tier: 'blue' },
+const USERS: { handle: string; name: string; avatar: string; tier: TrendingVideoTier }[] = [
+  { handle: 'drsarah', name: 'Dr. Sarah Chen', avatar: 'https://i.pravatar.cc/100?img=47', tier: 'orange' },
+  { handle: 'wellnesshub', name: 'Wellness Hub', avatar: 'https://i.pravatar.cc/100?img=32', tier: 'green' },
+  { handle: 'jamie_j', name: 'Jamie Jordan', avatar: 'https://i.pravatar.cc/100?img=12', tier: 'blue' },
+  { handle: 'mindmatters', name: 'Mind Matters', avatar: 'https://i.pravatar.cc/100?img=14', tier: 'purple' },
+  { handle: 'calmspace', name: 'Calm Space', avatar: 'https://i.pravatar.cc/100?img=9', tier: null },
+  { handle: 'alex_w', name: 'Alex Winters', avatar: 'https://i.pravatar.cc/100?img=33', tier: 'pink' },
+  { handle: 'newstart24', name: 'New Start 2024', avatar: 'https://i.pravatar.cc/100?img=51', tier: 'orange' },
+  { handle: 'breathe.daily', name: 'Breathe Daily', avatar: 'https://i.pravatar.cc/100?img=22', tier: 'purple' },
+  { handle: 'soft_landing', name: 'Soft Landing', avatar: 'https://i.pravatar.cc/100?img=5', tier: 'green' },
+  { handle: 'kindredspirit', name: 'Kindred Spirit', avatar: 'https://i.pravatar.cc/100?img=18', tier: 'blue' },
 ];
 
 const VIEWS = [12400, 8900, 5600, 23400, 18700, 4300, 67800, 156000, 34500, 9800, 2100, 45200, 11300, 7600, 88400, 3400, 19200, 5500, 27800, 6100];
