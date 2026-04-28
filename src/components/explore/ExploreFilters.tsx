@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { Filter, Check } from 'lucide-react';
+import { useState, useMemo, type ReactNode } from 'react';
+import { Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetTrigger } from '@/components/ui/sheet';
 import {
@@ -129,12 +129,20 @@ const ORIGIN_OPTIONS: { value: Origin; label: string }[] = [
   { value: 'verified', label: 'Verified creators only' },
 ];
 
+const TIER_HEX: Record<VerificationTier, string> = {
+  orange: '#f97316',
+  purple: '#a855f7',
+  blue: '#3b82f6',
+  green: '#10b981',
+  pink: '#ec4899',
+};
+
 const TIER_OPTIONS: { value: VerificationTier; label: string }[] = [
-  { value: 'orange', label: 'Creator' },
-  { value: 'purple', label: 'Practitioner' },
-  { value: 'blue', label: 'Organisation' },
-  { value: 'green', label: 'Supporter' },
-  { value: 'pink', label: 'Founder' },
+  { value: 'orange', label: 'Orange' },
+  { value: 'purple', label: 'Purple' },
+  { value: 'blue', label: 'Blue' },
+  { value: 'green', label: 'Green' },
+  { value: 'pink', label: 'Pink' },
 ];
 
 const TAB_TITLE: Record<ExploreTab, string> = {
@@ -144,54 +152,17 @@ const TAB_TITLE: Record<ExploreTab, string> = {
   posts: 'POSTS',
 };
 
-// ----- List row (Sort / Origin) -----
-
-interface ListRowProps<T extends string> {
-  option: { value: T; label: string };
-  active: boolean;
-  themePrimary: string;
-  onClick: () => void;
-}
-
-function ListRow<T extends string>({ option, active, themePrimary, onClick }: ListRowProps<T>) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
-      className="relative overflow-hidden flex items-center px-4 h-10 cursor-pointer rounded-md transition-colors hover:bg-white/[0.04] focus:outline-none focus-visible:bg-white/[0.04]"
-    >
-      {active && (
-        <span
-          aria-hidden
-          className="absolute left-0 top-0 bottom-0 w-[2px]"
-          style={{ backgroundColor: themePrimary }}
-        />
-      )}
-      <span className="flex-1 text-center text-white text-[14px]">{option.label}</span>
-      {active && (
-        <span
-          aria-hidden
-          className="absolute right-4 inline-flex items-center justify-center h-4 w-4 rounded-full"
-          style={{ backgroundColor: themePrimary }}
-        >
-          <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />
-        </span>
-      )}
-    </button>
-  );
-}
-
-// ----- Chip (Time / Duration / Format) -----
+// ----- Chip (Sort / Time / Duration / Format / Origin / Tier) -----
 
 interface ChipProps<T extends string> {
   option: { value: T; label: string; disabled?: boolean };
   active: boolean;
   themePrimary: string;
   onClick: () => void;
+  leftDot?: ReactNode;
 }
 
-function Chip<T extends string>({ option, active, themePrimary, onClick }: ChipProps<T>) {
+function Chip<T extends string>({ option, active, themePrimary, onClick, leftDot }: ChipProps<T>) {
   return (
     <button
       type="button"
@@ -199,7 +170,7 @@ function Chip<T extends string>({ option, active, themePrimary, onClick }: ChipP
       disabled={option.disabled}
       aria-pressed={active}
       className={cn(
-        'h-9 rounded-full text-[12px] uppercase tracking-[0.08em] flex items-center justify-center transition-colors',
+        'h-9 px-3 rounded-full text-[12px] uppercase tracking-[0.08em] flex items-center justify-center gap-2 transition-colors',
         active
           ? 'text-white'
           : 'border border-white/[0.15] text-white/55 bg-transparent hover:border-white/30',
@@ -207,6 +178,7 @@ function Chip<T extends string>({ option, active, themePrimary, onClick }: ChipP
       )}
       style={active ? { backgroundColor: themePrimary } : undefined}
     >
+      {leftDot}
       {option.label}
     </button>
   );
@@ -327,12 +299,12 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
 
         {/* Scrollable body */}
         <div className="flex-1 overflow-y-auto space-y-6 py-4">
-          {/* Section 1 — Sort by (vertical list) */}
+          {/* Section 1 — Sort by (chip grid, single-select) */}
           <section>
             <BrandSectionLabel className="px-5 mb-2">SORT BY</BrandSectionLabel>
-            <div className="flex flex-col">
+            <div className="flex flex-wrap gap-2 px-4">
               {SORT_OPTIONS.map((opt) => (
-                <ListRow
+                <Chip
                   key={opt.value}
                   option={opt}
                   active={tabSlice.sortBy === opt.value}
@@ -397,7 +369,7 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
           {activeTab !== 'images' && (
             <section>
               <BrandSectionLabel className="px-5 mb-2">CREATOR TIER</BrandSectionLabel>
-              <div className="grid grid-cols-3 gap-2 px-4">
+              <div className="flex flex-wrap gap-2 px-4">
                 <Chip
                   option={{ value: 'all', label: 'All' }}
                   active={(tabSlice as { creatorTier: CreatorTier }).creatorTier === 'all'}
@@ -413,6 +385,13 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
                       option={opt}
                       active={selected}
                       themePrimary={themePrimary}
+                      leftDot={
+                        <span
+                          className="w-2.5 h-2.5 rounded-full"
+                          style={{ backgroundColor: TIER_HEX[opt.value] }}
+                          aria-hidden
+                        />
+                      }
                       onClick={() => {
                         let next: CreatorTier;
                         if (current === 'all') {
@@ -433,12 +412,12 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
             </section>
           )}
 
-          {/* Section 4 — Origin (vertical list) */}
+          {/* Section 4 — Origin (chip grid, single-select) */}
           <section>
             <BrandSectionLabel className="px-5 mb-2">ORIGIN</BrandSectionLabel>
-            <div className="flex flex-col">
+            <div className="flex flex-wrap gap-2 px-4">
               {ORIGIN_OPTIONS.map((opt) => (
-                <ListRow
+                <Chip
                   key={opt.value}
                   option={opt}
                   active={tabSlice.origin === opt.value}
