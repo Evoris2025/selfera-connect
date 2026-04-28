@@ -86,11 +86,11 @@ function VideoCard({ item, index }: { item: TrendingVideo; index: number }) {
       onClick={() => handleTap('videos', item.id)}
       className="w-[200px] flex-shrink-0 text-left group"
     >
-      <div className="relative aspect-video rounded-md overflow-hidden bg-black">
+      <div className="relative w-[200px] h-[112px] rounded-md overflow-hidden bg-white/[0.04]">
         <span className="absolute top-2 left-2 z-10 flex items-center justify-center size-5 rounded-full bg-black/40 backdrop-blur-sm">
           <BrandIcon icon={Flame} className="w-3 h-3" />
         </span>
-        <img src={item.thumbnail} alt={item.title} loading="lazy" className="w-full h-full object-cover" />
+        <img src={item.thumbnail} alt={item.title} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute bottom-1 right-1 px-1.5 py-0.5 bg-black/80 text-[10px] text-white font-medium rounded">
           {item.duration}
         </div>
