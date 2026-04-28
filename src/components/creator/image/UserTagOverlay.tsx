@@ -97,7 +97,7 @@ export function UserTagOverlay({
         <button
           onClick={() => onEditingChange(!isEditing)}
           className={cn(
-            'flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors',
+            'flex items-center gap-2 px-3 py-1.5 rounded-full text-body font-medium transition-colors',
             isEditing
               ? 'bg-primary text-primary-foreground'
               : 'bg-secondary text-muted-foreground hover:text-foreground'
@@ -110,7 +110,7 @@ export function UserTagOverlay({
         {tags.length > 0 && (
           <button
             onClick={() => setShowTags(!showTags)}
-            className="text-xs text-muted-foreground hover:text-foreground"
+            className="text-label text-muted-foreground hover:text-foreground"
           >
             {showTags ? 'Hide' : 'Show'} tags ({tags.length})
           </button>
@@ -146,7 +146,7 @@ export function UserTagOverlay({
               <div className="relative">
                 <div className="px-2 py-1 rounded-lg bg-background/90 backdrop-blur-sm shadow-lg flex items-center gap-1.5">
                   <AtSign className="h-3 w-3 text-primary" />
-                  <span className="text-xs font-medium">{tag.username}</span>
+                  <span className="text-label font-medium">{tag.username}</span>
                   {isEditing && (
                     <button
                       onClick={(e) => {
@@ -188,7 +188,7 @@ export function UserTagOverlay({
                     placeholder="Search people..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-8 h-9 text-sm"
+                    className="pl-8 h-9 text-body"
                     autoFocus
                   />
                 </div>
@@ -205,19 +205,19 @@ export function UserTagOverlay({
                     >
                       <Avatar className="h-7 w-7">
                         <AvatarImage src={user.avatar} />
-                        <AvatarFallback className="text-xs">
+                        <AvatarFallback className="text-label">
                           {user.displayName[0]}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 text-left">
-                        <div className="text-sm font-medium">{user.displayName}</div>
-                        <div className="text-xs text-muted-foreground">@{user.username}</div>
+                        <div className="text-body font-medium">{user.displayName}</div>
+                        <div className="text-label text-muted-foreground">@{user.username}</div>
                       </div>
                     </button>
                   ))}
 
                   {filteredUsers.length === 0 && (
-                    <p className="text-xs text-muted-foreground text-center py-2">
+                    <p className="text-label text-muted-foreground text-center py-2">
                       No users found
                     </p>
                   )}
@@ -230,7 +230,7 @@ export function UserTagOverlay({
                     e.stopPropagation();
                     setPendingTag(null);
                   }}
-                  className="w-full mt-2 h-8 text-xs"
+                  className="w-full mt-2 h-8 text-label"
                 >
                   Cancel
                 </Button>
@@ -243,7 +243,7 @@ export function UserTagOverlay({
         {isEditing && !pendingTag && (
           <div className="absolute inset-0 bg-black/30 flex items-center justify-center pointer-events-none">
             <div className="px-4 py-2 rounded-full bg-background/90 backdrop-blur-sm">
-              <span className="text-sm font-medium">Tap to tag someone</span>
+              <span className="text-body font-medium">Tap to tag someone</span>
             </div>
           </div>
         )}
@@ -255,7 +255,7 @@ export function UserTagOverlay({
           {tags.map((tag) => (
             <div
               key={tag.id}
-              className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-secondary text-sm"
+              className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-secondary text-body"
             >
               <AtSign className="h-3 w-3 text-primary" />
               <span>{tag.username}</span>

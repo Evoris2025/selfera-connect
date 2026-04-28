@@ -93,21 +93,21 @@ export function CommentSheet({ open, onOpenChange, postId }: CommentSheetProps) 
                 transition={{ ...springConfig, delay: index * 0.05 }}
                 className="flex gap-3 group"
               >
-                <Avatar className="h-8 w-8 flex-shrink-0">
+                <Avatar size="sm" className="flex-shrink-0">
                   <AvatarImage src={c.author.avatar} />
-                  <AvatarFallback className="bg-secondary text-secondary-foreground text-xs">
+                  <AvatarFallback className="bg-secondary text-secondary-foreground text-label">
                     {c.author.name.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="inline-flex items-center gap-1">
-                      <span className="font-medium text-sm text-foreground">{c.author.name}</span>
+                      <span className="font-medium text-body text-foreground">{c.author.name}</span>
                       {c.author.isVerified && (
                         <EraVerifiedTooltip userEmail={c.author.email} size="sm" />
                       )}
                     </span>
-                    <span className="text-xs text-muted-foreground">{c.createdAt}</span>
+                    <span className="text-label text-muted-foreground">{c.createdAt}</span>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button 
@@ -132,7 +132,7 @@ export function CommentSheet({ open, onOpenChange, postId }: CommentSheetProps) 
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
-                  <p className="text-sm text-foreground mt-0.5">{c.content}</p>
+                  <p className="text-body text-foreground mt-0.5">{c.content}</p>
                 </div>
               </motion.div>
             ))}
@@ -147,8 +147,8 @@ export function CommentSheet({ open, onOpenChange, postId }: CommentSheetProps) 
           {/* Comment input */}
           <div className="p-4 border-t border-border/50 bg-background">
             <div className="flex items-center gap-3">
-              <Avatar className="h-8 w-8 flex-shrink-0">
-                <AvatarFallback className="bg-secondary text-secondary-foreground text-xs">
+              <Avatar size="sm" className="flex-shrink-0">
+                <AvatarFallback className="bg-secondary text-secondary-foreground text-label">
                   {user?.email?.charAt(0).toUpperCase() || 'U'}
                 </AvatarFallback>
               </Avatar>

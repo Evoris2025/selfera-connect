@@ -255,7 +255,7 @@ export function InteractiveStickerPicker({ isOpen, onClose, onAdd }: Interactive
                 />
               </div>
             ))}
-            <p className="text-xs text-muted-foreground">
+            <p className="text-label text-muted-foreground">
               Tap circle to mark correct answer
             </p>
           </div>
@@ -389,7 +389,7 @@ export function InteractiveStickerPicker({ isOpen, onClose, onAdd }: Interactive
                     <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                       {sticker.icon}
                     </div>
-                    <span className="text-xs font-medium">{sticker.label}</span>
+                    <span className="text-label font-medium">{sticker.label}</span>
                   </motion.button>
                 ))}
               </div>
@@ -445,7 +445,7 @@ export function InteractiveStickerDisplay({ sticker, onRemove }: InteractiveStic
         return (
           <div className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl p-4 min-w-[200px] shadow-lg">
             <p className="font-semibold text-white text-center mb-2">{data.prompt}</p>
-            <div className="bg-white/20 rounded-xl py-2 px-4 text-center text-white/80 text-sm">
+            <div className="bg-white/20 rounded-xl py-2 px-4 text-center text-white/80 text-body">
               Tap to respond
             </div>
           </div>
@@ -460,15 +460,15 @@ export function InteractiveStickerDisplay({ sticker, onRemove }: InteractiveStic
             <div className="flex gap-2 justify-center">
               <div className="bg-white/10 rounded-lg p-2">
                 <span className="text-2xl font-bold text-white">00</span>
-                <p className="text-xs text-white/60">Days</p>
+                <p className="text-label text-white/60">Days</p>
               </div>
               <div className="bg-white/10 rounded-lg p-2">
                 <span className="text-2xl font-bold text-white">00</span>
-                <p className="text-xs text-white/60">Hours</p>
+                <p className="text-label text-white/60">Hours</p>
               </div>
               <div className="bg-white/10 rounded-lg p-2">
                 <span className="text-2xl font-bold text-white">00</span>
-                <p className="text-xs text-white/60">Mins</p>
+                <p className="text-label text-white/60">Mins</p>
               </div>
             </div>
           </div>

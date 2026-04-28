@@ -175,7 +175,7 @@ export default function Auth() {
                   className="h-12"
                 />
                 {errors.email && (
-                  <p className="text-sm text-destructive">{errors.email}</p>
+                  <p className="text-body text-destructive">{errors.email}</p>
                 )}
               </div>
 
@@ -200,7 +200,7 @@ export default function Auth() {
                   </button>
                 </div>
                 {errors.password && (
-                  <p className="text-sm text-destructive">{errors.password}</p>
+                  <p className="text-body text-destructive">{errors.password}</p>
                 )}
               </div>
 
@@ -221,7 +221,7 @@ export default function Auth() {
 
               {isLogin && (
                 <div className="flex justify-end">
-                  <button type="button" className="text-sm text-primary hover:underline">
+                  <button type="button" className="text-body text-primary hover:underline">
                     {t('auth.forgotPassword')}
                   </button>
                 </div>
@@ -231,7 +231,7 @@ export default function Auth() {
                 {loading ? t('common.loading') : isLogin ? t('auth.login') : t('auth.signup')}
               </Button>
 
-              <p className="text-xs text-center text-muted-foreground">
+              <p className="text-label text-center text-muted-foreground">
                 {t('auth.termsAgreement')}
               </p>
             </form>
@@ -248,7 +248,7 @@ export default function Auth() {
           <h2 className="text-3xl font-bold text-foreground mb-4">
             {t('landing.hero.title')}
           </h2>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-title text-muted-foreground">
             {t('landing.hero.subtitle')}
           </p>
         </div>

@@ -134,7 +134,7 @@ export function AdminTrustPanel() {
       4: 'bg-destructive/30 text-destructive',
     };
     return (
-      <Badge variant="outline" className={cn('text-xs', colors[level])}>
+      <Badge variant="outline" className={cn('text-label', colors[level])}>
         L{level}: {config.label}
       </Badge>
     );
@@ -148,7 +148,7 @@ export function AdminTrustPanel() {
       danger: 'bg-destructive/10 text-destructive',
     };
     return (
-      <Badge key={flag} variant="outline" className={cn('text-xs', colors[config.severity])}>
+      <Badge key={flag} variant="outline" className={cn('text-label', colors[config.severity])}>
         {config.label}
       </Badge>
     );
@@ -169,8 +169,8 @@ export function AdminTrustPanel() {
           <Shield className="h-5 w-5 text-primary" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-foreground">Trust & Governance Monitoring</h2>
-          <p className="text-sm text-muted-foreground">
+          <h2 className="text-headline font-bold text-foreground">Trust & Governance Monitoring</h2>
+          <p className="text-body text-muted-foreground">
             Informational only — No automatic restrictions
           </p>
         </div>
@@ -182,7 +182,7 @@ export function AdminTrustPanel() {
           <CardContent className="pt-4">
             <div className="flex items-center gap-2 mb-1">
               <CheckCircle className="h-4 w-4 text-emerald-600" />
-              <span className="text-sm text-muted-foreground">Level 0: Clean</span>
+              <span className="text-body text-muted-foreground">Level 0: Clean</span>
             </div>
             <p className="text-2xl font-bold">{profiles.filter(p => p.escalationLevel === 0).length}</p>
           </CardContent>
@@ -191,7 +191,7 @@ export function AdminTrustPanel() {
           <CardContent className="pt-4">
             <div className="flex items-center gap-2 mb-1">
               <Eye className="h-4 w-4 text-amber-600" />
-              <span className="text-sm text-muted-foreground">Level 1: Observation</span>
+              <span className="text-body text-muted-foreground">Level 1: Observation</span>
             </div>
             <p className="text-2xl font-bold">{profiles.filter(p => p.escalationLevel === 1).length}</p>
           </CardContent>
@@ -200,7 +200,7 @@ export function AdminTrustPanel() {
           <CardContent className="pt-4">
             <div className="flex items-center gap-2 mb-1">
               <Flag className="h-4 w-4 text-destructive" />
-              <span className="text-sm text-muted-foreground">Level 2: Review</span>
+              <span className="text-body text-muted-foreground">Level 2: Review</span>
             </div>
             <p className="text-2xl font-bold">{profiles.filter(p => p.escalationLevel === 2).length}</p>
           </CardContent>
@@ -209,7 +209,7 @@ export function AdminTrustPanel() {
           <CardContent className="pt-4">
             <div className="flex items-center gap-2 mb-1">
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Avg Trust Score</span>
+              <span className="text-body text-muted-foreground">Avg Trust Score</span>
             </div>
             <p className="text-2xl font-bold">
               {Math.round(profiles.reduce((sum, p) => sum + p.trustScore, 0) / profiles.length)}
@@ -221,7 +221,7 @@ export function AdminTrustPanel() {
       {/* Trust Profiles List */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm font-medium">User Trust Profiles</CardTitle>
+          <CardTitle className="text-body font-medium">User Trust Profiles</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {profiles.map(profile => (
@@ -230,7 +230,7 @@ export function AdminTrustPanel() {
               className="p-4 border border-border rounded-lg hover:bg-muted/30 transition-colors"
             >
               <div className="flex items-start gap-4">
-                <Avatar className="h-12 w-12">
+                <Avatar size="md">
                   <AvatarImage src={profile.avatarUrl} />
                   <AvatarFallback>{profile.displayName.charAt(0)}</AvatarFallback>
                 </Avatar>
@@ -238,12 +238,12 @@ export function AdminTrustPanel() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-2">
                     <span className="font-semibold">{profile.displayName}</span>
-                    <span className="text-sm text-muted-foreground">@{profile.handle}</span>
-                    <Badge variant="outline" className={cn('text-xs capitalize', TIER_COLORS[profile.eraTier as keyof typeof TIER_COLORS])}>
+                    <span className="text-body text-muted-foreground">@{profile.handle}</span>
+                    <Badge variant="outline" className={cn('text-label capitalize', TIER_COLORS[profile.eraTier as keyof typeof TIER_COLORS])}>
                       {profile.eraTier}
                     </Badge>
                     {profile.isVerified && (
-                      <Badge variant="outline" className="text-xs bg-verified/10 text-verified">
+                      <Badge variant="outline" className="text-label bg-verified/10 text-verified">
                         Verified
                       </Badge>
                     )}
@@ -251,7 +251,7 @@ export function AdminTrustPanel() {
 
                   <div className="flex items-center gap-4 mb-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-muted-foreground">Trust Score:</span>
+                      <span className="text-body text-muted-foreground">Trust Score:</span>
                       <span className={cn('font-bold', getScoreColor(profile.trustScore))}>
                         {profile.trustScore}
                       </span>
@@ -260,7 +260,7 @@ export function AdminTrustPanel() {
                   </div>
 
                   {/* Trust Factors */}
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs text-muted-foreground mb-3">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-label text-muted-foreground mb-3">
                     <span>Account age: {profile.factors.accountAgeDays}d</span>
                     <span>Completion rate: {(profile.factors.interactionCompletionRate * 100).toFixed(0)}%</span>
                     <span>Reports received: {profile.factors.reportsReceived}</span>
@@ -276,7 +276,7 @@ export function AdminTrustPanel() {
 
                   {/* Notes */}
                   {profile.notes && (
-                    <div className="text-sm text-muted-foreground bg-muted/50 rounded p-2 mb-2">
+                    <div className="text-body text-muted-foreground bg-muted/50 rounded p-2 mb-2">
                       <span className="font-medium">Notes: </span>{profile.notes}
                     </div>
                   )}
@@ -288,7 +288,7 @@ export function AdminTrustPanel() {
                         value={annotationNotes[profile.id] || profile.notes}
                         onChange={(e) => setAnnotationNotes(prev => ({ ...prev, [profile.id]: e.target.value }))}
                         placeholder="Add internal annotation..."
-                        className="text-sm"
+                        className="text-body"
                         rows={2}
                       />
                       <div className="flex gap-2">
@@ -314,7 +314,7 @@ export function AdminTrustPanel() {
                 {/* Trust Score Visual */}
                 <div className="text-center">
                   <div className={cn(
-                    'w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold',
+                    'w-16 h-16 rounded-full flex items-center justify-center text-headline font-bold',
                     profile.trustScore >= 80 ? 'bg-emerald-500/10 text-emerald-600' :
                     profile.trustScore >= 60 ? 'bg-amber-500/10 text-amber-600' :
                     'bg-destructive/10 text-destructive'
@@ -331,7 +331,7 @@ export function AdminTrustPanel() {
       {/* Simulation Notice */}
       <Card className="border-dashed border-2 border-muted">
         <CardContent className="py-4">
-          <p className="text-sm text-muted-foreground text-center">
+          <p className="text-body text-muted-foreground text-center">
             This panel is for monitoring only. Trust scores do not trigger automatic restrictions.
           </p>
         </CardContent>

@@ -52,7 +52,7 @@ export function FollowRequestsSection() {
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <BrandSectionLabel>FOLLOW REQUESTS</BrandSectionLabel>
-        <span className="ml-2 text-[10px] font-medium uppercase tracking-[0.12em] text-white/55">
+        <span className="ml-2 text-caption font-medium uppercase tracking-[0.12em] text-white/55">
           ({pendingCount})
         </span>
         <motion.div
@@ -87,7 +87,7 @@ export function FollowRequestsSection() {
                 >
                   <Avatar className="h-9 w-9 border border-white/[0.12]">
                     <AvatarImage src={request.follower.avatar} alt={request.follower.name} />
-                    <AvatarFallback className="bg-gradient-to-br from-white/10 to-white/5 text-white text-[13px] font-medium">
+                    <AvatarFallback className="bg-gradient-to-br from-white/10 to-white/5 text-white text-label font-medium">
                       {request.follower.name.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
@@ -97,11 +97,11 @@ export function FollowRequestsSection() {
                   to={`/profile/${request.follower.handle}`}
                   className="flex-1 min-w-0"
                 >
-                  <p className="text-[14px] leading-snug">
+                  <p className="text-body leading-snug">
                     <span className="font-medium text-white">{request.follower.name}</span>
                     <span className="text-white/85">{' '}wants to follow you</span>
                   </p>
-                  <p className="text-[11px] text-white/45 uppercase tracking-[0.08em] mt-1">
+                  <p className="text-caption text-white/45 uppercase tracking-[0.08em] mt-1">
                     @{request.follower.handle} · {formatDistanceToNow(request.createdAt, { addSuffix: true })}
                   </p>
                 </Link>

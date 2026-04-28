@@ -92,7 +92,7 @@ export function TextPostCard({
       <div className="p-6 pb-4">
         <div className="flex items-start gap-4">
           <Quote className="h-8 w-8 text-muted-foreground/30 flex-shrink-0 mt-1" />
-          <p className="text-lg leading-relaxed text-foreground font-light">
+          <p className="text-title leading-relaxed text-foreground font-light">
             {content}
           </p>
         </div>
@@ -102,7 +102,7 @@ export function TextPostCard({
       {tags.length > 0 && (
         <div className="px-6 pb-4 flex flex-wrap gap-2">
           {tags.map((tag) => (
-            <Badge key={tag} variant="secondary" className="rounded-full text-xs">
+            <Badge key={tag} variant="secondary" className="rounded-full text-label">
               {tag}
             </Badge>
           ))}
@@ -115,16 +115,16 @@ export function TextPostCard({
           <div className="flex items-center gap-3">
             <Avatar className="h-9 w-9 ring-2 ring-border">
               <AvatarImage src={author.avatar} alt={author.name} />
-              <AvatarFallback className="bg-secondary text-secondary-foreground text-sm">
+              <AvatarFallback className="bg-secondary text-secondary-foreground text-body">
                 {author.name.charAt(0)}
               </AvatarFallback>
             </Avatar>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-medium text-sm text-foreground">{author.name}</span>
+                <span className="font-medium text-body text-foreground">{author.name}</span>
                 {author.isVerified && <VerifiedBadge size="sm" />}
               </div>
-              <p className="text-xs text-muted-foreground">@{author.handle} · {createdAt}</p>
+              <p className="text-label text-muted-foreground">@{author.handle} · {createdAt}</p>
             </div>
           </div>
 

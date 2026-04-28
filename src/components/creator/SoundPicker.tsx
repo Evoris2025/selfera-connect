@@ -159,7 +159,7 @@ export function SoundPicker({ isOpen, onClose, onSelect, selectedSound }: SoundP
               step={1}
               className="flex-1"
             />
-            <span className="text-xs text-muted-foreground w-8">{volume}%</span>
+            <span className="text-label text-muted-foreground w-8">{volume}%</span>
           </div>
 
           {/* Categories */}
@@ -170,7 +170,7 @@ export function SoundPicker({ isOpen, onClose, onSelect, selectedSound }: SoundP
                   key={category}
                   onClick={() => setActiveCategory(category)}
                   className={cn(
-                    "px-3 py-1.5 rounded-full text-sm whitespace-nowrap transition-all",
+                    "px-3 py-1.5 rounded-full text-body whitespace-nowrap transition-all",
                     activeCategory === category
                       ? "bg-primary text-primary-foreground"
                       : "bg-secondary hover:bg-secondary/80"
@@ -216,11 +216,11 @@ export function SoundPicker({ isOpen, onClose, onSelect, selectedSound }: SoundP
                   {/* Sound Info */}
                   <div className="flex-1 min-w-0">
                     <p className="font-medium truncate">{sound.name}</p>
-                    <p className="text-sm text-muted-foreground truncate">{sound.artist}</p>
+                    <p className="text-body text-muted-foreground truncate">{sound.artist}</p>
                   </div>
 
                   {/* Duration */}
-                  <span className="text-xs text-muted-foreground shrink-0">
+                  <span className="text-label text-muted-foreground shrink-0">
                     {formatDuration(sound.duration)}
                   </span>
 
@@ -249,8 +249,8 @@ export function SoundPicker({ isOpen, onClose, onSelect, selectedSound }: SoundP
                 <div className="flex items-center gap-3">
                   <Music className="w-5 h-5 text-primary" />
                   <div>
-                    <p className="font-medium text-sm">{selectedSound.name}</p>
-                    <p className="text-xs text-muted-foreground">{selectedSound.artist}</p>
+                    <p className="font-medium text-body">{selectedSound.name}</p>
+                    <p className="text-label text-muted-foreground">{selectedSound.artist}</p>
                   </div>
                 </div>
                 <Button onClick={onClose} size="sm">

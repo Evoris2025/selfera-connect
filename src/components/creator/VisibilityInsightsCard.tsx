@@ -70,7 +70,7 @@ export function VisibilityInsightsCard({ insights, loading }: VisibilityInsights
     >
       <GlassCard variant="subtle" className="p-5">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
+          <h3 className="text-title font-semibold text-foreground flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-primary" />
             Visibility Insights
           </h3>
@@ -89,9 +89,9 @@ export function VisibilityInsightsCard({ insights, loading }: VisibilityInsights
           <div className="rounded-xl bg-card/40 border border-white/[0.06] p-3">
             <div className="flex items-center gap-2 mb-1">
               <TrendingUp className="w-4 h-4 text-primary" />
-              <span className="text-xs text-muted-foreground">Est. Reach</span>
+              <span className="text-label text-muted-foreground">Est. Reach</span>
             </div>
-            <p className="text-xl font-bold text-foreground">
+            <p className="text-headline font-bold text-foreground">
               {insights.estimatedReach.toLocaleString()}
             </p>
           </div>
@@ -100,33 +100,33 @@ export function VisibilityInsightsCard({ insights, loading }: VisibilityInsights
           <div className="rounded-xl bg-card/40 border border-white/[0.06] p-3">
             <div className="flex items-center gap-2 mb-1">
               <Users className="w-4 h-4 text-primary" />
-              <span className="text-xs text-muted-foreground">Profile Views</span>
+              <span className="text-label text-muted-foreground">Profile Views</span>
             </div>
-            <p className="text-xl font-bold text-foreground">
+            <p className="text-headline font-bold text-foreground">
               {insights.profileViews.toLocaleString()}
             </p>
-            <span className="text-[10px] text-muted-foreground">Last 30 days</span>
+            <span className="text-caption text-muted-foreground">Last 30 days</span>
           </div>
 
           {/* Interaction Views */}
           <div className="rounded-xl bg-card/40 border border-white/[0.06] p-3">
             <div className="flex items-center gap-2 mb-1">
               <Eye className="w-4 h-4 text-primary" />
-              <span className="text-xs text-muted-foreground">Interaction Views</span>
+              <span className="text-label text-muted-foreground">Interaction Views</span>
             </div>
-            <p className="text-xl font-bold text-foreground">
+            <p className="text-headline font-bold text-foreground">
               {insights.interactionViews.toLocaleString()}
             </p>
-            <span className="text-[10px] text-muted-foreground">Last 30 days</span>
+            <span className="text-caption text-muted-foreground">Last 30 days</span>
           </div>
 
           {/* Completion Rate */}
           <div className="rounded-xl bg-card/40 border border-white/[0.06] p-3">
             <div className="flex items-center gap-2 mb-1">
               <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-              <span className="text-xs text-muted-foreground">Completion</span>
+              <span className="text-label text-muted-foreground">Completion</span>
             </div>
-            <p className="text-xl font-bold text-foreground">
+            <p className="text-headline font-bold text-foreground">
               {insights.completionRate}%
             </p>
             <Progress 
@@ -138,10 +138,10 @@ export function VisibilityInsightsCard({ insights, loading }: VisibilityInsights
 
         {/* Visibility Tier Info */}
         <div className={`rounded-xl ${tierConfig.bgColor} p-3 mb-4`}>
-          <p className={`text-sm font-medium ${tierConfig.color} mb-1`}>
+          <p className={`text-body font-medium ${tierConfig.color} mb-1`}>
             {tierConfig.label} Visibility
           </p>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-label text-muted-foreground">
             {tierConfig.description}
           </p>
         </div>
@@ -154,10 +154,10 @@ export function VisibilityInsightsCard({ insights, loading }: VisibilityInsights
                 <Sparkles className="w-4 h-4 text-emerald-400" />
               </div>
               <div>
-                <p className="text-sm font-medium text-emerald-400">
+                <p className="text-body font-medium text-emerald-400">
                   Earning Ready
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-label text-muted-foreground">
                   Your account meets all eligibility requirements
                 </p>
               </div>
@@ -168,10 +168,10 @@ export function VisibilityInsightsCard({ insights, loading }: VisibilityInsights
                 <AlertCircle className="w-4 h-4 text-muted-foreground" />
               </div>
               <div>
-                <p className="text-sm font-medium text-foreground">
+                <p className="text-body font-medium text-foreground">
                   Building Eligibility
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-label text-muted-foreground">
                   {insights.eligibilityReason || 'Continue building your profile'}
                 </p>
               </div>
@@ -180,7 +180,7 @@ export function VisibilityInsightsCard({ insights, loading }: VisibilityInsights
         </div>
 
         {/* Disclaimer */}
-        <p className="text-[10px] text-muted-foreground/60 text-center mt-4">
+        <p className="text-caption text-muted-foreground/60 text-center mt-4">
           Metrics are estimates based on platform activity. Earnings features coming soon.
         </p>
       </GlassCard>

@@ -47,9 +47,9 @@ export default function Search() {
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="w-full bg-secondary">
-            <TabsTrigger value="all" className="flex-1 text-xs">All</TabsTrigger>
-            <TabsTrigger value="accounts" className="flex-1 text-xs">Accounts</TabsTrigger>
-            <TabsTrigger value="tags" className="flex-1 text-xs">Tags</TabsTrigger>
+            <TabsTrigger value="all" className="flex-1 text-label">All</TabsTrigger>
+            <TabsTrigger value="accounts" className="flex-1 text-label">Accounts</TabsTrigger>
+            <TabsTrigger value="tags" className="flex-1 text-label">Tags</TabsTrigger>
           </TabsList>
         </Tabs>
 
@@ -67,7 +67,7 @@ export default function Search() {
                 className="cursor-pointer hover:bg-primary/20 hover:text-primary transition-colors"
               >
                 #{tag.name}
-                <span className="ml-1 text-muted-foreground text-xs">
+                <span className="ml-1 text-muted-foreground text-label">
                   {tag.count.toLocaleString()}
                 </span>
               </Badge>
@@ -87,7 +87,7 @@ export default function Search() {
                 key={account.handle}
                 className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border hover:border-primary/30 transition-colors cursor-pointer"
               >
-                <Avatar className="h-12 w-12">
+                <Avatar size="md">
                   <AvatarFallback className="bg-secondary text-secondary-foreground">
                     {account.name.charAt(0)}
                   </AvatarFallback>
@@ -97,7 +97,7 @@ export default function Search() {
                     <span className="font-medium text-foreground">{account.name}</span>
                     {account.isVerified && <EraVerifiedTick size="sm" userEmail={account.email} />}
                   </div>
-                  <p className="text-sm text-muted-foreground">@{account.handle}</p>
+                  <p className="text-body text-muted-foreground">@{account.handle}</p>
                 </div>
               </div>
             ))}

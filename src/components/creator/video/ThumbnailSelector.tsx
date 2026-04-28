@@ -42,13 +42,13 @@ export function ThumbnailSelector({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <label className="text-sm font-medium">Thumbnail</label>
+        <label className="text-body font-medium">Thumbnail</label>
         <div className="flex gap-2">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => fileInputRef.current?.click()}
-            className="h-8 text-xs"
+            className="h-8 text-label"
           >
             <Upload className="w-4 h-4 mr-1" />
             Upload
@@ -59,7 +59,7 @@ export function ThumbnailSelector({
               size="sm"
               onClick={onGenerateAI}
               disabled={isGeneratingAI}
-              className="h-8 text-xs"
+              className="h-8 text-label"
             >
               {isGeneratingAI ? (
                 <Loader2 className="w-4 h-4 mr-1 animate-spin" />
@@ -107,7 +107,7 @@ export function ThumbnailSelector({
                 <Check className="w-3 h-3 text-primary-foreground" />
               </div>
             )}
-            <span className="absolute bottom-1 left-1 text-[10px] bg-black/60 text-white px-1.5 rounded">
+            <span className="absolute bottom-1 left-1 text-caption bg-black/60 text-white px-1.5 rounded">
               Auto {index + 1}
             </span>
           </motion.button>
@@ -138,13 +138,13 @@ export function ThumbnailSelector({
               <Check className="w-4 h-4 text-primary-foreground" />
             </div>
           )}
-          <span className="absolute bottom-2 left-2 text-xs bg-black/60 text-white px-2 py-0.5 rounded">
+          <span className="absolute bottom-2 left-2 text-label bg-black/60 text-white px-2 py-0.5 rounded">
             Custom
           </span>
         </motion.button>
       )}
 
-      <p className="text-xs text-muted-foreground">
+      <p className="text-label text-muted-foreground">
         Recommended: 1280x720 (16:9). A good thumbnail can significantly increase views.
       </p>
     </div>

@@ -41,7 +41,7 @@ export function UnsavedChangesDialog({
                 </div>
                 <div>
                   <h3 className="font-semibold text-foreground">Discard changes?</h3>
-                  <p className="text-sm text-muted-foreground">Your edits will be lost.</p>
+                  <p className="text-body text-muted-foreground">Your edits will be lost.</p>
                 </div>
               </div>
               

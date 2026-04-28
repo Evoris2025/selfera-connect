@@ -159,7 +159,7 @@ export const GridLayoutPicker = memo(function GridLayoutPicker({
             
             {/* Header */}
             <div className="flex items-center justify-between px-5 pb-4">
-              <h3 className="text-lg font-semibold text-foreground">Grid Layout</h3>
+              <h3 className="text-title font-semibold text-foreground">Grid Layout</h3>
               <button
                 onClick={onClose}
                 className="p-2 rounded-full hover:bg-muted/50 transition-colors"
@@ -197,7 +197,7 @@ export const GridLayoutPicker = memo(function GridLayoutPicker({
                         {option.icon}
                         <span className="font-medium text-foreground">{option.name}</span>
                       </div>
-                      <p className="text-sm text-muted-foreground mt-0.5">
+                      <p className="text-body text-muted-foreground mt-0.5">
                         {option.description}
                       </p>
                     </div>

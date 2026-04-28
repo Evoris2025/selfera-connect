@@ -52,7 +52,7 @@ export function BrandScreenTitle({
         </span>
       </h1>
       {subtitle && (
-        <p className="text-white/55 text-[13px] mt-1 lowercase">{subtitle}</p>
+        <p className="text-white/55 text-label mt-1 lowercase">{subtitle}</p>
       )}
     </div>
   );

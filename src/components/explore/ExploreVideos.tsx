@@ -68,7 +68,7 @@ function VideoTile({ video, index }: { video: VideoItem; index: number }) {
           className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
         />
         <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
-        <div className="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 bg-black/80 text-[10px] text-white font-medium rounded">
+        <div className="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 bg-black/80 text-caption text-white font-medium rounded">
           {video.duration}
         </div>
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -84,24 +84,24 @@ function VideoTile({ video, index }: { video: VideoItem; index: number }) {
       {/* Below: title + creator row + stats */}
       <div className="flex flex-col gap-1.5 mt-2">
         {/* Row 1 — Title (locked to 2 lines reserved height) */}
-        <p className="text-white text-[13px] font-medium leading-snug line-clamp-2 min-h-[2.25rem]">
+        <p className="text-white text-label font-medium leading-snug line-clamp-2 min-h-[2.25rem]">
           {video.title}
         </p>
 
         {/* Row 2 — Creator row (avatar + name + tier badge) */}
         <div className="flex items-center gap-2 min-w-0">
-          <Avatar className="h-5 w-5 shrink-0">
+          <Avatar size="xs" className="shrink-0">
             <AvatarImage src={video.creator.avatar} alt={video.creator.name} />
-            <AvatarFallback className="bg-white/[0.06] text-[10px] text-white/70">
+            <AvatarFallback className="bg-white/[0.06] text-caption text-white/70">
               {video.creator.name.charAt(0)}
             </AvatarFallback>
           </Avatar>
-          <span className="text-[12px] text-white/70 truncate">{video.creator.name}</span>
+          <span className="text-label text-white/70 truncate">{video.creator.name}</span>
           <ExploreVerifiedTick tier={video.creator.tier} className="shrink-0" />
         </div>
 
         {/* Row 3 — Stats row */}
-        <p className="text-[11px] uppercase tracking-[0.08em] text-white/45">
+        <p className="text-caption uppercase tracking-[0.08em] text-white/45">
           {formatViews(video.views)} VIEWS · {video.ageLabel}
         </p>
       </div>

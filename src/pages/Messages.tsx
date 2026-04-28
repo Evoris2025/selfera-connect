@@ -1,4 +1,5 @@
 import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
+import { ICON_SIZE } from "@/lib/scale";
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import {
@@ -188,7 +189,7 @@ function MessageBubble({
               : undefined
           }
         >
-          <p className="text-[14px] leading-relaxed">{message.content}</p>
+          <p className="text-body leading-relaxed">{message.content}</p>
 
           <ReactionPicker
             isOpen={showPicker}
@@ -214,14 +215,14 @@ function MessageBubble({
               whileTap={{ scale: 0.85 }}
               onClick={() => onReact(reaction.emoji)}
               className={cn(
-                "flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs border",
+                "flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-label border",
                 "bg-white/[0.06] border-white/10"
               )}
               style={reaction.userReacted ? { borderColor: themePrimary } : undefined}
             >
               <span>{reaction.emoji}</span>
               {reaction.count > 1 && (
-                <span className="text-white/55 text-[10px]">{reaction.count}</span>
+                <span className="text-white/55 text-caption">{reaction.count}</span>
               )}
             </motion.button>
           ))}
@@ -234,7 +235,7 @@ function MessageBubble({
           animate={{ opacity: 1 }}
           className="mt-1 flex justify-end"
         >
-          <span className="text-white/45 text-[11px] uppercase tracking-[0.08em]">
+          <span className="text-white/45 text-caption uppercase tracking-[0.08em]">
             {isRead ? 'READ' : 'SENT'}
           </span>
         </motion.div>
@@ -561,8 +562,8 @@ export default function Messages() {
                 <Upload className="h-12 w-12" style={{ color: themePrimary }} />
               </motion.div>
               <div className="text-center">
-                <p className="text-lg font-semibold text-white">Drop images here</p>
-                <p className="text-sm text-white/55">Up to 10 images at once</p>
+                <p className="text-title font-semibold text-white">Drop images here</p>
+                <p className="text-body text-white/55">Up to 10 images at once</p>
               </div>
             </motion.div>
           )}
@@ -584,7 +585,7 @@ export default function Messages() {
           </motion.button>
           <div className="relative">
             <Avatar className="h-6 w-6">
-              <AvatarFallback className="bg-white/[0.08] text-white text-[11px] font-medium">
+              <AvatarFallback className="bg-white/[0.08] text-white text-caption font-medium">
                 {selectedConversation.participant.name.charAt(0)}
               </AvatarFallback>
             </Avatar>
@@ -594,7 +595,7 @@ export default function Messages() {
           </div>
           <div className="flex-1 min-w-0 text-center">
             <div className="flex items-center justify-center gap-1">
-              <p className="font-medium text-[14px] text-white truncate">
+              <p className="font-medium text-body text-white truncate">
                 {selectedConversation.participant.name}
               </p>
               {selectedConversation.participant.isVerified && (
@@ -602,15 +603,15 @@ export default function Messages() {
               )}
             </div>
             {(selectedConversation.participant.isOnline || onlineUsers.has(selectedConversation.participant.id)) && currentTypingUsers.length > 0 && (
-              <p className="text-[11px] uppercase tracking-[0.08em] text-white/45">typing…</p>
+              <p className="text-caption uppercase tracking-[0.08em] text-white/45">typing…</p>
             )}
           </div>
           <div className="flex items-center gap-1">
             <motion.button whileTap={{ scale: 0.85 }} transition={springSnap} className="h-9 w-9 rounded-full flex items-center justify-center">
-              <BrandIcon icon={Phone} size={18} />
+              <BrandIcon icon={Phone} size={ICON_SIZE.md} />
             </motion.button>
             <motion.button whileTap={{ scale: 0.85 }} transition={springSnap} className="h-9 w-9 rounded-full flex items-center justify-center">
-              <BrandIcon icon={Video} size={18} />
+              <BrandIcon icon={Video} size={ICON_SIZE.md} />
             </motion.button>
           </div>
         </motion.div>
@@ -661,7 +662,7 @@ export default function Messages() {
               <div className="rounded-2xl border border-white/[0.12]">
                 <TypingIndicator color={themePrimary} />
               </div>
-              <span className="text-[11px] uppercase tracking-[0.08em] text-white/45">
+              <span className="text-caption uppercase tracking-[0.08em] text-white/45">
                 typing…
               </span>
             </motion.div>
@@ -714,7 +715,7 @@ export default function Messages() {
               onChange={handleInputChange}
               onPaste={handlePaste}
               placeholder="message"
-              className="flex-1 border-0 bg-transparent focus-visible:ring-0 px-1 h-9 text-[14px] text-white placeholder:text-white/45"
+              className="flex-1 border-0 bg-transparent focus-visible:ring-0 px-1 h-9 text-body text-white placeholder:text-white/45"
               onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
             />
             <motion.button
@@ -753,7 +754,7 @@ export default function Messages() {
             whileTap={{ scale: 0.95 }}
             transition={springSnap}
           >
-            <span className="font-bold text-xl text-white tracking-tight">username</span>
+            <span className="font-bold text-headline text-white tracking-tight">username</span>
             <motion.div animate={{ rotate: 0 }} whileHover={{ rotate: 180 }} transition={springPop}>
               <ChevronDown className="h-4 w-4 text-white/55" />
             </motion.div>
@@ -767,7 +768,7 @@ export default function Messages() {
                   exit={{ opacity: 0, x: 20, scale: 0.8 }}
                   transition={springPop}
                   whileTap={{ scale: 0.9 }}
-                  className="text-[11px] uppercase tracking-[0.1em] font-medium"
+                  className="text-caption uppercase tracking-[0.1em] font-medium"
                   style={{ color: themePrimary }}
                 >
                   REQUESTS ({requestCount})
@@ -793,12 +794,12 @@ export default function Messages() {
           className="sticky top-0 z-10 px-5 pb-3 bg-background"
         >
           <BrandSurface className="relative flex items-center h-11 px-4 rounded-full">
-            <BrandIcon icon={Search} size={18} />
+            <BrandIcon icon={Search} size={ICON_SIZE.md} />
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="search messages"
-              className="flex-1 ml-2 border-0 bg-transparent focus-visible:ring-0 h-9 text-[14px] text-white placeholder:text-white/45"
+              className="flex-1 ml-2 border-0 bg-transparent focus-visible:ring-0 h-9 text-body text-white placeholder:text-white/45"
             />
           </BrandSurface>
         </motion.div>
@@ -837,7 +838,7 @@ export default function Messages() {
                     ) : (
                       <>
                         <Avatar className="h-16 w-16 border border-white/[0.12]">
-                          <AvatarFallback className="bg-white/[0.06] text-white text-base font-medium">
+                          <AvatarFallback className="bg-white/[0.06] text-white text-title font-medium">
                             {user.name.charAt(0)}
                           </AvatarFallback>
                         </Avatar>
@@ -845,7 +846,7 @@ export default function Messages() {
                       </>
                     )}
                   </div>
-                  <span className="text-[11px] text-white/55 truncate max-w-[64px]">
+                  <span className="text-caption text-white/55 truncate max-w-[64px]">
                     {user.id === 'note' ? 'your note' : user.id === 'new' ? 'new' : user.name}
                   </span>
                 </motion.button>
@@ -867,7 +868,7 @@ export default function Messages() {
           ) : filteredConversations.length === 0 ? (
             <div className="px-5 py-16 flex flex-col items-center text-center">
               <BrandIcon icon={MessageCircle} size={28} />
-              <p className="text-white/55 text-[14px] mt-4">start a conversation.</p>
+              <p className="text-white/55 text-body mt-4">start a conversation.</p>
             </div>
           ) : (
             <AnimatePresence mode="popLayout">
@@ -895,7 +896,7 @@ export default function Messages() {
                           : undefined
                       }
                     >
-                      <AvatarFallback className="bg-white/[0.06] text-white text-sm font-medium">
+                      <AvatarFallback className="bg-white/[0.06] text-white text-body font-medium">
                         {conversation.participant.name.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
@@ -903,14 +904,14 @@ export default function Messages() {
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1 text-[14px] font-medium text-white truncate">
+                    <div className="flex items-center gap-1 text-body font-medium text-white truncate">
                       <span className="truncate">{conversation.participant.name}</span>
                       {conversation.participant.isVerified && (
                         <EraVerifiedTick size="sm" userEmail={conversation.participant.email} />
                       )}
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <p className="text-[13px] text-white/55 truncate mt-0.5 flex-1">
+                      <p className="text-label text-white/55 truncate mt-0.5 flex-1">
                         {conversation.isTyping ? <TypingIndicator color={themePrimary} /> : getLastMessagePreview(conversation)}
                       </p>
                       {!conversation.unread && (
@@ -920,7 +921,7 @@ export default function Messages() {
                   </div>
 
                   <div className="flex flex-col items-end gap-1 shrink-0">
-                    <span className="text-white/45 text-[11px] uppercase tracking-[0.08em]">
+                    <span className="text-white/45 text-caption uppercase tracking-[0.08em]">
                       {conversation.lastMessageTime}
                     </span>
                     <AnimatePresence>
@@ -930,7 +931,7 @@ export default function Messages() {
                           animate={{ scale: 1, opacity: 1 }}
                           exit={{ scale: 0, opacity: 0 }}
                           transition={springPop}
-                          className="text-[10px] px-1.5 py-0.5 rounded-full border bg-transparent"
+                          className="text-caption px-1.5 py-0.5 rounded-full border bg-transparent"
                           style={{ borderColor: themePrimary, color: themePrimary }}
                         >
                           NEW

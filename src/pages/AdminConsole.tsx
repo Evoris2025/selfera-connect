@@ -47,7 +47,7 @@ export default function AdminConsole() {
             <Shield className="h-6 w-6 text-primary" />
             <div>
               <h1 className="text-2xl font-bold">Internal Admin</h1>
-              <p className="text-xs text-muted-foreground">Simulation Mode — No Enforcement Actions</p>
+              <p className="text-label text-muted-foreground">Simulation Mode — No Enforcement Actions</p>
             </div>
           </div>
         </div>

@@ -40,11 +40,11 @@ export function WithPeoplePicker({ value, onChange }: WithPeoplePickerProps) {
               key={p.id}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-blue-500/10 text-xs"
+              className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-blue-500/10 text-label"
             >
               <Avatar className="h-4 w-4">
                 <AvatarImage src={p.avatar} alt={p.name} />
-                <AvatarFallback className="text-[10px]">{p.name.charAt(0)}</AvatarFallback>
+                <AvatarFallback className="text-caption">{p.name.charAt(0)}</AvatarFallback>
               </Avatar>
               <span className="font-medium">{p.name}</span>
               <button onClick={() => remove(p.id)} className="p-0.5 rounded-full hover:bg-blue-500/20">

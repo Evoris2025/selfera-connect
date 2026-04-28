@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { ICON_SIZE } from "@/lib/scale";
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
@@ -376,12 +377,12 @@ export default function MyERA() {
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h2 className="text-lg font-semibold text-white truncate">
+                    <h2 className="text-title font-semibold text-white truncate">
                       {profile?.display_name || 'User'}
                     </h2>
                     {profile?.is_verified && <EraVerifiedTick size="sm" userEmail={profile?.email || undefined} />}
                   </div>
-                  <p className="text-sm text-white/55">
+                  <p className="text-body text-white/55">
                     @{profile?.handle || 'user'}
                   </p>
                   <div className="mt-1.5">
@@ -393,7 +394,7 @@ export default function MyERA() {
                 <button
                   type="button"
                   onClick={() => navigate('/profile')}
-                  className="shrink-0 h-9 px-3.5 rounded-full border bg-transparent text-[12px] uppercase tracking-[0.1em]"
+                  className="shrink-0 h-9 px-3.5 rounded-full border bg-transparent text-label uppercase tracking-[0.1em]"
                   style={{ borderColor: themePrimary, color: themePrimary }}
                 >
                   View Profile
@@ -408,11 +409,11 @@ export default function MyERA() {
                   onClick={() => navigate('/community')}
                 >
                   <div className="h-7 flex items-center justify-center mb-1.5">
-                    <p className="text-xl font-bold text-white leading-none">
+                    <p className="text-headline font-bold text-white leading-none">
                       {communitiesLoading ? '—' : communitiesCount}
                     </p>
                   </div>
-                  <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-white/55">Waitlist</p>
+                  <p className="text-caption font-medium uppercase tracking-[0.12em] text-white/55">Waitlist</p>
                 </button>
                 <button
                   type="button"
@@ -420,11 +421,11 @@ export default function MyERA() {
                   onClick={() => navigate('/directory')}
                 >
                   <div className="h-7 flex items-center justify-center mb-1.5">
-                    <p className="text-xl font-bold text-white leading-none">
+                    <p className="text-headline font-bold text-white leading-none">
                       {connectionsCount}
                     </p>
                   </div>
-                  <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-white/55">My List</p>
+                  <p className="text-caption font-medium uppercase tracking-[0.12em] text-white/55">My List</p>
                 </button>
                 <button
                   type="button"
@@ -432,11 +433,11 @@ export default function MyERA() {
                   onClick={() => navigate('/notifications')}
                 >
                   <div className="h-7 flex items-center justify-center mb-1.5">
-                    <p className="text-xl font-bold text-white leading-none">
+                    <p className="text-headline font-bold text-white leading-none">
                       {pendingConnectionCount || 0}
                     </p>
                   </div>
-                  <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-white/55">Pending</p>
+                  <p className="text-caption font-medium uppercase tracking-[0.12em] text-white/55">Pending</p>
                   {pendingConnectionCount > 0 && (
                     <span
                       className="absolute top-1 right-1/4 w-2 h-2 rounded-full"
@@ -452,7 +453,7 @@ export default function MyERA() {
                   <div className="h-7 flex items-center justify-center mb-1.5">
                     <BrandIcon icon={Bell} size={20} />
                   </div>
-                  <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-white/55">Alerts</p>
+                  <p className="text-caption font-medium uppercase tracking-[0.12em] text-white/55">Alerts</p>
                 </button>
               </div>
             </BrandSurface>
@@ -507,10 +508,10 @@ export default function MyERA() {
                       <BrandIcon icon={Shield} size={16} />
                     </div>
                     <div>
-                      <h3 className="text-[15px] font-medium text-white leading-tight">
+                      <h3 className="text-body font-medium text-white leading-tight">
                         Become ERA Verified
                       </h3>
-                      <p className="text-[13px] text-white/55 mt-1 leading-relaxed">
+                      <p className="text-label text-white/55 mt-1 leading-relaxed">
                         Build trust and connect with the right community.
                       </p>
                     </div>
@@ -533,7 +534,7 @@ export default function MyERA() {
                     <button
                       type="button"
                       onClick={() => setShowVerificationFlow(true)}
-                      className="w-full h-9 rounded-full border bg-transparent text-[12px] uppercase tracking-[0.1em] inline-flex items-center justify-center gap-1.5"
+                      className="w-full h-9 rounded-full border bg-transparent text-label uppercase tracking-[0.1em] inline-flex items-center justify-center gap-1.5"
                       style={{ borderColor: themePrimary, color: themePrimary }}
                     >
                       Start Verification
@@ -565,17 +566,17 @@ export default function MyERA() {
                       animate={{ scale: [1, 1.05, 1] }}
                       transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                     >
-                      <BrandIcon icon={Clock} size={18} />
+                      <BrandIcon icon={Clock} size={ICON_SIZE.md} />
                     </motion.div>
                     <div>
-                      <h3 className="text-[15px] font-medium text-white">In Progress</h3>
-                      <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-white/55 mt-0.5">
+                      <h3 className="text-body font-medium text-white">In Progress</h3>
+                      <p className="text-caption font-medium uppercase tracking-[0.12em] text-white/55 mt-0.5">
                         Pending review
                       </p>
                     </div>
                   </div>
 
-                  <p className="text-[13px] text-white/85 leading-relaxed mb-3">
+                  <p className="text-label text-white/85 leading-relaxed mb-3">
                     {myRequest?.account_type_requested} verification under review.
                   </p>
 
@@ -620,7 +621,7 @@ export default function MyERA() {
                     })}
                   </div>
 
-                  <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-white/45 mt-auto">
+                  <p className="text-caption font-medium uppercase tracking-[0.12em] text-white/45 mt-auto">
                     Submitted {myRequest?.created_at ? format(new Date(myRequest.created_at), 'MMM d') : '—'}
                   </p>
                 </BrandSurface>
@@ -640,17 +641,17 @@ export default function MyERA() {
                   <span aria-hidden className="absolute left-0 top-0 bottom-0 w-[2px] bg-white/40" />
                   <div className="flex items-center gap-3 mb-2">
                     <div className="w-10 h-10 rounded-full border border-white/[0.12] flex items-center justify-center">
-                      <BrandIcon icon={AlertCircle} size={18} />
+                      <BrandIcon icon={AlertCircle} size={ICON_SIZE.md} />
                     </div>
-                    <h3 className="text-[15px] font-medium text-white">Not Approved</h3>
+                    <h3 className="text-body font-medium text-white">Not Approved</h3>
                   </div>
-                  <p className="text-[13px] text-white/85 leading-relaxed mb-3 flex-1">
+                  <p className="text-label text-white/85 leading-relaxed mb-3 flex-1">
                     {myRequest?.admin_notes || 'Your request was not approved.'}
                   </p>
                   <button
                     type="button"
                     onClick={() => navigate('/settings?view=verification')}
-                    className="w-full h-9 rounded-full border bg-transparent text-[12px] uppercase tracking-[0.1em]"
+                    className="w-full h-9 rounded-full border bg-transparent text-label uppercase tracking-[0.1em]"
                     style={{ borderColor: themePrimary, color: themePrimary }}
                   >
                     Try Again
@@ -681,16 +682,16 @@ export default function MyERA() {
                       animate={{ scale: 1 }}
                       transition={{ type: 'spring', stiffness: 400, damping: 15 }}
                     >
-                      <BrandIcon icon={UserCheck} size={18} />
+                      <BrandIcon icon={UserCheck} size={ICON_SIZE.md} />
                     </motion.div>
                     <div>
-                      <h3 className="text-[15px] font-medium text-white">ERA Verified</h3>
-                      <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-white/55 mt-0.5">
+                      <h3 className="text-body font-medium text-white">ERA Verified</h3>
+                      <p className="text-caption font-medium uppercase tracking-[0.12em] text-white/55 mt-0.5">
                         Active
                       </p>
                     </div>
                   </div>
-                  <ul className="text-[13px] text-white/85 space-y-1.5 mt-2 leading-relaxed">
+                  <ul className="text-label text-white/85 space-y-1.5 mt-2 leading-relaxed">
                     <li className="flex items-start gap-1.5">
                       <BrandIcon icon={Check} size={12} className="mt-0.5" />
                       <span>Verified badge on profile &amp; posts</span>
@@ -722,17 +723,17 @@ export default function MyERA() {
               >
                 <div className="flex items-center justify-between mb-2">
                   <div>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-body text-muted-foreground">
                       What best describes you?
                     </p>
-                    <p className="text-xs text-muted-foreground/70">
+                    <p className="text-label text-muted-foreground/70">
                       Select all that apply
                     </p>
                   </div>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-xs h-7"
+                    className="text-label h-7"
                     onClick={() => {
                       setShowIntentSelection(false);
                       setSelectedIntents([]);
@@ -758,14 +759,14 @@ export default function MyERA() {
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
-                          <h3 className="text-white text-[15px] font-medium">
+                          <h3 className="text-white text-body font-medium">
                             {intent.title}
                           </h3>
-                          <span className="text-[10px] uppercase tracking-[0.1em] text-white/45">
+                          <span className="text-caption uppercase tracking-[0.1em] text-white/45">
                             {intent.depth}
                           </span>
                         </div>
-                        <p className="text-white/55 text-[13px] leading-relaxed">
+                        <p className="text-white/55 text-label leading-relaxed">
                           {intent.description}
                         </p>
                       </div>
@@ -816,7 +817,7 @@ export default function MyERA() {
             <button
               type="button"
               onClick={() => setShowDirectoryPicker(true)}
-              className="h-8 px-3 rounded-full border bg-transparent text-[11px] uppercase tracking-[0.1em] inline-flex items-center gap-1"
+              className="h-8 px-3 rounded-full border bg-transparent text-caption uppercase tracking-[0.1em] inline-flex items-center gap-1"
               style={{ borderColor: themePrimary, color: themePrimary }}
             >
               <Plus className="w-3.5 h-3.5" />
@@ -865,7 +866,7 @@ export default function MyERA() {
                     animate={{ opacity: 1 }}
                   >
                     <AlertCircle className="w-8 h-8 mx-auto mb-3 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground mb-3">Couldn't load support connections</p>
+                    <p className="text-body text-muted-foreground mb-3">Couldn't load support connections</p>
                     <Button
                       variant="outline"
                       size="sm"
@@ -884,16 +885,16 @@ export default function MyERA() {
                       <div className="mb-4">
                         <BrandIcon icon={Heart} size={28} />
                       </div>
-                      <h3 className="text-white/85 text-[15px] lowercase mb-2">
+                      <h3 className="text-white/85 text-body lowercase mb-2">
                         your support connections
                       </h3>
-                      <p className="text-white/55 text-[13px] leading-relaxed max-w-[260px] mx-auto mb-5">
+                      <p className="text-white/55 text-label leading-relaxed max-w-[260px] mx-auto mb-5">
                         find support when you're ready. connect with verified professionals on selfera.
                       </p>
                       <button
                         type="button"
                         onClick={() => navigate('/directory')}
-                        className="inline-flex items-center gap-2 bg-transparent border h-9 px-4 rounded-full text-[12px] uppercase tracking-[0.1em]"
+                        className="inline-flex items-center gap-2 bg-transparent border h-9 px-4 rounded-full text-label uppercase tracking-[0.1em]"
                         style={{ borderColor: themePrimary, color: themePrimary }}
                       >
                         <Compass className="w-3.5 h-3.5" />
@@ -932,12 +933,12 @@ export default function MyERA() {
                         
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-1.5">
-                            <span className="text-sm font-medium text-foreground truncate">
+                            <span className="text-body font-medium text-foreground truncate">
                             {link.provider?.display_name || 'Provider'}
                             </span>
                             {link.provider?.is_verified && <EraVerifiedTick size="sm" userEmail={link.provider?.email || undefined} />}
                           </div>
-                          <p className="text-xs text-muted-foreground truncate">
+                          <p className="text-label text-muted-foreground truncate">
                             {link.organization_name || link.provider_role}
                           </p>
                         </div>
@@ -979,10 +980,10 @@ export default function MyERA() {
                     <div className="mb-4">
                       <BrandIcon icon={Heart} size={28} />
                     </div>
-                    <h3 className="text-white/85 text-[15px] lowercase mb-2">
+                    <h3 className="text-white/85 text-body lowercase mb-2">
                       your saved connections
                     </h3>
-                    <p className="text-white/55 text-[13px] leading-relaxed max-w-[220px] mx-auto">
+                    <p className="text-white/55 text-label leading-relaxed max-w-[220px] mx-auto">
                       people and providers you've added to your personal list will appear here.
                     </p>
                   </div>
@@ -1031,7 +1032,7 @@ export default function MyERA() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
         >
-          <p className="text-[11px] text-muted-foreground/50 leading-relaxed max-w-sm mx-auto tracking-wide">
+          <p className="text-caption text-muted-foreground/50 leading-relaxed max-w-sm mx-auto tracking-wide">
             By using SelfERA, you agree to our community guidelines.
           </p>
         </motion.footer>

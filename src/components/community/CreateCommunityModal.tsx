@@ -146,7 +146,7 @@ export function CreateCommunityModal({ open, onOpenChange, onSuccess }: CreateCo
                 required
               />
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-label text-muted-foreground">
               Letters, numbers, and underscores only
             </p>
           </div>
@@ -162,7 +162,7 @@ export function CreateCommunityModal({ open, onOpenChange, onSuccess }: CreateCo
               maxLength={300}
               rows={3}
             />
-            <p className="text-xs text-muted-foreground text-right">
+            <p className="text-label text-muted-foreground text-right">
               {description.length}/300
             </p>
           </div>
@@ -176,10 +176,10 @@ export function CreateCommunityModal({ open, onOpenChange, onSuccess }: CreateCo
                 <Globe className="h-5 w-5 text-green-500" />
               )}
               <div>
-                <p className="font-medium text-sm">
+                <p className="font-medium text-body">
                   {isPrivate ? 'Private Community' : 'Public Community'}
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-label text-muted-foreground">
                   {isPrivate 
                     ? 'Only members can see posts' 
                     : 'Anyone can see and join'}

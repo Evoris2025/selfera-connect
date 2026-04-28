@@ -85,7 +85,7 @@ export function ScheduleSelector({ value, onChange }: ScheduleSelectorProps) {
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/20 text-sm"
+        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/20 text-body"
       >
         <Calendar className="h-3.5 w-3.5 text-accent" />
         <span className="font-medium">
@@ -115,8 +115,8 @@ export function ScheduleSelector({ value, onChange }: ScheduleSelectorProps) {
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
         <div className="p-3 border-b border-border">
-          <p className="font-medium text-sm">Schedule post</p>
-          <p className="text-xs text-muted-foreground">
+          <p className="font-medium text-body">Schedule post</p>
+          <p className="text-label text-muted-foreground">
             Choose when to publish
           </p>
         </div>
@@ -136,7 +136,7 @@ export function ScheduleSelector({ value, onChange }: ScheduleSelectorProps) {
                   onChange(date);
                   setOpen(false);
                 }}
-                className="text-xs justify-start"
+                className="text-label justify-start"
               >
                 {option.label}
               </Button>

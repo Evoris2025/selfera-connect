@@ -37,7 +37,7 @@ export function StepPills({
               onClick={() => isClickable && onStepClick?.(step.id)}
               disabled={!isClickable}
               className={cn(
-                "relative flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all",
+                "relative flex items-center gap-2 px-4 py-2 rounded-full text-body font-medium transition-all",
                 isActive 
                   ? "bg-primary text-primary-foreground shadow-md" 
                   : isCompleted 
@@ -50,7 +50,7 @@ export function StepPills({
             >
               {/* Step number or check */}
               <span className={cn(
-                "flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold",
+                "flex items-center justify-center w-5 h-5 rounded-full text-label font-bold",
                 isActive 
                   ? "bg-primary-foreground/20" 
                   : isCompleted 

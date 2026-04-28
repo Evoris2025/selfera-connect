@@ -120,7 +120,7 @@ export function GifPicker({ onSelect }: GifPickerProps) {
                 key={category}
                 onClick={() => handleCategoryClick(category)}
                 className={cn(
-                  'px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-colors',
+                  'px-3 py-1 rounded-full text-label font-medium whitespace-nowrap transition-colors',
                   activeCategory === category
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
@@ -139,7 +139,7 @@ export function GifPicker({ onSelect }: GifPickerProps) {
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             </div>
           ) : gifs.length === 0 ? (
-            <div className="py-8 text-center text-sm text-muted-foreground">
+            <div className="py-8 text-center text-body text-muted-foreground">
               No GIFs found
             </div>
           ) : (
@@ -166,7 +166,7 @@ export function GifPicker({ onSelect }: GifPickerProps) {
 
         {/* Attribution */}
         <div className="p-2 border-t border-border">
-          <p className="text-xs text-muted-foreground text-center">
+          <p className="text-label text-muted-foreground text-center">
             Powered by GIPHY
           </p>
         </div>

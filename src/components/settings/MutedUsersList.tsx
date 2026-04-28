@@ -79,7 +79,7 @@ export function MutedUsersList({ onBack }: MutedUsersListProps) {
               <VolumeX className="h-5 w-5 text-amber-500" />
             </div>
             <div>
-              <CardTitle className="text-base">Muted Accounts</CardTitle>
+              <CardTitle className="text-title">Muted Accounts</CardTitle>
               <CardDescription>
                 Muted accounts won't appear in your feed, but can still interact with you
               </CardDescription>
@@ -119,8 +119,8 @@ export function MutedUsersList({ onBack }: MutedUsersListProps) {
                       <AvatarFallback>{user.displayName[0]}</AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-medium text-sm">{user.displayName}</p>
-                      <p className="text-xs text-muted-foreground">@{user.handle}</p>
+                      <p className="font-medium text-body">{user.displayName}</p>
+                      <p className="text-label text-muted-foreground">@{user.handle}</p>
                     </div>
                   </Link>
                   <Button

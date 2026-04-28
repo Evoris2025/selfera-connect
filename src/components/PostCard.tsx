@@ -186,7 +186,7 @@ function PostCardBase(props: PostCardProps) {
   const bylineExtras = (
     <>
       {taggedPeople && taggedPeople.length > 0 && (
-        <p className="text-xs text-muted-foreground mt-0.5">
+        <p className="text-label text-muted-foreground mt-0.5">
           — with{' '}
           <span className="text-foreground/80 font-medium">
             {taggedPeople.slice(0, 2).map(p => p.name).join(', ')}
@@ -195,7 +195,7 @@ function PostCardBase(props: PostCardProps) {
         </p>
       )}
       {checkIn && (
-        <div className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full bg-white/[0.06] text-xs">
+        <div className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full bg-white/[0.06] text-label">
           <MapPin className="h-3 w-3 text-primary" />
           <span className="font-medium">at {checkIn.name}</span>
           {checkIn.category && <span className="text-muted-foreground">· {checkIn.category}</span>}
@@ -206,23 +206,23 @@ function PostCardBase(props: PostCardProps) {
 
   const lifeEventCard = lifeEvent ? (
     <div className="flex items-center gap-2 px-3 py-2 mb-3 rounded-lg border border-border bg-secondary/40">
-      <span className="text-xl">{lifeEvent.icon || '🏁'}</span>
+      <span className="text-headline">{lifeEvent.icon || '🏁'}</span>
       <div>
-        <p className="text-xs text-muted-foreground">Life event</p>
-        <p className="text-sm font-medium">{lifeEvent.label}</p>
+        <p className="text-label text-muted-foreground">Life event</p>
+        <p className="text-body font-medium">{lifeEvent.label}</p>
       </div>
     </div>
   ) : null;
 
   const fundraiserCard = fundraiser ? (
     <div className="px-4 py-3 mb-3 rounded-xl border border-warning/40 bg-warning/10">
-      <p className="text-xs uppercase tracking-wide text-warning font-semibold mb-1">Fundraiser</p>
-      <p className="text-sm font-semibold mb-1">{fundraiser.title}</p>
-      <p className="text-xs text-muted-foreground">
+      <p className="text-label uppercase tracking-wide text-warning font-semibold mb-1">Fundraiser</p>
+      <p className="text-body font-semibold mb-1">{fundraiser.title}</p>
+      <p className="text-label text-muted-foreground">
         Goal: {fundraiser.currency} {fundraiser.goal.toLocaleString()}
       </p>
       {/* TODO: wire "Donate" button to payments later. */}
-      <Button size="sm" variant="outline" className="mt-2 h-7 text-xs" disabled>
+      <Button size="sm" variant="outline" className="mt-2 h-7 text-label" disabled>
         Donate
       </Button>
     </div>
@@ -274,12 +274,12 @@ function PostCardBase(props: PostCardProps) {
               {opt.image && (
                 <img src={opt.image} alt="" className="h-8 w-8 rounded object-cover" />
               )}
-              <span className="text-sm flex-1">{opt.text || `Option ${i + 1}`}</span>
+              <span className="text-body flex-1">{opt.text || `Option ${i + 1}`}</span>
             </button>
           );
         })}
       </div>
-      <p className="text-xs text-muted-foreground">
+      <p className="text-label text-muted-foreground">
         {pollClosed ? 'Poll closed' : formatPollClosing(poll.closesAt)}
         {poll.multiSelect && !pollClosed && ' · Multiple answers allowed'}
       </p>
@@ -291,10 +291,10 @@ function PostCardBase(props: PostCardProps) {
       {thread.map((item, i) => (
         <div key={item.id} className="rounded-xl border border-border bg-secondary/30 p-3">
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="h-5 w-5 rounded-full bg-white/[0.06] flex items-center justify-center text-[10px] font-medium text-white/80">{i + 1}</span>
-            <span className="text-xs text-muted-foreground">in thread</span>
+            <span className="h-5 w-5 rounded-full bg-white/[0.06] flex items-center justify-center text-caption font-medium text-white/80">{i + 1}</span>
+            <span className="text-label text-muted-foreground">in thread</span>
           </div>
-          <p className="text-[15px] text-foreground leading-relaxed">{renderContent(item.content)}</p>
+          <p className="text-body text-foreground leading-relaxed">{renderContent(item.content)}</p>
           {item.mediaUrl && (
             <div className="mt-2 rounded-lg overflow-hidden bg-muted">
               {item.mediaType === 'video' ? (
@@ -338,7 +338,7 @@ function PostCardBase(props: PostCardProps) {
         <CommentButton count={commentCount} onClick={() => setShowCommentSheet(true)} />
       )}
       {!canComment && commentPermission === 'followers' && (
-        <span className="text-xs text-muted-foreground" title="Only followers can comment">
+        <span className="text-label text-muted-foreground" title="Only followers can comment">
           Comments limited
         </span>
       )}
@@ -385,13 +385,13 @@ function PostCardBase(props: PostCardProps) {
           <div className="flex-1 min-w-0">
             <button onClick={handleCreatorClick} className="text-left hover:underline">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="font-semibold text-foreground text-[15px]">{author.name}</span>
+                <span className="font-semibold text-foreground text-body">{author.name}</span>
                 {author.isVerified && (
                   <EraVerifiedTooltip tier={calculateVerificationTier(0, false, author.email)} userEmail={author.email} size="sm" />
                 )}
                 {author.accountType && <AccountTypeBadge type={author.accountType} size="sm" />}
               </div>
-              <p className="text-muted-foreground text-sm">@{author.handle} · {createdAt}</p>
+              <p className="text-muted-foreground text-body">@{author.handle} · {createdAt}</p>
             </button>
             {bylineExtras}
           </div>
@@ -434,7 +434,7 @@ function PostCardBase(props: PostCardProps) {
           <>
             {content && (
               <button onClick={handlePostContentClick} className="text-left w-full">
-                <p className="text-[15px] text-foreground leading-relaxed mb-3">{renderContent(content)}</p>
+                <p className="text-body text-foreground leading-relaxed mb-3">{renderContent(content)}</p>
               </button>
             )}
             {pollBlock}
@@ -443,7 +443,7 @@ function PostCardBase(props: PostCardProps) {
           <>
             {content && (
               <button onClick={handlePostContentClick} className="text-left w-full">
-                <p className="text-[15px] text-foreground leading-relaxed mb-3">{renderContent(content)}</p>
+                <p className="text-body text-foreground leading-relaxed mb-3">{renderContent(content)}</p>
               </button>
             )}
             {linkPreviewBlock}
@@ -452,7 +452,7 @@ function PostCardBase(props: PostCardProps) {
           backgroundBlock
         ) : (
           <button onClick={handlePostContentClick} className="text-left w-full">
-            <p className="text-[15px] text-foreground leading-relaxed mb-3">{renderContent(content)}</p>
+            <p className="text-body text-foreground leading-relaxed mb-3">{renderContent(content)}</p>
           </button>
         )}
 
@@ -501,8 +501,8 @@ function PostCardBase(props: PostCardProps) {
             <div className="w-14 h-14 rounded-full bg-warning/20 flex items-center justify-center mx-auto mb-4">
               <span className="text-2xl">⚠️</span>
             </div>
-            <span className="text-base text-warning font-medium block mb-2">{contentWarningType || 'Sensitive Content'}</span>
-            <p className="text-muted-foreground text-sm">Tap to view</p>
+            <span className="text-title text-warning font-medium block mb-2">{contentWarningType || 'Sensitive Content'}</span>
+            <p className="text-muted-foreground text-body">Tap to view</p>
           </div>
         </div>
       ) : (
@@ -536,12 +536,12 @@ function PostCardBase(props: PostCardProps) {
                 ring="gradient"
               />
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="font-semibold text-foreground text-[15px] drop-shadow-md">{author.name}</span>
+                <span className="font-semibold text-foreground text-body drop-shadow-md">{author.name}</span>
                 {author.isVerified && (
                   <EraVerifiedTooltip tier={calculateVerificationTier(0, false, author.email)} userEmail={author.email} size="sm" />
                 )}
                 {author.accountType && <AccountTypeBadge type={author.accountType} size="sm" />}
-                <span className="text-foreground/70 text-sm drop-shadow-sm">@{author.handle}</span>
+                <span className="text-foreground/70 text-body drop-shadow-sm">@{author.handle}</span>
               </div>
             </motion.button>
 
@@ -584,7 +584,7 @@ function PostCardBase(props: PostCardProps) {
               )}
               {fundraiserCard}
 
-              <p className="text-[15px] text-foreground leading-relaxed mb-2 drop-shadow-md">
+              <p className="text-body text-foreground leading-relaxed mb-2 drop-shadow-md">
                 <span className="font-semibold mr-1.5">{author.handle}</span>
                 {renderContent(content)}
               </p>
@@ -592,7 +592,7 @@ function PostCardBase(props: PostCardProps) {
               {tags.length > 0 && !content.includes('#') && (
                 <div className="flex flex-wrap gap-1.5 mb-4">
                   {tags.map((tag) => (
-                    <span key={tag} className="text-sm text-foreground/80 font-medium">#{tag}</span>
+                    <span key={tag} className="text-body text-foreground/80 font-medium">#{tag}</span>
                   ))}
                 </div>
               )}
@@ -628,7 +628,7 @@ function PostCardBase(props: PostCardProps) {
               {commentCount > 0 && canComment && (
                 <button
                   onClick={() => setShowCommentSheet(true)}
-                  className="text-sm text-muted-foreground mt-2 hover:text-foreground transition-colors"
+                  className="text-body text-muted-foreground mt-2 hover:text-foreground transition-colors"
                 >
                   View all {formatCount(commentCount)} comments
                 </button>

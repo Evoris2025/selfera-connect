@@ -74,16 +74,16 @@ function ExpressionTile({ expression, index }: { expression: ExpressionItem; ind
       <div className="absolute bottom-2 left-2 right-12 flex items-center gap-1.5 min-w-0">
         <Avatar className="h-6 w-6 ring-1 ring-white/30 flex-shrink-0">
           <AvatarImage src={expression.user.avatar} alt={expression.user.name} />
-          <AvatarFallback className="text-[9px] bg-white/[0.08] text-white/70">
+          <AvatarFallback className="text-caption bg-white/[0.08] text-white/70">
             {expression.user.name.charAt(0)}
           </AvatarFallback>
         </Avatar>
-        <span className="text-white text-[11px] font-medium truncate">@{expression.user.handle}</span>
+        <span className="text-white text-caption font-medium truncate">@{expression.user.handle}</span>
         <ExploreVerifiedTick tier={expression.user.tier} size="sm" />
       </div>
 
       {/* Bottom-right: view count pill */}
-      <div className="absolute bottom-2 right-2 flex items-center gap-1 text-white text-[12px] font-medium px-1.5 py-0.5 rounded-full bg-black/40 backdrop-blur-sm">
+      <div className="absolute bottom-2 right-2 flex items-center gap-1 text-white text-label font-medium px-1.5 py-0.5 rounded-full bg-black/40 backdrop-blur-sm">
         <Eye className="w-3.5 h-3.5" strokeWidth={1.5} />
         <span className="tabular-nums">{formatCount(expression.views)}</span>
       </div>

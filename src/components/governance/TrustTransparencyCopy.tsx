@@ -38,7 +38,7 @@ export function TrustTransparencyCopy({ variant, className }: TransparencyCopyPr
   return (
     <div
       className={cn(
-        'flex items-center gap-2 text-xs',
+        'flex items-center gap-2 text-label',
         tone === 'subtle' && 'text-muted-foreground/70',
         tone === 'warm' && 'text-muted-foreground',
         className
@@ -55,7 +55,7 @@ export function TrustTransparencyCopy({ variant, className }: TransparencyCopyPr
  */
 export function TrustNote({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <p className={cn('text-xs text-muted-foreground/60 italic', className)}>
+    <p className={cn('text-label text-muted-foreground/60 italic', className)}>
       {children}
     </p>
   );

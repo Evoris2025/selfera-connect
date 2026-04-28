@@ -52,7 +52,7 @@ export function EnhancedFilterLibrary({
             key={cat}
             onClick={() => setCategory(cat)}
             className={cn(
-              'px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap',
+              'px-3 py-1.5 rounded-full text-label font-medium transition-colors whitespace-nowrap',
               category === cat
                 ? 'bg-primary text-primary-foreground'
                 : 'bg-secondary/50 text-muted-foreground hover:bg-secondary hover:text-foreground'
@@ -135,7 +135,7 @@ export function EnhancedFilterLibrary({
             </div>
             
             <span className={cn(
-              'text-xs transition-colors',
+              'text-label transition-colors',
               isMagikSuccess ? 'text-emerald-400 font-medium' : 'text-violet-400 font-medium'
             )}>
               {isMagikLoading ? 'Analyzing' : isMagikSuccess ? 'Applied!' : 'Magik'}
@@ -188,7 +188,7 @@ export function EnhancedFilterLibrary({
               </div>
               
               <span className={cn(
-                'text-xs transition-colors',
+                'text-label transition-colors',
                 isSelected ? 'text-primary font-medium' : 'text-muted-foreground'
               )}>
                 {filter.name}
@@ -208,8 +208,8 @@ export function EnhancedFilterLibrary({
             className="space-y-3 overflow-hidden"
           >
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Filter Intensity</span>
-              <span className="text-sm font-medium tabular-nums">{filterIntensity}%</span>
+              <span className="text-body text-muted-foreground">Filter Intensity</span>
+              <span className="text-body font-medium tabular-nums">{filterIntensity}%</span>
             </div>
             <Slider
               value={[filterIntensity]}
@@ -227,7 +227,7 @@ export function EnhancedFilterLibrary({
                   key={preset}
                   onClick={() => onIntensityChange(preset)}
                   className={cn(
-                    'px-3 py-1 rounded-full text-xs transition-colors',
+                    'px-3 py-1 rounded-full text-label transition-colors',
                     filterIntensity === preset
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-secondary text-muted-foreground hover:text-foreground'

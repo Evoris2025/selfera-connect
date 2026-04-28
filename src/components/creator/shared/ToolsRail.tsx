@@ -84,7 +84,7 @@ export function ToolsRail({
             )}
           >
             <Icon className="h-5 w-5" />
-            <span className="text-[9px] font-medium mt-0.5 opacity-80">{tool.label}</span>
+            <span className="text-caption font-medium mt-0.5 opacity-80">{tool.label}</span>
             
             {/* Active indicator dot */}
             <AnimatePresence>

@@ -18,6 +18,19 @@ export default {
         display: ['DM Sans', 'Instrument Sans', 'system-ui', 'sans-serif'],
         logo: ['Space Grotesk', 'system-ui', 'sans-serif'],
       },
+      fontSize: {
+        // Canonical 5-step type scale (see src/lib/scale.ts).
+        // Per project decision: label/body are size-only so re-flowing
+        // existing text-xs / text-sm callsites only changes font-size,
+        // not letter-spacing or line-height. Tight variants opt-in.
+        caption: ['11px', { lineHeight: '1.25', letterSpacing: '0.04em' }],
+        label: ['12px', { lineHeight: '1.4' }],
+        'label-tight': ['12px', { lineHeight: '1.25', letterSpacing: '0.02em' }],
+        body: ['14px', { lineHeight: '1.5' }],
+        'body-snug': ['14px', { lineHeight: '1.375' }],
+        title: ['16px', { lineHeight: '1.375', fontWeight: '500' }],
+        headline: ['20px', { lineHeight: '1.25', fontWeight: '600' }],
+      },
       colors: {
         border: {
           DEFAULT: "hsl(var(--border))",

@@ -38,7 +38,7 @@ export function BrandStatPill({
       role={label ? 'img' : undefined}
     >
       <BrandIcon icon={icon} size={size} />
-      <span className="text-[11px] font-medium text-white tabular-nums leading-none">
+      <span className="text-caption font-medium text-white tabular-nums leading-none">
         {value}
       </span>
     </span>

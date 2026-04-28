@@ -111,7 +111,7 @@ export default function Guidelines() {
             >
               <Card className="border-border/50">
                 <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-3 text-lg">
+                  <CardTitle className="flex items-center gap-3 text-title">
                     <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
                       <guideline.icon className="h-5 w-5 text-primary" />
                     </div>
@@ -119,10 +119,10 @@ export default function Guidelines() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <p className="text-muted-foreground text-sm">{guideline.description}</p>
+                  <p className="text-muted-foreground text-body">{guideline.description}</p>
                   <ul className="space-y-2">
                     {guideline.points.map((point, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm text-foreground">
+                      <li key={i} className="flex items-start gap-2 text-body text-foreground">
                         <span className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
                         {point}
                       </li>
@@ -141,15 +141,15 @@ export default function Guidelines() {
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-muted mb-2">
             <MessageCircle className="h-6 w-6 text-muted-foreground" />
           </div>
-          <h2 className="text-xl font-semibold text-foreground">Need Support?</h2>
-          <p className="text-muted-foreground text-sm max-w-md mx-auto">
+          <h2 className="text-headline font-semibold text-foreground">Need Support?</h2>
+          <p className="text-muted-foreground text-body max-w-md mx-auto">
             If you're experiencing a mental health crisis, please visit our{' '}
             <a href="/crisis" className="text-primary hover:underline">
               Crisis Support
             </a>{' '}
             page for immediate resources.
           </p>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-label text-muted-foreground">
             Last updated: January 2026
           </p>
         </motion.div>

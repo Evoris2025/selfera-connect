@@ -102,19 +102,19 @@ export function AdminGovernanceLog() {
           <FileText className="h-5 w-5 text-foreground" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-foreground">Governance Event Log</h2>
-          <p className="text-sm text-muted-foreground">Internal transparency & audit trail</p>
+          <h2 className="text-headline font-bold text-foreground">Governance Event Log</h2>
+          <p className="text-body text-muted-foreground">Internal transparency & audit trail</p>
         </div>
       </div>
 
       <Card>
-        <CardHeader><CardTitle className="text-sm font-medium">Event Timeline</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-body font-medium">Event Timeline</CardTitle></CardHeader>
         <CardContent className="space-y-6">
           {Object.entries(eventsByDay).map(([day, dayEvents]) => (
             <div key={day}>
               <div className="flex items-center gap-2 mb-3">
                 <div className="h-px flex-1 bg-border" />
-                <span className="text-xs font-medium text-muted-foreground px-2">{day}</span>
+                <span className="text-label font-medium text-muted-foreground px-2">{day}</span>
                 <div className="h-px flex-1 bg-border" />
               </div>
               <div className="space-y-3">
@@ -128,11 +128,11 @@ export function AdminGovernanceLog() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-medium text-sm">{config?.label || event.event_type}</span>
-                          <span className="text-xs text-muted-foreground">{formatTimeAgo(event.created_at)}</span>
+                          <span className="font-medium text-body">{config?.label || event.event_type}</span>
+                          <span className="text-label text-muted-foreground">{formatTimeAgo(event.created_at)}</span>
                         </div>
-                        <p className="text-sm text-muted-foreground mb-2">{event.reason}</p>
-                        <div className="flex items-center gap-4 text-xs">
+                        <p className="text-body text-muted-foreground mb-2">{event.reason}</p>
+                        <div className="flex items-center gap-4 text-label">
                           {event.previous_value && (
                             <div className="flex items-center gap-1">
                               <span className="text-muted-foreground">From:</span>
@@ -147,7 +147,7 @@ export function AdminGovernanceLog() {
                           )}
                         </div>
                       </div>
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-1 text-label text-muted-foreground">
                         <User className="h-3 w-3" />
                         <span>{event.user_id.slice(0, 8)}...</span>
                       </div>
@@ -162,8 +162,8 @@ export function AdminGovernanceLog() {
 
       <Card className="border-dashed border-2 border-muted">
         <CardContent className="py-4 space-y-2">
-          <p className="text-sm font-medium text-center">This log exists for:</p>
-          <div className="flex justify-center gap-6 text-sm text-muted-foreground">
+          <p className="text-body font-medium text-center">This log exists for:</p>
+          <div className="flex justify-center gap-6 text-body text-muted-foreground">
             <span>• Internal transparency</span>
             <span>• Founder oversight</span>
             <span>• Future audit readiness</span>

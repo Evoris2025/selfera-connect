@@ -97,7 +97,7 @@ export default function Directory() {
           <h1 className="text-2xl font-bold text-foreground mb-2">
             {t('directory.title')}
           </h1>
-          <p className="text-sm text-muted-foreground max-w-md mx-auto">
+          <p className="text-body text-muted-foreground max-w-md mx-auto">
             {t('directory.subtitle')}
           </p>
         </motion.div>
@@ -110,7 +110,7 @@ export default function Directory() {
           transition={{ ...springGentle, delay: 0.05 }}
         >
           <Globe className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-          <div className="text-sm">
+          <div className="text-body">
             <p className="text-foreground">{t('directory.globalAccess')}</p>
             <p className="text-muted-foreground mt-1">{t('directory.affordabilityNote')}</p>
           </div>
@@ -147,7 +147,7 @@ export default function Directory() {
                     <Filter className="w-4 h-4" />
                     Filters
                     {hasActiveFilters && (
-                      <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-[10px]">
+                      <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-caption">
                         Active
                       </Badge>
                     )}
@@ -174,7 +174,7 @@ export default function Directory() {
                   checked={filters.verifiedOnly}
                   onCheckedChange={(checked) => updateFilter('verifiedOnly', checked)}
                 />
-                <Label htmlFor="verified" className="text-sm text-muted-foreground">
+                <Label htmlFor="verified" className="text-body text-muted-foreground">
                   {t('directory.filters.verifiedOnly')}
                 </Label>
               </div>
@@ -266,7 +266,7 @@ export default function Directory() {
           transition={{ ...springGentle, delay: 0.2 }}
         >
           <Info className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
-          <p className="text-sm text-muted-foreground">
+          <p className="text-body text-muted-foreground">
             {t('directory.disclaimer')}
           </p>
         </motion.div>
@@ -274,7 +274,7 @@ export default function Directory() {
         {/* Results Count */}
         {!loading && (
           <motion.p 
-            className="text-sm text-muted-foreground mb-4"
+            className="text-body text-muted-foreground mb-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
@@ -334,26 +334,26 @@ export default function Directory() {
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <h3 className="text-base font-semibold text-foreground truncate">
+                            <h3 className="text-title font-semibold text-foreground truncate">
                               {entry.name}
                             </h3>
                             {entry.verified && <EraVerifiedTick size="sm" userEmail={entry.profile?.email || undefined} />}
                           </div>
                           {entry.profile?.handle && (
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-body text-muted-foreground">
                               @{entry.profile.handle}
                             </p>
                           )}
                         </div>
                         
                         {entry.price_range && priceLabels[entry.price_range] && (
-                          <Badge className={`shrink-0 text-xs ${priceLabels[entry.price_range].color}`}>
+                          <Badge className={`shrink-0 text-label ${priceLabels[entry.price_range].color}`}>
                             {priceLabels[entry.price_range].label}
                           </Badge>
                         )}
                       </div>
 
-                      <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                      <p className="text-body text-muted-foreground mt-2 line-clamp-2">
                         {entry.description}
                       </p>
 
@@ -362,19 +362,19 @@ export default function Directory() {
                           <Badge 
                             key={tag} 
                             variant="secondary" 
-                            className="text-xs rounded-full"
+                            className="text-label rounded-full"
                           >
                             {tag}
                           </Badge>
                         ))}
                         {entry.tags && entry.tags.length > 4 && (
-                          <Badge variant="secondary" className="text-xs rounded-full">
+                          <Badge variant="secondary" className="text-label rounded-full">
                             +{entry.tags.length - 4}
                           </Badge>
                         )}
                       </div>
 
-                      <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-4 mt-3 text-label text-muted-foreground">
                         {entry.regions_served && entry.regions_served.length > 0 && (
                           <div className="flex items-center gap-1">
                             <MapPin className="h-3.5 w-3.5" />

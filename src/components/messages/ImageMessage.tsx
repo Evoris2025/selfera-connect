@@ -113,7 +113,7 @@ export function ImageMessage({ imageUrls, isOwnMessage, caption }: ImageMessageP
                     className="absolute inset-0 bg-black/60 flex items-center justify-center cursor-pointer"
                     onClick={() => setExpandedIndex(3)}
                   >
-                    <span className="text-white text-xl font-semibold">
+                    <span className="text-white text-headline font-semibold">
                       +{imageUrls.length - 4}
                     </span>
                   </div>
@@ -126,7 +126,7 @@ export function ImageMessage({ imageUrls, isOwnMessage, caption }: ImageMessageP
         {/* Caption */}
         {caption && (
           <div className={cn(
-            "px-3 py-2 text-[15px]",
+            "px-3 py-2 text-body",
             isOwnMessage ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground"
           )}>
             {caption}
@@ -153,7 +153,7 @@ export function ImageMessage({ imageUrls, isOwnMessage, caption }: ImageMessageP
             >
               {/* Image counter */}
               {imageUrls.length > 1 && (
-                <span className="text-white/80 text-sm">
+                <span className="text-white/80 text-body">
                   {expandedIndex + 1} / {imageUrls.length}
                 </span>
               )}

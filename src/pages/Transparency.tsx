@@ -82,7 +82,7 @@ export default function Transparency() {
           <h1 className="text-3xl font-bold text-foreground mb-3">
             Trust & Transparency
           </h1>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-muted-foreground text-title">
             Understanding how SelfERA works, what we stand for, and how we protect you.
           </p>
         </div>
@@ -105,7 +105,7 @@ export default function Transparency() {
           {sections.map((section) => (
             <Card key={section.title}>
               <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-3 text-lg">
+                <CardTitle className="flex items-center gap-3 text-title">
                   <section.icon className="h-5 w-5 text-primary" />
                   {section.title}
                 </CardTitle>
@@ -127,7 +127,7 @@ export default function Transparency() {
         {/* Footer */}
         <div className="mt-8 text-center space-y-4">
           <Separator />
-          <p className="text-sm text-muted-foreground pt-4">
+          <p className="text-body text-muted-foreground pt-4">
             Questions about our practices? We're committed to open dialogue.
           </p>
           <div className="flex justify-center gap-3">

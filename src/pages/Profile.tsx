@@ -107,7 +107,7 @@ function CardStatItem({
         onClick && 'hover:bg-white/[0.04] active:scale-[0.97] cursor-pointer',
       )}
     >
-      <p className="text-white text-[18px] font-medium leading-none">{formatCount(count)}</p>
+      <p className="text-white text-title font-medium leading-none">{formatCount(count)}</p>
       <div className="mt-1.5 flex justify-center">
         <BrandSectionLabel>{label}</BrandSectionLabel>
       </div>
@@ -144,7 +144,7 @@ function FounderAdminMenuItem() {
       <DropdownMenuItem className="flex items-center gap-2 cursor-pointer text-white" onClick={() => navigate('/admin')}>
         <Shield className="h-4 w-4 flex-shrink-0" />
         <span className="flex-1">Admin Console</span>
-        <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-white/[0.08] text-white/70 border-0 flex-shrink-0">
+        <Badge variant="secondary" className="text-caption px-1.5 py-0 h-4 bg-white/[0.08] text-white/70 border-0 flex-shrink-0">
           STAFF
         </Badge>
       </DropdownMenuItem>
@@ -560,7 +560,7 @@ export default function Profile() {
                 <div className="flex items-center justify-between gap-2">
                   {/* Name + Verified Badge */}
                   <div className="flex items-center gap-2 flex-wrap min-w-0">
-                    <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground tracking-tight leading-tight truncate">
+                    <h1 className="text-headline sm:text-2xl md:text-3xl font-bold text-foreground tracking-tight leading-tight truncate">
                       {displayProfile.displayName || mockUser.name}
                     </h1>
                     {displayProfile.isVerified && (
@@ -578,7 +578,7 @@ export default function Profile() {
                 </div>
 
                 {/* Handle + Location */}
-                <p className="text-sm sm:text-base text-muted-foreground mt-1 flex items-center flex-wrap gap-x-2">
+                <p className="text-body sm:text-title text-muted-foreground mt-1 flex items-center flex-wrap gap-x-2">
                   <span className="font-medium">@{displayProfile.handle || mockUser.handle}</span>
                   {(displayProfile.location || mockUser.location) && (
                     <span className="inline-flex items-center gap-1.5 text-muted-foreground/70">
@@ -593,7 +593,7 @@ export default function Profile() {
 
             {/* Bio - Full Width Below */}
             <motion.p
-              className="text-sm sm:text-base text-foreground/85 leading-relaxed mt-5 max-w-2xl"
+              className="text-body sm:text-title text-foreground/85 leading-relaxed mt-5 max-w-2xl"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.25 }}
@@ -641,7 +641,7 @@ export default function Profile() {
                   type="button"
                   onClick={handleFollow}
                   disabled={isPending}
-                  className="inline-flex items-center justify-center bg-transparent border h-9 px-4 rounded-full text-[12px] uppercase tracking-[0.1em] transition-colors disabled:opacity-60"
+                  className="inline-flex items-center justify-center bg-transparent border h-9 px-4 rounded-full text-label uppercase tracking-[0.1em] transition-colors disabled:opacity-60"
                   style={
                     isFollowing
                       ? { borderColor: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.55)' }
@@ -652,7 +652,7 @@ export default function Profile() {
                 </button>
                 <button
                   type="button"
-                  className="inline-flex items-center justify-center gap-1.5 bg-transparent border border-white/15 text-white h-9 px-4 rounded-full text-[12px] uppercase tracking-[0.1em] transition-colors hover:border-white/30"
+                  className="inline-flex items-center justify-center gap-1.5 bg-transparent border border-white/15 text-white h-9 px-4 rounded-full text-label uppercase tracking-[0.1em] transition-colors hover:border-white/30"
                 >
                   <MessageCircle className="w-3.5 h-3.5" />
                   Message
@@ -740,7 +740,7 @@ export default function Profile() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="text-center py-16 text-muted-foreground text-sm"
+                  className="text-center py-16 text-muted-foreground text-body"
                 >
                   {isOwnProfile ? "Communities you've joined" : 'No communities yet'}
                 </motion.div>
@@ -752,7 +752,7 @@ export default function Profile() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="text-center py-16 text-muted-foreground text-sm"
+                  className="text-center py-16 text-muted-foreground text-body"
                 >
                   {isOwnProfile ? 'Your saved content' : 'Library is private'}
                 </motion.div>

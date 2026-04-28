@@ -17,7 +17,7 @@ const NotFound = () => {
           <span className="text-3xl font-bold text-foreground">?</span>
         </div>
         <h1 className="mb-2 text-6xl font-bold text-foreground">404</h1>
-        <p className="mb-8 text-xl text-muted-foreground">Page not found</p>
+        <p className="mb-8 text-headline text-muted-foreground">Page not found</p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Button variant="gradient" asChild>
             <Link to="/">

@@ -36,14 +36,14 @@ export function MessageReactions({ reactions, onReact, isOwnMessage }: MessageRe
           whileTap={{ scale: 0.85 }}
           onClick={() => onReact(reaction.emoji)}
           className={cn(
-            "flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs border",
+            "flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-label border",
             "bg-white/[0.06] border-white/10 hover:bg-white/[0.1] transition-colors",
             reaction.userReacted && "ring-1 ring-white/40"
           )}
         >
           <span>{reaction.emoji}</span>
           {reaction.count > 1 && (
-            <span className="text-muted-foreground text-[10px]">{reaction.count}</span>
+            <span className="text-muted-foreground text-caption">{reaction.count}</span>
           )}
         </motion.button>
       ))}
@@ -94,7 +94,7 @@ export function ReactionPicker({ isOpen, onSelect, onClose, position }: Reaction
                   onSelect(emoji);
                   onClose();
                 }}
-                className="text-xl p-1 hover:bg-secondary/50 rounded-full transition-colors"
+                className="text-headline p-1 hover:bg-secondary/50 rounded-full transition-colors"
               >
                 {emoji}
               </motion.button>
@@ -163,7 +163,7 @@ export function MessageBubbleWithReactions({
             : 'bg-secondary/80 text-foreground rounded-[22px] rounded-bl-md'
         )}
       >
-        <p className="text-[15px] leading-relaxed">{content}</p>
+        <p className="text-body leading-relaxed">{content}</p>
         
         <ReactionPicker
           isOpen={showPicker}

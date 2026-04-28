@@ -162,7 +162,7 @@ export function HoldToRecordButton({
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-white/60 text-xs whitespace-nowrap"
+        className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-white/60 text-label whitespace-nowrap"
       >
         {isHolding || isRecording ? 'Recording...' : 'Tap for photo, hold for video'}
       </motion.p>

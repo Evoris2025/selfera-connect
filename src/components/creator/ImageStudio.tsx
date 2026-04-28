@@ -738,19 +738,19 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
             <Tabs value={editTab} onValueChange={(v) => setEditTab(v as EditTab)} className="shrink-0 px-4 pt-2 pb-4">
               <div className="flex items-center gap-2 mb-3">
                 <TabsList className="grid flex-1 grid-cols-4">
-                  <TabsTrigger value="filters" className="gap-1 text-xs">
+                  <TabsTrigger value="filters" className="gap-1 text-label">
                     <Palette className="h-3.5 w-3.5" />
                     <span className="hidden sm:inline">Filters</span>
                   </TabsTrigger>
-                  <TabsTrigger value="adjust" className="gap-1 text-xs">
+                  <TabsTrigger value="adjust" className="gap-1 text-label">
                     <Sliders className="h-3.5 w-3.5" />
                     <span className="hidden sm:inline">Adjust</span>
                   </TabsTrigger>
-                  <TabsTrigger value="effects" className="gap-1 text-xs">
+                  <TabsTrigger value="effects" className="gap-1 text-label">
                     <ImageIcon className="h-3.5 w-3.5" />
                     <span className="hidden sm:inline">Effects</span>
                   </TabsTrigger>
-                  <TabsTrigger value="crop" className="gap-1 text-xs">
+                  <TabsTrigger value="crop" className="gap-1 text-label">
                     <Crop className="h-3.5 w-3.5" />
                     <span className="hidden sm:inline">Crop</span>
                   </TabsTrigger>
@@ -761,7 +761,7 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                   aria-pressed={showBeforeAfter}
                   aria-label="Compare before and after"
                   className={cn(
-                    'inline-flex items-center justify-center gap-1 text-xs whitespace-nowrap px-3 h-9 rounded-md font-medium transition-colors border',
+                    'inline-flex items-center justify-center gap-1 text-label whitespace-nowrap px-3 h-9 rounded-md font-medium transition-colors border',
                     showBeforeAfter
                       ? 'bg-primary text-primary-foreground border-primary'
                       : 'bg-secondary text-muted-foreground hover:text-foreground border-border'
@@ -838,8 +838,8 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                     }).map(([key, config]) => (
                       <div key={key} className="space-y-1">
                         <div className="flex items-center justify-between">
-                          <span className="text-xs text-muted-foreground">{config.label}</span>
-                          <span className="text-xs font-medium tabular-nums">
+                          <span className="text-label text-muted-foreground">{config.label}</span>
+                          <span className="text-label font-medium tabular-nums">
                             {currentImage[key as keyof CarouselImage] as number}
                           </span>
                         </div>
@@ -875,7 +875,7 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                       recordChange(currentImage.id, 'adjustment', previousState, DEFAULT_ADJUSTMENTS);
                       updateImage(currentImage.id, DEFAULT_ADJUSTMENTS);
                     }}
-                    className="w-full text-xs"
+                    className="w-full text-label"
                   >
                     Reset All Adjustments
                   </Button>
@@ -964,7 +964,7 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                     className="absolute inset-0 w-full h-full object-cover"
                     draggable={false}
                   />
-                  <div className="absolute bottom-0.5 right-0.5 w-4 h-4 rounded-full bg-background/80 flex items-center justify-center text-[10px] font-medium">
+                  <div className="absolute bottom-0.5 right-0.5 w-4 h-4 rounded-full bg-background/80 flex items-center justify-center text-caption font-medium">
                     {i + 1}
                   </div>
                 </div>
@@ -982,7 +982,7 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                 }}
                 className="min-h-[100px] resize-none"
               />
-              <p className="text-xs text-muted-foreground text-right">
+              <p className="text-label text-muted-foreground text-right">
                 {caption.length} / 2,200
               </p>
             </div>
@@ -1025,7 +1025,7 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                   )}
                 >
                   <Music className="h-4 w-4" />
-                  <span className="text-sm">
+                  <span className="text-body">
                     {selectedSound ? selectedSound.name : 'Add music to carousel'}
                   </span>
                 </button>
@@ -1056,10 +1056,10 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
                 }}
               />
               {selectedTags.length === 0 && (
-                <p className="text-xs text-destructive">At least one topic tag is required</p>
+                <p className="text-label text-destructive">At least one topic tag is required</p>
               )}
               {selectedTags.length > 5 && (
-                <p className="text-xs text-destructive">Maximum 5 topic tags allowed</p>
+                <p className="text-label text-destructive">Maximum 5 topic tags allowed</p>
               )}
             </div>
 

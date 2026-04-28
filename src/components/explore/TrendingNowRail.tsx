@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { ICON_SIZE } from "@/lib/scale";
 import { motion } from 'framer-motion';
 import { Flame, Eye, Heart, Play, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -69,20 +70,20 @@ function ExpressionCard({ item, index }: { item: TrendingExpression; index: numb
       <div className="absolute top-2 left-2 flex items-center [filter:drop-shadow(0_2px_4px_rgba(0,0,0,0.6))]">
         <Avatar className="h-10 w-10 ring-2 ring-black/40 shrink-0">
           <AvatarImage src={item.user.avatar} alt={item.user.name} />
-          <AvatarFallback className="text-[10px]">{item.user.name.charAt(0)}</AvatarFallback>
+          <AvatarFallback className="text-caption">{item.user.name.charAt(0)}</AvatarFallback>
         </Avatar>
       </div>
       {/* Bottom-left: @handle (with tier badge) stacked above views (naked, drop-shadow only) */}
       <div className="absolute bottom-2 left-2 right-2 flex flex-col items-start gap-0.5 min-w-0 [filter:drop-shadow(0_2px_4px_rgba(0,0,0,0.6))]">
         <div className="flex items-center gap-1 min-w-0 max-w-full">
-          <span className="text-[11px] font-medium text-white truncate leading-none">
+          <span className="text-caption font-medium text-white truncate leading-none">
             @{item.user.handle}
           </span>
           <ExploreVerifiedTick tier={item.user.tier} className="shrink-0" />
         </div>
         <div className="flex items-center gap-1">
           <BrandIcon icon={Eye} size={16} />
-          <span className="text-[12px] font-medium text-white tabular-nums leading-none">
+          <span className="text-label font-medium text-white tabular-nums leading-none">
             {formatCount(item.views)}
           </span>
         </div>
@@ -103,32 +104,32 @@ function VideoCard({ item, index }: { item: TrendingVideo; index: number }) {
     >
       <div className="relative w-[200px] h-[112px] rounded-md overflow-hidden bg-white/[0.04]">
         <img src={item.thumbnail} alt={item.title} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute bottom-1 right-1 px-1.5 h-5 inline-flex items-center bg-black/55 border border-white/10 text-[10px] text-white font-medium rounded-md tabular-nums">
+        <div className="absolute bottom-1 right-1 px-1.5 h-5 inline-flex items-center bg-black/55 border border-white/10 text-caption text-white font-medium rounded-md tabular-nums">
           {item.duration}
         </div>
         <BrandIconBadge
           icon={Play}
-          size={14}
+          size={ICON_SIZE.sm}
           className="absolute inset-0 m-auto w-10 h-10 opacity-0 group-hover:opacity-100 transition-opacity"
           aria-label="Play"
         />
       </div>
       <div className="flex flex-col gap-1 mt-2 w-[200px]">
         {/* Row 1+2 — Title (locked to exactly 2 lines reserved) */}
-        <p className="text-[12px] font-medium leading-snug line-clamp-2 min-h-[2.1rem] text-white">
+        <p className="text-label font-medium leading-snug line-clamp-2 min-h-[2.1rem] text-white">
           {item.title}
         </p>
         {/* Row 3 — Creator row (avatar + name + tier badge) */}
         <div className="flex items-center gap-1.5 min-w-0">
           <Avatar className="h-4 w-4 shrink-0">
             <AvatarImage src={item.creator.avatar} alt={item.creator.name} />
-            <AvatarFallback className="text-[8px]">{item.creator.name.charAt(0)}</AvatarFallback>
+            <AvatarFallback className="text-caption">{item.creator.name.charAt(0)}</AvatarFallback>
           </Avatar>
-          <span className="text-[11px] text-white/70 truncate">{item.creator.name}</span>
+          <span className="text-caption text-white/70 truncate">{item.creator.name}</span>
           <ExploreVerifiedTick tier={item.creator.tier} className="shrink-0" />
         </div>
         {/* Row 4 — Views row */}
-        <p className="text-[10px] uppercase tracking-[0.08em] text-white/45">
+        <p className="text-caption uppercase tracking-[0.08em] text-white/45">
           {formatCount(item.views)} VIEWS
         </p>
       </div>
@@ -153,7 +154,7 @@ function ImageCard({ item, index }: { item: TrendingImage; index: number }) {
         aria-label={`${formatCount(item.likes)} reactions`}
       >
         <BrandIcon icon={Heart} size={16} />
-        <span className="text-[12px] font-medium text-white tabular-nums leading-none">
+        <span className="text-label font-medium text-white tabular-nums leading-none">
           {formatCount(item.likes)}
         </span>
       </div>
@@ -171,18 +172,18 @@ function PostCard({ item, index }: { item: TrendingPost; index: number }) {
       onClick={() => handleTap('posts', item.id)}
       className="relative w-[240px] h-[120px] flex-shrink-0 flex flex-col text-left rounded-md border border-white/[0.08] p-3 hover:border-white/20 transition-colors"
     >
-      <p className="text-white/85 text-[12px] leading-snug line-clamp-3 flex-1 pr-7">
+      <p className="text-white/85 text-label leading-snug line-clamp-3 flex-1 pr-7">
         {item.snippet}
       </p>
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-1.5 min-w-0">
-          <Avatar className="h-5 w-5 flex-shrink-0">
+          <Avatar size="xs" className="flex-shrink-0">
             <AvatarImage src={item.user.avatar} alt={item.user.handle} />
-            <AvatarFallback className="text-[8px] bg-white/[0.08] text-white/70">
+            <AvatarFallback className="text-caption bg-white/[0.08] text-white/70">
               {item.user.handle.charAt(0)}
             </AvatarFallback>
           </Avatar>
-          <span className="text-white/55 text-[10px] truncate">{item.user.handle}</span>
+          <span className="text-white/55 text-caption truncate">{item.user.handle}</span>
           <ExploreVerifiedTick tier={item.user.tier} className="shrink-0" />
         </div>
         <BrandStatPill
@@ -316,7 +317,7 @@ export function TrendingNowRail({ activeTab, filters }: TrendingNowRailProps) {
     <div className="bg-background pt-4 pb-6">
       <div className="px-4 mb-2 flex items-center gap-1.5">
         <BrandIcon icon={Flame} size={12} />
-        <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-white/55">
+        <span className="text-caption font-medium uppercase tracking-[0.12em] text-white/55">
           {`TRENDING ${activeTab.toUpperCase()}`}
         </span>
       </div>

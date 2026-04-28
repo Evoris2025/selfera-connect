@@ -133,7 +133,7 @@ export function DirectorySearchBar({
             className="absolute top-full left-0 right-0 mt-2 z-50 bg-card border border-border/50 rounded-xl shadow-lg overflow-hidden"
           >
             {displayedEntries.length === 0 ? (
-              <div className="p-4 text-center text-sm text-muted-foreground">
+              <div className="p-4 text-center text-body text-muted-foreground">
                 No providers found for "{value}"
               </div>
             ) : (
@@ -165,7 +165,7 @@ export function DirectorySearchBar({
                         </div>
                         
                         {entry.description && (
-                          <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
+                          <p className="text-label text-muted-foreground line-clamp-1 mt-0.5">
                             {entry.description}
                           </p>
                         )}
@@ -175,14 +175,14 @@ export function DirectorySearchBar({
                             <Badge 
                               key={tag} 
                               variant="secondary" 
-                              className="text-[10px] px-1.5 py-0 h-4 rounded-full"
+                              className="text-caption px-1.5 py-0 h-4 rounded-full"
                             >
                               {tag}
                             </Badge>
                           ))}
                           
                           {entry.regions_served && entry.regions_served.length > 0 && (
-                            <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground">
+                            <span className="flex items-center gap-0.5 text-caption text-muted-foreground">
                               <MapPin className="h-2.5 w-2.5" />
                               {entry.regions_served[0]}
                             </span>
@@ -195,7 +195,7 @@ export function DirectorySearchBar({
                 
                 {hasMoreResults && (
                   <div className="p-2 border-t border-border/30 text-center">
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-label text-muted-foreground">
                       +{entries.length - 5} more results
                     </span>
                   </div>

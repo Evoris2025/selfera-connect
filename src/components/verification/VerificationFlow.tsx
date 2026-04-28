@@ -112,7 +112,7 @@ export function VerificationFlow({ onBack, onComplete }: VerificationFlowProps) 
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-emerald-500 flex items-center justify-center">
             <Shield className="w-4 h-4 text-white" />
           </div>
-          <h1 className="text-lg font-semibold text-foreground">Get ERA Verified</h1>
+          <h1 className="text-title font-semibold text-foreground">Get ERA Verified</h1>
         </div>
       </div>
 

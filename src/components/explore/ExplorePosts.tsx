@@ -60,37 +60,37 @@ function PostCard({ post, index }: { post: PostItem; index: number }) {
         <div className="flex items-center gap-3 mb-3">
           <Avatar className="h-10 w-10">
             <AvatarImage src={post.user.avatar} alt={post.user.name} />
-            <AvatarFallback className="bg-white/[0.06] text-white/70 text-xs">
+            <AvatarFallback className="bg-white/[0.06] text-white/70 text-label">
               {post.user.name.charAt(0)}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-sm text-white truncate">{post.user.name}</span>
+              <span className="font-semibold text-body text-white truncate">{post.user.name}</span>
               <ExploreVerifiedTick tier={post.user.tier} size="sm" />
             </div>
-            <p className="text-[11px] text-white/45 uppercase tracking-[0.08em]">
+            <p className="text-caption text-white/45 uppercase tracking-[0.08em]">
               @{post.user.handle} · {post.createdAt}
             </p>
           </div>
         </div>
 
-        <p className="text-[14px] text-white/85 leading-relaxed mb-3 whitespace-pre-line">
+        <p className="text-body text-white/85 leading-relaxed mb-3 whitespace-pre-line">
           {post.content}
         </p>
 
         <div className="flex items-center gap-5 text-white/55">
           <div className="flex items-center gap-1.5">
             <Heart className="h-4 w-4" />
-            <span className="text-[11px] tabular-nums">{formatCount(post.likes)}</span>
+            <span className="text-caption tabular-nums">{formatCount(post.likes)}</span>
           </div>
           <div className="flex items-center gap-1.5">
             <MessageCircle className="h-4 w-4" />
-            <span className="text-[11px] tabular-nums">{formatCount(post.comments)}</span>
+            <span className="text-caption tabular-nums">{formatCount(post.comments)}</span>
           </div>
           <div className="flex items-center gap-1.5">
             <Share2 className="h-4 w-4" />
-            <span className="text-[11px] tabular-nums">{formatCount(post.shares)}</span>
+            <span className="text-caption tabular-nums">{formatCount(post.shares)}</span>
           </div>
         </div>
       </BrandSurface>

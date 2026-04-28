@@ -181,7 +181,7 @@ export function ContinueWorkingSheet({
             >
               <div className="flex items-start gap-3">
                 {gradientIcon(Sparkles, 20)}
-                <p className="text-sm text-white/85 leading-snug flex-1">
+                <p className="text-body text-white/85 leading-snug flex-1">
                   {todayPrompt}
                 </p>
               </div>
@@ -190,13 +190,13 @@ export function ContinueWorkingSheet({
                 <button
                   type="button"
                   onClick={() => setPickerOpen(true)}
-                  className="mt-3 w-full text-[11px] font-semibold tracking-wider uppercase text-white/70 hover:text-white transition-colors py-2 rounded-lg border border-white/10 hover:border-white/20"
+                  className="mt-3 w-full text-caption font-semibold tracking-wider uppercase text-white/70 hover:text-white transition-colors py-2 rounded-lg border border-white/10 hover:border-white/20"
                 >
                   Generate prompt
                 </button>
               ) : (
                 <div className="mt-3">
-                  <p className="text-[10px] font-medium tracking-wider uppercase text-white/40 mb-2 px-1">
+                  <p className="text-caption font-medium tracking-wider uppercase text-white/40 mb-2 px-1">
                     Create as
                   </p>
                   <div className="grid grid-cols-4 gap-2">
@@ -218,7 +218,7 @@ export function ContinueWorkingSheet({
                           aria-label={`Use prompt for ${CONTENT_TYPE_LABEL[ct]}`}
                         >
                           {gradientIcon(Icon, 18)}
-                          <span className="text-[10px] font-semibold tracking-wider uppercase text-white/70">
+                          <span className="text-caption font-semibold tracking-wider uppercase text-white/70">
                             {CONTENT_TYPE_LABEL[ct]}
                           </span>
                         </button>
@@ -233,7 +233,7 @@ export function ContinueWorkingSheet({
 
         {/* Empty state — only fires if no drafts, no scheduled, no prompt (rare) */}
         {sortedDrafts.length === 0 && sortedScheduled.length === 0 && !todayPrompt && (
-          <p className="text-sm text-white/50 text-center py-8">
+          <p className="text-body text-white/50 text-center py-8">
             Nothing in progress yet. Pick a format below to begin.
           </p>
         )}

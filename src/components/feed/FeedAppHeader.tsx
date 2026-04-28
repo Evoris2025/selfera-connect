@@ -47,7 +47,7 @@ export function FeedAppHeader({ title }: FeedAppHeaderProps) {
             <motion.span
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              className="font-semibold text-foreground text-lg tracking-tight"
+              className="font-semibold text-foreground text-title tracking-tight"
             >
               {title}
             </motion.span>
@@ -104,7 +104,7 @@ export function FeedAppHeader({ title }: FeedAppHeaderProps) {
                   <DropdownMenuItem className="flex items-center gap-2 cursor-pointer text-primary" onClick={() => navigate('/admin')}>
                     <Shield className="h-4 w-4 flex-shrink-0" />
                     <span className="flex-1">Admin Console</span>
-                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-primary/10 text-primary border-0 flex-shrink-0">
+                    <Badge variant="secondary" className="text-caption px-1.5 py-0 h-4 bg-primary/10 text-primary border-0 flex-shrink-0">
                       STAFF
                     </Badge>
                   </DropdownMenuItem>

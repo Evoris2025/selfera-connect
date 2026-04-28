@@ -118,7 +118,7 @@ export function UserTagPicker({ isOpen, onClose, onSelect }: UserPickerProps) {
                     </Avatar>
                     <div className="text-left flex-1">
                       <p className="font-medium">{user.name}</p>
-                      <p className="text-sm text-muted-foreground">@{user.handle}</p>
+                      <p className="text-body text-muted-foreground">@{user.handle}</p>
                     </div>
                   </motion.button>
                 ))

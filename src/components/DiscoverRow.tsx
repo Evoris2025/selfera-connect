@@ -275,7 +275,7 @@ export function DiscoverRow() {
       {/* Section Header */}
       <div className="flex items-center justify-between px-5 mb-4">
         <CollapsibleTrigger className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <h3 className="text-base font-semibold text-foreground">Discover People</h3>
+          <h3 className="text-title font-semibold text-foreground">Discover People</h3>
           <ChevronDown 
             className={`h-4 w-4 text-muted-foreground transition-transform duration-300 ${
               isOpen ? '' : '-rotate-90'
@@ -283,7 +283,7 @@ export function DiscoverRow() {
           />
         </CollapsibleTrigger>
         <button
-          className="text-sm text-primary font-medium flex items-center gap-0.5 hover:opacity-80 transition-opacity"
+          className="text-body text-primary font-medium flex items-center gap-0.5 hover:opacity-80 transition-opacity"
           onClick={() => navigate('/directory')}
         >
           See all
@@ -337,7 +337,7 @@ export function DiscoverRow() {
                     </div>
 
                     <div className="flex items-center justify-center gap-1 mb-0.5 w-full">
-                      <p className="text-sm font-semibold text-foreground truncate">
+                      <p className="text-body font-semibold text-foreground truncate">
                         {profile.display_name || 'User'}
                       </p>
                       {profile.is_verified && (
@@ -345,7 +345,7 @@ export function DiscoverRow() {
                       )}
                     </div>
                     
-                    <p className="text-xs text-muted-foreground truncate w-full mb-3">
+                    <p className="text-label text-muted-foreground truncate w-full mb-3">
                       @{profile.handle || 'user'}
                     </p>
 
@@ -365,7 +365,7 @@ export function DiscoverRow() {
                         size="sm"
                         onClick={() => handleFollowToggle(profile.id, profile.isFollowing)}
                         disabled={isPending}
-                        className={`w-full h-8 text-xs font-semibold rounded-lg transition-all duration-300 overflow-hidden ${
+                        className={`w-full h-8 text-label font-semibold rounded-lg transition-all duration-300 overflow-hidden ${
                           isPending 
                             ? 'bg-blue-500 hover:bg-blue-500 text-white shadow-[0_0_12px_rgba(59,130,246,0.5)]' 
                             : 'bg-gradient-to-r from-primary via-pink-500 to-orange-400 hover:opacity-90 text-white'

@@ -30,11 +30,11 @@ export function BlockedProfileState({ userId, isBlockedByMe }: BlockedProfileSta
         <ShieldOff className="w-10 h-10 text-muted-foreground" />
       </motion.div>
       
-      <h2 className="text-xl font-semibold text-foreground mb-2">
+      <h2 className="text-headline font-semibold text-foreground mb-2">
         {isBlockedByMe ? "You've blocked this user" : "You can't view this profile"}
       </h2>
       
-      <p className="text-sm text-muted-foreground max-w-xs mb-6">
+      <p className="text-body text-muted-foreground max-w-xs mb-6">
         {isBlockedByMe 
           ? "You won't see their posts, comments, or be able to message them."
           : "This user has blocked you. You can't view their profile or content."

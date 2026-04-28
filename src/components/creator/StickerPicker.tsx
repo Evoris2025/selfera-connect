@@ -123,7 +123,7 @@ export function StickerPicker({ isOpen, onClose, onSelect }: StickerPickerProps)
                   key={category}
                   onClick={() => setActiveCategory(category)}
                   className={cn(
-                    "px-3 py-1.5 rounded-full text-sm whitespace-nowrap transition-all",
+                    "px-3 py-1.5 rounded-full text-body whitespace-nowrap transition-all",
                     activeCategory === category
                       ? "bg-primary text-primary-foreground"
                       : "bg-secondary hover:bg-secondary/80"

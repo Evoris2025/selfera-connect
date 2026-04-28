@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ICON_SIZE } from "@/lib/scale";
 import { Sheet } from '@/components/ui/sheet';
 import {
   BrandSheetContent,
@@ -121,7 +122,7 @@ export function UnifiedDraftsDrawer({
                             aria-label="Delete draft"
                             className="p-1.5 rounded-full text-white/30 hover:text-destructive hover:bg-destructive/10 transition"
                           >
-                            <Trash2 size={14} />
+                            <Trash2 size={ICON_SIZE.sm} />
                           </button>
                           <ChevronRight size={16} className="text-white/40" />
                         </span>
@@ -163,7 +164,7 @@ export function UnifiedDraftsDrawer({
                             size="sm"
                             variant="ghost"
                             onClick={() => cancelScheduled(s.id)}
-                            className="h-7 px-2 text-xs text-white/50 hover:text-destructive"
+                            className="h-7 px-2 text-label text-white/50 hover:text-destructive"
                           >
                             Cancel
                           </Button>
@@ -182,7 +183,7 @@ export function UnifiedDraftsDrawer({
 
 function EmptyState({ message }: { message: string }) {
   return (
-    <div className="flex flex-col items-center justify-center py-12 text-center text-sm text-white/40">
+    <div className="flex flex-col items-center justify-center py-12 text-center text-body text-white/40">
       {message}
     </div>
   );

@@ -55,9 +55,9 @@ export function BrandSheetItem({
     >
       {icon && <span className="shrink-0 flex items-center justify-center">{icon}</span>}
       <span className="flex-1 min-w-0 flex flex-col">
-        <span className="text-sm font-semibold text-white truncate">{title}</span>
+        <span className="text-body font-semibold text-white truncate">{title}</span>
         {meta && (
-          <span className="text-xs text-white/50 mt-0.5 truncate">{meta}</span>
+          <span className="text-label text-white/50 mt-0.5 truncate">{meta}</span>
         )}
       </span>
       {right && <span className="shrink-0 flex items-center">{right}</span>}

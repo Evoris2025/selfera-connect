@@ -157,8 +157,8 @@ export function AdminVerificationPanel() {
           <BadgeCheck className="h-5 w-5 text-verified" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-foreground">Verification Review</h2>
-          <p className="text-sm text-muted-foreground">
+          <h2 className="text-headline font-bold text-foreground">Verification Review</h2>
+          <p className="text-body text-muted-foreground">
             Review and process ERA verification requests
           </p>
         </div>
@@ -190,7 +190,7 @@ export function AdminVerificationPanel() {
                 <CardContent className="p-0">
                   {/* Header */}
                   <div className="flex items-center gap-4 p-4 border-b border-border/50">
-                    <Avatar className="h-12 w-12">
+                    <Avatar size="md">
                       <AvatarImage src={request.avatarUrl} />
                       <AvatarFallback>
                         {request.displayName.charAt(0)}
@@ -205,20 +205,20 @@ export function AdminVerificationPanel() {
                           {request.accountTypeRequested}
                         </Badge>
                       </div>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-body text-muted-foreground">
                         @{request.handle}
                       </p>
                     </div>
                     <div className="text-right">
                       <Badge variant="secondary">pending</Badge>
-                      <p className="text-xs text-muted-foreground mt-1">
+                      <p className="text-label text-muted-foreground mt-1">
                         {formatDate(request.createdAt)}
                       </p>
                     </div>
                   </div>
 
                   {/* Details */}
-                  <div className="p-4 space-y-3 text-sm">
+                  <div className="p-4 space-y-3 text-body">
                     <div className="flex items-start gap-2">
                       <span className="text-muted-foreground min-w-24">Country:</span>
                       <span className="text-foreground">{request.country}</span>
@@ -307,7 +307,7 @@ export function AdminVerificationPanel() {
                       <span className="font-semibold text-foreground">
                         {request.displayName}
                       </span>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-body text-muted-foreground">
                         @{request.handle}
                       </p>
                     </div>
@@ -319,8 +319,8 @@ export function AdminVerificationPanel() {
                   </div>
                   {request.adminNotes && (
                     <div className="p-4 bg-muted/30">
-                      <p className="text-xs text-muted-foreground mb-1">Admin notes:</p>
-                      <p className="text-sm">{request.adminNotes}</p>
+                      <p className="text-label text-muted-foreground mb-1">Admin notes:</p>
+                      <p className="text-body">{request.adminNotes}</p>
                     </div>
                   )}
                 </CardContent>
@@ -393,7 +393,7 @@ export function AdminVerificationPanel() {
       {/* Simulation Notice */}
       <Card className="border-dashed border-2 border-muted">
         <CardContent className="py-4">
-          <p className="text-sm text-muted-foreground text-center">
+          <p className="text-body text-muted-foreground text-center">
             Simulation mode — Changes do not affect real user accounts.
           </p>
         </CardContent>

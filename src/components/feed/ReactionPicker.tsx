@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, type TouchEvent, type ReactNode } from 'react';
+import { ICON_SIZE } from "@/lib/scale";
 import { motion, AnimatePresence, useAnimationControls } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { 
@@ -122,7 +123,7 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 5, scale: 0.95 }}
                       transition={springTransitions.snappy}
-                      className="absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 bg-foreground text-background text-xs font-semibold rounded-md whitespace-nowrap shadow-lg"
+                      className="absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 bg-foreground text-background text-label font-semibold rounded-md whitespace-nowrap shadow-lg"
                     >
                       {reaction.label}
                       {/* Tooltip arrow */}
@@ -343,7 +344,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact }: Reac
             className="flex items-center justify-center"
           >
             {hasReaction ? (
-              <FluentEmoji type={currentReaction!} size={24} />
+              <FluentEmoji type={currentReaction!} size={ICON_SIZE.lg} />
             ) : (
               <svg
                 className={cn(
@@ -408,7 +409,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact }: Reac
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -10, opacity: 0 }}
               transition={{ duration: 0.15, ease: 'easeOut' }}
-              className="text-sm font-medium tabular-nums"
+              className="text-body font-medium tabular-nums"
             >
               {count >= 1000 ? `${(count/1000).toFixed(1)}K` : count}
             </motion.span>

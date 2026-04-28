@@ -44,7 +44,7 @@ export function LifeEventDialog({ open, onOpenChange, value, onSave }: LifeEvent
                 )}
               >
                 <span className="text-2xl">{p.icon}</span>
-                <span className="text-sm font-medium">{p.label}</span>
+                <span className="text-body font-medium">{p.label}</span>
               </button>
             );
           })}

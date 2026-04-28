@@ -42,7 +42,7 @@ export function AnalyticsSection() {
         transition={{ ...springGentle, delay: 0.2 }}
       >
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-foreground tracking-tight">Analytics</h2>
+          <h2 className="text-title font-semibold text-foreground tracking-tight">Analytics</h2>
         </div>
         <div className="flex items-center justify-center py-12">
           <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
@@ -60,11 +60,11 @@ export function AnalyticsSection() {
         transition={{ ...springGentle, delay: 0.2 }}
       >
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-foreground tracking-tight">Analytics</h2>
+          <h2 className="text-title font-semibold text-foreground tracking-tight">Analytics</h2>
         </div>
         <div className="rounded-2xl bg-card/40 border border-white/[0.06] p-6 text-center">
           <BarChart3 className="w-8 h-8 mx-auto mb-2 text-muted-foreground opacity-50" />
-          <p className="text-sm text-muted-foreground">Couldn't load analytics</p>
+          <p className="text-body text-muted-foreground">Couldn't load analytics</p>
         </div>
       </motion.section>
     );
@@ -116,7 +116,7 @@ export function AnalyticsSection() {
           <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center">
             <BarChart3 className="w-4 h-4 text-white" />
           </div>
-          <h2 className="text-lg font-semibold text-foreground tracking-tight">Analytics</h2>
+          <h2 className="text-title font-semibold text-foreground tracking-tight">Analytics</h2>
         </div>
         <Button 
           variant="ghost" 
@@ -141,10 +141,10 @@ export function AnalyticsSection() {
             <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center">
               <Play className="w-7 h-7 text-white" />
             </div>
-            <h3 className="text-base font-medium text-foreground mb-1">
+            <h3 className="text-title font-medium text-foreground mb-1">
               No expressions yet
             </h3>
-            <p className="text-sm text-muted-foreground mb-4">
+            <p className="text-body text-muted-foreground mb-4">
               Create your first expression to see analytics
             </p>
             <Button
@@ -178,8 +178,8 @@ export function AnalyticsSection() {
                 <div className={`w-8 h-8 mx-auto mb-2 ${stat.bgColor} flex items-center justify-center`}>
                   <stat.icon className={`w-4 h-4 ${stat.color}`} />
                 </div>
-                <p className="text-lg font-bold text-foreground">{stat.value}</p>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wide">{stat.label}</p>
+                <p className="text-title font-bold text-foreground">{stat.value}</p>
+                <p className="text-caption text-muted-foreground uppercase tracking-wide">{stat.label}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -194,9 +194,9 @@ export function AnalyticsSection() {
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <TrendingUp className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium text-foreground">Views Trend</span>
+                <span className="text-body font-medium text-foreground">Views Trend</span>
               </div>
-              <Badge variant="secondary" className="text-xs">30 days</Badge>
+              <Badge variant="secondary" className="text-label">30 days</Badge>
             </div>
             
             <div className="h-24">
@@ -231,7 +231,7 @@ export function AnalyticsSection() {
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <BarChart3 className="w-4 h-4 text-amber-500" />
-                  <span className="text-sm font-medium text-foreground">Top Performing</span>
+                  <span className="text-body font-medium text-foreground">Top Performing</span>
                 </div>
               </div>
               
@@ -243,7 +243,7 @@ export function AnalyticsSection() {
                   >
                     <Badge 
                       variant="secondary" 
-                      className="w-5 h-5 p-0 flex items-center justify-center text-xs shrink-0"
+                      className="w-5 h-5 p-0 flex items-center justify-center text-label shrink-0"
                     >
                       {index + 1}
                     </Badge>
@@ -260,7 +260,7 @@ export function AnalyticsSection() {
                         </div>
                       )}
                     </div>
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground flex-1 min-w-0">
+                    <div className="flex items-center gap-3 text-label text-muted-foreground flex-1 min-w-0">
                       <span className="flex items-center gap-1">
                         <Eye className="w-3 h-3" />
                         {expr.views}

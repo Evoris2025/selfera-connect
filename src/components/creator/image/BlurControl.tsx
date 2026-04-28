@@ -35,13 +35,13 @@ export function BlurControl({ blur, onBlurChange }: BlurControlProps) {
       className="space-y-4"
     >
       <div className="flex items-center justify-between">
-        <label className="text-sm font-medium text-foreground">Tilt-Shift Blur</label>
+        <label className="text-body font-medium text-foreground">Tilt-Shift Blur</label>
         {hasModifications && (
           <Button
             variant="ghost"
             size="sm"
             onClick={handleReset}
-            className="h-7 text-xs text-muted-foreground hover:text-foreground"
+            className="h-7 text-label text-muted-foreground hover:text-foreground"
           >
             <RotateCcw className="h-3 w-3 mr-1" />
             Reset
@@ -64,7 +64,7 @@ export function BlurControl({ blur, onBlurChange }: BlurControlProps) {
             )}
           >
             <Icon className={cn('h-5 w-5', value === 'radial' && 'opacity-50')} />
-            <span className="text-xs font-medium">{label}</span>
+            <span className="text-label font-medium">{label}</span>
           </motion.button>
         ))}
       </div>
@@ -80,8 +80,8 @@ export function BlurControl({ blur, onBlurChange }: BlurControlProps) {
           {/* Intensity */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Intensity</span>
-              <span className="text-xs font-medium tabular-nums">{blur.intensity}</span>
+              <span className="text-body text-muted-foreground">Intensity</span>
+              <span className="text-label font-medium tabular-nums">{blur.intensity}</span>
             </div>
             <Slider
               value={[blur.intensity]}
@@ -96,10 +96,10 @@ export function BlurControl({ blur, onBlurChange }: BlurControlProps) {
           {/* Radius/Spread */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">
+              <span className="text-body text-muted-foreground">
                 {blur.mode === 'radial' ? 'Radius' : 'Spread'}
               </span>
-              <span className="text-xs font-medium tabular-nums">{blur.radius}</span>
+              <span className="text-label font-medium tabular-nums">{blur.radius}</span>
             </div>
             <Slider
               value={[blur.radius]}
@@ -114,8 +114,8 @@ export function BlurControl({ blur, onBlurChange }: BlurControlProps) {
           {/* Position X */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Position X</span>
-              <span className="text-xs font-medium tabular-nums">{blur.positionX}%</span>
+              <span className="text-body text-muted-foreground">Position X</span>
+              <span className="text-label font-medium tabular-nums">{blur.positionX}%</span>
             </div>
             <Slider
               value={[blur.positionX]}
@@ -130,8 +130,8 @@ export function BlurControl({ blur, onBlurChange }: BlurControlProps) {
           {/* Position Y */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Position Y</span>
-              <span className="text-xs font-medium tabular-nums">{blur.positionY}%</span>
+              <span className="text-body text-muted-foreground">Position Y</span>
+              <span className="text-label font-medium tabular-nums">{blur.positionY}%</span>
             </div>
             <Slider
               value={[blur.positionY]}
@@ -145,7 +145,7 @@ export function BlurControl({ blur, onBlurChange }: BlurControlProps) {
         </motion.div>
       )}
 
-      <p className="text-xs text-muted-foreground text-center">
+      <p className="text-label text-muted-foreground text-center">
         {blur.mode === 'off' 
           ? 'Select a blur mode to create depth-of-field effects'
           : blur.mode === 'radial'

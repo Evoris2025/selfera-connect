@@ -237,7 +237,7 @@ export function DirectoryListingForm({
               rows={4}
               maxLength={500}
             />
-            <p className="text-xs text-muted-foreground text-right">
+            <p className="text-label text-muted-foreground text-right">
               {description.length}/500
             </p>
           </div>
@@ -245,7 +245,7 @@ export function DirectoryListingForm({
           {/* Service Tags */}
           <div className="space-y-2">
             <Label>Service Tags *</Label>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-label text-muted-foreground">
               Select tags that describe your services
             </p>
             <div className="flex flex-wrap gap-2 mt-2">
@@ -363,7 +363,7 @@ export function DirectoryListingForm({
           </div>
 
           {/* Trust Notice */}
-          <div className="bg-muted/50 rounded-lg p-4 text-sm text-muted-foreground">
+          <div className="bg-muted/50 rounded-lg p-4 text-body text-muted-foreground">
             <p>
               By creating a listing, you confirm that you are a qualified professional or
               legitimate organisation. SelfERA facilitates discovery only — all services

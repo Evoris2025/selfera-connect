@@ -44,10 +44,10 @@ export function CrisisWidget({ collapsed = false }: CrisisWidgetProps) {
           <Heart className="h-5 w-5 text-crisis" />
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-foreground mb-1 text-sm">
+          <h3 className="font-semibold text-foreground mb-1 text-body">
             {t('landing.crisis.title')}
           </h3>
-          <p className="text-xs text-muted-foreground mb-3 line-clamp-2">
+          <p className="text-label text-muted-foreground mb-3 line-clamp-2">
             {t('landing.crisis.subtitle')}
           </p>
           <Button variant="crisis" size="sm" asChild className="w-full">

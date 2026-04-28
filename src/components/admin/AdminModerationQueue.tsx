@@ -93,28 +93,28 @@ function ReportCard({ report, onStatusChange }: {
         <div className="flex-1 min-w-0">
           {/* Header */}
           <div className="flex items-center gap-2 flex-wrap mb-2">
-            <span className="font-medium text-sm">
+            <span className="font-medium text-body">
               {report.reporterProfile?.displayName || 'Unknown'}
             </span>
-            <span className="text-muted-foreground text-sm">reported a</span>
-            <div className="flex items-center gap-1 text-sm">
+            <span className="text-muted-foreground text-body">reported a</span>
+            <div className="flex items-center gap-1 text-body">
               <TargetIcon className="h-3.5 w-3.5" />
               <span className="font-medium">{report.targetType}</span>
             </div>
-            <span className="text-muted-foreground text-xs">
+            <span className="text-muted-foreground text-label">
               · {formatTimeAgo(report.createdAt)}
             </span>
           </div>
 
           {/* Reason Badge */}
           <div className="flex items-center gap-2 mb-2">
-            <Badge variant="outline" className="text-xs">
+            <Badge variant="outline" className="text-label">
               <AlertTriangle className="h-3 w-3 mr-1" />
               {reasonLabels[report.reason] || report.reason}
             </Badge>
             <Badge 
               variant="outline" 
-              className={cn('text-xs', statusConfig[report.status].color)}
+              className={cn('text-label', statusConfig[report.status].color)}
             >
               <StatusIcon className="h-3 w-3 mr-1" />
               {statusConfig[report.status].label}
@@ -123,7 +123,7 @@ function ReportCard({ report, onStatusChange }: {
 
           {/* Details */}
           {report.details && (
-            <p className="text-sm text-muted-foreground bg-secondary/50 rounded-lg p-3 mt-2">
+            <p className="text-body text-muted-foreground bg-secondary/50 rounded-lg p-3 mt-2">
               "{report.details}"
             </p>
           )}
@@ -134,7 +134,7 @@ function ReportCard({ report, onStatusChange }: {
               value={report.status}
               onValueChange={(value) => onStatusChange(report.id, value as Report['status'])}
             >
-              <SelectTrigger className="w-32 h-8 text-xs">
+              <SelectTrigger className="w-32 h-8 text-label">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -145,7 +145,7 @@ function ReportCard({ report, onStatusChange }: {
               </SelectContent>
             </Select>
             
-            <Button variant="outline" size="sm" className="h-8 text-xs">
+            <Button variant="outline" size="sm" className="h-8 text-label">
               View Content
             </Button>
           </div>
@@ -200,8 +200,8 @@ export function AdminModerationQueue({ onBack }: AdminModerationQueueProps) {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <h2 className="text-xl font-bold">Moderation Queue</h2>
-          <p className="text-sm text-muted-foreground">
+          <h2 className="text-headline font-bold">Moderation Queue</h2>
+          <p className="text-body text-muted-foreground">
             {reports.length} total reports
           </p>
         </div>
@@ -247,7 +247,7 @@ export function AdminModerationQueue({ onBack }: AdminModerationQueueProps) {
               <Flag className="h-8 w-8 text-muted-foreground" />
             </div>
             <h3 className="font-semibold mb-1">No reports</h3>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-body text-muted-foreground">
               {statusFilter === 'all' 
                 ? 'No reports have been submitted yet.' 
                 : `No ${statusFilter} reports.`}

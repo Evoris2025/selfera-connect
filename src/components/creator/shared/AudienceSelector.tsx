@@ -48,7 +48,7 @@ export function AudienceSelector({ value, onChange, excludes = [], size = 'sm', 
           <button
             type="button"
             className={cn(
-              'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs',
+              'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-label',
               'bg-white/5 hover:bg-white/10 text-foreground/70 hover:text-foreground transition'
             )}
           >
@@ -74,8 +74,8 @@ export function AudienceSelector({ value, onChange, excludes = [], size = 'sm', 
             >
               <ItemIcon className="h-4 w-4 mt-0.5 text-muted-foreground" />
               <div className="flex flex-col">
-                <span className="text-sm font-medium">{opt.label}</span>
-                <span className="text-xs text-muted-foreground">{opt.description}</span>
+                <span className="text-body font-medium">{opt.label}</span>
+                <span className="text-label text-muted-foreground">{opt.description}</span>
               </div>
             </DropdownMenuItem>
           );

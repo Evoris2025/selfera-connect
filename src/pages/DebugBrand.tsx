@@ -39,7 +39,7 @@ export default function DebugBrand() {
       <div className="mt-8">
         <BrandSectionLabel>Surfaces</BrandSectionLabel>
         <BrandSurface className="mt-3 p-4">
-          <p className="text-sm text-white/85">
+          <p className="text-body text-white/85">
             Outline-only surface. bg-black + border-white/[0.08] + rounded-2xl.
           </p>
         </BrandSurface>
@@ -59,7 +59,7 @@ export default function DebugBrand() {
         <BrandSectionLabel>Underline tabs</BrandSectionLabel>
         <div className="mt-3">
           <BrandUnderlineTabs tabs={TAB_LIST} value={tab} onChange={setTab} />
-          <p className="mt-3 text-sm text-white/55">Active: {tab}</p>
+          <p className="mt-3 text-body text-white/55">Active: {tab}</p>
         </div>
       </div>
 
@@ -71,7 +71,7 @@ export default function DebugBrand() {
               key={t}
               type="button"
               onClick={() => setTheme(t)}
-              className={`px-3 py-1.5 text-[12px] uppercase tracking-[0.1em] rounded-full border ${
+              className={`px-3 py-1.5 text-label uppercase tracking-[0.1em] rounded-full border ${
                 theme === t
                   ? 'border-white/40 text-white'
                   : 'border-white/10 text-white/55'
@@ -84,7 +84,7 @@ export default function DebugBrand() {
         <BrandSurface className="mt-3 p-4">
           <pre
             data-testid="theme-color-readout"
-            className="text-[11px] leading-relaxed text-white/70 whitespace-pre-wrap break-all"
+            className="text-caption leading-relaxed text-white/70 whitespace-pre-wrap break-all"
           >
 {JSON.stringify({ activeTheme: theme, ...color }, null, 2)}
           </pre>

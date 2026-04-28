@@ -116,8 +116,8 @@ export function HighlightViewer({ isOpen, onClose, highlight }: HighlightViewerP
 
       {/* Highlight name */}
       <div className="absolute top-12 left-4 z-30">
-        <p className="text-white font-semibold text-lg">{highlight.name}</p>
-        <p className="text-white/60 text-sm">{items.length} items</p>
+        <p className="text-white font-semibold text-title">{highlight.name}</p>
+        <p className="text-white/60 text-body">{items.length} items</p>
       </div>
 
       {/* Content */}

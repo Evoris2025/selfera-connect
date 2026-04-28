@@ -68,7 +68,7 @@ export function CommunityFeedView({ community, onBack }: CommunityFeedViewProps)
               <h1 className="font-semibold text-foreground truncate">{community.name}</h1>
               {community.is_private && <Lock className="h-3.5 w-3.5 text-muted-foreground" />}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-label text-muted-foreground">
               {community.member_count.toLocaleString()} members
             </p>
           </div>
@@ -80,7 +80,7 @@ export function CommunityFeedView({ community, onBack }: CommunityFeedViewProps)
         
         {/* Community description */}
         {community.description && (
-          <p className="px-4 pb-3 text-sm text-muted-foreground line-clamp-2">
+          <p className="px-4 pb-3 text-body text-muted-foreground line-clamp-2">
             {community.description}
           </p>
         )}
@@ -119,7 +119,7 @@ export function CommunityFeedView({ community, onBack }: CommunityFeedViewProps)
           <div className="text-center py-12 px-4">
             <Users className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
             <h3 className="font-medium text-foreground mb-1">No posts yet</h3>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-body text-muted-foreground">
               Be the first to share something with this community!
             </p>
           </div>
@@ -144,21 +144,21 @@ export function CommunityFeedView({ community, onBack }: CommunityFeedViewProps)
                     
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5 mb-1">
-                        <span className="font-medium text-sm">
+                        <span className="font-medium text-body">
                           {post.author?.display_name || 'User'}
                         </span>
                         {post.author?.is_verified && <EraVerifiedTick size="sm" userEmail={post.author?.email || undefined} />}
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-label text-muted-foreground">
                           @{post.author?.handle}
                         </span>
-                        <span className="text-xs text-muted-foreground">·</span>
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-label text-muted-foreground">·</span>
+                        <span className="text-label text-muted-foreground">
                           {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}
                         </span>
                       </div>
                       
                       {post.content && (
-                        <p className="text-sm text-foreground whitespace-pre-wrap">
+                        <p className="text-body text-foreground whitespace-pre-wrap">
                           {post.content}
                         </p>
                       )}

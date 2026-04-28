@@ -170,7 +170,7 @@ function Chip<T extends string>({ option, active, themePrimary, onClick, leftDot
       disabled={option.disabled}
       aria-pressed={active}
       className={cn(
-        'h-9 px-3 rounded-full text-[12px] uppercase tracking-[0.08em] flex items-center justify-center gap-2 transition-colors',
+        'h-9 px-3 rounded-full text-label uppercase tracking-[0.08em] flex items-center justify-center gap-2 transition-colors',
         active
           ? 'text-white'
           : 'border border-white/[0.15] text-white/55 bg-transparent hover:border-white/30',
@@ -288,7 +288,7 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
                 type="button"
                 onClick={handleHeaderPillReset}
                 aria-label={`Clear ${draftCount} active filters`}
-                className="shrink-0 mt-1 text-[10px] uppercase tracking-[0.12em] px-2 py-1 rounded-full bg-transparent transition-opacity hover:opacity-80"
+                className="shrink-0 mt-1 text-caption uppercase tracking-[0.12em] px-2 py-1 rounded-full bg-transparent transition-opacity hover:opacity-80"
                 style={{ borderWidth: 1, borderStyle: 'solid', borderColor: themePrimary, color: themePrimary }}
               >
                 {draftCount} ACTIVE
@@ -435,14 +435,14 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
             type="button"
             onClick={handleReset}
             disabled={draftCount === 0}
-            className="flex-1 h-10 rounded-full border border-white/[0.15] bg-transparent text-white/55 text-[12px] uppercase tracking-[0.1em] transition-colors hover:border-white/30 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-white/[0.15]"
+            className="flex-1 h-10 rounded-full border border-white/[0.15] bg-transparent text-white/55 text-label uppercase tracking-[0.1em] transition-colors hover:border-white/30 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-white/[0.15]"
           >
             Reset
           </button>
           <button
             type="button"
             onClick={handleApply}
-            className="flex-1 h-10 rounded-full text-[12px] uppercase tracking-[0.1em] inline-flex items-center justify-center text-white transition-opacity hover:opacity-90"
+            className="flex-1 h-10 rounded-full text-label uppercase tracking-[0.1em] inline-flex items-center justify-center text-white transition-opacity hover:opacity-90"
             style={{ backgroundColor: themePrimary }}
           >
             Apply

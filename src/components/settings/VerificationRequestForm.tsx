@@ -67,7 +67,7 @@ export function VerificationRequestForm({ onBack }: VerificationRequestFormProps
                 <BadgeCheck className="h-5 w-5 text-verified" />
               </div>
               <div>
-                <CardTitle className="text-base">Verification Request</CardTitle>
+                <CardTitle className="text-title">Verification Request</CardTitle>
                 <CardDescription>Your request status</CardDescription>
               </div>
             </div>
@@ -103,7 +103,7 @@ export function VerificationRequestForm({ onBack }: VerificationRequestFormProps
                   <BadgeCheck className="h-5 w-5" />
                   <span className="font-medium">You are verified!</span>
                 </div>
-                <p className="text-sm text-muted-foreground mt-2">
+                <p className="text-body text-muted-foreground mt-2">
                   Your verified badge is now visible on your profile and posts.
                 </p>
               </div>
@@ -112,7 +112,7 @@ export function VerificationRequestForm({ onBack }: VerificationRequestFormProps
             {myRequest.status === 'rejected' && myRequest.admin_notes && (
               <div className="mt-4 p-4 rounded-lg bg-destructive/10 border border-destructive/20">
                 <span className="font-medium text-destructive">Reason:</span>
-                <p className="text-sm text-muted-foreground mt-1">{myRequest.admin_notes}</p>
+                <p className="text-body text-muted-foreground mt-1">{myRequest.admin_notes}</p>
               </div>
             )}
           </CardContent>
@@ -140,7 +140,7 @@ export function VerificationRequestForm({ onBack }: VerificationRequestFormProps
         {/* Account Type Selection */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Account Type</CardTitle>
+            <CardTitle className="text-title">Account Type</CardTitle>
             <CardDescription>What type of account are you applying for?</CardDescription>
           </CardHeader>
           <CardContent>
@@ -159,7 +159,7 @@ export function VerificationRequestForm({ onBack }: VerificationRequestFormProps
                     <Briefcase className="h-4 w-4 text-verified" />
                     Professional
                   </Label>
-                  <p className="text-sm text-muted-foreground mt-1">
+                  <p className="text-body text-muted-foreground mt-1">
                     Licensed therapists, counselors, psychologists, and mental health practitioners.
                   </p>
                 </div>
@@ -172,7 +172,7 @@ export function VerificationRequestForm({ onBack }: VerificationRequestFormProps
                     <Building2 className="h-4 w-4 text-verified" />
                     Organisation
                   </Label>
-                  <p className="text-sm text-muted-foreground mt-1">
+                  <p className="text-body text-muted-foreground mt-1">
                     Mental health services, clinics, nonprofits, and support organisations.
                   </p>
                 </div>
@@ -184,7 +184,7 @@ export function VerificationRequestForm({ onBack }: VerificationRequestFormProps
         {/* Basic Information */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Basic Information</CardTitle>
+            <CardTitle className="text-title">Basic Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
@@ -260,7 +260,7 @@ export function VerificationRequestForm({ onBack }: VerificationRequestFormProps
                   terms_accepted: checked === true 
                 }))}
               />
-              <Label htmlFor="terms" className="text-sm leading-relaxed cursor-pointer">
+              <Label htmlFor="terms" className="text-body leading-relaxed cursor-pointer">
                 I confirm that the information provided is accurate and I agree to SelfERA's verification terms. 
                 I understand that verification grants a trust badge and does not constitute endorsement.
               </Label>
@@ -287,7 +287,7 @@ export function VerificationRequestForm({ onBack }: VerificationRequestFormProps
           )}
         </Button>
 
-        <p className="text-xs text-center text-muted-foreground">
+        <p className="text-label text-center text-muted-foreground">
           Verification requests are typically reviewed within 3-5 business days.
         </p>
       </form>

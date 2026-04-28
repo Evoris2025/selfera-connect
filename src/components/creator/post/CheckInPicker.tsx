@@ -54,7 +54,7 @@ export function CheckInPicker({ value, onChange }: CheckInPickerProps) {
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 text-sm"
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 text-body"
       >
         <Icon className="h-3.5 w-3.5 text-emerald-500" />
         <span className="font-medium">at {value.name}</span>
@@ -103,14 +103,14 @@ export function CheckInPicker({ value, onChange }: CheckInPickerProps) {
               >
                 <Icon className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
                 <div>
-                  <p className="text-sm font-medium">{place.name}</p>
-                  {place.category && <p className="text-xs text-muted-foreground">{place.category}</p>}
+                  <p className="text-body font-medium">{place.name}</p>
+                  {place.category && <p className="text-label text-muted-foreground">{place.category}</p>}
                 </div>
               </button>
             );
           })}
           {!searching && search.length >= 2 && results.length === 0 && (
-            <div className="py-4 text-center text-sm text-muted-foreground">No places found</div>
+            <div className="py-4 text-center text-body text-muted-foreground">No places found</div>
           )}
         </div>
       </PopoverContent>

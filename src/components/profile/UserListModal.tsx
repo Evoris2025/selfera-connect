@@ -268,7 +268,7 @@ export function UserListModal({ isOpen, onClose, type, userId, userName }: UserL
           >
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-              <h2 className="text-lg font-semibold text-foreground">{titles[type]}</h2>
+              <h2 className="text-title font-semibold text-foreground">{titles[type]}</h2>
               <Button
                 variant="ghost"
                 size="icon"
@@ -325,13 +325,13 @@ export function UserListModal({ isOpen, onClose, type, userId, userName }: UserL
                           className="flex-1 min-w-0 cursor-pointer"
                           onClick={() => handleUserClick(listUser.handle, listUser.id)}
                         >
-                          <p className="font-semibold text-sm text-foreground truncate inline-flex items-center gap-1">
+                          <p className="font-semibold text-body text-foreground truncate inline-flex items-center gap-1">
                             <span>{listUser.display_name || 'User'}</span>
                             {listUser.is_verified && (
                               <EraVerifiedTick size="sm" userEmail={listUser.email || undefined} />
                             )}
                           </p>
-                          <p className="text-xs text-muted-foreground truncate">
+                          <p className="text-label text-muted-foreground truncate">
                             @{listUser.handle || 'user'}
                           </p>
                         </div>
@@ -342,7 +342,7 @@ export function UserListModal({ isOpen, onClose, type, userId, userName }: UserL
                             size="sm"
                             variant={isFollowingUser ? 'outline' : 'default'}
                             onClick={() => handleFollowToggle(listUser.id)}
-                            className={`h-8 px-4 text-xs font-semibold rounded-lg transition-all ${
+                            className={`h-8 px-4 text-label font-semibold rounded-lg transition-all ${
                               isFollowingUser 
                                 ? 'border-border text-foreground hover:bg-destructive/10 hover:text-destructive hover:border-destructive/50' 
                                 : 'bg-primary text-primary-foreground'

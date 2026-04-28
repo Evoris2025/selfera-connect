@@ -198,7 +198,7 @@ export function PollCreator({ poll, onPollChange }: PollCreatorProps) {
       )}
 
       <div className="flex items-center justify-between gap-3 pt-1">
-        <Label htmlFor="poll-multi" className="flex items-center gap-2 text-sm">
+        <Label htmlFor="poll-multi" className="flex items-center gap-2 text-body">
           <CheckSquare className="h-4 w-4 text-muted-foreground" />
           Allow multiple answers
         </Label>
@@ -210,7 +210,7 @@ export function PollCreator({ poll, onPollChange }: PollCreatorProps) {
       </div>
 
       <div className="flex items-center gap-3">
-        <Label className="text-sm text-muted-foreground">Duration:</Label>
+        <Label className="text-body text-muted-foreground">Duration:</Label>
         <Select value={durationMs.toString()} onValueChange={(v) => setDurationMs(parseInt(v))}>
           <SelectTrigger className="w-32">
             <SelectValue />

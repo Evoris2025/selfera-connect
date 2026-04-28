@@ -64,7 +64,7 @@ export function CreatorScreenHeader({
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <h1 className="text-base font-bold tracking-tight">
+          <h1 className="text-title font-bold tracking-tight">
             <span className="font-medium text-white">{framingWord} </span>
             <span className="text-gradient-brand">
               {TITLES[type]}
@@ -101,7 +101,7 @@ export function CreatorScreenHeader({
           <h2 className="text-4xl font-bold tracking-tight text-foreground leading-none truncate max-w-full">
             {displayName}
           </h2>
-          <p className="text-base text-foreground/55 mt-1">@{handle}</p>
+          <p className="text-title text-foreground/55 mt-1">@{handle}</p>
           {showAudience && (
             <div className="mt-2">
               <AudienceSelector

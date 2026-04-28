@@ -88,7 +88,7 @@ function VideoCard({ video, size = 'medium' }: VideoCardProps) {
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
-        <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-black/80 rounded text-xs text-white font-medium">
+        <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-black/80 rounded text-label text-white font-medium">
           {video.duration}
         </div>
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -103,19 +103,19 @@ function VideoCard({ video, size = 'medium' }: VideoCardProps) {
         <div className="flex gap-3">
           <Avatar className="h-9 w-9 flex-shrink-0">
             <AvatarImage src={video.creator.avatar} alt={video.creator.name} />
-            <AvatarFallback className="bg-secondary text-xs">
+            <AvatarFallback className="bg-secondary text-label">
               {video.creator.name.charAt(0)}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <h3 className="font-medium text-sm text-foreground line-clamp-2 leading-tight">
+            <h3 className="font-medium text-body text-foreground line-clamp-2 leading-tight">
               {video.title}
             </h3>
             <div className="flex items-center gap-1 mt-1">
-              <span className="text-xs text-muted-foreground">{video.creator.name}</span>
+              <span className="text-label text-muted-foreground">{video.creator.name}</span>
               {video.creator.isVerified && <VerifiedBadge size="sm" />}
             </div>
-            <div className="flex items-center gap-2 mt-0.5 text-xs text-muted-foreground">
+            <div className="flex items-center gap-2 mt-0.5 text-label text-muted-foreground">
               <span>{formatViews(video.views)} views</span>
             </div>
           </div>
@@ -142,7 +142,7 @@ function VideoSection({ title, icon, videos, size = 'medium' }: VideoSectionProp
           {icon}
           <h2 className="font-semibold text-foreground">{title}</h2>
         </div>
-        <button className="flex items-center gap-1 text-sm text-primary hover:text-primary/80 transition-colors">
+        <button className="flex items-center gap-1 text-body text-primary hover:text-primary/80 transition-colors">
           See all
           <ChevronRight className="h-4 w-4" />
         </button>
@@ -193,8 +193,8 @@ export default function VideoHub() {
                 <BookOpen className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <h3 className="font-medium text-foreground text-sm">Reflection space</h3>
-                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                <h3 className="font-medium text-foreground text-body">Reflection space</h3>
+                <p className="text-label text-muted-foreground mt-1 leading-relaxed">
                   After watching, take a moment to reflect. What resonated with you?
                 </p>
               </div>

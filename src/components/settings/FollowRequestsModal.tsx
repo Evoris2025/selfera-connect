@@ -64,14 +64,14 @@ export function FollowRequestsModal({ open, onOpenChange }: FollowRequestsModalP
                     className="flex items-center gap-3 hover:opacity-80 transition-opacity flex-1 min-w-0"
                     onClick={() => onOpenChange(false)}
                   >
-                    <Avatar className="h-12 w-12 shrink-0">
+                    <Avatar size="md" className="shrink-0">
                       <AvatarImage src={request.follower.avatar} alt={request.follower.name} />
                       <AvatarFallback>{request.follower.name[0]}</AvatarFallback>
                     </Avatar>
                     <div className="min-w-0">
-                      <p className="font-medium text-sm truncate">{request.follower.name}</p>
-                      <p className="text-xs text-muted-foreground truncate">@{request.follower.handle}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
+                      <p className="font-medium text-body truncate">{request.follower.name}</p>
+                      <p className="text-label text-muted-foreground truncate">@{request.follower.handle}</p>
+                      <p className="text-label text-muted-foreground mt-0.5">
                         {formatDistanceToNow(request.createdAt, { addSuffix: true })}
                       </p>
                     </div>

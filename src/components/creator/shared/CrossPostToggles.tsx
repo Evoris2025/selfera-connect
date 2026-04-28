@@ -24,7 +24,7 @@ export function CrossPostToggles({ source, value, onChange }: CrossPostTogglesPr
     <div className="space-y-3">
       {source !== 'expression' && (
         <div className="flex items-center justify-between gap-3">
-          <Label htmlFor="cross-expression" className="flex items-center gap-2 text-sm">
+          <Label htmlFor="cross-expression" className="flex items-center gap-2 text-body">
             <Sparkles className="h-4 w-4 text-rose-400" />
             Also share as Expression
           </Label>
@@ -38,7 +38,7 @@ export function CrossPostToggles({ source, value, onChange }: CrossPostTogglesPr
 
       {source !== 'post' && (
         <div className="flex items-center justify-between gap-3">
-          <Label htmlFor="cross-post" className="flex items-center gap-2 text-sm">
+          <Label htmlFor="cross-post" className="flex items-center gap-2 text-body">
             <FileText className="h-4 w-4 text-emerald-400" />
             Also share as Post
           </Label>

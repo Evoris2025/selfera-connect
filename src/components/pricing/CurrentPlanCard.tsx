@@ -61,14 +61,14 @@ export function CurrentPlanCard() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-semibold text-foreground">
+                <h3 className="text-title font-semibold text-foreground">
                   {planDetails?.name} Plan
                 </h3>
-                <Badge className={`${planAccentBadge[currentPlan]} text-[10px] px-1.5`}>
+                <Badge className={`${planAccentBadge[currentPlan]} text-caption px-1.5`}>
                   Active
                 </Badge>
               </div>
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <p className="text-label text-muted-foreground mt-0.5">
                 {planDetails?.description}
               </p>
             </div>
@@ -78,14 +78,14 @@ export function CurrentPlanCard() {
         <div className="mt-4 pt-4 border-t border-white/5">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">Current period</p>
+              <p className="text-label text-muted-foreground">Current period</p>
               {isPaid && subscription?.current_period_end ? (
-                <div className="flex items-center gap-1.5 text-sm text-foreground">
+                <div className="flex items-center gap-1.5 text-body text-foreground">
                   <Calendar className="w-3.5 h-3.5" />
                   <span>Renews {format(new Date(subscription.current_period_end), 'MMM d, yyyy')}</span>
                 </div>
               ) : (
-                <p className="text-sm text-foreground">Forever free</p>
+                <p className="text-body text-foreground">Forever free</p>
               )}
             </div>
             <Button

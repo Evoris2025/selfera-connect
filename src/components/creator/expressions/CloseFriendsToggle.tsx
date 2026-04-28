@@ -34,12 +34,12 @@ export function CloseFriendsToggle({ enabled, onChange, closeFriendsCount = 0 }:
         </div>
         <div>
           <p className={cn(
-            "font-semibold text-sm",
+            "font-semibold text-body",
             enabled ? "text-green-400" : "text-foreground"
           )}>
             Close Friends
           </p>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-label text-muted-foreground">
             {enabled 
               ? `Only ${closeFriendsCount} people will see this`
               : 'Share with everyone'

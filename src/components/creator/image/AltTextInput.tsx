@@ -22,9 +22,9 @@ export function AltTextInput({ value, onChange, maxLength = 500 }: AltTextInputP
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Eye className="h-4 w-4 text-muted-foreground" />
-          <label className="text-sm font-medium">Alt Text</label>
+          <label className="text-body font-medium">Alt Text</label>
         </div>
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        <div className="flex items-center gap-1.5 text-label text-muted-foreground">
           <Info className="h-3.5 w-3.5" />
           <span>For accessibility</span>
         </div>
@@ -34,10 +34,10 @@ export function AltTextInput({ value, onChange, maxLength = 500 }: AltTextInputP
         placeholder="Describe this image for people who use screen readers..."
         value={value}
         onChange={(e) => onChange(e.target.value.slice(0, maxLength))}
-        className="min-h-[80px] resize-none text-sm"
+        className="min-h-[80px] resize-none text-body"
       />
 
-      <div className="flex items-center justify-between text-xs">
+      <div className="flex items-center justify-between text-label">
         <p className="text-muted-foreground">
           Describe what's in the image so everyone can enjoy it
         </p>

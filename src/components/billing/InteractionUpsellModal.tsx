@@ -66,10 +66,10 @@ export function InteractionUpsellModal({ isOpen, onClose }: InteractionUpsellMod
             
             {/* Content */}
             <div className="p-6 text-center">
-              <h2 className="text-xl font-bold text-foreground mb-2">
+              <h2 className="text-headline font-bold text-foreground mb-2">
                 Unlock Interactions
               </h2>
-              <p className="text-muted-foreground text-sm mb-6">
+              <p className="text-muted-foreground text-body mb-6">
                 Upgrade to Client Paid to request interactions with ERA Verified providers
               </p>
               
@@ -81,7 +81,7 @@ export function InteractionUpsellModal({ isOpen, onClose }: InteractionUpsellMod
                   'Priority support access',
                   'Exclusive community features',
                 ].map((feature, idx) => (
-                  <div key={idx} className="flex items-center gap-2 text-sm">
+                  <div key={idx} className="flex items-center gap-2 text-body">
                     <Sparkles className="w-4 h-4 text-pink-500 flex-shrink-0" />
                     <span className="text-foreground">{feature}</span>
                   </div>
@@ -92,7 +92,7 @@ export function InteractionUpsellModal({ isOpen, onClose }: InteractionUpsellMod
               <div className="py-4 border-t border-b border-white/[0.06] mb-6">
                 <p className="text-3xl font-bold text-foreground">
                   {formatPrice(CLIENT_BASE_PRICE)}
-                  <span className="text-base font-normal text-muted-foreground">/month</span>
+                  <span className="text-title font-normal text-muted-foreground">/month</span>
                 </p>
               </div>
               
@@ -108,7 +108,7 @@ export function InteractionUpsellModal({ isOpen, onClose }: InteractionUpsellMod
               
               <button
                 onClick={onClose}
-                className="mt-3 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="mt-3 text-body text-muted-foreground hover:text-foreground transition-colors"
               >
                 Maybe later
               </button>

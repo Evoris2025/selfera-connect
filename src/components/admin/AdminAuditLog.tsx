@@ -70,20 +70,20 @@ function LogEntryCard({ entry }: { entry: AuditLogEntry }) {
               <Badge variant={actionConfig.variant}>
                 {actionConfig.label}
               </Badge>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-label text-muted-foreground">
                 {entityLabel}
               </span>
             </div>
-            <p className="text-sm text-muted-foreground">
-              Target: <code className="text-xs bg-muted px-1 rounded">{entry.target_entity_id.slice(0, 8)}...</code>
+            <p className="text-body text-muted-foreground">
+              Target: <code className="text-label bg-muted px-1 rounded">{entry.target_entity_id.slice(0, 8)}...</code>
             </p>
             {entry.notes && (
-              <p className="text-sm text-foreground mt-2 p-2 bg-muted/50 rounded">
+              <p className="text-body text-foreground mt-2 p-2 bg-muted/50 rounded">
                 {entry.notes}
               </p>
             )}
           </div>
-          <div className="text-right text-xs text-muted-foreground whitespace-nowrap">
+          <div className="text-right text-label text-muted-foreground whitespace-nowrap">
             {format(new Date(entry.created_at), 'MMM d, yyyy')}
             <br />
             {format(new Date(entry.created_at), 'h:mm a')}
@@ -143,7 +143,7 @@ export function AdminAuditLog() {
               </SelectContent>
             </Select>
             {logs.length > 0 && (
-              <span className="text-sm text-muted-foreground ml-auto">
+              <span className="text-body text-muted-foreground ml-auto">
                 {logs.length} entries loaded
               </span>
             )}
@@ -162,7 +162,7 @@ export function AdminAuditLog() {
           <CardContent className="py-8 text-center text-muted-foreground">
             <FileText className="h-8 w-8 mx-auto mb-2 opacity-50" />
             <p>No audit logs found</p>
-            <p className="text-sm">Admin actions will appear here</p>
+            <p className="text-body">Admin actions will appear here</p>
           </CardContent>
         </Card>
       ) : (
@@ -193,7 +193,7 @@ export function AdminAuditLog() {
           )}
           
           {!hasMore && logs.length > 0 && (
-            <p className="text-center text-sm text-muted-foreground py-2">
+            <p className="text-center text-body text-muted-foreground py-2">
               All entries loaded
             </p>
           )}

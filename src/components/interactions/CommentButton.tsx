@@ -73,7 +73,7 @@ export function CommentButton({ count, onClick, size = 'md', hasNewComments = fa
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: countDirection === 'up' ? -20 : 20, opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="text-sm tabular-nums text-foreground block"
+            className="text-body tabular-nums text-foreground block"
           >
             {displayCount > 0 ? displayCount : ''}
           </motion.span>

@@ -69,8 +69,8 @@ export function AdminInteractionsPanel() {
           <MessageSquare className="h-5 w-5 text-blue-600" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-foreground">Interaction Oversight</h2>
-          <p className="text-sm text-muted-foreground">
+          <h2 className="text-headline font-bold text-foreground">Interaction Oversight</h2>
+          <p className="text-body text-muted-foreground">
             Read-only visibility — No editing permitted
           </p>
         </div>
@@ -82,7 +82,7 @@ export function AdminInteractionsPanel() {
           <CardContent className="pt-4">
             <div className="flex items-center gap-2 mb-1">
               <CheckCircle className="h-4 w-4 text-emerald-600" />
-              <span className="text-sm text-muted-foreground">Completion Rate</span>
+              <span className="text-body text-muted-foreground">Completion Rate</span>
             </div>
             <p className="text-2xl font-bold text-emerald-600">
               {(MOCK_INTERACTION_STATS.completionRate * 100).toFixed(0)}%
@@ -93,7 +93,7 @@ export function AdminInteractionsPanel() {
           <CardContent className="pt-4">
             <div className="flex items-center gap-2 mb-1">
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Total Completed</span>
+              <span className="text-body text-muted-foreground">Total Completed</span>
             </div>
             <p className="text-2xl font-bold">{MOCK_INTERACTION_STATS.completedLifetime.toLocaleString()}</p>
           </CardContent>
@@ -102,7 +102,7 @@ export function AdminInteractionsPanel() {
           <CardContent className="pt-4">
             <div className="flex items-center gap-2 mb-1">
               <XCircle className="h-4 w-4 text-amber-600" />
-              <span className="text-sm text-muted-foreground">Total Cancelled</span>
+              <span className="text-body text-muted-foreground">Total Cancelled</span>
             </div>
             <p className="text-2xl font-bold text-amber-600">{MOCK_INTERACTION_STATS.cancelledLifetime}</p>
           </CardContent>
@@ -111,7 +111,7 @@ export function AdminInteractionsPanel() {
           <CardContent className="pt-4">
             <div className="flex items-center gap-2 mb-1">
               <AlertTriangle className="h-4 w-4 text-destructive" />
-              <span className="text-sm text-muted-foreground">Flagged (Open)</span>
+              <span className="text-body text-muted-foreground">Flagged (Open)</span>
             </div>
             <p className="text-2xl font-bold text-destructive">
               {MOCK_INTERACTION_STATS.flaggedTotal - MOCK_INTERACTION_STATS.flaggedResolved}
@@ -123,7 +123,7 @@ export function AdminInteractionsPanel() {
       {/* Current Interactions by Status */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm font-medium">Current Interaction States</CardTitle>
+          <CardTitle className="text-body font-medium">Current Interaction States</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -140,9 +140,9 @@ export function AdminInteractionsPanel() {
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <Icon className="h-4 w-4" />
-                    <span className="text-sm font-medium">{config.label}</span>
+                    <span className="text-body font-medium">{config.label}</span>
                   </div>
-                  <p className="text-xl font-bold">{count}</p>
+                  <p className="text-headline font-bold">{count}</p>
                 </div>
               );
             })}
@@ -153,7 +153,7 @@ export function AdminInteractionsPanel() {
       {/* Recent Interactions */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm font-medium">Recent Interactions</CardTitle>
+          <CardTitle className="text-body font-medium">Recent Interactions</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {interactions.slice(0, 5).map(interaction => {
@@ -175,22 +175,22 @@ export function AdminInteractionsPanel() {
                 </Avatar>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-sm">
+                    <span className="font-medium text-body">
                       {otherParty?.display_name || 'Unknown'}
                     </span>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-label text-muted-foreground">
                       ({isProvider ? 'Client' : 'Provider'})
                     </span>
                   </div>
-                  <p className="text-xs text-muted-foreground truncate">
+                  <p className="text-label text-muted-foreground truncate">
                     {interaction.notes || 'No notes'}
                   </p>
                 </div>
-                <Badge variant="outline" className={cn('text-xs', config?.color)}>
+                <Badge variant="outline" className={cn('text-label', config?.color)}>
                   <Icon className="h-3 w-3 mr-1" />
                   {config?.label || interaction.status}
                 </Badge>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-label text-muted-foreground">
                   ${interaction.amount_due.toFixed(2)}
                 </span>
               </div>
@@ -202,14 +202,14 @@ export function AdminInteractionsPanel() {
       {/* Flagged Interactions */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-sm font-medium">
+          <CardTitle className="flex items-center gap-2 text-body font-medium">
             <AlertTriangle className="h-4 w-4 text-destructive" />
             Flagged Interactions
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {MOCK_FLAGGED_INTERACTIONS.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-4">
+            <p className="text-body text-muted-foreground text-center py-4">
               No flagged interactions
             </p>
           ) : (
@@ -221,20 +221,20 @@ export function AdminInteractionsPanel() {
                 <AlertTriangle className="h-5 w-5 text-destructive mt-0.5" />
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="font-medium text-sm">{flag.providerName}</span>
-                    <span className="text-xs text-muted-foreground">@{flag.providerHandle}</span>
+                    <span className="font-medium text-body">{flag.providerName}</span>
+                    <span className="text-label text-muted-foreground">@{flag.providerHandle}</span>
                     <Badge 
                       variant="outline" 
                       className={cn(
-                        'text-xs',
+                        'text-label',
                         flag.status === 'new' ? 'bg-amber-500/10 text-amber-600' : 'bg-blue-500/10 text-blue-600'
                       )}
                     >
                       {flag.status}
                     </Badge>
                   </div>
-                  <p className="text-sm text-muted-foreground">{flag.reason}</p>
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-body text-muted-foreground">{flag.reason}</p>
+                  <p className="text-label text-muted-foreground mt-1">
                     Flagged {Math.floor((Date.now() - flag.createdAt.getTime()) / (1000 * 60 * 60))}h ago
                   </p>
                 </div>
@@ -247,7 +247,7 @@ export function AdminInteractionsPanel() {
       {/* Simulation Notice */}
       <Card className="border-dashed border-2 border-muted">
         <CardContent className="py-4">
-          <p className="text-sm text-muted-foreground text-center">
+          <p className="text-body text-muted-foreground text-center">
             This panel provides read-only visibility. No interaction editing is permitted.
           </p>
         </CardContent>

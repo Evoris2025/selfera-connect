@@ -68,13 +68,13 @@ export function CustomAudienceDialog({ open, onOpenChange, value, onSave }: Cust
                   checked ? 'bg-primary/10' : 'hover:bg-secondary'
                 )}
               >
-                <Avatar className="h-8 w-8">
+                <Avatar size="sm">
                   <AvatarImage src={u.avatar} alt={u.name} />
                   <AvatarFallback>{u.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{u.name}</p>
-                  <p className="text-xs text-muted-foreground truncate">@{u.handle}</p>
+                  <p className="text-body font-medium truncate">{u.name}</p>
+                  <p className="text-label text-muted-foreground truncate">@{u.handle}</p>
                 </div>
                 <div className={cn(
                   'h-5 w-5 rounded-full border-2 flex items-center justify-center',

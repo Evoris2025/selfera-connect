@@ -43,7 +43,7 @@ export function AppHeader({ title, brandMark = false }: AppHeaderProps) {
             <motion.span
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              className="font-semibold text-foreground text-lg tracking-tight"
+              className="font-semibold text-foreground text-title tracking-tight"
             >
               {title}
             </motion.span>

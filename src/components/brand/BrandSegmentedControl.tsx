@@ -45,7 +45,7 @@ export function BrandSegmentedControl<T extends string>({
             disabled={item.disabled}
             onClick={() => onChange(item.value)}
             className={cn(
-              'relative flex-1 h-9 rounded-full text-sm font-semibold tracking-tight',
+              'relative flex-1 h-9 rounded-full text-body font-semibold tracking-tight',
               'flex items-center justify-center gap-1.5',
               'transition-colors duration-150',
               'disabled:opacity-40 disabled:cursor-not-allowed',
@@ -70,7 +70,7 @@ export function BrandSegmentedControl<T extends string>({
             {typeof item.count === 'number' && (
               <span
                 className={cn(
-                  'text-xs font-medium tabular-nums',
+                  'text-label font-medium tabular-nums',
                   active ? 'text-white/70' : 'text-white/40',
                 )}
               >

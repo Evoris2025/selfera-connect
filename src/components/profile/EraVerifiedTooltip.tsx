@@ -70,8 +70,8 @@ export function EraVerifiedTooltip({
         side="top" 
         className="max-w-[250px] text-center"
       >
-        <p className="font-semibold text-sm mb-1">{title}</p>
-        <p className="text-xs text-muted-foreground">{description}</p>
+        <p className="font-semibold text-body mb-1">{title}</p>
+        <p className="text-label text-muted-foreground">{description}</p>
       </TooltipContent>
     </Tooltip>
   );

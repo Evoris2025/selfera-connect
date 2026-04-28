@@ -13,9 +13,9 @@ interface FollowButtonProps {
 }
 
 const sizeClasses = {
-  sm: 'h-7 text-xs px-3 min-w-[70px]',
-  md: 'h-9 text-sm px-4 min-w-[90px]',
-  lg: 'h-11 text-sm px-5 min-w-[100px]',
+  sm: 'h-7 text-label px-3 min-w-[70px]',
+  md: 'h-9 text-body px-4 min-w-[90px]',
+  lg: 'h-11 text-body px-5 min-w-[100px]',
 };
 
 export function FollowButton({ 

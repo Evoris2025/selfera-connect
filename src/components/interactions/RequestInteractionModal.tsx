@@ -80,14 +80,14 @@ export function RequestInteractionModal({
                   />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <h2 className="text-lg font-semibold text-foreground">
+                      <h2 className="text-title font-semibold text-foreground">
                         {provider.display_name}
                       </h2>
                       {provider.is_verified && (
                         <Sparkles className="w-4 h-4 text-primary" />
                       )}
                     </div>
-                    <p className="text-sm text-muted-foreground">@{provider.handle}</p>
+                    <p className="text-body text-muted-foreground">@{provider.handle}</p>
                   </div>
                   <button
                     className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/5 transition-colors"
@@ -105,7 +105,7 @@ export function RequestInteractionModal({
 
                 {/* Notes Input */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">
+                  <label className="text-body font-medium text-foreground">
                     Add a note (optional)
                   </label>
                   <Textarea
@@ -116,7 +116,7 @@ export function RequestInteractionModal({
                     rows={3}
                     className="resize-none"
                   />
-                  <p className="text-xs text-muted-foreground text-right">
+                  <p className="text-label text-muted-foreground text-right">
                     {notes.length}/500
                   </p>
                 </div>
@@ -124,7 +124,7 @@ export function RequestInteractionModal({
                 {/* Info Notice */}
                 <div className="flex items-start gap-3 p-3 rounded-xl bg-primary/5 border border-primary/10">
                   <AlertCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-label text-muted-foreground">
                     The provider will review your request and can choose to accept or decline. 
                     You'll be notified of their response.
                   </p>

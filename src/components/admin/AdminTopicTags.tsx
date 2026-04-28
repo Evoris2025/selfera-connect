@@ -261,7 +261,7 @@ export function AdminTopicTags() {
                 <SelectItem value="inactive">Inactive</SelectItem>
               </SelectContent>
             </Select>
-            <span className="text-sm text-muted-foreground ml-auto">
+            <span className="text-body text-muted-foreground ml-auto">
               {filteredTags.length} tags
             </span>
           </div>
@@ -286,7 +286,7 @@ export function AdminTopicTags() {
                       #{tag.name}
                     </Badge>
                     {tag.category && (
-                      <span className="text-xs text-muted-foreground truncate">
+                      <span className="text-label text-muted-foreground truncate">
                         {TAG_CATEGORIES.find(c => c.value === tag.category)?.label || tag.category}
                       </span>
                     )}
@@ -335,7 +335,7 @@ export function AdminTopicTags() {
                 value={newTagName}
                 onChange={e => setNewTagName(e.target.value)}
               />
-              <p className="text-xs text-muted-foreground">
+              <p className="text-label text-muted-foreground">
                 Tag names are lowercase and should be single words or hyphenated
               </p>
             </div>

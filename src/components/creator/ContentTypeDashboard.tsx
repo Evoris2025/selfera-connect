@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { ICON_SIZE } from "@/lib/scale";
 import { motion } from 'framer-motion';
 import {
   Sparkles,
@@ -154,18 +155,18 @@ function CreatorRow({
 
         {/* Content column */}
         <div className="flex-1 min-w-0">
-          <h3 className="text-xl font-extrabold tracking-tight text-white leading-none truncate">
+          <h3 className="text-headline font-extrabold tracking-tight text-white leading-none truncate">
             {title.toUpperCase()}
             <span className="text-gradient-brand">.</span>
           </h3>
-          <p className="text-[10px] font-medium tracking-[0.15em] uppercase text-white/55 mt-1.5 truncate">
+          <p className="text-caption font-medium tracking-[0.15em] uppercase text-white/55 mt-1.5 truncate">
             {description}
           </p>
         </div>
 
         {/* Chevron chip */}
         <div className="w-7 h-7 rounded-full bg-white/[0.08] backdrop-blur-md border border-white/10 flex items-center justify-center shrink-0">
-          <ChevronRight size={14} className="text-white/85" />
+          <ChevronRight size={ICON_SIZE.sm} className="text-white/85" />
         </div>
       </div>
     </motion.button>
@@ -262,7 +263,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
               CREATE.
             </span>
           </h1>
-          <p className="text-sm text-white/55 mt-1.5">choose how you show up today</p>
+          <p className="text-body text-white/55 mt-1.5">choose how you show up today</p>
         </div>
 
         {/* Slim resume strip — opens the continue WORKING. sheet. Hidden when no work. */}
@@ -285,14 +286,14 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
                 aria-hidden
                 className="shrink-0"
               />
-              <span className="text-[13px] tracking-[0.02em] text-white shrink-0">
+              <span className="text-label tracking-[0.02em] text-white shrink-0">
                 continue WORKING<span className="text-gradient-brand">.</span>
               </span>
               <span aria-hidden className="shrink-0 w-[3px] h-[3px] rounded-full bg-white/30" />
-              <span className="flex-1 min-w-0 truncate text-[11px] uppercase tracking-[0.08em] text-white/50 text-left">
+              <span className="flex-1 min-w-0 truncate text-caption uppercase tracking-[0.08em] text-white/50 text-left">
                 {resumeStrip.meta}
               </span>
-              <ChevronRight size={14} className="shrink-0 text-white/40" />
+              <ChevronRight size={ICON_SIZE.sm} className="shrink-0 text-white/40" />
             </button>
           </div>
         )}

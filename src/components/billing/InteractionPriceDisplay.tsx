@@ -39,14 +39,14 @@ export function InteractionPriceDisplay({
       {/* Main Price */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Interaction Fee</span>
+          <span className="text-body text-muted-foreground">Interaction Fee</span>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Info className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
               </TooltipTrigger>
               <TooltipContent className="max-w-xs">
-                <p className="text-xs">
+                <p className="text-label">
                   As a Client Paid subscriber ({formatPrice(CLIENT_BASE_PRICE)}/mo), 
                   you only pay the difference to interact with this provider.
                 </p>
@@ -55,7 +55,7 @@ export function InteractionPriceDisplay({
           </TooltipProvider>
         </div>
         <motion.span
-          className="text-lg font-bold text-foreground"
+          className="text-title font-bold text-foreground"
           initial={{ opacity: 0, x: 10 }}
           animate={{ opacity: 1, x: 0 }}
         >
@@ -70,19 +70,19 @@ export function InteractionPriceDisplay({
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
         >
-          <div className="flex items-center justify-between text-xs">
+          <div className="flex items-center justify-between text-label">
             <span className="text-muted-foreground">Provider tier price</span>
             <span className={`font-medium ${tierConfig.colorClass}`}>
               {formatPrice(tierPrice)}
             </span>
           </div>
-          <div className="flex items-center justify-between text-xs">
+          <div className="flex items-center justify-between text-label">
             <span className="text-muted-foreground">Your subscription covers</span>
             <span className="font-medium text-green-500">
               -{formatPrice(CLIENT_BASE_PRICE)}
             </span>
           </div>
-          <div className="flex items-center justify-between text-xs pt-1.5 border-t border-white/[0.06]">
+          <div className="flex items-center justify-between text-label pt-1.5 border-t border-white/[0.06]">
             <span className="text-muted-foreground">You pay</span>
             <span className="font-bold text-foreground">
               {formatPrice(amountDue)}
@@ -98,7 +98,7 @@ export function InteractionPriceDisplay({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          <p className="text-xs text-green-500">
+          <p className="text-label text-green-500">
             ✓ Included with your Client Paid subscription
           </p>
         </motion.div>

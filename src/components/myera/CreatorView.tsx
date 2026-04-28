@@ -73,15 +73,15 @@ export function CreatorView({
             <Sparkles className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1">
-            <h3 className="text-base font-semibold text-foreground mb-1">
+            <h3 className="text-title font-semibold text-foreground mb-1">
               Your Creator Dashboard
             </h3>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-body text-muted-foreground">
               Grow your community and connect with supporters
             </p>
           </div>
           {isVerified && (
-            <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-xs">
+            <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-label">
               <Check className="w-3 h-3 mr-1" />
               Verified
             </Badge>
@@ -100,7 +100,7 @@ export function CreatorView({
         <div className="bg-card/40 border border-white/[0.06] p-4">
           <div className="flex items-center gap-2 mb-2">
             <Users className="w-4 h-4 text-primary" />
-            <span className="text-xs text-muted-foreground">Subscribers</span>
+            <span className="text-label text-muted-foreground">Subscribers</span>
           </div>
           <p className="text-2xl font-bold text-foreground">{subscriberCount.toLocaleString()}</p>
         </div>
@@ -109,14 +109,14 @@ export function CreatorView({
         <div className="bg-card/40 border border-white/[0.06] p-4">
           <div className="flex items-center gap-2 mb-2">
             <Eye className="w-4 h-4 text-primary" />
-            <span className="text-xs text-muted-foreground">Visibility Tier</span>
+            <span className="text-label text-muted-foreground">Visibility Tier</span>
           </div>
           <div className="flex items-center gap-2">
             <div 
               className="w-3 h-3 rounded-full"
               style={{ backgroundColor: tierConfig.color }}
             />
-            <span className="text-lg font-semibold text-foreground capitalize">
+            <span className="text-title font-semibold text-foreground capitalize">
               {tierColour || 'Green'}
             </span>
           </div>
@@ -130,7 +130,7 @@ export function CreatorView({
         animate={{ opacity: 1, y: 0 }}
         transition={{ ...springGentle, delay: 0.35 }}
       >
-        <h3 className="text-sm font-medium text-foreground flex items-center gap-2">
+        <h3 className="text-body font-medium text-foreground flex items-center gap-2">
           <MessageCircle className="w-4 h-4 text-primary" />
           Interaction Requests
         </h3>
@@ -139,15 +139,15 @@ export function CreatorView({
           {/* Pending */}
           <div className="bg-amber-500/10 border border-amber-500/20 p-4 text-center">
             <Clock className="w-5 h-5 mx-auto mb-1 text-amber-400" />
-            <p className="text-xl font-bold text-foreground">{pendingInteractions}</p>
-            <p className="text-xs text-muted-foreground">Pending</p>
+            <p className="text-headline font-bold text-foreground">{pendingInteractions}</p>
+            <p className="text-label text-muted-foreground">Pending</p>
           </div>
 
           {/* Confirmed */}
           <div className="bg-emerald-500/10 border border-emerald-500/20 p-4 text-center">
             <Check className="w-5 h-5 mx-auto mb-1 text-emerald-400" />
-            <p className="text-xl font-bold text-foreground">{confirmedInteractions}</p>
-            <p className="text-xs text-muted-foreground">Confirmed</p>
+            <p className="text-headline font-bold text-foreground">{confirmedInteractions}</p>
+            <p className="text-label text-muted-foreground">Confirmed</p>
           </div>
         </div>
       </motion.div>
@@ -203,10 +203,10 @@ export function CreatorView({
             />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium text-foreground">
+            <p className="text-body font-medium text-foreground">
               {tierConfig.label} Tier
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-label text-muted-foreground">
               Interaction cap: ${tierConfig.interactionCap.toFixed(2)}
             </p>
           </div>

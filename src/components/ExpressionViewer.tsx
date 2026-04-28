@@ -310,14 +310,14 @@ export function ExpressionViewer({ isOpen, onClose, initialIndex = 0 }: Expressi
           <div className="absolute right-4 bottom-36 flex flex-col items-center gap-6">
             {/* Avatar */}
             <motion.div whileTap={{ scale: 0.9 }} className="relative">
-              <Avatar className="h-12 w-12 ring-2 ring-white">
+              <Avatar size="md" className="ring-2 ring-white">
                 <AvatarImage src={currentExpression.userAvatar} />
                 <AvatarFallback className="bg-primary text-white">
                   {currentExpression.userName.charAt(0)}
                 </AvatarFallback>
               </Avatar>
               <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-rose-500 flex items-center justify-center">
-                <span className="text-white text-xs">+</span>
+                <span className="text-white text-label">+</span>
               </div>
             </motion.div>
 
@@ -339,7 +339,7 @@ export function ExpressionViewer({ isOpen, onClose, initialIndex = 0 }: Expressi
               className="flex flex-col items-center gap-1"
             >
               <MessageCircle className="h-8 w-8 text-white" />
-              <span className="text-white text-xs font-semibold">{formatCount(stats.comments)}</span>
+              <span className="text-white text-label font-semibold">{formatCount(stats.comments)}</span>
             </motion.button>
 
             {/* Share */}
@@ -349,7 +349,7 @@ export function ExpressionViewer({ isOpen, onClose, initialIndex = 0 }: Expressi
               className="flex flex-col items-center gap-1"
             >
               <Share2 className="h-8 w-8 text-white" />
-              <span className="text-white text-xs font-semibold">{formatCount(stats.shares)}</span>
+              <span className="text-white text-label font-semibold">{formatCount(stats.shares)}</span>
             </motion.button>
 
             {/* Save to Highlight - More prominent */}
@@ -361,7 +361,7 @@ export function ExpressionViewer({ isOpen, onClose, initialIndex = 0 }: Expressi
               <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur flex items-center justify-center">
                 <Bookmark className="h-5 w-5 text-white" />
               </div>
-              <span className="text-white text-[10px] font-medium">Save</span>
+              <span className="text-white text-caption font-medium">Save</span>
             </motion.button>
 
             {/* Analytics toggle - Only for creator */}
@@ -384,7 +384,7 @@ export function ExpressionViewer({ isOpen, onClose, initialIndex = 0 }: Expressi
                 )}>
                   <BarChart3 className="h-5 w-5 text-white" />
                 </div>
-                <span className="text-white text-[10px] font-medium">Insights</span>
+                <span className="text-white text-caption font-medium">Insights</span>
               </motion.button>
             )}
 
@@ -431,20 +431,20 @@ export function ExpressionViewer({ isOpen, onClose, initialIndex = 0 }: Expressi
             {currentExpression.caption && (
               <HashtagText
                 text={currentExpression.caption}
-                className="text-white text-sm mb-2 line-clamp-3 block"
+                className="text-white text-body mb-2 line-clamp-3 block"
                 hashtagClassName="text-primary font-medium"
               />
             )}
 
             {/* Time remaining */}
-            <p className="text-white/70 text-xs mb-3">
+            <p className="text-white/70 text-label mb-3">
               {getTimeRemaining(currentExpression.expiresAt)}
             </p>
 
             {/* Audio indicator */}
             <div className="flex items-center gap-2 mb-4">
               <Music2 className="h-4 w-4 text-white/80" />
-              <span className="text-white/80 text-sm">Original Sound</span>
+              <span className="text-white/80 text-body">Original Sound</span>
             </div>
 
             {/* Emoji Reaction Picker */}

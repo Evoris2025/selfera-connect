@@ -138,25 +138,25 @@ export function InteractionCard({
         {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-sm font-medium text-foreground truncate">
+            <span className="text-body font-medium text-foreground truncate">
               {displayName}
             </span>
             {otherParty?.is_verified && (
-              <span className="text-primary text-xs">✓</span>
+              <span className="text-primary text-label">✓</span>
             )}
           </div>
-          <p className="text-xs text-muted-foreground mb-2">
+          <p className="text-label text-muted-foreground mb-2">
             @{handle} • {dateStr}
           </p>
 
           {/* Status Badge */}
           <div className="flex items-center gap-2">
-            <Badge className={`${status.bgClass} ${status.colorClass} border-0 text-xs`}>
+            <Badge className={`${status.bgClass} ${status.colorClass} border-0 text-label`}>
               <StatusIcon className="w-3 h-3 mr-1" />
               {status.label}
             </Badge>
             {interaction.amount_due > 0 && (
-              <span className="text-xs text-muted-foreground">
+              <span className="text-label text-muted-foreground">
                 {formatPrice(interaction.amount_due)}
               </span>
             )}
@@ -164,7 +164,7 @@ export function InteractionCard({
 
           {/* Notes */}
           {interaction.notes && (
-            <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
+            <p className="text-label text-muted-foreground mt-2 line-clamp-2">
               {interaction.notes}
             </p>
           )}
@@ -238,7 +238,7 @@ export function InteractionCard({
       {showCancel && (
         <div className="mt-3 pt-3 border-t border-white/5 flex items-center justify-between">
           <button
-            className="text-xs text-muted-foreground hover:text-destructive transition-colors"
+            className="text-label text-muted-foreground hover:text-destructive transition-colors"
             onClick={onCancel}
           >
             Cancel interaction

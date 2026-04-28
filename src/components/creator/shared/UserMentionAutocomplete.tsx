@@ -133,20 +133,20 @@ export function UserMentionAutocomplete({
               index === selectedIndex ? 'bg-secondary' : 'hover:bg-secondary/50'
             )}
           >
-            <Avatar className="h-8 w-8">
+            <Avatar size="sm">
               <AvatarImage src={user.avatarUrl} alt={user.displayName} />
-              <AvatarFallback className="text-xs">
+              <AvatarFallback className="text-label">
                 {user.displayName.charAt(0)}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0 text-left">
               <div className="flex items-center gap-1">
-                <span className="font-medium text-sm truncate">
+                <span className="font-medium text-body truncate">
                   {user.displayName}
                 </span>
                 {user.isVerified && <EraVerifiedTick size="sm" />}
               </div>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-label text-muted-foreground">
                 @{user.handle}
               </span>
             </div>
