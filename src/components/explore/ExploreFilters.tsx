@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { Filter, Check } from 'lucide-react';
+import { useState, useMemo, type ReactNode } from 'react';
+import { Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetTrigger } from '@/components/ui/sheet';
 import {
