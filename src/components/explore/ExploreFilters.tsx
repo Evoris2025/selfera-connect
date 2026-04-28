@@ -369,7 +369,7 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
           {activeTab !== 'images' && (
             <section>
               <BrandSectionLabel className="px-5 mb-2">CREATOR TIER</BrandSectionLabel>
-              <div className="flex flex-wrap gap-2 px-4">
+              <div className="grid grid-cols-3 gap-2 px-4">
                 <Chip
                   option={{ value: 'all', label: 'All' }}
                   active={(tabSlice as { creatorTier: CreatorTier }).creatorTier === 'all'}
