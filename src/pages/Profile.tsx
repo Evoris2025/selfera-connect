@@ -38,7 +38,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { BrandSectionLabel, BrandIcon } from '@/components/brand';
+import { BrandIcon } from '@/components/brand';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
 // Mock user data with full social metrics
