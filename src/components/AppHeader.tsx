@@ -32,7 +32,7 @@ export function AppHeader({ title, brandMark = false }: AppHeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/50 bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80 pt-safe">
+    <header className="sticky top-0 z-40 border-b border-border/50 bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80 pt-safe lg:hidden">
       <div className="flex items-center justify-between h-14 px-4 w-full">
         {/* Logo + Title */}
         <Link to="/feed" className="flex items-center gap-3">
@@ -50,13 +50,14 @@ export function AppHeader({ title, brandMark = false }: AppHeaderProps) {
           )}
         </Link>
 
-        {/* Right: Avatar Menu */}
+        {/* Right: Avatar Menu — wrapped in 44x44 hit target per docs/SCALING.md rule 6 */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="rounded-full focus:outline-none focus:ring-2 focus:ring-primary/50"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-primary/50"
+              aria-label="Account menu"
             >
               <CinematicAvatar
                 src={avatarUrl}
