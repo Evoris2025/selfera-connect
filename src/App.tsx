@@ -13,6 +13,7 @@ import { NavbarProvider } from "@/contexts/NavbarContext";
 import { SafetyProvider } from "@/contexts/SafetyContext";
 import logo from '@/assets/selfera-logo.png';
 import { BrandGradientDefs } from '@/components/brand';
+import { ScrollToTop } from '@/components/ScrollToTop';
 
 import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
@@ -131,6 +132,7 @@ const App = () => {
                   <Sonner />
                   <BrandGradientDefs />
                   <BrowserRouter>
+                    <ScrollToTop />
                     <AppRoutes />
                   </BrowserRouter>
                 </TooltipProvider>

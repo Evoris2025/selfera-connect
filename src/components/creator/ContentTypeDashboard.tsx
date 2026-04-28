@@ -256,7 +256,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
         </div>
 
         {/* Page hero */}
-        <div className="px-5 pt-4 pb-6 text-center shrink-0">
+        <div className="px-4 pt-4 pb-6 text-center shrink-0">
           <h1 className="text-4xl font-bold tracking-tight leading-tight">
             <span className="font-medium text-white">what will you </span>
             <span className="font-extrabold text-gradient-brand">
@@ -268,7 +268,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
 
         {/* Slim resume strip — opens the continue WORKING. sheet. Hidden when no work. */}
         {resumeStrip && (
-          <div className="px-5 mt-4 mb-3 shrink-0">
+          <div className="px-4 mt-4 mb-3 shrink-0">
             <button
               type="button"
               onClick={() => setSheetOpen(true)}
@@ -299,7 +299,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
         )}
 
         {/* Creator rows — fixed tall rows (doubled height) */}
-        <div className="grid grid-cols-1 gap-3 px-5 pb-2">
+        <div className="grid grid-cols-1 gap-3 px-4 pb-2">
           {contentTypes.map((type) => (
             <div key={type.id} className="h-[170px]">
               <CreatorRow
