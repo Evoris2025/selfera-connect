@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Flame, Eye, Heart, Play, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { BrandIcon } from '@/components/brand';
+import { BrandIcon, BrandIconBadge, BrandStatPill } from '@/components/brand';
 import { cn } from '@/lib/utils';
 import type { ExploreTab } from './ExploreFilters';
 import {
@@ -55,9 +55,7 @@ function ExpressionCard({ item, index }: { item: TrendingExpression; index: numb
       onClick={() => handleTap('expressions', item.id)}
       className="relative w-[112px] h-[199px] flex-shrink-0 overflow-hidden rounded-md bg-white/[0.04] group"
     >
-      <span className="absolute top-2 left-2 z-10 flex items-center justify-center size-5 rounded-full bg-black/40 backdrop-blur-sm">
-        <BrandIcon icon={Flame} className="w-3 h-3" />
-      </span>
+      <BrandIconBadge icon={Flame} className="absolute top-2 left-2 z-10" aria-label="Trending" />
       <img src={item.thumbnail} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
       <div className="absolute inset-x-0 bottom-0 h-full bg-gradient-to-t from-black/85 via-black/40 to-transparent pointer-events-none" />
       <span className="absolute bottom-2 left-2 z-10 flex items-center gap-1.5">
@@ -68,10 +66,12 @@ function ExpressionCard({ item, index }: { item: TrendingExpression; index: numb
           className="w-5 h-5 rounded-full object-cover"
         />
       </span>
-      <span className="absolute bottom-2 right-2 z-10 flex items-center gap-1 text-white text-[11px] font-medium px-1.5 py-0.5 rounded-full bg-black/40 backdrop-blur-sm">
-        <Eye className="w-3 h-3" strokeWidth={1.5} />
-        {formatCount(item.views)}
-      </span>
+      <BrandStatPill
+        icon={Eye}
+        value={formatCount(item.views)}
+        className="absolute bottom-2 right-2 z-10"
+        aria-label={`${formatCount(item.views)} views`}
+      />
     </motion.button>
   );
 }
@@ -87,18 +87,17 @@ function VideoCard({ item, index }: { item: TrendingVideo; index: number }) {
       className="w-[200px] flex-shrink-0 text-left group"
     >
       <div className="relative w-[200px] h-[112px] rounded-md overflow-hidden bg-white/[0.04]">
-        <span className="absolute top-2 left-2 z-10 flex items-center justify-center size-5 rounded-full bg-black/40 backdrop-blur-sm">
-          <BrandIcon icon={Flame} className="w-3 h-3" />
-        </span>
+        <BrandIconBadge icon={Flame} className="absolute top-2 left-2 z-10" aria-label="Trending" />
         <img src={item.thumbnail} alt={item.title} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute bottom-1 right-1 px-1.5 py-0.5 bg-black/80 text-[10px] text-white font-medium rounded">
+        <div className="absolute bottom-1 right-1 px-1.5 h-5 inline-flex items-center bg-black/55 border border-white/10 text-[10px] text-white font-medium rounded-md tabular-nums">
           {item.duration}
         </div>
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-          <div className="w-9 h-9 rounded-full bg-black/60 flex items-center justify-center">
-            <Play className="h-4 w-4 text-white" />
-          </div>
-        </div>
+        <BrandIconBadge
+          icon={Play}
+          size={14}
+          className="absolute inset-0 m-auto w-10 h-10 opacity-0 group-hover:opacity-100 transition-opacity"
+          aria-label="Play"
+        />
       </div>
       <h3 className="text-white text-[12px] font-medium leading-snug line-clamp-2 mt-1.5">
         {item.title}
@@ -120,15 +119,15 @@ function ImageCard({ item, index }: { item: TrendingImage; index: number }) {
       onClick={() => handleTap('images', item.id)}
       className="relative w-[120px] h-[120px] flex-shrink-0 overflow-hidden rounded-md bg-white/[0.04] group"
     >
-      <span className="absolute top-2 left-2 z-10 flex items-center justify-center size-5 rounded-full bg-black/40 backdrop-blur-sm">
-        <BrandIcon icon={Flame} className="w-3 h-3" />
-      </span>
+      <BrandIconBadge icon={Flame} className="absolute top-2 left-2 z-10" aria-label="Trending" />
       <img src={item.url} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
       <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/70 to-transparent pointer-events-none" />
-      <div className="absolute bottom-1.5 left-1.5 flex items-center gap-1">
-        <Heart className="h-2.5 w-2.5 text-white" />
-        <span className="text-white text-[10px] font-medium tabular-nums">{formatCount(item.likes)}</span>
-      </div>
+      <BrandStatPill
+        icon={Heart}
+        value={formatCount(item.likes)}
+        className="absolute bottom-2 left-2 z-10"
+        aria-label={`${formatCount(item.likes)} reactions`}
+      />
     </motion.button>
   );
 }
@@ -143,9 +142,7 @@ function PostCard({ item, index }: { item: TrendingPost; index: number }) {
       onClick={() => handleTap('posts', item.id)}
       className="relative w-[240px] flex-shrink-0 text-left rounded-md border border-white/[0.08] p-3 hover:border-white/20 transition-colors"
     >
-      <span className="absolute top-2 right-2 z-10 flex items-center justify-center size-5 rounded-full bg-black/40 backdrop-blur-sm">
-        <BrandIcon icon={Flame} className="w-3 h-3" />
-      </span>
+      <BrandIconBadge icon={Flame} className="absolute top-2 right-2 z-10" aria-label="Trending" />
       <p className="text-white/85 text-[12px] leading-snug line-clamp-3 mb-2">
         {item.snippet}
       </p>
@@ -159,15 +156,15 @@ function PostCard({ item, index }: { item: TrendingPost; index: number }) {
           </Avatar>
           <span className="text-white/55 text-[10px] truncate">{item.user.handle}</span>
         </div>
-        <div className="flex items-center gap-1 text-white/55 flex-shrink-0">
-          <Heart className="h-2.5 w-2.5" />
-          <span className="text-[10px] tabular-nums">{formatCount(item.likes)}</span>
-        </div>
+        <BrandStatPill
+          icon={Heart}
+          value={formatCount(item.likes)}
+          aria-label={`${formatCount(item.likes)} reactions`}
+        />
       </div>
     </motion.button>
   );
 }
-
 type AnyItem = TrendingExpression | TrendingVideo | TrendingImage | TrendingPost;
 
 const MAX_LOOPS = 5;

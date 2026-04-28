@@ -14,3 +14,5 @@ export { BrandSheetTitle } from './BrandSheetTitle';
 export { BrandSegmentedControl, type BrandSegmentedItem } from './BrandSegmentedControl';
 export { BrandSheetSectionLabel } from './BrandSheetSectionLabel';
 export { BrandSheetItem } from './BrandSheetItem';
+export { BrandIconBadge } from './BrandIconBadge';
+export { BrandStatPill } from './BrandStatPill';
