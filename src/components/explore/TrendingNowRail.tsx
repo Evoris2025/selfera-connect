@@ -170,6 +170,7 @@ function PostCard({ item, index }: { item: TrendingPost; index: number }) {
             </AvatarFallback>
           </Avatar>
           <span className="text-white/55 text-[10px] truncate">{item.user.handle}</span>
+          <ExploreVerifiedTick tier={item.user.tier} className="shrink-0" />
         </div>
         <BrandStatPill
           icon={Heart}
