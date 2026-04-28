@@ -34,14 +34,16 @@ The entire app is sized in rem, so this single clamp gently scales every text
 and spacing token with viewport width while still respecting the user's
 browser/system text-size preference (the rem floor is preserved).
 
-### 3. App-shell is a centered mobile column
-The outermost container is `max-w-md` (28rem ≈ iPhone 14 Pro Max width) with
-`mx-auto` and `min-h-dvh`. On viewports `< 28rem` the column fills the width;
-on viewports `≥ 28rem` the column stays 28rem wide and the rest of the screen
-shows a neutral backdrop (`bg-background`).
+### 3. App-shell is a stepped mobile-canonical column
+The outermost container is `mx-auto` with a stepped `max-width` ladder so the
+column has a sensible shape on every device class — phone fills the viewport,
+tablet breathes a little, desktop returns to the mobile-canonical width and
+hands secondary chrome to the `DesktopLeftRail`. See the breakpoint table
+below.
 
-**Never stretch the column wider than 28rem on desktop** — that's what broke
-proportions in the previous regression.
+**Never stretch the column past `max-w-xl` (36rem) on tablet or past
+`max-w-md` (28rem) on desktop** — wider canvases broke proportions in the
+previous regression.
 
 ### 4. Viewport meta is locked
 ```html
@@ -81,13 +83,29 @@ These all caused the white-screen and 72%-shrink regressions:
 
 ## Breakpoint table
 
-| Viewport       | Behavior                                                           |
-|----------------|--------------------------------------------------------------------|
-| `< 28rem`      | Phone — column fills the width (mobile devices)                    |
-| `≥ 28rem`      | Column capped at `max-w-md` (28rem); neutral backdrop fills sides  |
-| `≥ 64rem`      | Backdrop slot reserved for optional secondary chrome (not built)   |
+| Viewport            | Column max-width        | Behavior                                                                                          |
+|---------------------|-------------------------|---------------------------------------------------------------------------------------------------|
+| `< 768px` (phone)   | none (full width)       | Column fills the viewport edge-to-edge                                                            |
+| `768–1023px` (md)   | `max-w-xl` (36rem/576px)| Column grows to breathe on tablet, centered, neutral backdrop on either side                      |
+| `≥ 1024px` (lg)     | `max-w-md` (28rem/448px)| `DesktopLeftRail` appears as a sibling and carries primary nav; column returns to mobile-canonical|
+| `≥ 1280px` (xl)     | `max-w-md` (28rem/448px)| Same as `lg`; right rail slot reserved for future secondary chrome                                |
 
-There is no breakpoint at which the app content stretches beyond `max-w-md`.
+Implementation lives on the column wrapper in `src/components/AppLayout.tsx`:
+`w-full md:max-w-xl lg:max-w-md mx-auto`. Do NOT widen the column past these
+caps and do NOT collapse the ladder back to a single `max-w-md` — the tablet
+range needs the extra breathing room.
+
+### Horizontal scroll rails
+
+Any in-column horizontal rail (Profile stats, tab bars, discover cards) must
+make its scrollability obvious:
+
+- Add `overflow-x-auto snap-x snap-mandatory scrollbar-hide` to the rail.
+- Apply the `rail-fade-right` utility (declared in `src/index.css`) so the
+  trailing edge fades, and add `pr-8` (or a trailing spacer) so the last
+  item peeks before the fade begins.
+- Trailing items must never sit flush against the column's right edge — that
+  reads as a clipped layout, not a scroll affordance.
 
 ---
 
