@@ -59,22 +59,34 @@ export function AppLayout({ children, title, showHeader = true, brandMark = fals
             {children}
           </main>
 
-          {/* Bottom Nav — hidden at lg+ where the side rail handles primary nav. */}
-          <div className="sticky bottom-0 left-0 right-0 z-50 w-full lg:hidden">
-            <AnimatePresence mode="wait">
-              {isNavbarVisible && (
-                <motion.div
-                  key="mobile-nav"
-                  initial={{ y: 100, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: 100, opacity: 0 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 35 }}
-                >
-                  <MobileNav followRequestCount={pendingCount} />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+        </div>
+      </div>
+
+      {/*
+       * Bottom Nav — fixed to viewport so it survives `overflow-x: hidden`
+       * on html/body (which breaks `position: sticky` inside the column).
+       *
+       * Outer wrapper spans the viewport but is pointer-events-none so it
+       * never blocks clicks outside the column. Inner wrapper mirrors the
+       * AppLayout column ladder (w-full md:max-w-xl lg:max-w-md) so the
+       * bar visually sits inside the column on tablet/desktop. Hidden at
+       * lg+ where DesktopLeftRail takes over primary nav.
+       */}
+      <div className="fixed inset-x-0 bottom-0 z-50 lg:hidden flex justify-center pointer-events-none">
+        <div className="w-full md:max-w-xl pointer-events-auto">
+          <AnimatePresence mode="wait">
+            {isNavbarVisible && (
+              <motion.div
+                key="mobile-nav"
+                initial={{ y: 100, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 100, opacity: 0 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 35 }}
+              >
+                <MobileNav followRequestCount={pendingCount} />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </div>
