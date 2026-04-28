@@ -211,6 +211,22 @@
     /* Use dynamic viewport height for mobile browsers */
     min-height: 100dvh;
     min-height: -webkit-fill-available;
+    /* Native-feel: lock horizontal axis. Vertical bounce stays for iOS feel. */
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
+    overscroll-behavior-y: auto;
+  }
+
+  html {
+    overflow-x: hidden;
+  }
+
+  /* iOS Safari zooms when a focused input has font-size < 16px. Force the
+     base form-control font-size to 16px (1rem at our root) to prevent it. */
+  input,
+  textarea,
+  select {
+    font-size: max(16px, 1rem);
   }
 
   /* RTL Support */
