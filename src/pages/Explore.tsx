@@ -170,7 +170,7 @@ export default function Explore() {
             </div>
 
             {/* TRENDING [TAB] rail — non-sticky, per-tab native shapes */}
-            <TrendingNowRail activeTab={activeTab} />
+            <TrendingNowRail activeTab={activeTab} filters={filters} />
 
             <PullToRefresh onRefresh={handleRefresh} className="flex-1">
               <AnimatePresence mode="wait">

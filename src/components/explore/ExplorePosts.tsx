@@ -33,6 +33,7 @@ const mostCommentedPosts = forYouPosts.slice().sort((a, b) => b.comments - a.com
 const newestPosts = forYouPosts.slice(0, 5).map((p) => ({ ...p, id: `n-${p.id}` }));
 
 import type { PostsFilters, SortBy } from './ExploreFilters';
+import { applyCreatorTier } from './exploreFilterUtils';
 
 const SORT_TO_DATA: Record<SortBy, PostItem[]> = {
   'for-you': forYouPosts,
@@ -130,10 +131,7 @@ export function ExplorePosts({
   const sortBy = filters?.sortBy ?? 'for-you';
   const creatorTier = filters?.creatorTier ?? 'all';
   const baseSource = SORT_TO_DATA[sortBy] ?? SORT_TO_DATA['for-you'];
-  const source =
-    creatorTier === 'all'
-      ? baseSource
-      : baseSource.filter((p) => p.user.tier !== null && creatorTier.includes(p.user.tier));
+  const source = applyCreatorTier(baseSource, creatorTier);
   const tierKey = creatorTier === 'all' ? 'all' : creatorTier.slice().sort().join(',');
   const resetKey = `${sortBy}|${filters?.timePeriod ?? 'all-time'}|${tierKey}|${filters?.origin ?? 'all'}`;
   const { items, sentinelRef, isLoadingMore, hasMore } = useInfiniteList({

@@ -33,7 +33,8 @@ const trendingVideos = forYouVideos.map((v) => ({ ...v, id: `t-${v.id}` }));
 const mostWatchedVideos = forYouVideos.slice().sort((a, b) => b.views - a.views).map((v) => ({ ...v, id: `mw-${v.id}` }));
 const recentVideos = forYouVideos.slice(0, 5).map((v) => ({ ...v, id: `r-${v.id}` }));
 
-import type { VideosFilters, SortBy, Duration } from './ExploreFilters';
+import type { VideosFilters, SortBy } from './ExploreFilters';
+import { applyCreatorTier, applyDuration } from './exploreFilterUtils';
 
 const SORT_TO_DATA: Record<SortBy, VideoItem[]> = {
   'for-you': forYouVideos,
@@ -42,24 +43,6 @@ const SORT_TO_DATA: Record<SortBy, VideoItem[]> = {
   'most-recent': recentVideos,
   'most-liked': mostWatchedVideos,
 };
-
-function durationSeconds(d: string): number {
-  const parts = d.split(':').map(Number);
-  if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
-  if (parts.length === 2) return parts[0] * 60 + parts[1];
-  return 0;
-}
-
-function applyDuration(items: VideoItem[], dur: Duration): VideoItem[] {
-  if (dur === 'all') return items;
-  return items.filter((v) => {
-    const s = durationSeconds(v.duration);
-    if (dur === 'under-5') return s < 5 * 60;
-    if (dur === '5-20') return s >= 5 * 60 && s <= 20 * 60;
-    if (dur === 'over-20') return s > 20 * 60;
-    return true;
-  });
-}
 
 function formatViews(n: number): string {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
@@ -152,13 +135,10 @@ export function ExploreVideos({
   const sortBy = filters?.sortBy ?? 'for-you';
   const duration = filters?.duration ?? 'all';
   const creatorTier = filters?.creatorTier ?? 'all';
-  const afterDuration = applyDuration(SORT_TO_DATA[sortBy] ?? SORT_TO_DATA['for-you'], duration);
-  const source =
-    creatorTier === 'all'
-      ? afterDuration
-      : afterDuration.filter(
-          (v) => v.creator.tier !== null && creatorTier.includes(v.creator.tier),
-        );
+  const source = applyCreatorTier(
+    applyDuration(SORT_TO_DATA[sortBy] ?? SORT_TO_DATA['for-you'], duration),
+    creatorTier,
+  );
   const tierKey = creatorTier === 'all' ? 'all' : creatorTier.slice().sort().join(',');
   const resetKey = `${sortBy}|${filters?.timePeriod ?? 'all-time'}|${duration}|${tierKey}|${filters?.origin ?? 'all'}`;
   const { items, sentinelRef, isLoadingMore, hasMore } = useInfiniteList({

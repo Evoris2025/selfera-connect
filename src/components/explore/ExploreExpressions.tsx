@@ -37,6 +37,7 @@ const recentExpressions = forYouExpressions.slice(0, 5).map((e) => ({ ...e, id: 
 const communityExpressions = forYouExpressions.slice(2, 7).map((e) => ({ ...e, id: `c-${e.id}` }));
 
 import type { ExpressionsFilters, SortBy } from './ExploreFilters';
+import { applyCreatorTier } from './exploreFilterUtils';
 
 const SORT_TO_DATA: Record<SortBy, ExpressionItem[]> = {
   'for-you': forYouExpressions,
@@ -105,10 +106,7 @@ export function ExploreExpressions({
   const sortBy = filters?.sortBy ?? 'for-you';
   const creatorTier = filters?.creatorTier ?? 'all';
   const baseSource = SORT_TO_DATA[sortBy] ?? SORT_TO_DATA['for-you'];
-  const source =
-    creatorTier === 'all'
-      ? baseSource
-      : baseSource.filter((e) => e.user.tier !== null && creatorTier.includes(e.user.tier));
+  const source = applyCreatorTier(baseSource, creatorTier);
   const tierKey = creatorTier === 'all' ? 'all' : creatorTier.slice().sort().join(',');
   const resetKey = `${sortBy}|${filters?.timePeriod ?? 'all-time'}|${tierKey}|${filters?.origin ?? 'all'}`;
   const { items, sentinelRef, isLoadingMore, hasMore } = useInfiniteList({

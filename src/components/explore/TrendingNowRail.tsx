@@ -6,6 +6,13 @@ import { BrandIcon, BrandIconBadge, BrandStatPill } from '@/components/brand';
 import { ExploreVerifiedTick } from './ExploreVerifiedTick';
 import { cn } from '@/lib/utils';
 import type { ExploreTab } from './ExploreFilters';
+import type { ExploreFiltersState } from './ExploreFilters';
+import {
+  applyExpressionsFilters,
+  applyVideosFilters,
+  applyImagesFilters,
+  applyPostsFilters,
+} from './exploreFilterUtils';
 import {
   trendingExpressions,
   trendingVideos,
@@ -32,6 +39,7 @@ import {
 
 interface TrendingNowRailProps {
   activeTab: ExploreTab;
+  filters?: ExploreFiltersState;
 }
 
 function formatCount(n: number): string {
@@ -200,7 +208,7 @@ function remapIds(seed: AnyItem[], loop: number): AnyItem[] {
   return seed.map((it) => ({ ...it, id: `${it.id}-loop${loop}` }) as AnyItem);
 }
 
-export function TrendingNowRail({ activeTab }: TrendingNowRailProps) {
+export function TrendingNowRail({ activeTab, filters }: TrendingNowRailProps) {
   const railRef = useRef<HTMLDivElement | null>(null);
   const loopCountRef = useRef<number>(1);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -267,22 +275,33 @@ export function TrendingNowRail({ activeTab }: TrendingNowRailProps) {
 
   const renderCards = () => {
     switch (activeTab) {
-      case 'expressions':
-        return (items as TrendingExpression[]).map((item, i) => (
+      case 'expressions': {
+        const filtered = applyExpressionsFilters(
+          items as TrendingExpression[],
+          filters?.expressions,
+        );
+        return filtered.map((item, i) => (
           <ExpressionCard key={item.id} item={item} index={i} />
         ));
-      case 'videos':
-        return (items as TrendingVideo[]).map((item, i) => (
+      }
+      case 'videos': {
+        const filtered = applyVideosFilters(items as TrendingVideo[], filters?.videos);
+        return filtered.map((item, i) => (
           <VideoCard key={item.id} item={item} index={i} />
         ));
-      case 'images':
-        return (items as TrendingImage[]).map((item, i) => (
+      }
+      case 'images': {
+        const filtered = applyImagesFilters(items as TrendingImage[], filters?.images);
+        return filtered.map((item, i) => (
           <ImageCard key={item.id} item={item} index={i} />
         ));
-      case 'posts':
-        return (items as TrendingPost[]).map((item, i) => (
+      }
+      case 'posts': {
+        const filtered = applyPostsFilters(items as TrendingPost[], filters?.posts);
+        return filtered.map((item, i) => (
           <PostCard key={item.id} item={item} index={i} />
         ));
+      }
       default:
         return null;
     }
