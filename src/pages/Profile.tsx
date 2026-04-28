@@ -603,7 +603,7 @@ export default function Profile() {
 
             {/* Stats Row — horizontal snap rail to handle column-density at max-w-md */}
             <motion.div
-              className="mt-6 -mx-4 flex items-stretch overflow-x-auto snap-x snap-mandatory scrollbar-hide px-2"
+              className="mt-6 -mx-4 flex items-stretch overflow-x-auto snap-x snap-mandatory scrollbar-hide rail-fade-right pl-2 pr-8"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
