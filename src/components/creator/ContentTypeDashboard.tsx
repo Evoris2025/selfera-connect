@@ -301,7 +301,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
         {/* Creator tiles — vertical stack */}
         <div className="grid grid-cols-1 gap-3 px-4 pb-2">
           {contentTypes.map((type) => (
-            <div key={type.id} className="h-[170px]">
+            <div key={type.id} className="h-[114px]">
               <CreatorRow
                 icon={type.icon}
                 title={type.title}
