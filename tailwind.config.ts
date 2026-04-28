@@ -28,8 +28,15 @@ export default {
         'label-tight': ['12px', { lineHeight: '1.25', letterSpacing: '0.02em' }],
         body: ['14px', { lineHeight: '1.5' }],
         'body-snug': ['14px', { lineHeight: '1.375' }],
-        title: ['16px', { lineHeight: '1.375', fontWeight: '500' }],
-        headline: ['20px', { lineHeight: '1.25', fontWeight: '600' }],
+        // title/headline are size+leading only (weight opt-in) to match
+        // the same philosophy as label/body. Use the *-medium / *-semibold
+        // / *-bold variants below when an explicit weight is required.
+        title: ['16px', { lineHeight: '1.375' }],
+        'title-medium': ['16px', { lineHeight: '1.4', fontWeight: '500' }],
+        'title-semibold': ['16px', { lineHeight: '1.4', fontWeight: '600' }],
+        headline: ['20px', { lineHeight: '1.25' }],
+        'headline-semibold': ['20px', { lineHeight: '1.3', fontWeight: '600' }],
+        'headline-bold': ['20px', { lineHeight: '1.3', fontWeight: '700' }],
       },
       colors: {
         border: {
