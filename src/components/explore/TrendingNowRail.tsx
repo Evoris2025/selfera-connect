@@ -208,7 +208,7 @@ function remapIds(seed: AnyItem[], loop: number): AnyItem[] {
   return seed.map((it) => ({ ...it, id: `${it.id}-loop${loop}` }) as AnyItem);
 }
 
-export function TrendingNowRail({ activeTab }: TrendingNowRailProps) {
+export function TrendingNowRail({ activeTab, filters }: TrendingNowRailProps) {
   const railRef = useRef<HTMLDivElement | null>(null);
   const loopCountRef = useRef<number>(1);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
