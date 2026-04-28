@@ -95,17 +95,36 @@ Implementation lives on the column wrapper in `src/components/AppLayout.tsx`:
 caps and do NOT collapse the ladder back to a single `max-w-md` — the tablet
 range needs the extra breathing room.
 
-### Horizontal scroll rails
+### Horizontal rows: navigation vs content
 
-Any in-column horizontal rail (Profile stats, tab bars, discover cards) must
-make its scrollability obvious:
+Two distinct patterns. Choose by the row's purpose, not its visual similarity.
 
-- Add `overflow-x-auto snap-x snap-mandatory scrollbar-hide` to the rail.
-- Apply the `rail-fade-right` utility (declared in `src/index.css`) so the
-  trailing edge fades, and add `pr-8` (or a trailing spacer) so the last
-  item peeks before the fade begins.
-- Trailing items must never sit flush against the column's right edge — that
-  reads as a clipped layout, not a scroll affordance.
+**Navigation chrome — must FIT, never scroll**
+
+Tab bars, stat rows, sub-nav, in-card stat strips. The user must see every
+option/value at a glance. Never make these scrollable.
+
+Pattern:
+- Container: `flex w-full items-end gap-2` (or `items-center` / `gap-1` for
+  stat rows)
+- Each item: `flex-1 min-w-0 justify-center inline-flex`
+- Labels: canonical caption / body sizing; `tracking-wider` not
+  `tracking-[0.1em]`
+- Safety net: `truncate w-full text-center` on long labels (stat row labels
+  only)
+
+If labels still overflow after these reductions, clamp the font size:
+`text-[clamp(0.625rem,0.55rem+0.4vw,0.75rem)]`. Last resort only: abbreviate
+the label.
+
+**Content rails — scroll with peek + fade**
+
+Stories, suggestion carousels, trending lists, any row of user-generated
+items. The user is meant to discover by scrolling.
+
+Pattern:
+- Container: `flex overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-4 pl-4 pr-10 rail-fade-right`
+- Each item: `flex-shrink-0 snap-start`
 
 ---
 
