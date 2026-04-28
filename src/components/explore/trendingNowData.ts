@@ -16,7 +16,7 @@ export type TrendingVideoTier = 'orange' | 'purple' | 'blue' | 'green' | 'pink' 
 export interface TrendingExpression {
   id: string;
   thumbnail: string;
-  user: { handle: string; avatar: string; tier: TrendingVideoTier };
+  user: { handle: string; name: string; avatar: string; tier: TrendingVideoTier };
   views: number;
 }
 
