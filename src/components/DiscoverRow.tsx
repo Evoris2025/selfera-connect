@@ -294,14 +294,10 @@ export function DiscoverRow() {
       {/* Manual Horizontal Scroll */}
       <CollapsibleContent>
         <div className="relative">
-          {/* Gradient masks */}
-          <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
-          
           <div
             ref={scrollRef}
             onScroll={handleScroll}
-            className="flex gap-3 px-4 pr-6 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
+            className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory rail-fade-right -mx-4 pl-4 pr-10"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {profiles.map((profile) => {

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { HighlightCircle, Highlight } from './HighlightCircle';
 import { CreateHighlightModal } from '@/components/expressions/CreateHighlightModal';
 import { HighlightViewer } from '@/components/expressions/HighlightViewer';
