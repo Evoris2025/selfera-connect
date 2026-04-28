@@ -56,12 +56,26 @@ export function BrandUnderlineTabs({
     return () => window.removeEventListener('resize', handle);
   }, [measure]);
 
+  // Keep the active tab visible inside the horizontal-scroll rail.
+  React.useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const activeBtn = container.querySelector<HTMLButtonElement>(
+      `[data-tab-id="${value}"]`,
+    );
+    activeBtn?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }, [value]);
+
   return (
     <div
       ref={containerRef}
       role="tablist"
       aria-label={ariaLabel}
-      className={cn('relative flex w-full items-end', className)}
+      className={cn(
+        'relative flex w-full items-end gap-6 overflow-x-auto scrollbar-hide snap-x snap-mandatory -mx-4 px-4',
+        className,
+      )}
+      style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
     >
       {tabs.map((tab) => {
         const active = tab.id === value;
@@ -74,7 +88,7 @@ export function BrandUnderlineTabs({
             data-tab-id={tab.id}
             onClick={() => onChange(tab.id)}
             className={cn(
-              'flex-1 justify-center inline-flex',
+              'flex-shrink-0 snap-start justify-center inline-flex',
               'px-3 py-2 text-label uppercase tracking-[0.1em] font-medium',
               'transition-colors duration-150',
               'outline-none focus:outline-none focus-visible:outline-none',
