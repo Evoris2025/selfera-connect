@@ -302,7 +302,7 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
           {/* Section 1 — Sort by (chip grid, single-select) */}
           <section>
             <BrandSectionLabel className="px-5 mb-2">SORT BY</BrandSectionLabel>
-            <div className="flex flex-wrap gap-2 px-4">
+            <div className="grid grid-cols-3 gap-2 px-4">
               {SORT_OPTIONS.map((opt) => (
                 <Chip
                   key={opt.value}
