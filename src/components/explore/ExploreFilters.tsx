@@ -369,7 +369,7 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
           {activeTab !== 'images' && (
             <section>
               <BrandSectionLabel className="px-5 mb-2">CREATOR TIER</BrandSectionLabel>
-              <div className="grid grid-cols-3 gap-2 px-4">
+              <div className="flex flex-wrap gap-2 px-4">
                 <Chip
                   option={{ value: 'all', label: 'All' }}
                   active={(tabSlice as { creatorTier: CreatorTier }).creatorTier === 'all'}
@@ -385,6 +385,13 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
                       option={opt}
                       active={selected}
                       themePrimary={themePrimary}
+                      leftDot={
+                        <span
+                          className="w-2.5 h-2.5 rounded-full"
+                          style={{ backgroundColor: TIER_HEX[opt.value] }}
+                          aria-hidden
+                        />
+                      }
                       onClick={() => {
                         let next: CreatorTier;
                         if (current === 'all') {
@@ -405,12 +412,12 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
             </section>
           )}
 
-          {/* Section 4 — Origin (vertical list) */}
+          {/* Section 4 — Origin (chip grid, single-select) */}
           <section>
             <BrandSectionLabel className="px-5 mb-2">ORIGIN</BrandSectionLabel>
-            <div className="flex flex-col">
+            <div className="flex flex-wrap gap-2 px-4">
               {ORIGIN_OPTIONS.map((opt) => (
-                <ListRow
+                <Chip
                   key={opt.value}
                   option={opt}
                   active={tabSlice.origin === opt.value}
