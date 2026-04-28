@@ -482,9 +482,12 @@ export default function MyERA() {
         </div>
 
 
+        {/* Sections — IA: MYERA NETWORK is hero (order-1), YOUR ACCOUNT demoted (order-2) */}
+        <div className="flex flex-col">
+
         {/* Your Account Info Section */}
         <motion.section
-          className="px-4 mt-8"
+          className="px-4 mt-8 order-2"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...springGentle, delay: 0.17 }}
