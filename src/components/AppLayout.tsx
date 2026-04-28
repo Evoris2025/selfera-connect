@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { MobileNav } from './MobileNav';
 import { AppHeader } from './AppHeader';
+import { DesktopLeftRail } from './DesktopLeftRail';
 import { useFollowRequests } from '@/hooks/useFollowRequests';
 import { useNavbar } from '@/contexts/NavbarContext';
 
@@ -37,29 +38,38 @@ export function AppLayout({ children, title, showHeader = true, brandMark = fals
 
   return (
     <div className="min-h-dvh w-full bg-background">
-      {/* Centered mobile column — never wider than 28rem on any device. */}
-      <div className="relative mx-auto flex min-h-dvh w-full max-w-md flex-col bg-background shadow-cinematic">
-        {showHeader && <AppHeader title={title} brandMark={brandMark} />}
+      {/*
+       * Outer flex: at lg+, the DesktopLeftRail sits as a sibling to the
+       * mobile column. Below lg, the rail is display:none (handled inside
+       * the rail component itself) and the column behaves identically.
+       */}
+      <div className="flex min-h-dvh w-full">
+        <DesktopLeftRail />
 
-        <main className="flex-1 pb-nav-safe w-full">
-          {children}
-        </main>
+        {/* Mobile column — unchanged shape/behavior on every viewport. */}
+        <div className="relative mx-auto flex min-h-dvh w-full max-w-md flex-col bg-background shadow-cinematic">
+          {showHeader && <AppHeader title={title} brandMark={brandMark} />}
 
-        {/* Bottom Nav — sticky inside the column so it auto-scopes to mobile width. */}
-        <div className="sticky bottom-0 left-0 right-0 z-50 w-full">
-          <AnimatePresence mode="wait">
-            {isNavbarVisible && (
-              <motion.div
-                key="mobile-nav"
-                initial={{ y: 100, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: 100, opacity: 0 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 35 }}
-              >
-                <MobileNav followRequestCount={pendingCount} />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <main className="flex-1 pb-nav-safe w-full lg:pb-0">
+            {children}
+          </main>
+
+          {/* Bottom Nav — hidden at lg+ where the side rail handles primary nav. */}
+          <div className="sticky bottom-0 left-0 right-0 z-50 w-full lg:hidden">
+            <AnimatePresence mode="wait">
+              {isNavbarVisible && (
+                <motion.div
+                  key="mobile-nav"
+                  initial={{ y: 100, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: 100, opacity: 0 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 35 }}
+                >
+                  <MobileNav followRequestCount={pendingCount} />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </div>
