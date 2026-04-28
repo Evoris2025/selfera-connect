@@ -735,6 +735,22 @@
   display: none;
 }
 
+/*
+ * Edge-fade affordance for horizontal scroll rails.
+ * Fades the right edge so users can see content scrolls beyond the viewport.
+ * `.rail-fade-right` fades trailing edge only; `.rail-fade-x` fades both edges.
+ * Pair with `pr-8` (or trailing spacer) on the scroll container so the last
+ * item peeks before the fade begins.
+ */
+.rail-fade-right {
+  -webkit-mask-image: linear-gradient(to right, black 0, black calc(100% - 2rem), transparent 100%);
+  mask-image: linear-gradient(to right, black 0, black calc(100% - 2rem), transparent 100%);
+}
+.rail-fade-x {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, black 1.5rem, black calc(100% - 1.5rem), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, black 1.5rem, black calc(100% - 1.5rem), transparent 100%);
+}
+
 /* Focus styles - subtle ring */
 *:focus-visible {
   outline: 2px solid hsl(var(--ring) / 0.4);
