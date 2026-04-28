@@ -122,7 +122,7 @@ export function DesktopNav({
                     animate={isActive ? { scale: 1.1 } : { scale: 1 }}
                     transition={springGentle}
                   >
-                    <item.icon className="h-[22px] w-[22px]" strokeWidth={isActive ? 1.8 : 1.2} />
+                    <item.icon className="h-5 w-5" strokeWidth={isActive ? 1.8 : 1.2} />
                   </motion.div>
                 </motion.div>
               </Link>
@@ -154,7 +154,7 @@ export function DesktopNav({
                     animate={isActive ? { scale: 1.1 } : { scale: 1 }}
                     transition={springGentle}
                   >
-                    <item.icon className="h-[22px] w-[22px]" strokeWidth={isActive ? 1.8 : 1.2} />
+                    <item.icon className="h-5 w-5" strokeWidth={isActive ? 1.8 : 1.2} />
                   </motion.div>
                 </motion.div>
               </Link>
@@ -185,7 +185,7 @@ export function DesktopNav({
                   animate={isActive ? { scale: 1.1 } : { scale: 1 }}
                   transition={springGentle}
                 >
-                  <item.icon className="h-[22px] w-[22px]" strokeWidth={isActive ? 1.8 : 1.2} />
+                  <item.icon className="h-5 w-5" strokeWidth={isActive ? 1.8 : 1.2} />
                 </motion.div>
                 
                 {/* Subtle active indicator */}
