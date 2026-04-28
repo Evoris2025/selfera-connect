@@ -95,7 +95,6 @@ function VideoCard({ item, index }: { item: TrendingVideo; index: number }) {
       className="w-[200px] flex-shrink-0 text-left group"
     >
       <div className="relative w-[200px] h-[112px] rounded-md overflow-hidden bg-white/[0.04]">
-        <BrandIconBadge icon={Flame} className="absolute top-2 left-2 z-10" aria-label="Trending" />
         <img src={item.thumbnail} alt={item.title} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute bottom-1 right-1 px-1.5 h-5 inline-flex items-center bg-black/55 border border-white/10 text-[10px] text-white font-medium rounded-md tabular-nums">
           {item.duration}
