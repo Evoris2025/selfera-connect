@@ -39,6 +39,7 @@ import {
 
 interface TrendingNowRailProps {
   activeTab: ExploreTab;
+  filters?: ExploreFiltersState;
 }
 
 function formatCount(n: number): string {
