@@ -135,13 +135,10 @@ export function ExploreVideos({
   const sortBy = filters?.sortBy ?? 'for-you';
   const duration = filters?.duration ?? 'all';
   const creatorTier = filters?.creatorTier ?? 'all';
-  const afterDuration = applyDuration(SORT_TO_DATA[sortBy] ?? SORT_TO_DATA['for-you'], duration);
-  const source =
-    creatorTier === 'all'
-      ? afterDuration
-      : afterDuration.filter(
-          (v) => v.creator.tier !== null && creatorTier.includes(v.creator.tier),
-        );
+  const source = applyCreatorTier(
+    applyDuration(SORT_TO_DATA[sortBy] ?? SORT_TO_DATA['for-you'], duration),
+    creatorTier,
+  );
   const tierKey = creatorTier === 'all' ? 'all' : creatorTier.slice().sort().join(',');
   const resetKey = `${sortBy}|${filters?.timePeriod ?? 'all-time'}|${duration}|${tierKey}|${filters?.origin ?? 'all'}`;
   const { items, sentinelRef, isLoadingMore, hasMore } = useInfiniteList({
