@@ -18,12 +18,19 @@ export interface TrendingExpression {
   views: number;
 }
 
+export type TrendingVideoTier = 'orange' | 'purple' | 'blue' | 'green' | 'pink' | null;
+
 export interface TrendingVideo {
   id: string;
   thumbnail: string;
   duration: string;
   title: string;
   views: number;
+  creator: {
+    name: string;
+    avatar: string;
+    tier: TrendingVideoTier;
+  };
 }
 
 export interface TrendingImage {
@@ -130,6 +137,19 @@ function buildExpressions(): TrendingExpression[] {
   }));
 }
 
+const VIDEO_CREATORS: TrendingVideo['creator'][] = [
+  { name: 'Dr. Sarah Chen', avatar: 'https://i.pravatar.cc/100?img=47', tier: 'orange' },
+  { name: 'Wellness Hub', avatar: 'https://i.pravatar.cc/100?img=32', tier: 'green' },
+  { name: 'Jamie Jordan', avatar: 'https://i.pravatar.cc/100?img=12', tier: 'blue' },
+  { name: 'Mind Matters', avatar: 'https://i.pravatar.cc/100?img=14', tier: 'purple' },
+  { name: 'Calm Space', avatar: 'https://i.pravatar.cc/100?img=9', tier: null },
+  { name: 'Alex Winters', avatar: 'https://i.pravatar.cc/100?img=33', tier: 'pink' },
+  { name: 'New Start 2024', avatar: 'https://i.pravatar.cc/100?img=51', tier: 'orange' },
+  { name: 'Breathe Daily', avatar: 'https://i.pravatar.cc/100?img=22', tier: 'purple' },
+  { name: 'Soft Landing', avatar: 'https://i.pravatar.cc/100?img=5', tier: 'green' },
+  { name: 'Kindred Spirit', avatar: 'https://i.pravatar.cc/100?img=18', tier: 'blue' },
+];
+
 function buildVideos(): TrendingVideo[] {
   return Array.from({ length: 20 }, (_, i) => ({
     id: `tn-v${i + 1}`,
@@ -137,6 +157,7 @@ function buildVideos(): TrendingVideo[] {
     duration: VIDEO_DURATIONS[i],
     title: VIDEO_TITLES[i],
     views: VIEWS[i],
+    creator: VIDEO_CREATORS[i % VIDEO_CREATORS.length],
   }));
 }
 

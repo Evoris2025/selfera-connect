@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Flame, Eye, Heart, Play, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { BrandIcon, BrandIconBadge, BrandStatPill } from '@/components/brand';
+import { ExploreVerifiedTick } from './ExploreVerifiedTick';
 import { cn } from '@/lib/utils';
 import type { ExploreTab } from './ExploreFilters';
 import {
@@ -99,12 +100,25 @@ function VideoCard({ item, index }: { item: TrendingVideo; index: number }) {
           aria-label="Play"
         />
       </div>
-      <h3 className="text-white text-[12px] font-medium leading-snug line-clamp-2 mt-1.5">
-        {item.title}
-      </h3>
-      <p className="text-white/45 text-[10px] uppercase tracking-[0.08em] mt-0.5">
-        {formatCount(item.views)}
-      </p>
+      <div className="flex flex-col gap-1 mt-2 w-[200px]">
+        {/* Row 1+2 — Title (locked to exactly 2 lines reserved) */}
+        <p className="text-[12px] font-medium leading-snug line-clamp-2 min-h-[2.1rem] text-white">
+          {item.title}
+        </p>
+        {/* Row 3 — Creator row (avatar + name + tier badge) */}
+        <div className="flex items-center gap-1.5 min-w-0">
+          <Avatar className="h-4 w-4 shrink-0">
+            <AvatarImage src={item.creator.avatar} alt={item.creator.name} />
+            <AvatarFallback className="text-[8px]">{item.creator.name.charAt(0)}</AvatarFallback>
+          </Avatar>
+          <span className="text-[11px] text-white/70 truncate">{item.creator.name}</span>
+          <ExploreVerifiedTick tier={item.creator.tier} className="shrink-0" />
+        </div>
+        {/* Row 4 — Views row */}
+        <p className="text-[10px] uppercase tracking-[0.08em] text-white/45">
+          {formatCount(item.views)} VIEWS
+        </p>
+      </div>
     </motion.button>
   );
 }
