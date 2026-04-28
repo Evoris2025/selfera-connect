@@ -118,10 +118,10 @@ export function DesktopLeftRail() {
             <CinematicAvatar src={avatarUrl} alt={displayName} size="sm" ring="primary" />
             <div className="min-w-0 flex-1">
               <p className="truncate text-label font-medium text-foreground">
-                {displayName || 'Account'}
+                {displayName}
               </p>
               <p className="truncate text-caption text-muted-foreground">
-                {t('nav.account', 'Account')}
+                {t('nav.viewProfile', 'View profile')}
               </p>
             </div>
           </button>
