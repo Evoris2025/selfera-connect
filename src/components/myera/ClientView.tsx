@@ -124,7 +124,7 @@ export function ClientView({ interactions = [], supportNetworkCount, onFindSuppo
         <div className="bg-card/30 border border-white/5 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-2xl font-bold text-foreground">{supportNetworkCount}</p>
+              <p className="text-headline font-bold text-foreground">{supportNetworkCount}</p>
               <p className="text-label text-muted-foreground">Connected providers</p>
             </div>
             <Button
