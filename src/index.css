@@ -193,6 +193,15 @@
     text-size-adjust: 100%;
     /* Support for dynamic viewport height */
     height: 100%;
+    /*
+     * Fluid root font-size — the entire app is sized in rem, so this single
+     * clamp gently scales every text/spacing/size token with viewport width
+     * while still respecting the user's browser/system text-size preference.
+     * Floor: 15px (0.9375rem) so we never undershoot legibility.
+     * Ceiling: 16px (1rem) so we never inflate beyond the canonical scale.
+     * See docs/SCALING.md for the full philosophy.
+     */
+    font-size: clamp(0.9375rem, 0.875rem + 0.2vw, 1rem);
   }
 
   body {
