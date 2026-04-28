@@ -193,15 +193,6 @@
     text-size-adjust: 100%;
     /* Support for dynamic viewport height */
     height: 100%;
-    /* Preview zoom for desktop - controlled via JS */
-    --preview-zoom: 1;
-  }
-  
-  /* Desktop preview zoom - only applies on fine pointer devices (mouse/trackpad) */
-  @media (pointer: fine) {
-    .preview-zoom-enabled {
-      zoom: var(--preview-zoom);
-    }
   }
 
   body {

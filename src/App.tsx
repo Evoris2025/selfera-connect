@@ -11,9 +11,6 @@ import { MockSystemProvider } from "@/contexts/MockSystemContext";
 import { FeedDataProvider } from "@/contexts/FeedDataContext";
 import { NavbarProvider } from "@/contexts/NavbarContext";
 import { SafetyProvider } from "@/contexts/SafetyContext";
-import { ViewportDebugOverlay } from "@/components/dev/ViewportDebugOverlay";
-import { usePreviewZoom } from "@/hooks/usePreviewZoom";
-import { useDeviceMetricSync } from "@/hooks/useDeviceMetricSync";
 import logo from '@/assets/selfera-logo.png';
 import { BrandGradientDefs } from '@/components/brand';
 
@@ -83,14 +80,8 @@ function HomeRoute() {
 }
 
 function AppRoutes() {
-  // Initialize preview zoom on app mount
-  usePreviewZoom();
-  // Sync device metrics on mobile
-  useDeviceMetricSync();
-  
   return (
     <>
-      <ViewportDebugOverlay />
       <Routes>
         <Route path="/" element={<HomeRoute />} />
         <Route path="/auth" element={<Auth />} />

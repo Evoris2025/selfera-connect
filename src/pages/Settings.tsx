@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { languages, changeLanguage, getCurrentLanguage, type LanguageCode } from '@/i18n';
 import { ThemeSelector } from '@/components/settings/ThemeSelector';
-import { PreviewZoomControl } from '@/components/settings/PreviewZoomControl';
+
 import { VerificationRequestForm } from '@/components/settings/VerificationRequestForm';
 import { BlockedUsersList } from '@/components/settings/BlockedUsersList';
 import { MutedUsersList } from '@/components/settings/MutedUsersList';
@@ -191,9 +191,6 @@ export default function Settings() {
               <ThemeSelector />
             </CardContent>
           </Card>
-
-          {/* Preview Zoom (Desktop only) */}
-          <PreviewZoomControl />
 
           {/* Language */}
           <Card>
