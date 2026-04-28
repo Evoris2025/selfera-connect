@@ -301,7 +301,7 @@ export function DiscoverRow() {
           <div
             ref={scrollRef}
             onScroll={handleScroll}
-            className="flex gap-3 px-5 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
+            className="flex gap-3 px-4 pr-6 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {profiles.map((profile) => {
