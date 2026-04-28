@@ -103,13 +103,15 @@ function CardStatItem({
       onClick={onClick}
       disabled={!onClick}
       className={cn(
-        'snap-start shrink-0 text-center py-3 px-4 min-w-[5rem] transition-colors duration-200',
+        'flex-1 min-w-0 flex flex-col items-center text-center py-3 px-1 transition-colors duration-200',
         onClick && 'hover:bg-white/[0.04] active:scale-[0.97] cursor-pointer',
       )}
     >
       <p className="text-white text-title font-medium leading-none">{formatCount(count)}</p>
-      <div className="mt-1.5 flex justify-center">
-        <BrandSectionLabel>{label}</BrandSectionLabel>
+      <div className="mt-1.5 w-full">
+        <p className="text-caption font-medium uppercase tracking-wider text-white/55 truncate w-full text-center">
+          {label}
+        </p>
       </div>
     </button>
   );
