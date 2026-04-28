@@ -65,12 +65,15 @@ function ExpressionCard({ item, index }: { item: TrendingExpression; index: numb
       className="relative w-[112px] h-[199px] flex-shrink-0 overflow-hidden rounded-md bg-white/[0.04] group"
     >
       <img src={item.thumbnail} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
-      {/* Top-left: avatar + tier badge (no backing pill, drop-shadow only) */}
-      <div className="absolute top-2 left-2 flex items-center gap-1 [filter:drop-shadow(0_2px_4px_rgba(0,0,0,0.6))]">
-        <Avatar className="h-10 w-10 ring-2 ring-black/40">
+      {/* Top-left: avatar + @handle + tier badge (no backing pill, drop-shadow only) */}
+      <div className="absolute top-2 left-2 right-2 flex items-center gap-1.5 min-w-0 [filter:drop-shadow(0_2px_4px_rgba(0,0,0,0.6))]">
+        <Avatar className="h-10 w-10 ring-2 ring-black/40 shrink-0">
           <AvatarImage src={item.user.avatar} alt={item.user.name} />
           <AvatarFallback className="text-[10px]">{item.user.name.charAt(0)}</AvatarFallback>
         </Avatar>
+        <span className="text-[11px] font-medium text-white truncate leading-none">
+          @{item.user.handle}
+        </span>
         <ExploreVerifiedTick tier={item.user.tier} className="shrink-0" />
       </div>
       {/* Top-right: views (naked icon + number, no pill) */}
