@@ -59,13 +59,14 @@ function ExpressionCard({ item, index }: { item: TrendingExpression; index: numb
       <BrandIconBadge icon={Flame} className="absolute top-2 left-2 z-10" aria-label="Trending" />
       <img src={item.thumbnail} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
       <div className="absolute inset-x-0 bottom-0 h-full bg-gradient-to-t from-black/85 via-black/40 to-transparent pointer-events-none" />
-      <span className="absolute bottom-2 left-2 z-10 flex items-center gap-1.5">
+      <span className="absolute bottom-2 left-2 z-10 flex items-center gap-1">
         <img
           src={item.user.avatar}
           alt=""
           loading="lazy"
           className="w-5 h-5 rounded-full object-cover"
         />
+        <ExploreVerifiedTick tier={item.user.tier} className="shrink-0" />
       </span>
       <BrandStatPill
         icon={Eye}
