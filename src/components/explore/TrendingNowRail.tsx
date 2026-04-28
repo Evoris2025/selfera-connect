@@ -53,12 +53,12 @@ function ExpressionCard({ item, index }: { item: TrendingExpression; index: numb
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: Math.min(index * 0.03, 0.18) }}
       onClick={() => handleTap('expressions', item.id)}
-      className="relative w-[112px] aspect-[9/16] flex-shrink-0 overflow-hidden rounded-md bg-secondary group"
+      className="relative w-[112px] h-[199px] flex-shrink-0 overflow-hidden rounded-md bg-white/[0.04] group"
     >
       <span className="absolute top-2 left-2 z-10 flex items-center justify-center size-5 rounded-full bg-black/40 backdrop-blur-sm">
         <BrandIcon icon={Flame} className="w-3 h-3" />
       </span>
-      <img src={item.thumbnail} alt="" loading="lazy" className="w-full h-full object-cover" />
+      <img src={item.thumbnail} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
       <div className="absolute inset-x-0 bottom-0 h-full bg-gradient-to-t from-black/85 via-black/40 to-transparent pointer-events-none" />
       <span className="absolute bottom-2 left-2 z-10 flex items-center gap-1.5">
         <img
@@ -86,11 +86,11 @@ function VideoCard({ item, index }: { item: TrendingVideo; index: number }) {
       onClick={() => handleTap('videos', item.id)}
       className="w-[200px] flex-shrink-0 text-left group"
     >
-      <div className="relative aspect-video rounded-md overflow-hidden bg-black">
+      <div className="relative w-[200px] h-[112px] rounded-md overflow-hidden bg-white/[0.04]">
         <span className="absolute top-2 left-2 z-10 flex items-center justify-center size-5 rounded-full bg-black/40 backdrop-blur-sm">
           <BrandIcon icon={Flame} className="w-3 h-3" />
         </span>
-        <img src={item.thumbnail} alt={item.title} loading="lazy" className="w-full h-full object-cover" />
+        <img src={item.thumbnail} alt={item.title} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute bottom-1 right-1 px-1.5 py-0.5 bg-black/80 text-[10px] text-white font-medium rounded">
           {item.duration}
         </div>
@@ -118,12 +118,12 @@ function ImageCard({ item, index }: { item: TrendingImage; index: number }) {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: Math.min(index * 0.03, 0.18) }}
       onClick={() => handleTap('images', item.id)}
-      className="relative w-[120px] aspect-square flex-shrink-0 overflow-hidden rounded-md bg-secondary group"
+      className="relative w-[120px] h-[120px] flex-shrink-0 overflow-hidden rounded-md bg-white/[0.04] group"
     >
       <span className="absolute top-2 left-2 z-10 flex items-center justify-center size-5 rounded-full bg-black/40 backdrop-blur-sm">
         <BrandIcon icon={Flame} className="w-3 h-3" />
       </span>
-      <img src={item.url} alt="" loading="lazy" className="w-full h-full object-cover" />
+      <img src={item.url} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
       <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/70 to-transparent pointer-events-none" />
       <div className="absolute bottom-1.5 left-1.5 flex items-center gap-1">
         <Heart className="h-2.5 w-2.5 text-white" />
@@ -288,7 +288,7 @@ export function TrendingNowRail({ activeTab }: TrendingNowRailProps) {
           ref={railRef}
           role="list"
           aria-label="Trending now"
-          className="flex gap-2 overflow-x-auto px-4 scrollbar-hide"
+          className="flex items-start gap-2 overflow-x-auto px-4 scrollbar-hide"
         >
           {renderCards()}
         </div>
