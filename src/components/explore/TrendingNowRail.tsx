@@ -275,22 +275,33 @@ export function TrendingNowRail({ activeTab, filters }: TrendingNowRailProps) {
 
   const renderCards = () => {
     switch (activeTab) {
-      case 'expressions':
-        return (items as TrendingExpression[]).map((item, i) => (
+      case 'expressions': {
+        const filtered = applyExpressionsFilters(
+          items as TrendingExpression[],
+          filters?.expressions,
+        );
+        return filtered.map((item, i) => (
           <ExpressionCard key={item.id} item={item} index={i} />
         ));
-      case 'videos':
-        return (items as TrendingVideo[]).map((item, i) => (
+      }
+      case 'videos': {
+        const filtered = applyVideosFilters(items as TrendingVideo[], filters?.videos);
+        return filtered.map((item, i) => (
           <VideoCard key={item.id} item={item} index={i} />
         ));
-      case 'images':
-        return (items as TrendingImage[]).map((item, i) => (
+      }
+      case 'images': {
+        const filtered = applyImagesFilters(items as TrendingImage[], filters?.images);
+        return filtered.map((item, i) => (
           <ImageCard key={item.id} item={item} index={i} />
         ));
-      case 'posts':
-        return (items as TrendingPost[]).map((item, i) => (
+      }
+      case 'posts': {
+        const filtered = applyPostsFilters(items as TrendingPost[], filters?.posts);
+        return filtered.map((item, i) => (
           <PostCard key={item.id} item={item} index={i} />
         ));
+      }
       default:
         return null;
     }
