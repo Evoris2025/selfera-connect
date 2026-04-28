@@ -821,7 +821,7 @@ export default function MyERA() {
 
         {/* MyERA Network Section */}
         <motion.section
-          className="mt-8 px-4"
+          className="mt-8 px-4 order-1"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...springGentle, delay: 0.35 }}
