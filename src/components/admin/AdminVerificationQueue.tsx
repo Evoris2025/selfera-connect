@@ -49,7 +49,7 @@ function RequestCard({ request, onApprove, onReject }: RequestCardProps) {
         <CardContent className="p-0">
           {/* Header */}
           <div className="flex items-center gap-4 p-4 border-b border-border/50">
-            <Avatar className="h-12 w-12">
+            <Avatar size="md">
               <AvatarImage src={request.profile?.avatar_url} />
               <AvatarFallback>
                 {request.profile?.display_name?.charAt(0) || 'U'}

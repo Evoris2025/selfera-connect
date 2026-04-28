@@ -1,4 +1,5 @@
 import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
+import { ICON_SIZE } from "@/lib/scale";
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import {
@@ -607,10 +608,10 @@ export default function Messages() {
           </div>
           <div className="flex items-center gap-1">
             <motion.button whileTap={{ scale: 0.85 }} transition={springSnap} className="h-9 w-9 rounded-full flex items-center justify-center">
-              <BrandIcon icon={Phone} size={18} />
+              <BrandIcon icon={Phone} size={ICON_SIZE.md} />
             </motion.button>
             <motion.button whileTap={{ scale: 0.85 }} transition={springSnap} className="h-9 w-9 rounded-full flex items-center justify-center">
-              <BrandIcon icon={Video} size={18} />
+              <BrandIcon icon={Video} size={ICON_SIZE.md} />
             </motion.button>
           </div>
         </motion.div>
@@ -793,7 +794,7 @@ export default function Messages() {
           className="sticky top-0 z-10 px-5 pb-3 bg-background"
         >
           <BrandSurface className="relative flex items-center h-11 px-4 rounded-full">
-            <BrandIcon icon={Search} size={18} />
+            <BrandIcon icon={Search} size={ICON_SIZE.md} />
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}

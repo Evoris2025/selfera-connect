@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, type TouchEvent, type ReactNode } from 'react';
+import { ICON_SIZE } from "@/lib/scale";
 import { motion, AnimatePresence, useAnimationControls } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { 
@@ -343,7 +344,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact }: Reac
             className="flex items-center justify-center"
           >
             {hasReaction ? (
-              <FluentEmoji type={currentReaction!} size={24} />
+              <FluentEmoji type={currentReaction!} size={ICON_SIZE.lg} />
             ) : (
               <svg
                 className={cn(

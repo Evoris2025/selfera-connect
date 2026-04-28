@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { ICON_SIZE } from "@/lib/scale";
 import { motion } from 'framer-motion';
 import {
   Sparkles,
@@ -165,7 +166,7 @@ function CreatorRow({
 
         {/* Chevron chip */}
         <div className="w-7 h-7 rounded-full bg-white/[0.08] backdrop-blur-md border border-white/10 flex items-center justify-center shrink-0">
-          <ChevronRight size={14} className="text-white/85" />
+          <ChevronRight size={ICON_SIZE.sm} className="text-white/85" />
         </div>
       </div>
     </motion.button>
@@ -292,7 +293,7 @@ export function ContentTypeDashboard({ onSelect, onClose }: ContentTypeDashboard
               <span className="flex-1 min-w-0 truncate text-caption uppercase tracking-[0.08em] text-white/50 text-left">
                 {resumeStrip.meta}
               </span>
-              <ChevronRight size={14} className="shrink-0 text-white/40" />
+              <ChevronRight size={ICON_SIZE.sm} className="shrink-0 text-white/40" />
             </button>
           </div>
         )}

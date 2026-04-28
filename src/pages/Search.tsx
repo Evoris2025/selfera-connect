@@ -87,7 +87,7 @@ export default function Search() {
                 key={account.handle}
                 className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border hover:border-primary/30 transition-colors cursor-pointer"
               >
-                <Avatar className="h-12 w-12">
+                <Avatar size="md">
                   <AvatarFallback className="bg-secondary text-secondary-foreground">
                     {account.name.charAt(0)}
                   </AvatarFallback>

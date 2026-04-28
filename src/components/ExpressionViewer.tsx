@@ -310,7 +310,7 @@ export function ExpressionViewer({ isOpen, onClose, initialIndex = 0 }: Expressi
           <div className="absolute right-4 bottom-36 flex flex-col items-center gap-6">
             {/* Avatar */}
             <motion.div whileTap={{ scale: 0.9 }} className="relative">
-              <Avatar className="h-12 w-12 ring-2 ring-white">
+              <Avatar size="md" className="ring-2 ring-white">
                 <AvatarImage src={currentExpression.userAvatar} />
                 <AvatarFallback className="bg-primary text-white">
                   {currentExpression.userName.charAt(0)}

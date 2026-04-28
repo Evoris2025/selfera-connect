@@ -93,7 +93,7 @@ export function CommentSheet({ open, onOpenChange, postId }: CommentSheetProps) 
                 transition={{ ...springConfig, delay: index * 0.05 }}
                 className="flex gap-3 group"
               >
-                <Avatar className="h-8 w-8 flex-shrink-0">
+                <Avatar size="sm" className="flex-shrink-0">
                   <AvatarImage src={c.author.avatar} />
                   <AvatarFallback className="bg-secondary text-secondary-foreground text-label">
                     {c.author.name.charAt(0)}
@@ -147,7 +147,7 @@ export function CommentSheet({ open, onOpenChange, postId }: CommentSheetProps) 
           {/* Comment input */}
           <div className="p-4 border-t border-border/50 bg-background">
             <div className="flex items-center gap-3">
-              <Avatar className="h-8 w-8 flex-shrink-0">
+              <Avatar size="sm" className="flex-shrink-0">
                 <AvatarFallback className="bg-secondary text-secondary-foreground text-label">
                   {user?.email?.charAt(0).toUpperCase() || 'U'}
                 </AvatarFallback>

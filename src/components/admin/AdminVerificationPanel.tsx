@@ -190,7 +190,7 @@ export function AdminVerificationPanel() {
                 <CardContent className="p-0">
                   {/* Header */}
                   <div className="flex items-center gap-4 p-4 border-b border-border/50">
-                    <Avatar className="h-12 w-12">
+                    <Avatar size="md">
                       <AvatarImage src={request.avatarUrl} />
                       <AvatarFallback>
                         {request.displayName.charAt(0)}

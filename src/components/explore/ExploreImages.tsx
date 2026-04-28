@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ICON_SIZE } from "@/lib/scale";
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Share2, Bookmark, Eye } from 'lucide-react';
 import { BrandIcon } from '@/components/brand';
@@ -65,7 +66,7 @@ function ImageTile({ image, index, onClick }: { image: ImageItem; index: number;
       />
       {/* Bottom-left: views (naked icon + number, no pill) */}
       <div className="absolute bottom-2 left-2 flex items-center gap-1 [filter:drop-shadow(0_2px_4px_rgba(0,0,0,0.6))]">
-        <BrandIcon icon={Eye} size={14} />
+        <BrandIcon icon={Eye} size={ICON_SIZE.sm} />
         <span className="text-caption font-medium text-white tabular-nums leading-none">
           {formatCount(image.views)}
         </span>

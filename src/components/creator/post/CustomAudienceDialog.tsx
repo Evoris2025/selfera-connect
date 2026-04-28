@@ -68,7 +68,7 @@ export function CustomAudienceDialog({ open, onOpenChange, value, onSave }: Cust
                   checked ? 'bg-primary/10' : 'hover:bg-secondary'
                 )}
               >
-                <Avatar className="h-8 w-8">
+                <Avatar size="sm">
                   <AvatarImage src={u.avatar} alt={u.name} />
                   <AvatarFallback>{u.name.charAt(0)}</AvatarFallback>
                 </Avatar>

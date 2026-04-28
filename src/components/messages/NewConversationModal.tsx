@@ -180,7 +180,7 @@ export function NewConversationModal({ isOpen, onClose, onStartConversation }: N
                       : "hover:bg-white/[0.04]"
                   )}
                 >
-                  <Avatar className="h-12 w-12">
+                  <Avatar size="md">
                     <AvatarImage src={userResult.avatarUrl} />
                     <AvatarFallback className="bg-gradient-to-br from-secondary to-secondary/60">
                       {userResult.displayName.charAt(0)}

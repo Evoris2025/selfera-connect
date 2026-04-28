@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { ICON_SIZE } from "@/lib/scale";
 import { useTranslation } from 'react-i18next';
 import {
   Heart,
@@ -186,7 +187,7 @@ function NotificationItem({
           {/* Content */}
           <div className="flex-1 min-w-0">
             <p className="text-body leading-snug flex items-start gap-1.5">
-              <BrandIcon icon={ActionIcon} size={14} strokeWidth={1.75} className="mt-[3px]" />
+              <BrandIcon icon={ActionIcon} size={ICON_SIZE.sm} strokeWidth={1.75} className="mt-[3px]" />
               <span className="min-w-0">
                 {primaryUser && (
                   <>

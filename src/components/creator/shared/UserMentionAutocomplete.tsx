@@ -133,7 +133,7 @@ export function UserMentionAutocomplete({
               index === selectedIndex ? 'bg-secondary' : 'hover:bg-secondary/50'
             )}
           >
-            <Avatar className="h-8 w-8">
+            <Avatar size="sm">
               <AvatarImage src={user.avatarUrl} alt={user.displayName} />
               <AvatarFallback className="text-label">
                 {user.displayName.charAt(0)}

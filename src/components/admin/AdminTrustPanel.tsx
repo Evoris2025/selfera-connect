@@ -230,7 +230,7 @@ export function AdminTrustPanel() {
               className="p-4 border border-border rounded-lg hover:bg-muted/30 transition-colors"
             >
               <div className="flex items-start gap-4">
-                <Avatar className="h-12 w-12">
+                <Avatar size="md">
                   <AvatarImage src={profile.avatarUrl} />
                   <AvatarFallback>{profile.displayName.charAt(0)}</AvatarFallback>
                 </Avatar>

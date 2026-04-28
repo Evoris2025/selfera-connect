@@ -90,7 +90,7 @@ function VideoTile({ video, index }: { video: VideoItem; index: number }) {
 
         {/* Row 2 — Creator row (avatar + name + tier badge) */}
         <div className="flex items-center gap-2 min-w-0">
-          <Avatar className="h-5 w-5 shrink-0">
+          <Avatar size="xs" className="shrink-0">
             <AvatarImage src={video.creator.avatar} alt={video.creator.name} />
             <AvatarFallback className="bg-white/[0.06] text-caption text-white/70">
               {video.creator.name.charAt(0)}

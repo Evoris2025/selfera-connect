@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { ICON_SIZE } from "@/lib/scale";
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
@@ -565,7 +566,7 @@ export default function MyERA() {
                       animate={{ scale: [1, 1.05, 1] }}
                       transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                     >
-                      <BrandIcon icon={Clock} size={18} />
+                      <BrandIcon icon={Clock} size={ICON_SIZE.md} />
                     </motion.div>
                     <div>
                       <h3 className="text-body font-medium text-white">In Progress</h3>
@@ -640,7 +641,7 @@ export default function MyERA() {
                   <span aria-hidden className="absolute left-0 top-0 bottom-0 w-[2px] bg-white/40" />
                   <div className="flex items-center gap-3 mb-2">
                     <div className="w-10 h-10 rounded-full border border-white/[0.12] flex items-center justify-center">
-                      <BrandIcon icon={AlertCircle} size={18} />
+                      <BrandIcon icon={AlertCircle} size={ICON_SIZE.md} />
                     </div>
                     <h3 className="text-body font-medium text-white">Not Approved</h3>
                   </div>
@@ -681,7 +682,7 @@ export default function MyERA() {
                       animate={{ scale: 1 }}
                       transition={{ type: 'spring', stiffness: 400, damping: 15 }}
                     >
-                      <BrandIcon icon={UserCheck} size={18} />
+                      <BrandIcon icon={UserCheck} size={ICON_SIZE.md} />
                     </motion.div>
                     <div>
                       <h3 className="text-body font-medium text-white">ERA Verified</h3>

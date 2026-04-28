@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { ICON_SIZE } from "@/lib/scale";
 import { motion } from 'framer-motion';
 import { Flame, Eye, Heart, Play, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -108,7 +109,7 @@ function VideoCard({ item, index }: { item: TrendingVideo; index: number }) {
         </div>
         <BrandIconBadge
           icon={Play}
-          size={14}
+          size={ICON_SIZE.sm}
           className="absolute inset-0 m-auto w-10 h-10 opacity-0 group-hover:opacity-100 transition-opacity"
           aria-label="Play"
         />
@@ -176,7 +177,7 @@ function PostCard({ item, index }: { item: TrendingPost; index: number }) {
       </p>
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-1.5 min-w-0">
-          <Avatar className="h-5 w-5 flex-shrink-0">
+          <Avatar size="xs" className="flex-shrink-0">
             <AvatarImage src={item.user.avatar} alt={item.user.handle} />
             <AvatarFallback className="text-caption bg-white/[0.08] text-white/70">
               {item.user.handle.charAt(0)}

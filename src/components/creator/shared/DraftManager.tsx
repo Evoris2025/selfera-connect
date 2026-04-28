@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { ICON_SIZE } from "@/lib/scale";
 import { FileText, Trash2, Clock, ChevronRight, Sparkles, Video, Image as ImageIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -222,7 +223,7 @@ export function DraftManager({ onSelectDraft, filterType, className }: DraftMana
                           aria-label="Delete draft"
                           className="p-1.5 rounded-full text-white/30 hover:text-destructive hover:bg-destructive/10 transition"
                         >
-                          <Trash2 size={14} />
+                          <Trash2 size={ICON_SIZE.sm} />
                         </button>
                         <ChevronRight size={16} className="text-white/40" />
                       </span>

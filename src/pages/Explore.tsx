@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { ICON_SIZE } from "@/lib/scale";
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { Search as SearchIcon, X } from 'lucide-react';
@@ -122,7 +123,7 @@ export default function Explore() {
         <div className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-white/[0.08]">
           <div className="p-3 flex items-center gap-2">
             <BrandSurface className="relative flex-1 flex items-center h-11 px-4 rounded-full">
-              <BrandIcon icon={SearchIcon} size={18} />
+              <BrandIcon icon={SearchIcon} size={ICON_SIZE.md} />
               <Input
                 ref={searchInputRef}
                 placeholder="search SelfERA"
