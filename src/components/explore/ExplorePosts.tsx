@@ -33,6 +33,7 @@ const mostCommentedPosts = forYouPosts.slice().sort((a, b) => b.comments - a.com
 const newestPosts = forYouPosts.slice(0, 5).map((p) => ({ ...p, id: `n-${p.id}` }));
 
 import type { PostsFilters, SortBy } from './ExploreFilters';
+import { applyCreatorTier } from './exploreFilterUtils';
 
 const SORT_TO_DATA: Record<SortBy, PostItem[]> = {
   'for-you': forYouPosts,
