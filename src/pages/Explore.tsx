@@ -161,7 +161,7 @@ export default function Explore() {
         ) : (
           <>
             {/* Brand Underline Tab Bar */}
-            <div className="sticky top-[68px] z-20 bg-background/95 backdrop-blur px-3 border-b border-white/[0.08]">
+            <div className="sticky top-14 z-20 bg-background/95 backdrop-blur px-3 border-b border-white/[0.08]">
               <BrandUnderlineTabs
                 tabs={exploreTabs}
                 value={activeTab}
