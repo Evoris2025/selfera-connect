@@ -603,10 +603,9 @@ export default function Profile() {
               {renderBioWithHashtags(displayProfile.bio || mockUser.bio)}
             </motion.p>
 
-            {/* Stats Row — horizontal snap rail to handle column-density at max-w-md */}
+            {/* Stats Row — fits 4 stats natively across the 28rem column (no scroll) */}
             <motion.div
-              className="mt-6 -mx-4 flex items-stretch overflow-x-auto snap-x snap-mandatory scrollbar-hide rail-fade-right pl-2 pr-8"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              className="mt-6 flex w-full items-stretch gap-1"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
