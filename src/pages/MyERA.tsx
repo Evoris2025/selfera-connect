@@ -511,7 +511,7 @@ export default function MyERA() {
                 <BrandSurface
                   as={motion.div as any}
                   key="verification-cta"
-                  className="relative overflow-hidden min-h-[180px] flex flex-col p-5"
+                  className="relative overflow-hidden flex flex-col p-4"
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -10 }}
@@ -563,7 +563,7 @@ export default function MyERA() {
                 <BrandSurface
                   as={motion.div as any}
                   key="verification-progress"
-                  className="relative overflow-hidden min-h-[180px] flex flex-col p-5"
+                  className="relative overflow-hidden flex flex-col p-4"
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -10 }}
@@ -646,7 +646,7 @@ export default function MyERA() {
                 <BrandSurface
                   as={motion.div as any}
                   key="verification-rejected"
-                  className="relative overflow-hidden min-h-[180px] flex flex-col p-5"
+                  className="relative overflow-hidden flex flex-col p-4"
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -10 }}
@@ -678,7 +678,7 @@ export default function MyERA() {
                 <BrandSurface
                   as={motion.div as any}
                   key="verified-status"
-                  className="relative overflow-hidden min-h-[180px] flex flex-col p-5"
+                  className="relative overflow-hidden flex flex-col p-4"
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -10 }}
