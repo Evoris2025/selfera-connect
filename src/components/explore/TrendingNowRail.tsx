@@ -288,7 +288,7 @@ export function TrendingNowRail({ activeTab }: TrendingNowRailProps) {
           ref={railRef}
           role="list"
           aria-label="Trending now"
-          className="flex gap-2 overflow-x-auto px-4 scrollbar-hide"
+          className="flex items-start gap-2 overflow-x-auto px-4 scrollbar-hide"
         >
           {renderCards()}
         </div>
