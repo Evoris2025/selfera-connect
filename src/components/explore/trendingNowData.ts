@@ -42,7 +42,7 @@ export interface TrendingImage {
 export interface TrendingPost {
   id: string;
   snippet: string;
-  user: { handle: string; avatar: string };
+  user: { handle: string; avatar: string; tier: TrendingVideoTier };
   likes: number;
 }
 
