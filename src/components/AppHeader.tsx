@@ -32,8 +32,8 @@ export function AppHeader({ title, brandMark = false }: AppHeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/50 bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80">
-      <div className="flex items-center justify-between h-14 px-4 max-w-lg md:max-w-full lg:max-w-2xl mx-auto w-full">
+    <header className="sticky top-0 z-40 border-b border-border/50 bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80 pt-safe">
+      <div className="flex items-center justify-between h-14 px-4 w-full">
         {/* Logo + Title */}
         <Link to="/feed" className="flex items-center gap-3">
         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
