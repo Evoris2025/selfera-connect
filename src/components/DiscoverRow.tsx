@@ -320,7 +320,7 @@ export function DiscoverRow() {
                   <GlassCard
                     variant="card"
                     hover
-                    className="w-36 p-4 flex flex-col items-center text-center"
+                    className="w-44 p-4 flex flex-col items-center text-center"
                   >
                     <div 
                       className="mb-3 cursor-pointer"
