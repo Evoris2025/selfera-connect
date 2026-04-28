@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Share2, Bookmark } from 'lucide-react';
+import { X, Share2, Bookmark, Eye } from 'lucide-react';
+import { BrandIcon } from '@/components/brand';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { useThemeColor } from '@/hooks/useThemeColor';
@@ -10,19 +11,20 @@ interface ImageItem {
   id: string;
   url: string;
   likes: number;
+  views: number;
   user: string;
 }
 
 const trendingImages: ImageItem[] = [
-  { id: 'i1', url: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=600&h=600&fit=crop', likes: 12400, user: 'drsarah' },
-  { id: 'i2', url: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=600&h=600&fit=crop', likes: 8900, user: 'mindful' },
-  { id: 'i3', url: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=600&h=600&fit=crop', likes: 15600, user: 'wellness' },
-  { id: 'i4', url: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=600&h=600&fit=crop', likes: 23400, user: 'academy' },
-  { id: 'i5', url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=600&fit=crop', likes: 18700, user: 'jamie' },
-  { id: 'i6', url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&h=600&fit=crop', likes: 5600, user: 'support' },
-  { id: 'i7', url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=600&h=600&fit=crop', likes: 4300, user: 'recovery' },
-  { id: 'i8', url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=600&h=600&fit=crop', likes: 890, user: 'alex' },
-  { id: 'i9', url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&h=600&fit=crop', likes: 1200, user: 'mind' },
+  { id: 'i1', url: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=600&h=600&fit=crop', likes: 12400, views: 184500, user: 'drsarah' },
+  { id: 'i2', url: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=600&h=600&fit=crop', likes: 8900, views: 92300, user: 'mindful' },
+  { id: 'i3', url: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=600&h=600&fit=crop', likes: 15600, views: 246800, user: 'wellness' },
+  { id: 'i4', url: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=600&h=600&fit=crop', likes: 23400, views: 412000, user: 'academy' },
+  { id: 'i5', url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=600&fit=crop', likes: 18700, views: 287400, user: 'jamie' },
+  { id: 'i6', url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&h=600&fit=crop', likes: 5600, views: 67200, user: 'support' },
+  { id: 'i7', url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=600&h=600&fit=crop', likes: 4300, views: 51800, user: 'recovery' },
+  { id: 'i8', url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=600&h=600&fit=crop', likes: 890, views: 14200, user: 'alex' },
+  { id: 'i9', url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&h=600&fit=crop', likes: 1200, views: 19600, user: 'mind' },
 ];
 
 const popularWeekImages = trendingImages.slice().sort((a, b) => b.likes - a.likes).map((i) => ({ ...i, id: `pw-${i.id}` }));
@@ -40,6 +42,12 @@ const SORT_TO_DATA: Record<SortBy, ImageItem[]> = {
   'most-liked': popularWeekImages,
 };
 
+function formatCount(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+  return String(n);
+}
+
 function ImageTile({ image, index, onClick }: { image: ImageItem; index: number; onClick: () => void }) {
   return (
     <motion.div
@@ -55,6 +63,13 @@ function ImageTile({ image, index, onClick }: { image: ImageItem; index: number;
         loading="lazy"
         className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
       />
+      {/* Bottom-left: views (naked icon + number, no pill) */}
+      <div className="absolute bottom-2 left-2 flex items-center gap-1 [filter:drop-shadow(0_2px_4px_rgba(0,0,0,0.6))]">
+        <BrandIcon icon={Eye} size={14} />
+        <span className="text-[11px] font-medium text-white tabular-nums leading-none">
+          {formatCount(image.views)}
+        </span>
+      </div>
     </motion.div>
   );
 }
