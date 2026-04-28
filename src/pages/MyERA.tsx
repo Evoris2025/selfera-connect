@@ -369,7 +369,7 @@ export default function MyERA() {
                   src={profile?.avatar_url || undefined}
                   alt={profile?.display_name || 'User'}
                   fallback={profile?.display_name?.[0] || 'U'}
-                  size="xl"
+                  size="md"
                   ring="gradient"
                   interactive
                   onClick={() => navigate('/profile')}
@@ -462,12 +462,20 @@ export default function MyERA() {
 
         {/* In-page brand title */}
         <div className="px-4 mt-8">
-          <BrandScreenTitle
-            setup="your"
-            emphasis="ERA"
-            subtitle="a record of who you've been."
-            size="screen"
-          />
+          <div className="flex flex-col">
+            <h1 className="text-headline font-bold tracking-tight leading-tight">
+              <span className="font-medium text-white">your </span>
+              <span className="font-extrabold text-white">ERA</span>
+              <span
+                className="text-gradient-brand font-extrabold inline-block leading-none align-baseline ml-[1px]"
+                style={{ fontSize: '1.25em' }}
+                aria-hidden="true"
+              >
+                .
+              </span>
+            </h1>
+            <p className="text-white/55 text-label mt-1 lowercase">a record of who you've been.</p>
+          </div>
         </div>
 
 
@@ -755,7 +763,7 @@ export default function MyERA() {
                       className="relative w-full overflow-hidden text-left p-4 flex items-center gap-4 transition-colors"
                       style={isSelected ? { borderColor: themePrimary, borderWidth: '1.5px' } : undefined}
                     >
-                      <BrandIcon icon={IconComponent} size={22} />
+                      <BrandIcon icon={IconComponent} size={20} />
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
@@ -883,7 +891,7 @@ export default function MyERA() {
                   <BrandSurface className="p-8">
                     <div className="text-center flex flex-col items-center">
                       <div className="mb-4">
-                        <BrandIcon icon={Heart} size={28} />
+                        <BrandIcon icon={Heart} size={24} />
                       </div>
                       <h3 className="text-white/85 text-body lowercase mb-2">
                         your support connections
@@ -978,7 +986,7 @@ export default function MyERA() {
                 <BrandSurface className="p-8">
                   <div className="text-center flex flex-col items-center">
                     <div className="mb-4">
-                      <BrandIcon icon={Heart} size={28} />
+                      <BrandIcon icon={Heart} size={24} />
                     </div>
                     <h3 className="text-white/85 text-body lowercase mb-2">
                       your saved connections
