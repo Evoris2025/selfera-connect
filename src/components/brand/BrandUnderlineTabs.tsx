@@ -72,7 +72,7 @@ export function BrandUnderlineTabs({
       role="tablist"
       aria-label={ariaLabel}
       className={cn(
-        'relative flex w-full items-end gap-6 overflow-x-auto scrollbar-hide snap-x snap-mandatory -mx-4 px-4',
+        'relative flex w-full items-end gap-6 overflow-x-auto scrollbar-hide rail-fade-right snap-x snap-mandatory -mx-4 pl-4 pr-10',
         className,
       )}
       style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
