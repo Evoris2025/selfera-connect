@@ -16,6 +16,14 @@ if ('serviceWorker' in navigator) {
   }
 }
 
+// One-time cleanup of legacy preview-zoom localStorage keys so any leftover
+// 0.72 values can't be re-read by stale code paths.
+try {
+  localStorage.removeItem('selfera-preview-zoom-mobile');
+  localStorage.removeItem('selfera-preview-zoom-tablet');
+  localStorage.removeItem('selfera-preview-zoom-desktop');
+} catch {}
+
 // Surface otherwise-silent failures to the console so white-screens become
 // debuggable instead of mysterious.
 window.addEventListener('error', (e) => {
