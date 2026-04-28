@@ -154,3 +154,75 @@ inside a horizontally-scrolling rail where the media has a known aspect).
   must remain usable, with no overlapping text or clipped controls.
 - Never rely on hover-only affordances; every interactive element must be
   reachable via keyboard and have a visible focus ring.
+
+---
+
+## Native-feel rules
+
+SelfERA is a PWA targeted to feel like a native app on iOS and Android. These rules are enforced.
+
+### PWA manifest
+
+- public/manifest.json exists with: name, short_name, description, start_url: "/", display: "standalone", theme_color, background_color (both = canonical background hex), and icons array (192×192, 512×512, plus a maskable variant).
+
+- Linked from index.html via <link rel="manifest" href="/manifest.json">.
+
+### iOS install metadata (index.html head)
+
+- <meta name="theme-color" content="<canonical bg hex>">
+
+- <meta name="apple-mobile-web-app-capable" content="yes">
+
+- <meta name="mobile-web-app-capable" content="yes">
+
+- <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+- <meta name="apple-mobile-web-app-title" content="SelfERA">
+
+- <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+### Viewport meta (locked)
+
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"> — never maximum-scale, minimum-scale, or user-scalable=no.
+
+### Prevent iOS input zoom
+
+All <input>, <textarea>, <select> resolve to ≥ 16px font-size on mobile. Enforced via global rule in index.css:
+
+`input, textarea, select { font-size: max(16px, 1rem); }`
+
+### Overscroll behavior
+
+- body: overscroll-behavior-x: none; overscroll-behavior-y: auto
+
+- Scrollable inner containers (post lists, message lists): overscroll-behavior: contain
+
+- This eliminates iOS rubber-band bounce that feels web-y.
+
+### No horizontal document scroll
+
+html and body have overflow-x: hidden. Catches any rogue element pushing the document wider than the viewport.
+
+### Tap highlight + selection
+
+- body: -webkit-tap-highlight-color: transparent (no gray flash on tap)
+
+- Buttons, cards, nav items: user-select: none (taps don't select text)
+
+### Scroll-to-top on route change
+
+The <ScrollToTop /> component is mounted once inside the Router. It listens to pathname changes and:
+
+- On forward navigation (PUSH / REPLACE): scrolls window + document.scrollingElement to top instantly.
+
+- On back navigation (POP): preserves the previous scroll position so the user returns to where they were.
+
+Native apps land at top on tab change but preserve position on back. This contract enforces that.
+
+### Safe areas
+
+- AppHeader: pt-safe (so content sits below the status bar in standalone PWA)
+
+- Bottom nav: pb-nav-safe (so content sits above the home indicator)
+
+- All other fixed top/bottom elements must reference env(safe-area-inset-top) / env(safe-area-inset-bottom).
