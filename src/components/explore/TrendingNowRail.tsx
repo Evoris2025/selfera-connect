@@ -6,6 +6,13 @@ import { BrandIcon, BrandIconBadge, BrandStatPill } from '@/components/brand';
 import { ExploreVerifiedTick } from './ExploreVerifiedTick';
 import { cn } from '@/lib/utils';
 import type { ExploreTab } from './ExploreFilters';
+import type { ExploreFiltersState } from './ExploreFilters';
+import {
+  applyExpressionsFilters,
+  applyVideosFilters,
+  applyImagesFilters,
+  applyPostsFilters,
+} from './exploreFilterUtils';
 import {
   trendingExpressions,
   trendingVideos,
