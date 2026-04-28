@@ -74,7 +74,7 @@ function ExpressionCard({ item, index }: { item: TrendingExpression; index: numb
         <ExploreVerifiedTick tier={item.user.tier} className="shrink-0" />
       </div>
       {/* Top-right: views (naked icon + number, no pill) */}
-      <div className="absolute top-2 right-2 flex items-center gap-1 [filter:drop-shadow(0_2px_4px_rgba(0,0,0,0.6))]">
+      <div className="absolute bottom-2 left-2 flex items-center gap-1 [filter:drop-shadow(0_2px_4px_rgba(0,0,0,0.6))]">
         <BrandIcon icon={Eye} size={16} />
         <span className="text-[12px] font-medium text-white tabular-nums leading-none">
           {formatCount(item.views)}
