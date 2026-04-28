@@ -42,6 +42,12 @@ const SORT_TO_DATA: Record<SortBy, ImageItem[]> = {
   'most-liked': popularWeekImages,
 };
 
+function formatCount(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
+  return String(n);
+}
+
 function ImageTile({ image, index, onClick }: { image: ImageItem; index: number; onClick: () => void }) {
   return (
     <motion.div
@@ -57,6 +63,13 @@ function ImageTile({ image, index, onClick }: { image: ImageItem; index: number;
         loading="lazy"
         className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
       />
+      {/* Bottom-left: views (naked icon + number, no pill) */}
+      <div className="absolute bottom-2 left-2 flex items-center gap-1 [filter:drop-shadow(0_2px_4px_rgba(0,0,0,0.6))]">
+        <BrandIcon icon={Eye} size={14} />
+        <span className="text-[11px] font-medium text-white tabular-nums leading-none">
+          {formatCount(image.views)}
+        </span>
+      </div>
     </motion.div>
   );
 }
