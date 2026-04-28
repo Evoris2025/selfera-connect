@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Share2, Bookmark } from 'lucide-react';
+import { X, Share2, Bookmark, Eye } from 'lucide-react';
+import { BrandIcon } from '@/components/brand';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { useThemeColor } from '@/hooks/useThemeColor';
