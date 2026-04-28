@@ -102,7 +102,7 @@ export function CreatorView({
             <Users className="w-4 h-4 text-primary" />
             <span className="text-label text-muted-foreground">Subscribers</span>
           </div>
-          <p className="text-2xl font-bold text-foreground">{subscriberCount.toLocaleString()}</p>
+          <p className="text-headline font-bold text-foreground">{subscriberCount.toLocaleString()}</p>
         </div>
 
         {/* Visibility Tier */}

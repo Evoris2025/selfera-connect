@@ -89,7 +89,7 @@ export function PractitionerView({
             <Users className="w-4 h-4 text-primary" />
             <span className="text-label text-muted-foreground">Active Clients</span>
           </div>
-          <p className="text-2xl font-bold text-foreground">{activeClients}</p>
+          <p className="text-headline font-bold text-foreground">{activeClients}</p>
         </div>
 
         {/* Pending Requests */}
@@ -98,7 +98,7 @@ export function PractitionerView({
             <Clock className="w-4 h-4 text-amber-400" />
             <span className="text-label text-muted-foreground">Pending</span>
           </div>
-          <p className="text-2xl font-bold text-foreground">{pendingRequests}</p>
+          <p className="text-headline font-bold text-foreground">{pendingRequests}</p>
           {pendingRequests > 0 && (
             <span className="absolute top-3 right-3 w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
           )}
@@ -127,9 +127,9 @@ export function PractitionerView({
             onClick={() => setIsAvailable(!isAvailable)}
           >
             {isAvailable ? (
-              <ToggleRight className="w-10 h-10 text-emerald-500" />
+              <ToggleRight className="w-6 h-6 text-emerald-500" />
             ) : (
-              <ToggleLeft className="w-10 h-10 text-muted-foreground" />
+              <ToggleLeft className="w-6 h-6 text-muted-foreground" />
             )}
           </button>
         </div>
@@ -157,9 +157,9 @@ export function PractitionerView({
             onClick={() => setProfileVisible(!profileVisible)}
           >
             {profileVisible ? (
-              <ToggleRight className="w-10 h-10 text-primary" />
+              <ToggleRight className="w-6 h-6 text-primary" />
             ) : (
-              <ToggleLeft className="w-10 h-10 text-muted-foreground" />
+              <ToggleLeft className="w-6 h-6 text-muted-foreground" />
             )}
           </button>
         </div>
