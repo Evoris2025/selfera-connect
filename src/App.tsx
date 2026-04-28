@@ -132,6 +132,7 @@ const App = () => {
                   <Sonner />
                   <BrandGradientDefs />
                   <BrowserRouter>
+                    <ScrollToTop />
                     <AppRoutes />
                   </BrowserRouter>
                 </TooltipProvider>
