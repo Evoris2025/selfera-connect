@@ -1,23 +1,34 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import "./index.css";
 
-// Register service worker for push notifications
+// Actively unregister any previously installed service worker and clear its
+// caches. The SW was causing white-screen issues inside the Lovable preview
+// iframe; this guarantees existing users get cleaned up on next load.
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then((registration) => {
-        console.log('Service Worker registered:', registration.scope);
-      })
-      .catch((error) => {
-        console.log('Service Worker registration failed:', error);
-      });
+  navigator.serviceWorker.getRegistrations().then((regs) => {
+    regs.forEach((reg) => reg.unregister());
   });
+  if ('caches' in window) {
+    caches.keys().then((keys) => keys.forEach((k) => caches.delete(k)));
+  }
 }
 
+// Surface otherwise-silent failures to the console so white-screens become
+// debuggable instead of mysterious.
+window.addEventListener('error', (e) => {
+  console.error('[GlobalError]', e.error || e.message, e);
+});
+window.addEventListener('unhandledrejection', (e) => {
+  console.error('[UnhandledRejection]', e.reason);
+});
+
 createRoot(document.getElementById("root")!).render(
-  <ThemeProvider>
-    <App />
-  </ThemeProvider>
+  <ErrorBoundary>
+    <ThemeProvider>
+      <App />
+    </ThemeProvider>
+  </ErrorBoundary>
 );
