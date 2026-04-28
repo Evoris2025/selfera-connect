@@ -140,11 +140,11 @@ function CreatorRow({
         style={{ background: accentColor }}
       />
 
-      {/* Content layer — vertical stack for square-ish tile */}
-      <div className="relative z-10 flex flex-col h-full px-4 py-4">
+      {/* Content layer — horizontal, vertically centered */}
+      <div className="relative z-10 flex items-center gap-4 h-full px-5 py-4">
         {/* Free-floating gradient-stroked icon mark */}
         <Icon
-          size={32}
+          size={36}
           strokeWidth={1.6}
           stroke="url(#selfera-brand-gradient)"
           fill="none"
@@ -153,23 +153,20 @@ function CreatorRow({
           style={{ filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.4))' }}
         />
 
-        {/* Spacer pushes text to bottom */}
-        <div className="flex-1" />
+        {/* Content column */}
+        <div className="flex-1 min-w-0">
+          <h3 className="text-headline font-extrabold tracking-tight text-white leading-none truncate">
+            {title.toUpperCase()}
+            <span className="text-gradient-brand">.</span>
+          </h3>
+          <p className="text-caption font-medium tracking-[0.15em] uppercase text-white/55 mt-1.5 truncate">
+            {description}
+          </p>
+        </div>
 
-        {/* Content + chevron row */}
-        <div className="flex items-end gap-2 min-w-0">
-          <div className="flex-1 min-w-0">
-            <h3 className="text-headline font-extrabold tracking-tight text-white leading-none truncate">
-              {title.toUpperCase()}
-              <span className="text-gradient-brand">.</span>
-            </h3>
-            <p className="text-caption font-medium tracking-[0.12em] uppercase text-white/55 mt-1.5 truncate">
-              {description}
-            </p>
-          </div>
-          <div className="w-7 h-7 rounded-full bg-white/[0.08] backdrop-blur-md border border-white/10 flex items-center justify-center shrink-0">
-            <ChevronRight size={ICON_SIZE.sm} className="text-white/85" />
-          </div>
+        {/* Chevron chip */}
+        <div className="w-7 h-7 rounded-full bg-white/[0.08] backdrop-blur-md border border-white/10 flex items-center justify-center shrink-0">
+          <ChevronRight size={ICON_SIZE.sm} className="text-white/85" />
         </div>
       </div>
     </motion.button>
