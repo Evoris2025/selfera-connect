@@ -65,7 +65,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
-  BrandScreenTitle,
   BrandSectionLabel,
   BrandIcon,
   BrandSurface,
