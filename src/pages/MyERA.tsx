@@ -401,11 +401,11 @@ export default function MyERA() {
                 </button>
               </div>
 
-              {/* Stats Row */}
-              <div className="grid grid-cols-4 gap-0 mt-5 pt-4 border-t border-white/[0.08]">
+              {/* Stats Row — FIT pattern (see docs/SCALING.md) */}
+              <div className="flex w-full items-stretch gap-0 mt-5 pt-4 border-t border-white/[0.08]">
                 <button
                   type="button"
-                  className="text-center py-2"
+                  className="flex-1 min-w-0 flex flex-col items-center text-center py-2 px-1"
                   onClick={() => navigate('/community')}
                 >
                   <div className="h-7 flex items-center justify-center mb-1.5">
@@ -413,11 +413,11 @@ export default function MyERA() {
                       {communitiesLoading ? '—' : communitiesCount}
                     </p>
                   </div>
-                  <p className="text-caption font-medium uppercase tracking-[0.12em] text-white/55">Waitlist</p>
+                  <p className="text-caption font-medium uppercase tracking-wider text-white/55 truncate w-full text-center">Waitlist</p>
                 </button>
                 <button
                   type="button"
-                  className="text-center py-2 border-l border-white/[0.08]"
+                  className="flex-1 min-w-0 flex flex-col items-center text-center py-2 px-1 border-l border-white/[0.08]"
                   onClick={() => navigate('/directory')}
                 >
                   <div className="h-7 flex items-center justify-center mb-1.5">
@@ -425,11 +425,11 @@ export default function MyERA() {
                       {connectionsCount}
                     </p>
                   </div>
-                  <p className="text-caption font-medium uppercase tracking-[0.12em] text-white/55">My List</p>
+                  <p className="text-caption font-medium uppercase tracking-wider text-white/55 truncate w-full text-center">My List</p>
                 </button>
                 <button
                   type="button"
-                  className="text-center relative py-2 border-l border-white/[0.08]"
+                  className="flex-1 min-w-0 flex flex-col items-center text-center py-2 px-1 relative border-l border-white/[0.08]"
                   onClick={() => navigate('/notifications')}
                 >
                   <div className="h-7 flex items-center justify-center mb-1.5">
@@ -437,7 +437,7 @@ export default function MyERA() {
                       {pendingConnectionCount || 0}
                     </p>
                   </div>
-                  <p className="text-caption font-medium uppercase tracking-[0.12em] text-white/55">Pending</p>
+                  <p className="text-caption font-medium uppercase tracking-wider text-white/55 truncate w-full text-center">Pending</p>
                   {pendingConnectionCount > 0 && (
                     <span
                       className="absolute top-1 right-1/4 w-2 h-2 rounded-full"
@@ -447,13 +447,13 @@ export default function MyERA() {
                 </button>
                 <button
                   type="button"
-                  className="text-center relative py-2 border-l border-white/[0.08]"
+                  className="flex-1 min-w-0 flex flex-col items-center text-center py-2 px-1 relative border-l border-white/[0.08]"
                   onClick={() => navigate('/notifications')}
                 >
                   <div className="h-7 flex items-center justify-center mb-1.5">
                     <BrandIcon icon={Bell} size={20} />
                   </div>
-                  <p className="text-caption font-medium uppercase tracking-[0.12em] text-white/55">Alerts</p>
+                  <p className="text-caption font-medium uppercase tracking-wider text-white/55 truncate w-full text-center">Alerts</p>
                 </button>
               </div>
             </BrandSurface>

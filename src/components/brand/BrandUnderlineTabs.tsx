@@ -78,7 +78,10 @@ export function BrandUnderlineTabs({
             onClick={() => onChange(tab.id)}
             className={cn(
               'flex-1 min-w-0 justify-center inline-flex',
-              'px-2 py-2 text-label uppercase tracking-wider font-medium truncate',
+              // Responsive label clamp keeps the longest token (e.g. "EXPRESSIONS")
+              // legible without clipping in the 28rem column. tracking-tight lets
+              // uppercase nav labels breathe inside narrow flex cells.
+              'px-1 py-2 text-[clamp(0.6875rem,0.625rem+0.4vw,0.8125rem)] uppercase tracking-tight font-medium truncate',
               'transition-colors duration-150',
               'outline-none focus:outline-none focus-visible:outline-none',
               active ? 'text-gradient-brand' : 'text-white/45 hover:text-white/70',
