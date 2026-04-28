@@ -210,7 +210,7 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
             exit={{ opacity: 0, y: -20 }}
             className="sticky top-0 z-20 glass-heavy px-4 py-3 flex items-center justify-between"
           >
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 text-body text-muted-foreground">
               <Move className="h-4 w-4" />
               <span>Drag to rearrange</span>
             </div>
@@ -340,11 +340,11 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
                       transition={{ duration: 0.15 }}
                       className="absolute inset-0 bg-background/60 backdrop-blur-[2px] flex items-center justify-center gap-4 pointer-events-none"
                     >
-                      <div className="flex items-center gap-1.5 text-white font-semibold text-sm">
+                      <div className="flex items-center gap-1.5 text-white font-semibold text-body">
                         <Heart className="h-4 w-4 fill-current" />
                         {formatCount(post.likes)}
                       </div>
-                      <div className="flex items-center gap-1.5 text-white font-semibold text-sm">
+                      <div className="flex items-center gap-1.5 text-white font-semibold text-body">
                         <MessageCircle className="h-4 w-4 fill-current" />
                         {formatCount(post.comments)}
                       </div>
@@ -363,7 +363,7 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
-          className="text-center text-xs text-muted-foreground py-4"
+          className="text-center text-label text-muted-foreground py-4"
         >
           Long-press to rearrange your grid
         </motion.p>

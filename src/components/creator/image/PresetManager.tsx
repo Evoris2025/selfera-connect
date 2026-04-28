@@ -96,9 +96,9 @@ export function PresetManager({
         >
           <div className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-primary" />
-            <span className="text-sm font-medium">Saved Presets</span>
+            <span className="text-body font-medium">Saved Presets</span>
             {presets.length > 0 && (
-              <span className="text-xs text-muted-foreground">({presets.length})</span>
+              <span className="text-label text-muted-foreground">({presets.length})</span>
             )}
           </div>
           {isExpanded ? (
@@ -134,13 +134,13 @@ export function PresetManager({
           >
             <div className="space-y-3 pt-2">
               {/* Quick-save hint */}
-              <p className="text-[11px] text-muted-foreground px-1">
+              <p className="text-caption text-muted-foreground px-1">
                 Tap the bookmark icon above to save your current filter & adjustments. Rename anytime.
               </p>
 
               {/* Preset List */}
               {presets.length === 0 ? (
-                <p className="text-xs text-muted-foreground text-center py-3">
+                <p className="text-label text-muted-foreground text-center py-3">
                   No saved presets yet. Save your favorite filter and adjustment combinations!
                 </p>
               ) : (
@@ -159,7 +159,7 @@ export function PresetManager({
                           <Input
                             value={editingName}
                             onChange={(e) => setEditingName(e.target.value)}
-                            className="h-6 text-xs flex-1"
+                            className="h-6 text-label flex-1"
                             autoFocus
                             onKeyDown={(e) => {
                               if (e.key === 'Enter') handleConfirmEdit();
@@ -189,8 +189,8 @@ export function PresetManager({
                             onClick={() => onApplyPreset(preset)}
                             className="flex-1 text-left"
                           >
-                            <div className="text-sm font-medium truncate">{preset.name}</div>
-                            <div className="text-xs text-muted-foreground truncate">
+                            <div className="text-body font-medium truncate">{preset.name}</div>
+                            <div className="text-label text-muted-foreground truncate">
                               {getPresetSummary(preset)}
                             </div>
                           </button>

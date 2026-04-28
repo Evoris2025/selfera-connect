@@ -78,13 +78,13 @@ export function EndScreenEditor({ elements, onChange, videoDuration }: EndScreen
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <label className="text-sm font-medium">End Screen</label>
+        <label className="text-body font-medium">End Screen</label>
         {!isAdding && elements.length < 4 && (
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setIsAdding(true)}
-            className="h-8 text-xs"
+            className="h-8 text-label"
           >
             <Plus className="w-4 h-4 mr-1" />
             Add Element
@@ -92,7 +92,7 @@ export function EndScreenEditor({ elements, onChange, videoDuration }: EndScreen
         )}
       </div>
 
-      <p className="text-xs text-muted-foreground">
+      <p className="text-label text-muted-foreground">
         End screens appear in the last 20 seconds of your video to promote content.
       </p>
 
@@ -107,7 +107,7 @@ export function EndScreenEditor({ elements, onChange, videoDuration }: EndScreen
           >
             {!selectedType ? (
               <>
-                <p className="text-sm font-medium">Choose element type</p>
+                <p className="text-body font-medium">Choose element type</p>
                 <div className="flex gap-2">
                   {elementTypes.map((type) => (
                     <button
@@ -118,7 +118,7 @@ export function EndScreenEditor({ elements, onChange, videoDuration }: EndScreen
                       <div className="p-2 rounded-lg bg-primary/10 text-primary">
                         {type.icon}
                       </div>
-                      <span className="text-xs font-medium">{type.label}</span>
+                      <span className="text-label font-medium">{type.label}</span>
                     </button>
                   ))}
                 </div>
@@ -135,7 +135,7 @@ export function EndScreenEditor({ elements, onChange, videoDuration }: EndScreen
               <>
                 <div className="flex items-center gap-2">
                   {elementTypes.find(t => t.type === selectedType)?.icon}
-                  <span className="font-medium text-sm">
+                  <span className="font-medium text-body">
                     {elementTypes.find(t => t.type === selectedType)?.label}
                   </span>
                 </div>
@@ -203,12 +203,12 @@ export function EndScreenEditor({ elements, onChange, videoDuration }: EndScreen
                 {elementTypes.find(t => t.type === element.type)?.icon}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">
+                <p className="text-body font-medium truncate">
                   {element.type === 'video' && (element.data.videoTitle || 'Best for viewer')}
                   {element.type === 'profile' && (element.data.profileName || 'Subscribe')}
                   {element.type === 'link' && (element.data.linkLabel || element.data.linkUrl)}
                 </p>
-                <p className="text-xs text-muted-foreground capitalize">{element.type}</p>
+                <p className="text-label text-muted-foreground capitalize">{element.type}</p>
               </div>
               <button
                 onClick={() => handleRemove(element.id)}
@@ -225,7 +225,7 @@ export function EndScreenEditor({ elements, onChange, videoDuration }: EndScreen
       {elements.length > 0 && (
         <div className="aspect-video bg-black/80 rounded-xl relative overflow-hidden">
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-xs text-white/50">End screen preview</span>
+            <span className="text-label text-white/50">End screen preview</span>
           </div>
           {elements.map((element, index) => (
             <motion.div
@@ -244,7 +244,7 @@ export function EndScreenEditor({ elements, onChange, videoDuration }: EndScreen
                 transform: 'translate(-50%, -50%)',
               }}
             >
-              <div className="flex items-center justify-center h-full text-white text-xs">
+              <div className="flex items-center justify-center h-full text-white text-label">
                 {elementTypes.find(t => t.type === element.type)?.icon}
               </div>
             </motion.div>

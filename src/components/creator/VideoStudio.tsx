@@ -389,13 +389,13 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
                 <p className="font-medium">
                   {isDragOver ? 'Drop video here' : 'Drag and drop or click to upload'}
                 </p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-body text-muted-foreground">
                   MP4, MOV, WebM (max 500MB)
                 </p>
               </div>
 
               {/* AI thumbnail hint */}
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-label">
                 <Sparkles className="h-3 w-3" />
                 <span>AI will generate thumbnails automatically</span>
               </div>
@@ -416,7 +416,7 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
                 {/* Upload Progress */}
                 {isUploading && (
                   <div className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center justify-between text-body">
                       <span>Uploading...</span>
                       <span>{uploadProgress}%</span>
                     </div>
@@ -437,8 +437,8 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
                 {/* Thumbnail Selector - Enhanced */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium">Thumbnail</label>
-                    <button className="flex items-center gap-1 text-xs text-primary hover:underline">
+                    <label className="text-body font-medium">Thumbnail</label>
+                    <button className="flex items-center gap-1 text-label text-primary hover:underline">
                       <Sparkles className="h-3 w-3" />
                       Generate with AI
                     </button>
@@ -454,7 +454,7 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
 
                 {/* Title */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">
+                  <label className="text-body font-medium">
                     Title <span className="text-destructive">*</span>
                   </label>
                   <Input
@@ -462,14 +462,14 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     maxLength={100}
-                    className="text-base"
+                    className="text-title"
                   />
-                  <span className="text-xs text-muted-foreground">{title.length}/100</span>
+                  <span className="text-label text-muted-foreground">{title.length}/100</span>
                 </div>
 
                 {/* Description */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Description</label>
+                  <label className="text-body font-medium">Description</label>
                   <Textarea
                     placeholder="Tell viewers about your video. Use keywords for discoverability."
                     value={description}
@@ -477,7 +477,7 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
                     className="min-h-[100px] resize-none"
                     maxLength={5000}
                   />
-                  <span className="text-xs text-muted-foreground">{description.length}/5000</span>
+                  <span className="text-label text-muted-foreground">{description.length}/5000</span>
                 </div>
 
                 {/* Topic Tags */}
@@ -527,7 +527,7 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
                     className="w-full h-full object-contain opacity-50"
                   />
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <p className="text-sm text-white/70">Add chapters and end screen elements</p>
+                    <p className="text-body text-white/70">Add chapters and end screen elements</p>
                   </div>
                 </div>
 

@@ -80,7 +80,7 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-sm"
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-body"
       >
         <MapPin className="h-3.5 w-3.5 text-primary" />
         <span className="font-medium">{value.name}</span>
@@ -143,9 +143,9 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
                 >
                   <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
                   <div>
-                    <p className="text-sm font-medium">{location.name}</p>
+                    <p className="text-body font-medium">{location.name}</p>
                     {location.address && (
-                      <p className="text-xs text-muted-foreground">{location.address}</p>
+                      <p className="text-label text-muted-foreground">{location.address}</p>
                     )}
                   </div>
                 </button>
@@ -155,7 +155,7 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
 
           {/* No Results */}
           {!isSearching && search.length >= 2 && searchResults.length === 0 && (
-            <div className="py-4 text-center text-sm text-muted-foreground">
+            <div className="py-4 text-center text-body text-muted-foreground">
               No locations found
             </div>
           )}
@@ -163,7 +163,7 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
           {/* Recent Locations */}
           {!isSearching && search.length < 2 && (
             <div className="p-2">
-              <p className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+              <p className="px-2 py-1.5 text-label font-medium text-muted-foreground">
                 Recent
               </p>
               {recentLocations.map((location, index) => (
@@ -174,9 +174,9 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
                 >
                   <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
                   <div>
-                    <p className="text-sm font-medium">{location.name}</p>
+                    <p className="text-body font-medium">{location.name}</p>
                     {location.address && (
-                      <p className="text-xs text-muted-foreground">{location.address}</p>
+                      <p className="text-label text-muted-foreground">{location.address}</p>
                     )}
                   </div>
                 </button>

@@ -120,7 +120,7 @@ export function TopicTagSelector({
   if (loading) {
     return (
       <div className="space-y-2">
-        <p className="text-sm font-medium text-muted-foreground">Topics</p>
+        <p className="text-body font-medium text-muted-foreground">Topics</p>
         <div className="flex flex-wrap gap-2">
           {[1, 2, 3, 4].map((i) => (
             <div
@@ -136,10 +136,10 @@ export function TopicTagSelector({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-muted-foreground">
+        <p className="text-body font-medium text-muted-foreground">
           Topics <span className="text-destructive">*</span>
         </p>
-        <span className="text-xs text-muted-foreground">
+        <span className="text-label text-muted-foreground">
           {selectedTags.length}/{maxTags}
         </span>
       </div>
@@ -151,7 +151,7 @@ export function TopicTagSelector({
             <button
               key={tag.id}
               onClick={() => toggleTag(tag.id)}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-full text-sm bg-primary text-primary-foreground transition-all hover:bg-primary/90"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-full text-body bg-primary text-primary-foreground transition-all hover:bg-primary/90"
             >
               <span className="opacity-70">#</span>
               {tag.name}
@@ -191,7 +191,7 @@ export function TopicTagSelector({
         selectedTags.length < maxTags && (
           <button
             onClick={() => setShowCustomInput(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-all"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-body bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-all"
           >
             <Plus className="h-3.5 w-3.5" />
             Add custom tag
@@ -201,7 +201,7 @@ export function TopicTagSelector({
 
       {/* Suggested Tags */}
       <div>
-        <p className="text-xs text-muted-foreground mb-2">Suggested</p>
+        <p className="text-label text-muted-foreground mb-2">Suggested</p>
         <div className="flex flex-wrap gap-2">
           {tags
             .filter(tag => !selectedTags.includes(tag.id))
@@ -212,7 +212,7 @@ export function TopicTagSelector({
                 onClick={() => toggleTag(tag.id)}
                 disabled={selectedTags.length >= maxTags}
                 className={cn(
-                  'flex items-center gap-1 px-3 py-1.5 rounded-full text-sm transition-all',
+                  'flex items-center gap-1 px-3 py-1.5 rounded-full text-body transition-all',
                   'bg-secondary/60 text-secondary-foreground hover:bg-secondary',
                   selectedTags.length >= maxTags && 'opacity-50 cursor-not-allowed'
                 )}
@@ -225,7 +225,7 @@ export function TopicTagSelector({
       </div>
 
       {selectedTags.length === 0 && (
-        <p className="text-xs text-destructive">Please select at least one topic</p>
+        <p className="text-label text-destructive">Please select at least one topic</p>
       )}
     </div>
   );

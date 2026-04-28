@@ -58,9 +58,9 @@ export function ExpressionAnalyticsCard({
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <BarChart3 className="w-4 h-4 text-primary" />
-          <span className="text-sm font-medium text-white">Expression Analytics</span>
+          <span className="text-body font-medium text-white">Expression Analytics</span>
         </div>
-        <div className="flex items-center gap-1 text-xs text-white/60">
+        <div className="flex items-center gap-1 text-label text-white/60">
           <Clock className="w-3 h-3" />
           {getTimeRemaining(expiresAt)}
         </div>
@@ -71,22 +71,22 @@ export function ExpressionAnalyticsCard({
         {/* Views */}
         <div className="bg-white/5 rounded-xl p-3 text-center">
           <Eye className="w-5 h-5 mx-auto mb-1 text-blue-400" />
-          <p className="text-lg font-bold text-white">{formatCount(analytics.views)}</p>
-          <p className="text-[10px] text-white/60">Views</p>
+          <p className="text-title font-bold text-white">{formatCount(analytics.views)}</p>
+          <p className="text-caption text-white/60">Views</p>
         </div>
 
         {/* Reactions */}
         <div className="bg-white/5 rounded-xl p-3 text-center">
           <Heart className="w-5 h-5 mx-auto mb-1 text-rose-400" />
-          <p className="text-lg font-bold text-white">{formatCount(analytics.reactions)}</p>
-          <p className="text-[10px] text-white/60">Reactions</p>
+          <p className="text-title font-bold text-white">{formatCount(analytics.reactions)}</p>
+          <p className="text-caption text-white/60">Reactions</p>
         </div>
 
         {/* Replies */}
         <div className="bg-white/5 rounded-xl p-3 text-center">
           <MessageCircle className="w-5 h-5 mx-auto mb-1 text-emerald-400" />
-          <p className="text-lg font-bold text-white">{formatCount(analytics.replies)}</p>
-          <p className="text-[10px] text-white/60">Replies</p>
+          <p className="text-title font-bold text-white">{formatCount(analytics.replies)}</p>
+          <p className="text-caption text-white/60">Replies</p>
         </div>
       </div>
 
@@ -96,7 +96,7 @@ export function ExpressionAnalyticsCard({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-amber-400" />
-            <span className="text-xs text-white/80">Completion Rate</span>
+            <span className="text-label text-white/80">Completion Rate</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-20 h-1.5 bg-white/10 rounded-full overflow-hidden">
@@ -107,7 +107,7 @@ export function ExpressionAnalyticsCard({
                 className="h-full bg-gradient-to-r from-amber-400 to-orange-400 rounded-full"
               />
             </div>
-            <span className="text-xs font-medium text-white">{analytics.completionRate}%</span>
+            <span className="text-label font-medium text-white">{analytics.completionRate}%</span>
           </div>
         </div>
 
@@ -115,21 +115,21 @@ export function ExpressionAnalyticsCard({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4 text-purple-400" />
-            <span className="text-xs text-white/80">Avg. Watch Time</span>
+            <span className="text-label text-white/80">Avg. Watch Time</span>
           </div>
-          <span className="text-xs font-medium text-white">{analytics.avgViewDuration}s</span>
+          <span className="text-label font-medium text-white">{analytics.avgViewDuration}s</span>
         </div>
       </div>
 
       {/* Reaction Breakdown */}
       {topReactions.length > 0 && (
         <div className="mt-4 pt-3 border-t border-white/10">
-          <p className="text-[10px] text-white/60 uppercase tracking-wide mb-2">Top Reactions</p>
+          <p className="text-caption text-white/60 uppercase tracking-wide mb-2">Top Reactions</p>
           <div className="flex items-center gap-3">
             {topReactions.map(([emoji, count]) => (
               <div key={emoji} className="flex items-center gap-1">
-                <span className="text-lg">{emoji}</span>
-                <span className="text-xs text-white/80">{formatCount(count)}</span>
+                <span className="text-title">{emoji}</span>
+                <span className="text-label text-white/80">{formatCount(count)}</span>
               </div>
             ))}
           </div>

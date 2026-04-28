@@ -91,8 +91,8 @@ export function NotificationSettings({ onBack }: NotificationSettingsProps) {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <h1 className="text-xl font-bold">Notification Settings</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="text-headline font-bold">Notification Settings</h1>
+          <p className="text-body text-muted-foreground">
             Choose which notifications you receive
           </p>
         </div>
@@ -108,7 +108,7 @@ export function NotificationSettings({ onBack }: NotificationSettingsProps) {
                   <BellRing className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <CardTitle className="text-base">Push Notifications</CardTitle>
+                  <CardTitle className="text-title">Push Notifications</CardTitle>
                   <CardDescription>
                     Receive notifications even when the app is closed
                   </CardDescription>
@@ -123,7 +123,7 @@ export function NotificationSettings({ onBack }: NotificationSettingsProps) {
           </CardHeader>
           {permission === 'denied' && (
             <CardContent className="pt-0">
-              <p className="text-xs text-destructive">
+              <p className="text-label text-destructive">
                 Push notifications are blocked. Please enable them in your browser settings.
               </p>
             </CardContent>
@@ -135,7 +135,7 @@ export function NotificationSettings({ onBack }: NotificationSettingsProps) {
 
       {/* In-App Notification Types */}
       <div>
-        <h2 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
+        <h2 className="text-body font-medium text-muted-foreground mb-3 flex items-center gap-2">
           <Bell className="w-4 h-4" />
           In-App Notifications
         </h2>
@@ -150,8 +150,8 @@ export function NotificationSettings({ onBack }: NotificationSettingsProps) {
                       <type.icon className={`h-4 w-4 ${type.color}`} />
                     </div>
                     <div>
-                      <CardTitle className="text-sm font-medium">{type.title}</CardTitle>
-                      <CardDescription className="text-xs">
+                      <CardTitle className="text-body font-medium">{type.title}</CardTitle>
+                      <CardDescription className="text-label">
                         {type.description}
                       </CardDescription>
                     </div>
@@ -169,7 +169,7 @@ export function NotificationSettings({ onBack }: NotificationSettingsProps) {
       </div>
 
       {/* Info Text */}
-      <p className="text-xs text-muted-foreground text-center px-4">
+      <p className="text-label text-muted-foreground text-center px-4">
         You'll still receive important account and security notifications regardless of these settings.
       </p>
     </div>

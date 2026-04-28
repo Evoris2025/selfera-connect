@@ -130,7 +130,7 @@ export default function Explore() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setIsSearchFocused(true)}
                 onKeyDown={handleSearchKeyDown}
-                className="flex-1 ml-2 bg-transparent border-0 h-full px-0 text-white text-[14px] placeholder:text-white/45 focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="flex-1 ml-2 bg-transparent border-0 h-full px-0 text-white text-body placeholder:text-white/45 focus-visible:ring-0 focus-visible:ring-offset-0"
               />
               {isSearchFocused && (
                 <button

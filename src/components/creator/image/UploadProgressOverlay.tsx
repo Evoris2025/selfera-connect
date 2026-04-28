@@ -73,7 +73,7 @@ export function UploadProgressOverlay({
                 </div>
               )}
               
-              <h3 className="font-semibold text-lg">{statusMessages[status]}</h3>
+              <h3 className="font-semibold text-title">{statusMessages[status]}</h3>
             </div>
 
             {/* Image Progress Grid */}

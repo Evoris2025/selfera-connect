@@ -40,7 +40,7 @@ export function ContentWarningToggle({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <AlertTriangle className="h-4 w-4 text-warning" />
-          <Label htmlFor="content-warning" className="text-sm font-medium">
+          <Label htmlFor="content-warning" className="text-body font-medium">
             Content Warning
           </Label>
         </div>
@@ -69,7 +69,7 @@ export function ContentWarningToggle({
         </Select>
       )}
 
-      <p className="text-xs text-muted-foreground">
+      <p className="text-label text-muted-foreground">
         Content with warnings will be blurred until viewers choose to see it.
       </p>
     </div>

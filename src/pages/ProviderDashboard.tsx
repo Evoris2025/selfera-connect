@@ -239,7 +239,7 @@ export default function ProviderDashboard() {
             transition={springGentle}
           >
             <Shield className="w-16 h-16 mx-auto mb-6 text-muted-foreground/30" />
-            <h1 className="text-xl font-semibold text-foreground mb-2">
+            <h1 className="text-headline font-semibold text-foreground mb-2">
               Provider Dashboard
             </h1>
             <p className="text-muted-foreground mb-6">
@@ -280,12 +280,12 @@ export default function ProviderDashboard() {
           />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-xl font-semibold text-foreground truncate">
+              <h1 className="text-headline font-semibold text-foreground truncate">
                 {profile?.display_name || 'Provider'}
               </h1>
               <VerifiedBadge size="sm" />
             </div>
-            <p className="text-sm text-muted-foreground">@{profile?.handle}</p>
+            <p className="text-body text-muted-foreground">@{profile?.handle}</p>
             <Badge variant="secondary" className="mt-2 capitalize">
               {profile?.user_type}
             </Badge>
@@ -309,21 +309,21 @@ export default function ProviderDashboard() {
         >
           <GlassCard variant="subtle" className="p-4 text-center">
             <p className="text-2xl font-semibold text-foreground">{activeClients.length}</p>
-            <p className="text-xs text-muted-foreground">Connections</p>
+            <p className="text-label text-muted-foreground">Connections</p>
           </GlassCard>
           <GlassCard variant="subtle" className="p-4 text-center">
             <p className="text-2xl font-semibold text-foreground">{groupedInteractions.pending.length}</p>
-            <p className="text-xs text-muted-foreground">Requests</p>
+            <p className="text-label text-muted-foreground">Requests</p>
           </GlassCard>
           <GlassCard variant="subtle" className="p-4 text-center">
             <p className="text-2xl font-semibold text-foreground">{groupedInteractions.active.length}</p>
-            <p className="text-xs text-muted-foreground">Active</p>
+            <p className="text-label text-muted-foreground">Active</p>
           </GlassCard>
           <GlassCard variant="subtle" className="p-4 text-center">
             <p className="text-2xl font-semibold text-foreground">
               {directoryEntry ? '1' : '0'}
             </p>
-            <p className="text-xs text-muted-foreground">Listing</p>
+            <p className="text-label text-muted-foreground">Listing</p>
           </GlassCard>
         </motion.div>
 
@@ -361,10 +361,10 @@ export default function ProviderDashboard() {
               
               {/* Scoring Info */}
               <GlassCard variant="subtle" className="p-4 mt-4">
-                <h4 className="text-sm font-medium text-foreground mb-2">
+                <h4 className="text-body font-medium text-foreground mb-2">
                   How visibility works
                 </h4>
-                <ul className="text-xs text-muted-foreground space-y-1.5">
+                <ul className="text-label text-muted-foreground space-y-1.5">
                   <li className="flex items-start gap-2">
                     <Check className="w-3 h-3 text-emerald-500 mt-0.5 shrink-0" />
                     Complete interactions to build your contribution score
@@ -386,7 +386,7 @@ export default function ProviderDashboard() {
 
               {/* Ethical Note */}
               <div className="mt-4 p-3 rounded-xl bg-primary/5 border border-primary/10">
-                <p className="text-[11px] text-muted-foreground leading-relaxed">
+                <p className="text-caption text-muted-foreground leading-relaxed">
                   <strong className="text-foreground">Our commitment:</strong> SelfERA never uses "pay-to-be-seen" algorithms. 
                   Visibility is earned through genuine contribution, not purchased. 
                   All providers have fair access to discovery regardless of subscription tier.
@@ -403,7 +403,7 @@ export default function ProviderDashboard() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
               >
-                <h3 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+                <h3 className="text-body font-medium text-foreground mb-3 flex items-center gap-2">
                   <Clock className="w-4 h-4 text-amber-500" />
                   Pending Requests ({groupedInteractions.pending.length})
                 </h3>
@@ -429,7 +429,7 @@ export default function ProviderDashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <h3 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+              <h3 className="text-body font-medium text-foreground mb-3 flex items-center gap-2">
                 <Check className="w-4 h-4 text-emerald-500" />
                 Active Interactions ({groupedInteractions.active.length})
               </h3>
@@ -437,7 +437,7 @@ export default function ProviderDashboard() {
               {groupedInteractions.active.length === 0 ? (
                 <GlassCard variant="subtle" className="p-8 text-center">
                   <Handshake className="w-10 h-10 mx-auto mb-3 text-muted-foreground/30" />
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-body text-muted-foreground">
                     No active interactions. Pending requests will appear here once accepted.
                   </p>
                 </GlassCard>
@@ -464,7 +464,7 @@ export default function ProviderDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.15 }}
               >
-                <h3 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+                <h3 className="text-body font-medium text-foreground mb-3 flex items-center gap-2">
                   <ChevronRight className="w-4 h-4 text-muted-foreground" />
                   Past Interactions ({groupedInteractions.completed.length + groupedInteractions.cancelled.length})
                 </h3>
@@ -486,10 +486,10 @@ export default function ProviderDashboard() {
              groupedInteractions.completed.length === 0 && (
               <GlassCard variant="subtle" className="p-8 text-center">
                 <Handshake className="w-12 h-12 mx-auto mb-4 text-muted-foreground/30" />
-                <h3 className="text-base font-medium text-foreground mb-2">
+                <h3 className="text-title font-medium text-foreground mb-2">
                   No Interactions Yet
                 </h3>
-                <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+                <p className="text-body text-muted-foreground max-w-sm mx-auto">
                   When users request interactions with you, they'll appear here. 
                   Make sure your directory listing is set up to be discoverable.
                 </p>
@@ -505,7 +505,7 @@ export default function ProviderDashboard() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
               >
-                <h3 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+                <h3 className="text-body font-medium text-foreground mb-3 flex items-center gap-2">
                   <Clock className="w-4 h-4 text-amber-500" />
                   Pending Requests ({pendingClients.length})
                 </h3>
@@ -521,10 +521,10 @@ export default function ProviderDashboard() {
                           ring="muted"
                         />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-foreground truncate">
+                          <p className="text-body font-medium text-foreground truncate">
                             {link.client?.display_name || 'User'}
                           </p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-label text-muted-foreground">
                             @{link.client?.handle || 'user'} • Requested connection
                           </p>
                         </div>
@@ -557,7 +557,7 @@ export default function ProviderDashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <h3 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+              <h3 className="text-body font-medium text-foreground mb-3 flex items-center gap-2">
                 <Users className="w-4 h-4 text-emerald-500" />
                 Active Connections ({activeClients.length})
               </h3>
@@ -565,7 +565,7 @@ export default function ProviderDashboard() {
               {activeClients.length === 0 ? (
                 <GlassCard variant="subtle" className="p-8 text-center">
                   <Users className="w-10 h-10 mx-auto mb-3 text-muted-foreground/30" />
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-body text-muted-foreground">
                     No active connections yet. Users can find and connect with you through the Directory.
                   </p>
                 </GlassCard>
@@ -582,10 +582,10 @@ export default function ProviderDashboard() {
                           ring="primary"
                         />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-foreground truncate">
+                          <p className="text-body font-medium text-foreground truncate">
                             {link.client?.display_name || 'User'}
                           </p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-label text-muted-foreground">
                             @{link.client?.handle || 'user'}
                           </p>
                         </div>
@@ -616,12 +616,12 @@ export default function ProviderDashboard() {
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="text-lg font-semibold text-foreground">
+                        <h3 className="text-title font-semibold text-foreground">
                           {directoryEntry.name}
                         </h3>
                         {directoryEntry.verified && <VerifiedBadge size="sm" />}
                       </div>
-                      <p className="text-sm text-muted-foreground mt-1">
+                      <p className="text-body text-muted-foreground mt-1">
                         {directoryEntry.description}
                       </p>
                     </div>
@@ -640,8 +640,8 @@ export default function ProviderDashboard() {
                       <div className="flex items-start gap-2">
                         <MapPin className="w-4 h-4 text-muted-foreground mt-0.5" />
                         <div>
-                          <p className="text-xs text-muted-foreground">Regions</p>
-                          <p className="text-sm text-foreground">
+                          <p className="text-label text-muted-foreground">Regions</p>
+                          <p className="text-body text-foreground">
                             {directoryEntry.regions_served.join(', ')}
                           </p>
                         </div>
@@ -651,8 +651,8 @@ export default function ProviderDashboard() {
                       <div className="flex items-start gap-2">
                         <Globe className="w-4 h-4 text-muted-foreground mt-0.5" />
                         <div>
-                          <p className="text-xs text-muted-foreground">Delivery</p>
-                          <p className="text-sm text-foreground capitalize">
+                          <p className="text-label text-muted-foreground">Delivery</p>
+                          <p className="text-body text-foreground capitalize">
                             {directoryEntry.delivery_type}
                           </p>
                         </div>
@@ -662,8 +662,8 @@ export default function ProviderDashboard() {
                       <div className="flex items-start gap-2">
                         <Languages className="w-4 h-4 text-muted-foreground mt-0.5" />
                         <div>
-                          <p className="text-xs text-muted-foreground">Languages</p>
-                          <p className="text-sm text-foreground">
+                          <p className="text-label text-muted-foreground">Languages</p>
+                          <p className="text-body text-foreground">
                             {directoryEntry.languages_supported.join(', ')}
                           </p>
                         </div>
@@ -673,8 +673,8 @@ export default function ProviderDashboard() {
                       <div className="flex items-start gap-2">
                         <DollarSign className="w-4 h-4 text-muted-foreground mt-0.5" />
                         <div>
-                          <p className="text-xs text-muted-foreground">Price Range</p>
-                          <p className="text-sm text-foreground">
+                          <p className="text-label text-muted-foreground">Price Range</p>
+                          <p className="text-body text-foreground">
                             {priceLabels[directoryEntry.price_range] || directoryEntry.price_range}
                           </p>
                         </div>
@@ -685,7 +685,7 @@ export default function ProviderDashboard() {
                   {directoryEntry.tags && directoryEntry.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mb-4">
                       {directoryEntry.tags.map(tag => (
-                        <Badge key={tag} variant="secondary" className="text-xs rounded-full">
+                        <Badge key={tag} variant="secondary" className="text-label rounded-full">
                           {tag}
                         </Badge>
                       ))}
@@ -709,9 +709,9 @@ export default function ProviderDashboard() {
                 <GlassCard variant="subtle" className="p-4 mt-4">
                   <div className="flex gap-3">
                     <AlertCircle className="w-5 h-5 text-primary shrink-0" />
-                    <div className="text-sm">
+                    <div className="text-body">
                       <p className="font-medium text-foreground mb-1">Listing Tips</p>
-                      <ul className="text-muted-foreground space-y-1 text-xs">
+                      <ul className="text-muted-foreground space-y-1 text-label">
                         <li>• Keep your description clear and focused on the support you provide</li>
                         <li>• Add relevant tags to help users find you</li>
                         <li>• Update your regions and languages if they change</li>
@@ -727,10 +727,10 @@ export default function ProviderDashboard() {
                 className="text-center py-8"
               >
                 <Globe className="w-12 h-12 mx-auto mb-4 text-muted-foreground/30" />
-                <h3 className="text-base font-medium text-foreground mb-2">
+                <h3 className="text-title font-medium text-foreground mb-2">
                   No Directory Listing Yet
                 </h3>
-                <p className="text-sm text-muted-foreground mb-6 max-w-sm mx-auto">
+                <p className="text-body text-muted-foreground mb-6 max-w-sm mx-auto">
                   Create a listing to appear in the SelfERA Directory and allow users to discover and connect with you.
                 </p>
                 <Button onClick={() => setShowListingForm(true)}>
@@ -749,7 +749,7 @@ export default function ProviderDashboard() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <p className="text-xs text-muted-foreground">
+          <p className="text-label text-muted-foreground">
             <strong className="text-foreground">Reminder:</strong> SelfERA facilitates discovery and connection only. 
             All treatment, appointments, and payment agreements occur independently between you and your clients 
             through your own systems.

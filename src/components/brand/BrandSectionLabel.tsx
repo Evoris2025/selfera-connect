@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 
 /**
  * Canonical screen-level section label.
- * C1 spec: text-[10px] font-medium uppercase tracking-[0.12em] text-white/55.
+ * C1 spec: text-caption font-medium uppercase tracking-[0.12em] text-white/55.
  * No bold. No icons. One component, no variants.
  */
 export function BrandSectionLabel({
@@ -16,7 +16,7 @@ export function BrandSectionLabel({
   return (
     <p
       className={cn(
-        'text-[10px] font-medium uppercase tracking-[0.12em] text-white/55',
+        'text-caption font-medium uppercase tracking-[0.12em] text-white/55',
         className,
       )}
     >

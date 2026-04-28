@@ -61,11 +61,11 @@ export function EmotionalContextBar({ selectedState, onStateChange }: EmotionalC
     <div className="space-y-3">
       {/* Header */}
       <div className="flex items-center justify-between px-1">
-        <p className="text-sm text-muted-foreground">How are you feeling?</p>
+        <p className="text-body text-muted-foreground">How are you feeling?</p>
         {selectedState && (
           <button 
             onClick={() => onStateChange(null)}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            className="text-label text-muted-foreground hover:text-foreground transition-colors"
           >
             Show all
           </button>
@@ -92,7 +92,7 @@ export function EmotionalContextBar({ selectedState, onStateChange }: EmotionalC
             >
               <Icon className={cn('h-4 w-4', isSelected ? state.color : 'text-muted-foreground')} />
               <span className={cn(
-                'text-sm font-medium',
+                'text-body font-medium',
                 isSelected ? 'text-foreground' : 'text-muted-foreground'
               )}>
                 {state.label}
@@ -115,7 +115,7 @@ export function EmotionalContextBar({ selectedState, onStateChange }: EmotionalC
               'px-4 py-3 rounded-xl bg-gradient-to-r border border-border/30',
               emotionalStates.find(s => s.id === selectedState)?.gradient
             )}>
-              <p className="text-sm text-foreground/80">
+              <p className="text-body text-foreground/80">
                 {selectedState === 'support' && 'Showing posts from people who understand and want to help.'}
                 {selectedState === 'steady' && 'Showing grounding content for when you need stability.'}
                 {selectedState === 'inspiration' && 'Showing uplifting stories and motivational content.'}

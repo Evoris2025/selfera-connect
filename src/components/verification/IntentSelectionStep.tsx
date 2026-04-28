@@ -73,8 +73,8 @@ export function IntentSelectionStep({
   return (
     <div className="space-y-6">
       <div className="text-center space-y-2">
-        <h2 className="text-xl font-semibold text-foreground">Choose Your Intent</h2>
-        <p className="text-sm text-muted-foreground">
+        <h2 className="text-headline font-semibold text-foreground">Choose Your Intent</h2>
+        <p className="text-body text-muted-foreground">
           How will you be using SelfERA? This helps us tailor your verification.
         </p>
       </div>
@@ -112,7 +112,7 @@ export function IntentSelectionStep({
                 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
-                    <h3 className="text-sm font-medium text-foreground">
+                    <h3 className="text-body font-medium text-foreground">
                       {option.title}
                     </h3>
                     {isSelected && (
@@ -125,10 +125,10 @@ export function IntentSelectionStep({
                       </motion.div>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">
+                  <p className="text-label text-muted-foreground mt-0.5">
                     {option.description}
                   </p>
-                  <span className="text-[10px] text-muted-foreground/70 mt-1 inline-block">
+                  <span className="text-caption text-muted-foreground/70 mt-1 inline-block">
                     {option.depth}
                   </span>
                 </div>

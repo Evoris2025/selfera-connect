@@ -59,13 +59,13 @@ export function CropControls({ cropData, onCropChange }: CropControlsProps) {
       {/* Aspect Ratio Selection */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <label className="text-sm font-medium text-foreground">Aspect Ratio</label>
+          <label className="text-body font-medium text-foreground">Aspect Ratio</label>
           {isModified && (
             <Button
               variant="ghost"
               size="sm"
               onClick={handleReset}
-              className="h-7 text-xs text-muted-foreground hover:text-foreground"
+              className="h-7 text-label text-muted-foreground hover:text-foreground"
             >
               <RotateCcw className="h-3 w-3 mr-1" />
               Reset
@@ -86,8 +86,8 @@ export function CropControls({ cropData, onCropChange }: CropControlsProps) {
               )}
             >
               <Icon className="h-5 w-5" />
-              <span className="text-xs font-medium">{label}</span>
-              <span className="text-[10px] opacity-60">{ratio}</span>
+              <span className="text-label font-medium">{label}</span>
+              <span className="text-caption opacity-60">{ratio}</span>
             </motion.button>
           ))}
         </div>
@@ -98,12 +98,12 @@ export function CropControls({ cropData, onCropChange }: CropControlsProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <RotateCw className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Straighten</span>
+            <span className="text-body text-muted-foreground">Straighten</span>
           </div>
-          <span className="text-sm font-medium">{cropData.rotation || 0}°</span>
+          <span className="text-body font-medium">{cropData.rotation || 0}°</span>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-xs text-muted-foreground">-45°</span>
+          <span className="text-label text-muted-foreground">-45°</span>
           <Slider
             value={[cropData.rotation || 0]}
             onValueChange={([v]) => handleRotationChange(v)}
@@ -112,7 +112,7 @@ export function CropControls({ cropData, onCropChange }: CropControlsProps) {
             step={0.5}
             className="flex-1"
           />
-          <span className="text-xs text-muted-foreground">+45°</span>
+          <span className="text-label text-muted-foreground">+45°</span>
         </div>
       </div>
 
@@ -121,9 +121,9 @@ export function CropControls({ cropData, onCropChange }: CropControlsProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <ZoomOut className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Zoom</span>
+            <span className="text-body text-muted-foreground">Zoom</span>
           </div>
-          <span className="text-sm font-medium">{Math.round(cropData.scale * 100)}%</span>
+          <span className="text-body font-medium">{Math.round(cropData.scale * 100)}%</span>
         </div>
         <div className="flex items-center gap-3">
           <Slider
@@ -139,7 +139,7 @@ export function CropControls({ cropData, onCropChange }: CropControlsProps) {
       </div>
 
       {/* Instructions */}
-      <p className="text-xs text-muted-foreground text-center">
+      <p className="text-label text-muted-foreground text-center">
         {cropData.scale > 1 
           ? 'Drag the image above to reposition • Scroll, pinch, or use the slider to zoom'
           : 'Select aspect ratio • Scroll on the image, pinch, or use the slider to zoom'}

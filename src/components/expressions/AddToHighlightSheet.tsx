@@ -107,7 +107,7 @@ export function AddToHighlightSheet({
                     </div>
                     <div className="text-left">
                       <p className="font-medium">New Highlight</p>
-                      <p className="text-sm text-muted-foreground">Create a new collection</p>
+                      <p className="text-body text-muted-foreground">Create a new collection</p>
                     </div>
                   </motion.button>
                 ) : (
@@ -161,7 +161,7 @@ export function AddToHighlightSheet({
                     </div>
                     <div className="text-left flex-1">
                       <p className="font-medium">{highlight.name}</p>
-                      <p className="text-sm text-muted-foreground">{highlight.itemCount} items</p>
+                      <p className="text-body text-muted-foreground">{highlight.itemCount} items</p>
                     </div>
                   </motion.button>
                 ))}

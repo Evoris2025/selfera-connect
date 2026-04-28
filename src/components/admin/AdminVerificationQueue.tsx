@@ -64,7 +64,7 @@ function RequestCard({ request, onApprove, onReject }: RequestCardProps) {
                   {request.account_type_requested}
                 </Badge>
               </div>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-body text-muted-foreground">
                 @{request.profile?.handle || 'unknown'}
               </p>
             </div>
@@ -77,14 +77,14 @@ function RequestCard({ request, onApprove, onReject }: RequestCardProps) {
               >
                 {request.status}
               </Badge>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-label text-muted-foreground mt-1">
                 {new Date(request.created_at).toLocaleDateString()}
               </p>
             </div>
           </div>
 
           {/* Details */}
-          <div className="p-4 space-y-3 text-sm">
+          <div className="p-4 space-y-3 text-body">
             {fields.country && (
               <div className="flex items-start gap-2">
                 <span className="text-muted-foreground min-w-24">Country:</span>
@@ -152,8 +152,8 @@ function RequestCard({ request, onApprove, onReject }: RequestCardProps) {
           {/* Admin notes for processed requests */}
           {request.status !== 'pending' && request.admin_notes && (
             <div className="p-4 border-t border-border/50 bg-muted/30">
-              <p className="text-xs text-muted-foreground mb-1">Admin notes:</p>
-              <p className="text-sm">{request.admin_notes}</p>
+              <p className="text-label text-muted-foreground mb-1">Admin notes:</p>
+              <p className="text-body">{request.admin_notes}</p>
             </div>
           )}
         </CardContent>
@@ -216,8 +216,8 @@ export function AdminVerificationQueue() {
           <BadgeCheck className="h-5 w-5 text-verified" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-foreground">Verification Queue</h2>
-          <p className="text-sm text-muted-foreground">
+          <h2 className="text-headline font-bold text-foreground">Verification Queue</h2>
+          <p className="text-body text-muted-foreground">
             Review and process verification requests
           </p>
         </div>

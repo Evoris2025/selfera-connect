@@ -43,10 +43,10 @@ export function PricingSection({ showTransparency = true }: PricingSectionProps)
         animate={{ opacity: 1, y: 0 }}
         transition={springGentle}
       >
-        <h2 className="text-xl font-semibold text-foreground mb-2">
+        <h2 className="text-headline font-semibold text-foreground mb-2">
           Choose your path
         </h2>
-        <p className="text-sm text-muted-foreground max-w-md mx-auto">
+        <p className="text-body text-muted-foreground max-w-md mx-auto">
           Core social features are free forever. Upgrade for professional tools.
         </p>
       </motion.div>
@@ -65,7 +65,7 @@ export function PricingSection({ showTransparency = true }: PricingSectionProps)
             </TabsTrigger>
             <TabsTrigger value="yearly" className="rounded-full px-6">
               Yearly
-              <span className="ml-2 text-xs text-emerald-400">Save up to 26%</span>
+              <span className="ml-2 text-label text-emerald-400">Save up to 26%</span>
             </TabsTrigger>
           </TabsList>
         </Tabs>

@@ -121,7 +121,7 @@ export function HighlightSelector({
                     </div>
                     <div className="text-left">
                       <p className="font-semibold">New Highlight</p>
-                      <p className="text-sm text-muted-foreground">Create a new highlight</p>
+                      <p className="text-body text-muted-foreground">Create a new highlight</p>
                     </div>
                   </button>
 
@@ -129,7 +129,7 @@ export function HighlightSelector({
                   {existingHighlights.length > 0 && (
                     <ScrollArea className="max-h-[300px]">
                       <div className="space-y-2">
-                        <p className="text-sm font-medium text-muted-foreground mb-2">
+                        <p className="text-body font-medium text-muted-foreground mb-2">
                           Your Highlights
                         </p>
                         {existingHighlights.map((highlight) => (
@@ -157,7 +157,7 @@ export function HighlightSelector({
                             </div>
                             <div className="text-left flex-1">
                               <p className="font-semibold">{highlight.name}</p>
-                              <p className="text-sm text-muted-foreground">
+                              <p className="text-body text-muted-foreground">
                                 {highlight.expressionCount} expression{highlight.expressionCount !== 1 ? 's' : ''}
                               </p>
                             </div>
@@ -171,7 +171,7 @@ export function HighlightSelector({
                   )}
 
                   {existingHighlights.length === 0 && (
-                    <p className="text-center text-muted-foreground text-sm py-4">
+                    <p className="text-center text-muted-foreground text-body py-4">
                       No highlights yet. Create your first one!
                     </p>
                   )}
@@ -220,8 +220,8 @@ export function AddToHighlightPrompt({
             <div className="w-16 h-16 rounded-full bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center mx-auto mb-4">
               <Bookmark className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-lg font-semibold mb-2">Save to Highlight?</h3>
-            <p className="text-muted-foreground text-sm mb-6">
+            <h3 className="text-title font-semibold mb-2">Save to Highlight?</h3>
+            <p className="text-muted-foreground text-body mb-6">
               Keep this expression on your profile permanently by adding it to a highlight.
             </p>
             <div className="flex gap-3">

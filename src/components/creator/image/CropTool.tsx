@@ -18,7 +18,7 @@ const aspectRatios: { value: AspectRatio; label: string; icon: React.ElementType
 export function CropTool({ aspectRatio, onAspectRatioChange }: CropToolProps) {
   return (
     <div className="space-y-3">
-      <label className="text-sm font-medium text-foreground">Aspect Ratio</label>
+      <label className="text-body font-medium text-foreground">Aspect Ratio</label>
       <div className="grid grid-cols-4 gap-2">
         {aspectRatios.map(({ value, label, icon: Icon, ratio }) => (
           <motion.button
@@ -33,8 +33,8 @@ export function CropTool({ aspectRatio, onAspectRatioChange }: CropToolProps) {
             )}
           >
             <Icon className="h-5 w-5" />
-            <span className="text-xs font-medium">{label}</span>
-            <span className="text-[10px] opacity-60">{ratio}</span>
+            <span className="text-label font-medium">{label}</span>
+            <span className="text-caption opacity-60">{ratio}</span>
           </motion.button>
         ))}
       </div>

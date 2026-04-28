@@ -177,7 +177,7 @@ function NotificationItem({
               )}
               style={avatarRingStyle}
             >
-              <AvatarFallback className="bg-gradient-to-br from-white/10 to-white/5 text-white text-[13px] font-medium">
+              <AvatarFallback className="bg-gradient-to-br from-white/10 to-white/5 text-white text-label font-medium">
                 {primaryUser?.name.charAt(0) ?? <Bell className="h-4 w-4 text-white/55" />}
               </AvatarFallback>
             </Avatar>
@@ -185,7 +185,7 @@ function NotificationItem({
 
           {/* Content */}
           <div className="flex-1 min-w-0">
-            <p className="text-[14px] leading-snug flex items-start gap-1.5">
+            <p className="text-body leading-snug flex items-start gap-1.5">
               <BrandIcon icon={ActionIcon} size={14} strokeWidth={1.75} className="mt-[3px]" />
               <span className="min-w-0">
                 {primaryUser && (
@@ -203,9 +203,9 @@ function NotificationItem({
               </span>
             </p>
             {notification.preview && (
-              <p className="text-[13px] text-white/55 truncate mt-0.5 ml-[22px]">{notification.preview}</p>
+              <p className="text-label text-white/55 truncate mt-0.5 ml-[22px]">{notification.preview}</p>
             )}
-            <p className="text-[11px] text-white/45 uppercase tracking-[0.08em] mt-1 ml-[22px]">
+            <p className="text-caption text-white/45 uppercase tracking-[0.08em] mt-1 ml-[22px]">
               {formatTime(notification.time)}
             </p>
           </div>
@@ -215,7 +215,7 @@ function NotificationItem({
               type="button"
               onClick={(e) => { e.stopPropagation(); setIsFollowing(!isFollowing); }}
               className={cn(
-                'shrink-0 h-8 px-3.5 rounded-full border bg-transparent text-[12px] uppercase tracking-[0.1em]',
+                'shrink-0 h-8 px-3.5 rounded-full border bg-transparent text-label uppercase tracking-[0.1em]',
                 isFollowing && 'border-white/15 text-white/55',
               )}
               style={
@@ -256,7 +256,7 @@ function EmptyState() {
       className="flex flex-col items-center mt-16 px-6"
     >
       <BrandIcon icon={Bell} size={28} />
-      <p className="text-white/55 text-[14px] mt-3 lowercase">nothing new yet.</p>
+      <p className="text-white/55 text-body mt-3 lowercase">nothing new yet.</p>
     </motion.div>
   );
 }

@@ -146,7 +146,7 @@ export function HeartButton({ count, active, onClick, size = 'md', layout = 'hor
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: countDirection === 'up' ? -20 : 20, opacity: 0 }}
             transition={{ duration: 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className={cn('text-sm tabular-nums block', active ? 'text-primary' : 'text-foreground')}
+            className={cn('text-body tabular-nums block', active ? 'text-primary' : 'text-foreground')}
           >
             {displayCount > 0 ? displayCount : ''}
           </motion.span>

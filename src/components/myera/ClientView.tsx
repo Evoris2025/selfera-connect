@@ -52,10 +52,10 @@ export function ClientView({ interactions = [], supportNetworkCount, onFindSuppo
             <Heart className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1">
-            <h3 className="text-base font-semibold text-foreground mb-1">
+            <h3 className="text-title font-semibold text-foreground mb-1">
               Your Support Journey
             </h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-body text-muted-foreground leading-relaxed">
               SelfERA is here for you. Connect with verified support when you're ready.
             </p>
           </div>
@@ -69,7 +69,7 @@ export function ClientView({ interactions = [], supportNetworkCount, onFindSuppo
         animate={{ opacity: 1, y: 0 }}
         transition={{ ...springGentle, delay: 0.3 }}
       >
-        <h3 className="text-sm font-medium text-foreground flex items-center gap-2">
+        <h3 className="text-body font-medium text-foreground flex items-center gap-2">
           <Calendar className="w-4 h-4 text-primary" />
           Your Active Interactions
         </h3>
@@ -77,10 +77,10 @@ export function ClientView({ interactions = [], supportNetworkCount, onFindSuppo
         {upcomingInteractions.length === 0 ? (
           <div className="bg-card/30 border border-white/5 p-5 text-center">
             <Clock className="w-8 h-8 mx-auto mb-2 text-muted-foreground/50" />
-            <p className="text-sm text-muted-foreground">
+            <p className="text-body text-muted-foreground">
               No upcoming interactions
             </p>
-            <p className="text-xs text-muted-foreground/70 mt-1">
+            <p className="text-label text-muted-foreground/70 mt-1">
               Connect with a provider to get started
             </p>
           </div>
@@ -95,10 +95,10 @@ export function ClientView({ interactions = [], supportNetworkCount, onFindSuppo
                   <MessageCircle className="w-5 h-5 text-primary" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-foreground">
+                  <p className="text-body font-medium text-foreground">
                     {interaction.provider_name}
                   </p>
-                  <Badge className="bg-emerald-500/20 text-emerald-400 text-[10px]">
+                  <Badge className="bg-emerald-500/20 text-emerald-400 text-caption">
                     <Check className="w-2 h-2 mr-0.5" />
                     Confirmed
                   </Badge>
@@ -116,7 +116,7 @@ export function ClientView({ interactions = [], supportNetworkCount, onFindSuppo
         animate={{ opacity: 1, y: 0 }}
         transition={{ ...springGentle, delay: 0.35 }}
       >
-        <h3 className="text-sm font-medium text-foreground flex items-center gap-2">
+        <h3 className="text-body font-medium text-foreground flex items-center gap-2">
           <Shield className="w-4 h-4 text-emerald-500" />
           Your Support Network
         </h3>
@@ -125,7 +125,7 @@ export function ClientView({ interactions = [], supportNetworkCount, onFindSuppo
           <div className="flex items-center justify-between">
             <div>
               <p className="text-2xl font-bold text-foreground">{supportNetworkCount}</p>
-              <p className="text-xs text-muted-foreground">Connected providers</p>
+              <p className="text-label text-muted-foreground">Connected providers</p>
             </div>
             <Button
               variant="secondary"
@@ -153,10 +153,10 @@ export function ClientView({ interactions = [], supportNetworkCount, onFindSuppo
             <Compass className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1">
-            <h3 className="text-sm font-semibold text-foreground mb-0.5">
+            <h3 className="text-body font-semibold text-foreground mb-0.5">
               Find Verified Support
             </h3>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-label text-muted-foreground">
               Browse ERA-verified professionals
             </p>
           </div>
@@ -179,7 +179,7 @@ export function ClientView({ interactions = [], supportNetworkCount, onFindSuppo
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...springGentle, delay: 0.45 }}
         >
-          <h3 className="text-sm font-medium text-muted-foreground">
+          <h3 className="text-body font-medium text-muted-foreground">
             Past Interactions
           </h3>
           <div className="space-y-2">
@@ -192,7 +192,7 @@ export function ClientView({ interactions = [], supportNetworkCount, onFindSuppo
                   <Check className="w-4 h-4 text-muted-foreground" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-body text-muted-foreground">
                     {interaction.provider_name}
                   </p>
                 </div>

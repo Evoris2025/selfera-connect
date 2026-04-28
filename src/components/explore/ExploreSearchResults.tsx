@@ -44,7 +44,7 @@ function FollowButton() {
         setIsFollowing((v) => !v);
       }}
       className={cn(
-        'px-3 py-1.5 rounded-full text-[10px] font-medium uppercase tracking-[0.08em] transition-colors flex-shrink-0',
+        'px-3 py-1.5 rounded-full text-caption font-medium uppercase tracking-[0.08em] transition-colors flex-shrink-0',
         isFollowing
           ? 'border border-white/20 text-white/60 bg-transparent'
           : 'border border-[hsl(var(--primary))] text-[hsl(var(--primary))] hover:bg-[hsl(var(--primary)/0.08)]',
@@ -65,7 +65,7 @@ function FollowTagButton() {
         setIsFollowing((v) => !v);
       }}
       className={cn(
-        'px-3 py-1.5 rounded-full text-[10px] font-medium uppercase tracking-[0.08em] transition-colors flex-shrink-0',
+        'px-3 py-1.5 rounded-full text-caption font-medium uppercase tracking-[0.08em] transition-colors flex-shrink-0',
         isFollowing
           ? 'border border-white/20 text-white/60 bg-transparent'
           : 'border border-[hsl(var(--primary))] text-[hsl(var(--primary))] hover:bg-[hsl(var(--primary)/0.08)]',
@@ -88,16 +88,16 @@ function AccountRow({ a }: { a: SearchAccount }) {
     >
       <Avatar className="h-10 w-10 flex-shrink-0">
         <AvatarImage src={a.avatarUrl} alt="" />
-        <AvatarFallback className="bg-white/[0.06] text-white/70 text-xs">
+        <AvatarFallback className="bg-white/[0.06] text-white/70 text-label">
           {a.displayName.charAt(0)}
         </AvatarFallback>
       </Avatar>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
-          <span className="text-[14px] text-white truncate">{a.displayName}</span>
+          <span className="text-body text-white truncate">{a.displayName}</span>
           <ExploreVerifiedTick tier={a.tier} size="sm" />
         </div>
-        <p className="text-[11px] text-white/45 truncate">
+        <p className="text-caption text-white/45 truncate">
           @{a.handle} · {formatCount(a.followerCount)} followers
         </p>
       </div>
@@ -116,12 +116,12 @@ function TagRow({ t }: { t: SearchTag }) {
       }}
       className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-white/[0.04] transition-colors text-left"
     >
-      <span className="flex items-center justify-center w-10 h-10 rounded-full bg-white/[0.06] text-white/70 text-base font-semibold flex-shrink-0">
+      <span className="flex items-center justify-center w-10 h-10 rounded-full bg-white/[0.06] text-white/70 text-title font-semibold flex-shrink-0">
         #
       </span>
       <div className="flex-1 min-w-0">
-        <p className="text-[14px] text-white truncate">#{t.name}</p>
-        <p className="text-[11px] text-white/45">{formatCount(t.postCount)} posts</p>
+        <p className="text-body text-white truncate">#{t.name}</p>
+        <p className="text-caption text-white/45">{formatCount(t.postCount)} posts</p>
       </div>
       <FollowTagButton />
     </button>
@@ -141,20 +141,20 @@ function PostRow({ p }: { p: SearchPost }) {
       <div className="flex items-center gap-2 mb-2">
         <Avatar className="h-7 w-7 flex-shrink-0">
           <AvatarImage src={p.author.avatarUrl} alt="" />
-          <AvatarFallback className="bg-white/[0.06] text-white/70 text-[10px]">
+          <AvatarFallback className="bg-white/[0.06] text-white/70 text-caption">
             {p.author.displayName.charAt(0)}
           </AvatarFallback>
         </Avatar>
         <div className="flex items-center gap-1.5 min-w-0 flex-1">
-          <span className="text-[13px] text-white font-medium truncate">{p.author.displayName}</span>
+          <span className="text-label text-white font-medium truncate">{p.author.displayName}</span>
           <ExploreVerifiedTick tier={p.author.tier} size="sm" />
-          <span className="text-[11px] text-white/45 truncate">
+          <span className="text-caption text-white/45 truncate">
             · @{p.author.handle} · {p.timeAgo}
           </span>
         </div>
       </div>
-      <p className="text-[14px] text-white/85 leading-relaxed mb-2 line-clamp-3">{p.body}</p>
-      <div className="flex items-center gap-4 text-white/45 text-[11px] tabular-nums">
+      <p className="text-body text-white/85 leading-relaxed mb-2 line-clamp-3">{p.body}</p>
+      <div className="flex items-center gap-4 text-white/45 text-caption tabular-nums">
         <span>♥ {formatCount(p.likes)}</span>
         <span>💬 {formatCount(p.comments)}</span>
       </div>
@@ -166,10 +166,10 @@ function EmptyState({ subtab, query }: { subtab: string; query: string }) {
   return (
     <div className="px-4 py-12 text-center">
       <SearchIcon className="w-8 h-8 text-white/30 mx-auto mb-3" strokeWidth={1.5} />
-      <p className="text-[14px] text-white/70">
+      <p className="text-body text-white/70">
         No {subtab} match "{query}".
       </p>
-      <p className="text-[12px] text-white/45 mt-1">Try a different search term.</p>
+      <p className="text-label text-white/45 mt-1">Try a different search term.</p>
     </div>
   );
 }
@@ -220,7 +220,7 @@ export function ExploreSearchResults({ query, submissionId }: ExploreSearchResul
     { id: 'posts', label: 'Posts' },
   ];
 
-  const seeAllClass = 'text-[11px] font-medium uppercase tracking-[0.08em] hover:opacity-80 transition-opacity';
+  const seeAllClass = 'text-caption font-medium uppercase tracking-[0.08em] hover:opacity-80 transition-opacity';
 
   const renderTop = () => {
     const sections = [

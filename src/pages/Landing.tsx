@@ -78,7 +78,7 @@ export default function Landing() {
           className="max-w-4xl mx-auto text-center"
         >
           <motion.div variants={fadeInUp} className="mb-6">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-8">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-body font-medium mb-8">
               <Heart className="h-4 w-4" />
               <span>Mental health support for everyone</span>
             </div>
@@ -93,7 +93,7 @@ export default function Landing() {
 
           <motion.p
             variants={fadeInUp}
-            className="text-lg sm:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed"
+            className="text-title sm:text-headline text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed"
           >
             {t('landing.hero.subtitle')}
           </motion.p>
@@ -131,7 +131,7 @@ export default function Landing() {
                 <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mx-auto mb-6">
                   <feature.icon className="h-7 w-7 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold text-foreground mb-3">{feature.title}</h3>
+                <h3 className="text-headline font-semibold text-foreground mb-3">{feature.title}</h3>
                 <p className="text-muted-foreground">{feature.description}</p>
               </motion.div>
             ))}
@@ -176,7 +176,7 @@ export default function Landing() {
               <BrandMark />
             </div>
 
-            <nav className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
+            <nav className="flex flex-wrap items-center justify-center gap-6 text-body text-muted-foreground">
               <Link to="/transparency" className="hover:text-foreground transition-colors">
                 Trust & Transparency
               </Link>
@@ -194,7 +194,7 @@ export default function Landing() {
               </Link>
             </nav>
 
-            <p className="text-sm text-muted-foreground">
+            <p className="text-body text-muted-foreground">
               © {new Date().getFullYear()} SelfERA
             </p>
           </div>

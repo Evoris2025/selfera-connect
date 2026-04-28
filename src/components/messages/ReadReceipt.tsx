@@ -43,7 +43,7 @@ export function ReadReceipt({
       )}
       
       {showTimestamp && isRead && readAt && (
-        <span className="text-[10px] text-muted-foreground/60">
+        <span className="text-caption text-muted-foreground/60">
           Seen {formatDistanceToNow(readAt, { addSuffix: true })}
         </span>
       )}
@@ -57,7 +57,7 @@ export function ReadReceiptCompact({ isRead }: { isRead: boolean }) {
     <motion.span
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="text-[11px] text-muted-foreground/70 flex items-center gap-1 font-medium"
+      className="text-caption text-muted-foreground/70 flex items-center gap-1 font-medium"
     >
       <CheckCheck 
         className={cn(

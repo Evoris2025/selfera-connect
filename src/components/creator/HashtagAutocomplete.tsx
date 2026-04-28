@@ -150,11 +150,11 @@ export function HashtagAutocomplete({
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-sm text-foreground">#{suggestion.tag}</p>
-                <p className="text-xs text-muted-foreground">{suggestion.count} posts</p>
+                <p className="font-medium text-body text-foreground">#{suggestion.tag}</p>
+                <p className="text-label text-muted-foreground">{suggestion.count} posts</p>
               </div>
               {suggestion.trending && (
-                <span className="text-[10px] font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                <span className="text-caption font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">
                   Trending
                 </span>
               )}
@@ -184,7 +184,7 @@ export function TrendingHashtagChips({ onSelect, currentValue, className }: Tren
 
   return (
     <div className={cn("flex flex-wrap gap-1.5", className)}>
-      <span className="text-xs text-white/50 mr-1 flex items-center">
+      <span className="text-label text-white/50 mr-1 flex items-center">
         <TrendingUp className="h-3 w-3 mr-1" />
         Trending:
       </span>
@@ -193,7 +193,7 @@ export function TrendingHashtagChips({ onSelect, currentValue, className }: Tren
           key={hashtag.tag}
           type="button"
           onClick={() => onSelect(hashtag.tag)}
-          className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-primary/20 text-primary hover:bg-primary/30 active:scale-95 transition-all"
+          className="inline-flex items-center gap-1 px-2.5 py-1 text-label font-medium rounded-full bg-primary/20 text-primary hover:bg-primary/30 active:scale-95 transition-all"
         >
           <Hash className="h-3 w-3" />
           {hashtag.tag}

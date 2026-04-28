@@ -61,7 +61,7 @@ function CommunityCard({
     >
       <Avatar className="h-14 w-14">
         <AvatarImage src={community.avatar_url || ''} />
-        <AvatarFallback className="bg-primary/10 text-primary text-lg">
+        <AvatarFallback className="bg-primary/10 text-primary text-title">
           <Users className="h-6 w-6" />
         </AvatarFallback>
       </Avatar>
@@ -71,8 +71,8 @@ function CommunityCard({
           <h3 className="font-semibold text-foreground truncate">{community.name}</h3>
           {community.is_private && <Lock className="h-3.5 w-3.5 text-muted-foreground" />}
         </div>
-        <p className="text-sm text-muted-foreground truncate">@{community.handle}</p>
-        <p className="text-xs text-muted-foreground mt-0.5">
+        <p className="text-body text-muted-foreground truncate">@{community.handle}</p>
+        <p className="text-label text-muted-foreground mt-0.5">
           {formatCount(community.member_count)} members · {formatCount(community.follower_count)} followers
         </p>
       </div>
@@ -82,7 +82,7 @@ function CommunityCard({
           <Button 
             variant="outline" 
             size="sm" 
-            className="text-xs gap-1"
+            className="text-label gap-1"
             onClick={() => onLeave(community.id)}
           >
             <UserMinus className="h-3.5 w-3.5" />
@@ -93,7 +93,7 @@ function CommunityCard({
             <Button 
               variant="outline" 
               size="sm" 
-              className="text-xs"
+              className="text-label"
               onClick={() => onUnfollow(community.id)}
             >
               Unfollow
@@ -101,7 +101,7 @@ function CommunityCard({
             <Button 
               variant="default" 
               size="sm" 
-              className="text-xs gap-1"
+              className="text-label gap-1"
               onClick={() => onJoin(community.id)}
             >
               <UserPlus className="h-3.5 w-3.5" />
@@ -113,7 +113,7 @@ function CommunityCard({
             <Button 
               variant="outline" 
               size="sm" 
-              className="text-xs"
+              className="text-label"
               onClick={() => onFollow(community.id)}
             >
               Follow
@@ -121,7 +121,7 @@ function CommunityCard({
             <Button 
               variant="default" 
               size="sm" 
-              className="text-xs gap-1"
+              className="text-label gap-1"
               onClick={() => onJoin(community.id)}
             >
               <UserPlus className="h-3.5 w-3.5" />
@@ -219,7 +219,7 @@ export default function Community() {
         {/* Header */}
         <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border px-4 py-3">
           <div className="flex items-center justify-between mb-3">
-            <h1 className="text-xl font-bold text-foreground">Communities</h1>
+            <h1 className="text-headline font-bold text-foreground">Communities</h1>
             <Button size="sm" className="gap-1" onClick={() => setCreateModalOpen(true)}>
               <Plus className="h-4 w-4" />
               Create
@@ -270,7 +270,7 @@ export default function Community() {
               <div className="text-center py-12 text-muted-foreground">
                 <Users className="h-12 w-12 mx-auto mb-3 opacity-50" />
                 <p>No communities joined yet</p>
-                <p className="text-sm mt-1">Explore and join communities to connect with others</p>
+                <p className="text-body mt-1">Explore and join communities to connect with others</p>
               </div>
             ) : (
               filteredCommunities(joinedCommunities).map((community, i) => (

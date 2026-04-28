@@ -98,7 +98,7 @@ function FollowButton({ creatorId }: { creatorId: string }) {
         console.log('[ExploreSearchOverlay] toggle follow', creatorId);
       }}
       className={cn(
-        'w-full px-3 py-1.5 rounded-full text-[10px] font-medium uppercase tracking-[0.08em] transition-colors',
+        'w-full px-3 py-1.5 rounded-full text-caption font-medium uppercase tracking-[0.08em] transition-colors',
         isFollowing
           ? 'border border-white/20 text-white/60 bg-transparent'
           : 'border border-[hsl(var(--primary))] text-[hsl(var(--primary))] hover:bg-[hsl(var(--primary)/0.08)]',
@@ -129,10 +129,10 @@ function SuggestedCreatorCard({
           <AvatarFallback>{c.displayName.charAt(0)}</AvatarFallback>
         </Avatar>
         <div className="flex items-center gap-1 max-w-full">
-          <span className="text-[12px] text-white/90 truncate">{c.displayName}</span>
+          <span className="text-label text-white/90 truncate">{c.displayName}</span>
           <ExploreVerifiedTick tier={c.tier} size="sm" />
         </div>
-        <span className="text-[10px] text-white/45 truncate max-w-full">@{c.handle}</span>
+        <span className="text-caption text-white/45 truncate max-w-full">@{c.handle}</span>
       </button>
       <div className="mt-2 w-full">
         <FollowButton creatorId={c.id} />
@@ -220,7 +220,7 @@ export function ExploreSearchOverlay({ query, onSelect }: ExploreSearchOverlayPr
               <button
                 type="button"
                 onClick={handleClearRecent}
-                className="text-[11px] font-medium text-white/55 hover:text-white/85 transition-colors"
+                className="text-caption font-medium text-white/55 hover:text-white/85 transition-colors"
               >
                 Clear all
               </button>
@@ -249,7 +249,7 @@ export function ExploreSearchOverlay({ query, onSelect }: ExploreSearchOverlayPr
                         <Hash className="w-3.5 h-3.5 text-white/60" strokeWidth={1.5} />
                       )}
                     </span>
-                    <span className="flex-1 text-[14px] text-white/90 truncate">
+                    <span className="flex-1 text-body text-white/90 truncate">
                       {recentDisplay(r)}
                     </span>
                     <ArrowUpRight className="w-4 h-4 text-white/40" strokeWidth={1.5} />
@@ -286,11 +286,11 @@ export function ExploreSearchOverlay({ query, onSelect }: ExploreSearchOverlayPr
                     'hover:bg-white/[0.04] transition-colors',
                   )}
                 >
-                  <span className="w-5 text-white/40 text-xs font-medium tabular-nums">
+                  <span className="w-5 text-white/40 text-label font-medium tabular-nums">
                     {idx + 1}
                   </span>
-                  <span className="flex-1 text-white text-sm truncate">{t.term}</span>
-                  <span className="text-white/40 text-[10px]">{formatSearchCount(t.count)}</span>
+                  <span className="flex-1 text-white text-body truncate">{t.term}</span>
+                  <span className="text-white/40 text-caption">{formatSearchCount(t.count)}</span>
                   <ArrowUpRight className="w-3.5 h-3.5 text-white/30" strokeWidth={1.5} />
                 </button>
               </li>

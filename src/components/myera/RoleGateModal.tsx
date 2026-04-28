@@ -102,7 +102,7 @@ export function RoleGateModal({ open, onOpenChange, reason }: RoleGateModalProps
                 >
                   <IconComponent className="w-8 h-8 text-white" />
                 </motion.div>
-                <DialogTitle className="text-xl font-semibold text-foreground">
+                <DialogTitle className="text-headline font-semibold text-foreground">
                   {content.title}
                 </DialogTitle>
               </DialogHeader>
@@ -111,7 +111,7 @@ export function RoleGateModal({ open, onOpenChange, reason }: RoleGateModalProps
 
           {/* Content */}
           <div className="p-6 pt-2 space-y-6">
-            <p className="text-sm text-muted-foreground text-center leading-relaxed">
+            <p className="text-body text-muted-foreground text-center leading-relaxed">
               {content.description}
             </p>
 

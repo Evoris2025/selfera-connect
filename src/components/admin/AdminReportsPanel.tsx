@@ -170,8 +170,8 @@ export function AdminReportsPanel() {
           <Flag className="h-5 w-5 text-amber-600" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-foreground">Reports Review</h2>
-          <p className="text-sm text-muted-foreground">
+          <h2 className="text-headline font-bold text-foreground">Reports Review</h2>
+          <p className="text-body text-muted-foreground">
             Review-only visibility — No enforcement actions
           </p>
         </div>
@@ -237,42 +237,42 @@ export function AdminReportsPanel() {
                     <div className="flex-1 min-w-0">
                       {/* Header */}
                       <div className="flex items-center gap-2 flex-wrap mb-2">
-                        <span className="font-medium text-sm">
+                        <span className="font-medium text-body">
                           {report.reporter.name}
                         </span>
-                        <span className="text-muted-foreground text-sm">reported a</span>
-                        <div className="flex items-center gap-1 text-sm">
+                        <span className="text-muted-foreground text-body">reported a</span>
+                        <div className="flex items-center gap-1 text-body">
                           <TargetIcon className="h-3.5 w-3.5" />
                           <span className="font-medium">{report.targetType}</span>
                         </div>
-                        <span className="text-muted-foreground text-xs">
+                        <span className="text-muted-foreground text-label">
                           · {formatTimeAgo(report.createdAt)}
                         </span>
                       </div>
 
                       {/* Badges */}
                       <div className="flex items-center gap-2 mb-2 flex-wrap">
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-label">
                           <AlertTriangle className="h-3 w-3 mr-1" />
                           {reasonLabels[report.reason] || report.reason}
                         </Badge>
                         <Badge 
                           variant="outline" 
-                          className={cn('text-xs', statusConfig[report.status as keyof typeof statusConfig].color)}
+                          className={cn('text-label', statusConfig[report.status as keyof typeof statusConfig].color)}
                         >
                           <StatusIcon className="h-3 w-3 mr-1" />
                           {statusConfig[report.status as keyof typeof statusConfig].label}
                         </Badge>
                         <Badge 
                           variant="outline" 
-                          className={cn('text-xs capitalize', severityColors[report.severity as keyof typeof severityColors])}
+                          className={cn('text-label capitalize', severityColors[report.severity as keyof typeof severityColors])}
                         >
                           {report.severity} severity
                         </Badge>
                       </div>
 
                       {/* Details */}
-                      <p className="text-sm text-muted-foreground bg-secondary/50 rounded-lg p-3">
+                      <p className="text-body text-muted-foreground bg-secondary/50 rounded-lg p-3">
                         "{report.details}"
                       </p>
 
@@ -282,7 +282,7 @@ export function AdminReportsPanel() {
                           value={report.status}
                           onValueChange={(value) => handleStatusChange(report.id, value)}
                         >
-                          <SelectTrigger className="w-32 h-8 text-xs">
+                          <SelectTrigger className="w-32 h-8 text-label">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -297,7 +297,7 @@ export function AdminReportsPanel() {
                           value={report.severity}
                           onValueChange={(value) => handleSeverityChange(report.id, value)}
                         >
-                          <SelectTrigger className="w-28 h-8 text-xs">
+                          <SelectTrigger className="w-28 h-8 text-label">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -310,7 +310,7 @@ export function AdminReportsPanel() {
                         <Button 
                           variant="outline" 
                           size="sm" 
-                          className="h-8 text-xs"
+                          className="h-8 text-label"
                           onClick={() => setExpandedReport(isExpanded ? null : report.id)}
                         >
                           {isExpanded ? 'Hide Notes' : 'Add Notes'}
@@ -320,14 +320,14 @@ export function AdminReportsPanel() {
                       {/* Internal Notes Expansion */}
                       {isExpanded && (
                         <div className="mt-4 p-3 bg-muted/50 rounded-lg">
-                          <p className="text-xs font-medium mb-2">Internal Notes</p>
+                          <p className="text-label font-medium mb-2">Internal Notes</p>
                           <Textarea
                             value={notes[report.id] || report.internalNotes}
                             onChange={(e) => setNotes(prev => ({ ...prev, [report.id]: e.target.value }))}
                             placeholder="Add internal notes for this report..."
-                            className="text-sm min-h-[80px]"
+                            className="text-body min-h-[80px]"
                           />
-                          <p className="text-xs text-muted-foreground mt-2">
+                          <p className="text-label text-muted-foreground mt-2">
                             Notes are for internal tracking only and not shared with reporters.
                           </p>
                         </div>
@@ -344,7 +344,7 @@ export function AdminReportsPanel() {
       {/* Simulation Notice */}
       <Card className="border-dashed border-2 border-muted">
         <CardContent className="py-4">
-          <p className="text-sm text-muted-foreground text-center">
+          <p className="text-body text-muted-foreground text-center">
             This is a review-only panel. No enforcement actions are available in simulation mode.
           </p>
         </CardContent>

@@ -27,7 +27,7 @@ export function CharacterCounter({
       {percentage >= 80 && (
         <span
           className={cn(
-            'text-xs font-medium tabular-nums transition-colors',
+            'text-label font-medium tabular-nums transition-colors',
             isOver ? 'text-destructive' : isWarning ? 'text-warning' : 'text-muted-foreground'
           )}
         >

@@ -83,7 +83,7 @@ export function FilterLibrary({
             key={cat}
             onClick={() => setCategory(cat)}
             className={cn(
-              'px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap',
+              'px-3 py-1.5 rounded-full text-label font-medium transition-colors whitespace-nowrap',
               category === cat
                 ? 'bg-primary text-primary-foreground'
                 : 'bg-secondary/50 text-muted-foreground hover:bg-secondary hover:text-foreground'
@@ -123,7 +123,7 @@ export function FilterLibrary({
                 />
               </div>
               <span className={cn(
-                'text-xs',
+                'text-label',
                 selectedFilter === actualIndex ? 'text-primary font-medium' : 'text-muted-foreground'
               )}>
                 {filter.name}
@@ -142,8 +142,8 @@ export function FilterLibrary({
           className="space-y-2"
         >
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Filter Intensity</span>
-            <span className="text-sm font-medium">{filterIntensity}%</span>
+            <span className="text-body text-muted-foreground">Filter Intensity</span>
+            <span className="text-body font-medium">{filterIntensity}%</span>
           </div>
           <Slider
             value={[filterIntensity]}

@@ -309,7 +309,7 @@ export const RearrangeableTabBar = memo(function RearrangeableTabBar({
           >
             Cancel
           </Button>
-          <span className="text-sm font-medium text-foreground">Rearrange Tabs</span>
+          <span className="text-body font-medium text-foreground">Rearrange Tabs</span>
           <Button
             variant="default"
             size="sm"
@@ -352,7 +352,7 @@ export const RearrangeableTabBar = memo(function RearrangeableTabBar({
       {/* Hint text - centered with proper spacing */}
       {isOwnProfile && !isRearrangeMode && (
         <div className="w-full flex items-center justify-center py-2 px-4">
-          <p className="text-[10px] text-muted-foreground/50 leading-none text-center whitespace-nowrap">
+          <p className="text-caption text-muted-foreground/50 leading-none text-center whitespace-nowrap">
             Triple-tap to rearrange • Hold grid icon for layout
           </p>
         </div>

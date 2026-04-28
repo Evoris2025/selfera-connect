@@ -60,14 +60,14 @@ function AdjustmentSlider({
             isModified ? 'text-primary' : 'text-muted-foreground'
           )} />
           <span className={cn(
-            'text-sm',
+            'text-body',
             isModified ? 'text-foreground font-medium' : 'text-muted-foreground'
           )}>
             {label}
           </span>
         </div>
         <span className={cn(
-          'text-xs tabular-nums w-10 text-right',
+          'text-label tabular-nums w-10 text-right',
           isModified ? 'text-primary' : 'text-muted-foreground'
         )}>
           {value > 0 && value !== defaultValue && min < 0 ? '+' : ''}{value}
@@ -126,13 +126,13 @@ export function AdjustmentPanel({ adjustments, onAdjustmentsChange }: Adjustment
       className="space-y-4"
     >
       <div className="flex items-center justify-between">
-        <label className="text-sm font-medium text-foreground">Adjustments</label>
+        <label className="text-body font-medium text-foreground">Adjustments</label>
         {hasModifications && (
           <Button
             variant="ghost"
             size="sm"
             onClick={handleReset}
-            className="h-8 text-xs text-muted-foreground hover:text-foreground"
+            className="h-8 text-label text-muted-foreground hover:text-foreground"
           >
             <RotateCcw className="h-3 w-3 mr-1" />
             Reset All

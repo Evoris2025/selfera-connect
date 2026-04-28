@@ -56,11 +56,11 @@ export function ComposerLinkPreview({
             <div className="flex items-start gap-2">
               <LinkIcon className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-sm line-clamp-1">{preview.title || 'Link preview'}</p>
+                <p className="font-medium text-body line-clamp-1">{preview.title || 'Link preview'}</p>
                 {preview.description && (
-                  <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{preview.description}</p>
+                  <p className="text-label text-muted-foreground line-clamp-2 mt-0.5">{preview.description}</p>
                 )}
-                <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
+                <div className="flex items-center gap-1 mt-1 text-label text-muted-foreground">
                   <ExternalLink className="h-3 w-3" />
                   <span className="truncate">{preview.siteName || host}</span>
                 </div>

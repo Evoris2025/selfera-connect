@@ -58,7 +58,7 @@ export function TransparencyPanel() {
           </div>
           <div>
             <h3 className="font-semibold text-foreground">Our commitment to you</h3>
-            <p className="text-sm text-muted-foreground">Transparency in everything we do</p>
+            <p className="text-body text-muted-foreground">Transparency in everything we do</p>
           </div>
         </div>
 
@@ -68,19 +68,19 @@ export function TransparencyPanel() {
             <AccordionTrigger className="hover:no-underline py-3">
               <div className="flex items-center gap-2">
                 <Heart className="w-4 h-4 text-emerald-400" />
-                <span className="text-sm font-medium">What's free forever</span>
+                <span className="text-body font-medium">What's free forever</span>
               </div>
             </AccordionTrigger>
             <AccordionContent>
               <ul className="space-y-2 pt-2">
                 {freeForever.map((item, idx) => (
-                  <li key={idx} className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <li key={idx} className="flex items-center gap-2 text-body text-muted-foreground">
                     <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                     {item}
                   </li>
                 ))}
               </ul>
-              <p className="text-xs text-muted-foreground/70 mt-3 pt-3 border-t border-border/30">
+              <p className="text-label text-muted-foreground/70 mt-3 pt-3 border-t border-border/30">
                 Social participation will never require payment. SelfERA believes expression should be accessible to everyone.
               </p>
             </AccordionContent>
@@ -91,19 +91,19 @@ export function TransparencyPanel() {
             <AccordionTrigger className="hover:no-underline py-3">
               <div className="flex items-center gap-2">
                 <Ban className="w-4 h-4 text-rose-400" />
-                <span className="text-sm font-medium">What SelfERA does NOT sell</span>
+                <span className="text-body font-medium">What SelfERA does NOT sell</span>
               </div>
             </AccordionTrigger>
             <AccordionContent>
               <ul className="space-y-2 pt-2">
                 {whatWeNeverSell.map((item, idx) => (
-                  <li key={idx} className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <li key={idx} className="flex items-center gap-2 text-body text-muted-foreground">
                     <Ban className="w-3.5 h-3.5 text-rose-400/70 shrink-0" />
                     {item}
                   </li>
                 ))}
               </ul>
-              <p className="text-xs text-muted-foreground/70 mt-3 pt-3 border-t border-border/30">
+              <p className="text-label text-muted-foreground/70 mt-3 pt-3 border-t border-border/30">
                 Professionals pay for visibility tools — never for algorithm priority or guaranteed clients.
               </p>
             </AccordionContent>
@@ -114,19 +114,19 @@ export function TransparencyPanel() {
             <AccordionTrigger className="hover:no-underline py-3">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-amber-400" />
-                <span className="text-sm font-medium">How revenue supports SelfERA</span>
+                <span className="text-body font-medium">How revenue supports SelfERA</span>
               </div>
             </AccordionTrigger>
             <AccordionContent>
               <ul className="space-y-2 pt-2">
                 {howRevenueSupports.map((item, idx) => (
-                  <li key={idx} className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <li key={idx} className="flex items-center gap-2 text-body text-muted-foreground">
                     <Sparkles className="w-3.5 h-3.5 text-amber-400/70 shrink-0" />
                     {item}
                   </li>
                 ))}
               </ul>
-              <p className="text-xs text-muted-foreground/70 mt-3 pt-3 border-t border-border/30">
+              <p className="text-label text-muted-foreground/70 mt-3 pt-3 border-t border-border/30">
                 Sustainable revenue helps us stay independent and prioritise user wellbeing over profit.
               </p>
             </AccordionContent>
@@ -137,11 +137,11 @@ export function TransparencyPanel() {
             <AccordionTrigger className="hover:no-underline py-3">
               <div className="flex items-center gap-2">
                 <Info className="w-4 h-4 text-blue-400" />
-                <span className="text-sm font-medium">Provider connection ethics</span>
+                <span className="text-body font-medium">Provider connection ethics</span>
               </div>
             </AccordionTrigger>
             <AccordionContent>
-              <div className="space-y-3 pt-2 text-sm text-muted-foreground">
+              <div className="space-y-3 pt-2 text-body text-muted-foreground">
                 <p>When you connect with a provider through SelfERA:</p>
                 <ul className="space-y-2 pl-4">
                   <li className="flex items-start gap-2">
@@ -161,7 +161,7 @@ export function TransparencyPanel() {
                     <span>Clinical content stays between you and your provider</span>
                   </li>
                 </ul>
-                <p className="text-xs text-muted-foreground/70 mt-2 pt-3 border-t border-border/30">
+                <p className="text-label text-muted-foreground/70 mt-2 pt-3 border-t border-border/30">
                   SelfERA facilitates discovery and connection — nothing more. Your care journey is yours.
                 </p>
               </div>

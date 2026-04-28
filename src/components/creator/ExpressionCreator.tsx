@@ -367,7 +367,7 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                   
                   <div className="flex items-center gap-2">
                     <Sparkles className="h-5 w-5 text-pink-400" />
-                    <span className="text-white font-medium text-sm">Expression</span>
+                    <span className="text-white font-medium text-body">Expression</span>
                   </div>
                   
                   <div className="flex items-center gap-2">
@@ -452,11 +452,11 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                 >
                   <Camera className="h-12 w-12 text-white" />
                 </motion.button>
-                <span className="text-sm text-white/70">Tap to open camera</span>
+                <span className="text-body text-white/70">Tap to open camera</span>
 
                 <div className="flex items-center gap-4 w-full max-w-[200px]">
                   <div className="h-px flex-1 bg-white/20" />
-                  <span className="text-xs text-white/50">or</span>
+                  <span className="text-label text-white/50">or</span>
                   <div className="h-px flex-1 bg-white/20" />
                 </div>
 
@@ -468,7 +468,7 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                   <span>Choose from gallery</span>
                 </button>
 
-                <p className="text-xs text-white/50 text-center max-w-[240px]">
+                <p className="text-label text-white/50 text-center max-w-[240px]">
                   Expressions disappear after 24 hours. Share moments that matter to you.
                 </p>
                 </div>
@@ -606,7 +606,7 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
               {selectedSound && (
                 <div className="absolute bottom-20 left-4 flex items-center gap-2 px-3 py-2 bg-black/60 backdrop-blur-sm rounded-full">
                   <Music className="h-4 w-4 text-white" />
-                  <span className="text-xs text-white truncate max-w-[120px]">
+                  <span className="text-label text-white truncate max-w-[120px]">
                     {selectedSound.name}
                   </span>
                 </div>
@@ -650,13 +650,13 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                     }
                   }}
                 />
-                <p className="text-xs text-white/50 ml-2 shrink-0">
+                <p className="text-label text-white/50 ml-2 shrink-0">
                   {caption.length}/200
                 </p>
               </div>
             </div>
 
-            <p className="text-sm text-white/70 py-2 text-center bg-black">
+            <p className="text-body text-white/70 py-2 text-center bg-black">
               {closeFriendsOnly 
                 ? '🟢 Visible to Close Friends only for 24 hours'
                 : 'This expression will be visible for 24 hours'

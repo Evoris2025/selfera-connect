@@ -92,7 +92,7 @@ export function ThreadComposer({
         Add to thread
       </Button>
 
-      <div className="text-xs text-muted-foreground text-center">
+      <div className="text-label text-muted-foreground text-center">
         {items.length} {items.length === 1 ? 'post' : 'posts'} in thread •{' '}
         {items.reduce((acc, it) => acc + it.content.length, 0)} total characters
       </div>
@@ -159,7 +159,7 @@ function SortableThread({ item, index, total, maxCharacters, onUpdate, onRemove,
 
         {/* Index badge */}
         <div className="absolute left-8 top-3 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-          <span className="text-xs font-medium text-primary">{index + 1}</span>
+          <span className="text-label font-medium text-primary">{index + 1}</span>
         </div>
 
         <div className="pl-16 pr-3 py-3">

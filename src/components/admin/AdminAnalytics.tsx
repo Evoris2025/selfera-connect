@@ -182,12 +182,12 @@ export function AdminAnalytics() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+            <CardTitle className="text-body font-medium">Total Users</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{analytics.totalUsers.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-label text-muted-foreground">
               +{analytics.newUsers} today
             </p>
           </CardContent>
@@ -195,12 +195,12 @@ export function AdminAnalytics() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Posts</CardTitle>
+            <CardTitle className="text-body font-medium">Total Posts</CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{analytics.totalPosts.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-label text-muted-foreground">
               +{analytics.newPosts} today
             </p>
           </CardContent>
@@ -208,12 +208,12 @@ export function AdminAnalytics() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Reports</CardTitle>
+            <CardTitle className="text-body font-medium">Pending Reports</CardTitle>
             <Flag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{analytics.pendingReports}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-label text-muted-foreground">
               +{analytics.newReports} today
             </p>
           </CardContent>
@@ -221,12 +221,12 @@ export function AdminAnalytics() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Verifications</CardTitle>
+            <CardTitle className="text-body font-medium">Verifications</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{analytics.pendingVerifications}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-label text-muted-foreground">
               pending review
             </p>
           </CardContent>
@@ -243,8 +243,8 @@ export function AdminAnalytics() {
             </CardTitle>
             <Tabs value={timeframe} onValueChange={(v) => setTimeframe(v as 'daily' | 'weekly')}>
               <TabsList className="h-8">
-                <TabsTrigger value="daily" className="text-xs px-2 h-6">Daily</TabsTrigger>
-                <TabsTrigger value="weekly" className="text-xs px-2 h-6">Weekly</TabsTrigger>
+                <TabsTrigger value="daily" className="text-label px-2 h-6">Daily</TabsTrigger>
+                <TabsTrigger value="weekly" className="text-label px-2 h-6">Weekly</TabsTrigger>
               </TabsList>
             </Tabs>
           </div>
@@ -253,7 +253,7 @@ export function AdminAnalytics() {
           {/* Simple bar chart */}
           <div className="space-y-4">
             {/* Legend */}
-            <div className="flex items-center gap-4 text-xs">
+            <div className="flex items-center gap-4 text-label">
               <div className="flex items-center gap-1.5">
                 <div className="w-3 h-3 rounded-sm bg-primary" />
                 <span>Users</span>
@@ -289,7 +289,7 @@ export function AdminAnalytics() {
                       title={`${point.reports} reports`}
                     />
                   </div>
-                  <span className="text-xs text-muted-foreground">{point.label}</span>
+                  <span className="text-label text-muted-foreground">{point.label}</span>
                 </div>
               ))}
             </div>
@@ -297,26 +297,26 @@ export function AdminAnalytics() {
             {/* Stats summary */}
             <div className="grid grid-cols-3 gap-4 pt-4 border-t">
               <div className="text-center">
-                <p className="text-lg font-semibold">
+                <p className="text-title font-semibold">
                   {timeSeries.reduce((sum, p) => sum + p.users, 0)}
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-label text-muted-foreground">
                   New Users ({timeframe === 'daily' ? '7 days' : '4 weeks'})
                 </p>
               </div>
               <div className="text-center">
-                <p className="text-lg font-semibold">
+                <p className="text-title font-semibold">
                   {timeSeries.reduce((sum, p) => sum + p.posts, 0)}
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-label text-muted-foreground">
                   New Posts ({timeframe === 'daily' ? '7 days' : '4 weeks'})
                 </p>
               </div>
               <div className="text-center">
-                <p className="text-lg font-semibold">
+                <p className="text-title font-semibold">
                   {timeSeries.reduce((sum, p) => sum + p.reports, 0)}
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-label text-muted-foreground">
                   Reports ({timeframe === 'daily' ? '7 days' : '4 weeks'})
                 </p>
               </div>

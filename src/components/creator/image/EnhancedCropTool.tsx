@@ -191,7 +191,7 @@ export function EnhancedCropTool({ imageUrl, cropData, onCropChange }: EnhancedC
         
         {/* Pinch hint on mobile */}
         {cropData.scale === 1 && (cropData.rotation || 0) === 0 && (
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/60 text-white text-xs md:hidden">
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/60 text-white text-label md:hidden">
             Pinch to zoom
           </div>
         )}
@@ -202,12 +202,12 @@ export function EnhancedCropTool({ imageUrl, cropData, onCropChange }: EnhancedC
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <RotateCw className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Straighten</span>
+            <span className="text-body text-muted-foreground">Straighten</span>
           </div>
-          <span className="text-sm font-medium">{cropData.rotation || 0}°</span>
+          <span className="text-body font-medium">{cropData.rotation || 0}°</span>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-xs text-muted-foreground">-45°</span>
+          <span className="text-label text-muted-foreground">-45°</span>
           <Slider
             value={[cropData.rotation || 0]}
             onValueChange={([v]) => handleRotationChange(v)}
@@ -216,7 +216,7 @@ export function EnhancedCropTool({ imageUrl, cropData, onCropChange }: EnhancedC
             step={0.5}
             className="flex-1"
           />
-          <span className="text-xs text-muted-foreground">+45°</span>
+          <span className="text-label text-muted-foreground">+45°</span>
         </div>
       </div>
 
@@ -225,9 +225,9 @@ export function EnhancedCropTool({ imageUrl, cropData, onCropChange }: EnhancedC
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <ZoomOut className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Zoom</span>
+            <span className="text-body text-muted-foreground">Zoom</span>
           </div>
-          <span className="text-sm font-medium">{Math.round(cropData.scale * 100)}%</span>
+          <span className="text-body font-medium">{Math.round(cropData.scale * 100)}%</span>
         </div>
         <div className="flex items-center gap-3">
           <Slider
@@ -245,13 +245,13 @@ export function EnhancedCropTool({ imageUrl, cropData, onCropChange }: EnhancedC
       {/* Aspect Ratio Selection */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <label className="text-sm font-medium text-foreground">Aspect Ratio</label>
+          <label className="text-body font-medium text-foreground">Aspect Ratio</label>
           {isModified && (
             <Button
               variant="ghost"
               size="sm"
               onClick={handleReset}
-              className="h-7 text-xs text-muted-foreground hover:text-foreground"
+              className="h-7 text-label text-muted-foreground hover:text-foreground"
             >
               <RotateCcw className="h-3 w-3 mr-1" />
               Reset
@@ -272,15 +272,15 @@ export function EnhancedCropTool({ imageUrl, cropData, onCropChange }: EnhancedC
               )}
             >
               <Icon className="h-5 w-5" />
-              <span className="text-xs font-medium">{label}</span>
-              <span className="text-[10px] opacity-60">{ratio}</span>
+              <span className="text-label font-medium">{label}</span>
+              <span className="text-caption opacity-60">{ratio}</span>
             </motion.button>
           ))}
         </div>
       </div>
 
       {/* Instructions */}
-      <p className="text-xs text-muted-foreground text-center">
+      <p className="text-label text-muted-foreground text-center">
         {cropData.scale > 1 
           ? 'Drag to reposition • Pinch or use slider to zoom'
           : 'Select aspect ratio • Zoom to crop'}

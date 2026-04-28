@@ -150,7 +150,7 @@ export function BillingSettingsView({ className }: BillingSettingsViewProps) {
       >
         <Card className="bg-card/40 backdrop-blur-lg border-white/[0.06]">
           <CardHeader>
-            <CardTitle className="text-lg">Current Plan</CardTitle>
+            <CardTitle className="text-title">Current Plan</CardTitle>
             <CardDescription>Your active subscription and billing details</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -166,7 +166,7 @@ export function BillingSettingsView({ className }: BillingSettingsViewProps) {
                   <p className="font-semibold text-foreground">
                     {currentPlanType === 'free' ? 'Free' : tierConfig?.label || currentPlanType}
                   </p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-body text-muted-foreground">
                     {currentPlanType === 'free' 
                       ? 'No billing' 
                       : formatPrice(currentTierColour ? ERA_TIER_PRICES[currentTierColour as EraTier] : 0) + '/month'
@@ -191,7 +191,7 @@ export function BillingSettingsView({ className }: BillingSettingsViewProps) {
               <>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-[11px] text-muted-foreground uppercase tracking-wide mb-1">Status</p>
+                    <p className="text-caption text-muted-foreground uppercase tracking-wide mb-1">Status</p>
                     <div className={`flex items-center gap-1.5 ${
                       billingStatus === 'overdue' ? 'text-red-500' : 
                       billingStatus === 'due_soon' ? 'text-amber-500' : 'text-green-500'
@@ -199,12 +199,12 @@ export function BillingSettingsView({ className }: BillingSettingsViewProps) {
                       {billingStatus === 'overdue' ? <AlertCircle className="w-4 h-4" /> :
                        billingStatus === 'due_soon' ? <Clock className="w-4 h-4" /> : 
                        <CheckCircle className="w-4 h-4" />}
-                      <span className="text-sm font-medium capitalize">{billingStatus.replace('_', ' ')}</span>
+                      <span className="text-body font-medium capitalize">{billingStatus.replace('_', ' ')}</span>
                     </div>
                   </div>
                   <div>
-                    <p className="text-[11px] text-muted-foreground uppercase tracking-wide mb-1">Next Billing</p>
-                    <p className="text-sm font-medium text-foreground">
+                    <p className="text-caption text-muted-foreground uppercase tracking-wide mb-1">Next Billing</p>
+                    <p className="text-body font-medium text-foreground">
                       {currentPeriodEnd ? format(new Date(currentPeriodEnd), 'MMM d, yyyy') : '—'}
                     </p>
                   </div>
@@ -212,7 +212,7 @@ export function BillingSettingsView({ className }: BillingSettingsViewProps) {
                 
                 {amountDue > 0 && billingStatus === 'overdue' && (
                   <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20">
-                    <p className="text-sm text-red-500 font-medium">
+                    <p className="text-body text-red-500 font-medium">
                       Amount due: {formatPrice(amountDue)}
                     </p>
                     <Button 
@@ -239,7 +239,7 @@ export function BillingSettingsView({ className }: BillingSettingsViewProps) {
       >
         <Card className="bg-card/40 backdrop-blur-lg border-white/[0.06]">
           <CardHeader>
-            <CardTitle className="text-lg">Available Plans</CardTitle>
+            <CardTitle className="text-title">Available Plans</CardTitle>
             <CardDescription>Choose a plan that fits your needs</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -269,11 +269,11 @@ export function BillingSettingsView({ className }: BillingSettingsViewProps) {
                         <div className="flex items-center gap-2">
                           <p className="font-semibold text-foreground">{plan.name}</p>
                           {isCurrentPlan && (
-                            <Badge variant="secondary" className="text-xs">Current</Badge>
+                            <Badge variant="secondary" className="text-label">Current</Badge>
                           )}
                         </div>
-                        <p className="text-sm text-muted-foreground">{plan.description}</p>
-                        <p className="text-lg font-bold text-foreground mt-1">
+                        <p className="text-body text-muted-foreground">{plan.description}</p>
+                        <p className="text-title font-bold text-foreground mt-1">
                           {plan.price === 0 ? 'Free' : `${formatPrice(plan.price)}/mo`}
                         </p>
                       </div>
@@ -295,7 +295,7 @@ export function BillingSettingsView({ className }: BillingSettingsViewProps) {
                   <div className="mt-3 pt-3 border-t border-white/[0.06]">
                     <ul className="grid grid-cols-2 gap-1">
                       {plan.features.map((feature, idx) => (
-                        <li key={idx} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <li key={idx} className="flex items-center gap-1.5 text-label text-muted-foreground">
                           <CheckCircle className="w-3 h-3 text-green-500" />
                           {feature}
                         </li>
@@ -316,7 +316,7 @@ export function BillingSettingsView({ className }: BillingSettingsViewProps) {
         transition={{ delay: 0.2 }}
         className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20"
       >
-        <p className="text-sm text-amber-500">
+        <p className="text-body text-amber-500">
           <strong>Testing Mode:</strong> Plan changes are simulated and persisted to the database for testing. 
           Payment processing is not yet connected.
         </p>

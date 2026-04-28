@@ -47,8 +47,8 @@ export function AdminPlatformOverview() {
           <Activity className="h-5 w-5 text-primary" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-foreground">Platform Overview</h2>
-          <p className="text-sm text-muted-foreground">
+          <h2 className="text-headline font-bold text-foreground">Platform Overview</h2>
+          <p className="text-body text-muted-foreground">
             Simulated system health metrics
           </p>
         </div>
@@ -58,12 +58,12 @@ export function AdminPlatformOverview() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+            <CardTitle className="text-body font-medium">Total Users</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{MOCK_PLATFORM_METRICS.totalUsers.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-label text-muted-foreground">
               {MOCK_PLATFORM_METRICS.verifiedUsers} verified
             </p>
           </CardContent>
@@ -71,12 +71,12 @@ export function AdminPlatformOverview() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Interactions</CardTitle>
+            <CardTitle className="text-body font-medium">Active Interactions</CardTitle>
             <MessageSquare className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{MOCK_PLATFORM_METRICS.interactions.active}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-label text-muted-foreground">
               {MOCK_PLATFORM_METRICS.interactions.completed.toLocaleString()} completed
             </p>
           </CardContent>
@@ -84,12 +84,12 @@ export function AdminPlatformOverview() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Verifications</CardTitle>
+            <CardTitle className="text-body font-medium">Pending Verifications</CardTitle>
             <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{MOCK_PLATFORM_METRICS.pendingVerifications}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-label text-muted-foreground">
               awaiting review
             </p>
           </CardContent>
@@ -97,12 +97,12 @@ export function AdminPlatformOverview() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Open Reports</CardTitle>
+            <CardTitle className="text-body font-medium">Open Reports</CardTitle>
             <Flag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{MOCK_PLATFORM_METRICS.reportsNew + MOCK_PLATFORM_METRICS.reportsReviewing}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-label text-muted-foreground">
               {MOCK_PLATFORM_METRICS.reportsNew} new, {MOCK_PLATFORM_METRICS.reportsReviewing} reviewing
             </p>
           </CardContent>
@@ -112,7 +112,7 @@ export function AdminPlatformOverview() {
       {/* ERA Tier Distribution */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-sm font-medium">
+          <CardTitle className="flex items-center gap-2 text-body font-medium">
             <Shield className="h-4 w-4" />
             ERA Tier Distribution
           </CardTitle>
@@ -123,7 +123,7 @@ export function AdminPlatformOverview() {
               const percentage = (count / MOCK_PLATFORM_METRICS.totalUsers) * 100;
               return (
                 <div key={tier} className="space-y-1">
-                  <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center justify-between text-body">
                     <span className="capitalize font-medium">{tier}</span>
                     <span className="text-muted-foreground">{count.toLocaleString()} ({percentage.toFixed(1)}%)</span>
                   </div>
@@ -144,17 +144,17 @@ export function AdminPlatformOverview() {
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-medium">User Types</CardTitle>
+            <CardTitle className="text-body font-medium">User Types</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between mb-4">
               <div>
                 <p className="text-2xl font-bold">{MOCK_PLATFORM_METRICS.clientProviderRatio.clients.toLocaleString()}</p>
-                <p className="text-xs text-muted-foreground">Clients</p>
+                <p className="text-label text-muted-foreground">Clients</p>
               </div>
               <div className="text-right">
                 <p className="text-2xl font-bold">{MOCK_PLATFORM_METRICS.clientProviderRatio.providers.toLocaleString()}</p>
-                <p className="text-xs text-muted-foreground">Providers</p>
+                <p className="text-label text-muted-foreground">Providers</p>
               </div>
             </div>
             <div className="h-3 rounded-full bg-secondary overflow-hidden flex">
@@ -172,23 +172,23 @@ export function AdminPlatformOverview() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-medium">Interaction Health</CardTitle>
+            <CardTitle className="text-body font-medium">Interaction Health</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Completed</span>
+              <span className="text-body text-muted-foreground">Completed</span>
               <span className="font-semibold text-emerald-600">{MOCK_PLATFORM_METRICS.interactions.completed.toLocaleString()}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Active</span>
+              <span className="text-body text-muted-foreground">Active</span>
               <span className="font-semibold text-blue-600">{MOCK_PLATFORM_METRICS.interactions.active}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Cancelled</span>
+              <span className="text-body text-muted-foreground">Cancelled</span>
               <span className="font-semibold text-amber-600">{MOCK_PLATFORM_METRICS.interactions.cancelled}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Flagged</span>
+              <span className="text-body text-muted-foreground">Flagged</span>
               <span className="font-semibold text-destructive">{MOCK_PLATFORM_METRICS.interactions.flagged}</span>
             </div>
           </CardContent>
@@ -198,7 +198,7 @@ export function AdminPlatformOverview() {
       {/* Simulation Notice */}
       <Card className="border-dashed border-2 border-muted">
         <CardContent className="py-4">
-          <p className="text-sm text-muted-foreground text-center">
+          <p className="text-body text-muted-foreground text-center">
             All data shown is simulated for development and testing purposes.
           </p>
         </CardContent>

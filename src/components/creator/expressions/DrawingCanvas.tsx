@@ -256,7 +256,7 @@ export function DrawingCanvas({ width, height, onSave, onCancel }: DrawingCanvas
 
         {/* Brush Size */}
         <div className="flex items-center gap-4">
-          <span className="text-sm text-muted-foreground w-12">Size</span>
+          <span className="text-body text-muted-foreground w-12">Size</span>
           <div className="flex gap-2">
             {BRUSH_SIZES.map((size) => (
               <button
@@ -279,7 +279,7 @@ export function DrawingCanvas({ width, height, onSave, onCancel }: DrawingCanvas
         {/* Color Picker */}
         {tool === 'brush' && (
           <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground w-12">Color</span>
+            <span className="text-body text-muted-foreground w-12">Color</span>
             <div className="flex gap-2 flex-wrap">
               {BRUSH_COLORS.map((c) => (
                 <button

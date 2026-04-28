@@ -60,15 +60,15 @@ export function PractitionerView({
             <Stethoscope className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1">
-            <h3 className="text-base font-semibold text-foreground mb-1">
+            <h3 className="text-title font-semibold text-foreground mb-1">
               Your Practice Overview
             </h3>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-body text-muted-foreground">
               Manage your support sessions and client connections
             </p>
           </div>
           {isVerified && (
-            <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-xs">
+            <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-label">
               <Check className="w-3 h-3 mr-1" />
               Verified
             </Badge>
@@ -87,7 +87,7 @@ export function PractitionerView({
         <div className="bg-card/40 border border-white/[0.06] p-4">
           <div className="flex items-center gap-2 mb-2">
             <Users className="w-4 h-4 text-primary" />
-            <span className="text-xs text-muted-foreground">Active Clients</span>
+            <span className="text-label text-muted-foreground">Active Clients</span>
           </div>
           <p className="text-2xl font-bold text-foreground">{activeClients}</p>
         </div>
@@ -96,7 +96,7 @@ export function PractitionerView({
         <div className="bg-card/40 border border-white/[0.06] p-4 relative">
           <div className="flex items-center gap-2 mb-2">
             <Clock className="w-4 h-4 text-amber-400" />
-            <span className="text-xs text-muted-foreground">Pending</span>
+            <span className="text-label text-muted-foreground">Pending</span>
           </div>
           <p className="text-2xl font-bold text-foreground">{pendingRequests}</p>
           {pendingRequests > 0 && (
@@ -116,8 +116,8 @@ export function PractitionerView({
           <div className="flex items-center gap-3">
             <Calendar className="w-5 h-5 text-muted-foreground" />
             <div>
-              <p className="text-sm font-medium text-foreground">Availability Status</p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-body font-medium text-foreground">Availability Status</p>
+              <p className="text-label text-muted-foreground">
                 {isAvailable ? 'Accepting new clients' : 'Not accepting clients'}
               </p>
             </div>
@@ -146,8 +146,8 @@ export function PractitionerView({
           <div className="flex items-center gap-3">
             <Eye className="w-5 h-5 text-muted-foreground" />
             <div>
-              <p className="text-sm font-medium text-foreground">Directory Visibility</p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-body font-medium text-foreground">Directory Visibility</p>
+              <p className="text-label text-muted-foreground">
                 {profileVisible ? 'Visible in directory' : 'Hidden from directory'}
               </p>
             </div>
@@ -183,10 +183,10 @@ export function PractitionerView({
             />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium text-foreground">
+            <p className="text-body font-medium text-foreground">
               {tierConfig.label} Tier
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-label text-muted-foreground">
               Session cap: ${tierConfig.interactionCap.toFixed(2)}
             </p>
           </div>
@@ -203,8 +203,8 @@ export function PractitionerView({
         <div className="flex items-start gap-3">
           <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-medium text-foreground">Compliance Reminder</p>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-body font-medium text-foreground">Compliance Reminder</p>
+            <p className="text-label text-muted-foreground mt-1">
               Ensure your credentials are up to date. SelfERA does not provide clinical documentation.
             </p>
           </div>

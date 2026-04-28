@@ -229,30 +229,30 @@ export function ProviderDetailModal({ entry, open, onOpenChange }: ProviderDetai
             />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <DialogTitle className="text-xl font-semibold truncate">
+                <DialogTitle className="text-headline font-semibold truncate">
                   {entry.name}
                 </DialogTitle>
                 {entry.verified && <EraVerifiedTick size="sm" userEmail={entry.profile?.email || undefined} />}
               </div>
               {entry.profile?.handle && (
-                <p className="text-sm text-muted-foreground">
+                <p className="text-body text-muted-foreground">
                   @{entry.profile.handle}
                 </p>
               )}
               <div className="flex items-center gap-2 mt-2 flex-wrap">
                 {entry.verified ? (
-                  <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-xs">
+                  <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-label">
                     <Check className="w-3 h-3 mr-1" />
                     Verified
                   </Badge>
                 ) : (
-                  <Badge variant="secondary" className="text-xs">
+                  <Badge variant="secondary" className="text-label">
                     <AlertCircle className="w-3 h-3 mr-1" />
                     Unverified
                   </Badge>
                 )}
                 {entry.price_range && (
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="outline" className="text-label">
                     <DollarSign className="w-3 h-3 mr-1" />
                     {priceLabels[entry.price_range] || entry.price_range}
                   </Badge>
@@ -264,7 +264,7 @@ export function ProviderDetailModal({ entry, open, onOpenChange }: ProviderDetai
 
         <div className="space-y-4">
           {/* Description */}
-          <p className="text-sm text-foreground leading-relaxed">
+          <p className="text-body text-foreground leading-relaxed">
             {entry.description}
           </p>
 
@@ -272,11 +272,11 @@ export function ProviderDetailModal({ entry, open, onOpenChange }: ProviderDetai
           <div className="grid grid-cols-2 gap-3">
             {entry.regions_served && entry.regions_served.length > 0 && (
               <GlassCard variant="subtle" className="p-3">
-                <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+                <div className="flex items-center gap-2 text-label text-muted-foreground mb-1">
                   <MapPin className="w-3.5 h-3.5" />
                   <span>Regions</span>
                 </div>
-                <p className="text-sm text-foreground">
+                <p className="text-body text-foreground">
                   {entry.regions_served.slice(0, 3).join(', ')}
                   {entry.regions_served.length > 3 && ` +${entry.regions_served.length - 3}`}
                 </p>
@@ -285,11 +285,11 @@ export function ProviderDetailModal({ entry, open, onOpenChange }: ProviderDetai
 
             {entry.delivery_type && (
               <GlassCard variant="subtle" className="p-3">
-                <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+                <div className="flex items-center gap-2 text-label text-muted-foreground mb-1">
                   <Globe className="w-3.5 h-3.5" />
                   <span>Delivery</span>
                 </div>
-                <p className="text-sm text-foreground">
+                <p className="text-body text-foreground">
                   {deliveryLabels[entry.delivery_type] || entry.delivery_type}
                 </p>
               </GlassCard>
@@ -297,11 +297,11 @@ export function ProviderDetailModal({ entry, open, onOpenChange }: ProviderDetai
 
             {entry.languages_supported && entry.languages_supported.length > 0 && (
               <GlassCard variant="subtle" className="p-3 col-span-2">
-                <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+                <div className="flex items-center gap-2 text-label text-muted-foreground mb-1">
                   <Languages className="w-3.5 h-3.5" />
                   <span>Languages</span>
                 </div>
-                <p className="text-sm text-foreground">
+                <p className="text-body text-foreground">
                   {entry.languages_supported.join(', ')}
                 </p>
               </GlassCard>
@@ -312,7 +312,7 @@ export function ProviderDetailModal({ entry, open, onOpenChange }: ProviderDetai
           {entry.tags && entry.tags.length > 0 && (
             <div className="flex flex-wrap gap-1.5">
               {entry.tags.map(tag => (
-                <Badge key={tag} variant="secondary" className="text-xs rounded-full">
+                <Badge key={tag} variant="secondary" className="text-label rounded-full">
                   {tag}
                 </Badge>
               ))}
@@ -366,7 +366,7 @@ export function ProviderDetailModal({ entry, open, onOpenChange }: ProviderDetai
           <GlassCard variant="subtle" className="p-4 mt-4">
             <div className="flex gap-3">
               <ShieldAlert className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
-              <div className="space-y-1.5 text-xs text-muted-foreground">
+              <div className="space-y-1.5 text-label text-muted-foreground">
                 <p>
                   <strong className="text-foreground">Important:</strong> SelfERA is not a healthcare provider. 
                   Services are provided independently by listed providers.

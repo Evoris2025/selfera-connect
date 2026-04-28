@@ -100,7 +100,7 @@ export function CreateHighlightModal({ isOpen, onClose }: CreateHighlightModalPr
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-border">
-              <h2 className="text-lg font-semibold">New Highlight</h2>
+              <h2 className="text-title font-semibold">New Highlight</h2>
               <button
                 onClick={onClose}
                 className="p-2 -mr-2 rounded-full hover:bg-secondary transition-colors"
@@ -113,7 +113,7 @@ export function CreateHighlightModal({ isOpen, onClose }: CreateHighlightModalPr
             <div className="flex-1 overflow-hidden flex flex-col">
               {/* Name Input */}
               <div className="p-4 border-b border-border">
-                <label className="text-sm font-medium mb-2 block">Highlight Name</label>
+                <label className="text-body font-medium mb-2 block">Highlight Name</label>
                 <Input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -125,10 +125,10 @@ export function CreateHighlightModal({ isOpen, onClose }: CreateHighlightModalPr
               {/* Expression Selection */}
               <div className="flex-1 overflow-hidden">
                 <div className="p-4 pb-2">
-                  <label className="text-sm font-medium">
+                  <label className="text-body font-medium">
                     Select Expressions ({selectedExpressions.length} selected)
                   </label>
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-label text-muted-foreground mt-1">
                     Tap to select. Long-press to set as cover.
                   </p>
                 </div>
@@ -175,7 +175,7 @@ export function CreateHighlightModal({ isOpen, onClose }: CreateHighlightModalPr
                           
                           {/* Cover badge */}
                           {isCover && (
-                            <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-primary text-primary-foreground text-xs font-medium">
+                            <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-primary text-primary-foreground text-label font-medium">
                               Cover
                             </div>
                           )}

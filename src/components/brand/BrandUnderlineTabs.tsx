@@ -18,7 +18,7 @@ interface BrandUnderlineTabsProps {
  * Underline-style tab bar for screen-level tab contexts (Profile, Explore, etc.).
  * C2 spec:
  *   - No outer border, no pill.
- *   - Label: text-[12px] uppercase tracking-[0.1em] text-white/45 px-3 py-2.
+ *   - Label: text-label uppercase tracking-[0.1em] text-white/45 px-3 py-2.
  *   - Active: gradient text + 2px brand-gradient underline.
  *   - 150ms transition on underline position.
  *
@@ -75,7 +75,7 @@ export function BrandUnderlineTabs({
             onClick={() => onChange(tab.id)}
             className={cn(
               'flex-1 justify-center inline-flex',
-              'px-3 py-2 text-[12px] uppercase tracking-[0.1em] font-medium',
+              'px-3 py-2 text-label uppercase tracking-[0.1em] font-medium',
               'transition-colors duration-150',
               'outline-none focus:outline-none focus-visible:outline-none',
               active ? 'text-gradient-brand' : 'text-white/45 hover:text-white/70',

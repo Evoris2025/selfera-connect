@@ -181,7 +181,7 @@ function MediaPostViewer({ post, onProfileClick }: { post: PostViewerModalProps[
               <span className="font-semibold text-foreground truncate">{post.author.name}</span>
               {post.author.isVerified && <VerifiedBadge size="sm" />}
             </button>
-            <p className="text-sm text-muted-foreground">@{post.author.handle}</p>
+            <p className="text-body text-muted-foreground">@{post.author.handle}</p>
           </div>
           <Button variant="ghost" size="icon">
             <MoreHorizontal className="h-5 w-5" />
@@ -199,11 +199,11 @@ function MediaPostViewer({ post, onProfileClick }: { post: PostViewerModalProps[
               size="sm"
             />
             <div>
-              <p className="text-sm">
+              <p className="text-body">
                 <span className="font-semibold mr-1.5">{post.author.handle}</span>
                 {post.content}
               </p>
-              <p className="text-xs text-muted-foreground mt-1">{post.createdAt}</p>
+              <p className="text-label text-muted-foreground mt-1">{post.createdAt}</p>
             </div>
           </div>
 
@@ -211,7 +211,7 @@ function MediaPostViewer({ post, onProfileClick }: { post: PostViewerModalProps[
           {post.tags.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mb-4">
               {post.tags.map(tag => (
-                <span key={tag} className="text-sm text-primary hover:underline cursor-pointer">
+                <span key={tag} className="text-body text-primary hover:underline cursor-pointer">
                   #{tag}
                 </span>
               ))}
@@ -219,7 +219,7 @@ function MediaPostViewer({ post, onProfileClick }: { post: PostViewerModalProps[
           )}
 
           {/* Placeholder for comments */}
-          <p className="text-sm text-muted-foreground">View all {post.commentCount} comments</p>
+          <p className="text-body text-muted-foreground">View all {post.commentCount} comments</p>
         </div>
 
         {/* Actions */}
@@ -243,8 +243,8 @@ function MediaPostViewer({ post, onProfileClick }: { post: PostViewerModalProps[
               <Bookmark className="h-6 w-6" />
             </button>
           </div>
-          <p className="font-semibold text-sm mb-1">{(post.likes || 0).toLocaleString()} likes</p>
-          <p className="text-xs text-muted-foreground uppercase">{post.createdAt}</p>
+          <p className="font-semibold text-body mb-1">{(post.likes || 0).toLocaleString()} likes</p>
+          <p className="text-label text-muted-foreground uppercase">{post.createdAt}</p>
         </div>
       </div>
     </div>
@@ -272,7 +272,7 @@ function TextPostViewer({ post, onProfileClick }: { post: PostViewerModalProps['
             <span className="font-semibold text-foreground">{post.author.name}</span>
             {post.author.isVerified && <VerifiedBadge size="sm" />}
           </button>
-          <p className="text-sm text-muted-foreground">{post.createdAt}</p>
+          <p className="text-body text-muted-foreground">{post.createdAt}</p>
         </div>
         <Button variant="ghost" size="icon">
           <MoreHorizontal className="h-5 w-5" />
@@ -281,7 +281,7 @@ function TextPostViewer({ post, onProfileClick }: { post: PostViewerModalProps['
 
       {/* Content */}
       <div className="p-6">
-        <p className="text-lg leading-relaxed">{post.content}</p>
+        <p className="text-title leading-relaxed">{post.content}</p>
         {post.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-4">
             {post.tags.map(tag => (
@@ -305,7 +305,7 @@ function TextPostViewer({ post, onProfileClick }: { post: PostViewerModalProps['
             />
             <button className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors">
               <MessageCircle className="h-5 w-5" />
-              <span className="text-sm">{post.commentCount}</span>
+              <span className="text-body">{post.commentCount}</span>
             </button>
             <button className="text-muted-foreground hover:text-foreground transition-colors">
               <Send className="h-5 w-5" />
@@ -319,13 +319,13 @@ function TextPostViewer({ post, onProfileClick }: { post: PostViewerModalProps['
 
       {/* Comments placeholder */}
       <div className="p-4 border-t border-border">
-        <p className="text-sm text-muted-foreground mb-4">View all {post.commentCount} comments</p>
+        <p className="text-body text-muted-foreground mb-4">View all {post.commentCount} comments</p>
         <div className="flex gap-3">
           <CinematicAvatar size="sm" fallback="Y" />
           <input
             type="text"
             placeholder="Add a comment..."
-            className="flex-1 bg-transparent text-sm focus:outline-none"
+            className="flex-1 bg-transparent text-body focus:outline-none"
           />
         </div>
       </div>
@@ -386,7 +386,7 @@ function ReelViewer({ post, onProfileClick }: { post: PostViewerModalProps['post
               <Icon className="h-6 w-6 text-foreground" />
             </div>
             {count !== undefined && (
-              <span className="text-xs font-medium text-foreground">{count}</span>
+              <span className="text-label font-medium text-foreground">{count}</span>
             )}
           </motion.button>
         ))}
@@ -404,15 +404,15 @@ function ReelViewer({ post, onProfileClick }: { post: PostViewerModalProps['post
           />
           <span className="font-semibold text-foreground">{post.author.handle}</span>
           {post.author.isVerified && <VerifiedBadge size="sm" />}
-          <Button size="sm" variant="outline" className="ml-2 h-7 text-xs">
+          <Button size="sm" variant="outline" className="ml-2 h-7 text-label">
             Follow
           </Button>
         </button>
-        <p className="text-sm text-foreground/90 line-clamp-2">{post.content}</p>
+        <p className="text-body text-foreground/90 line-clamp-2">{post.content}</p>
         {post.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-2">
             {post.tags.map(tag => (
-              <span key={tag} className="text-sm text-foreground/70">#{tag}</span>
+              <span key={tag} className="text-body text-foreground/70">#{tag}</span>
             ))}
           </div>
         )}
@@ -441,19 +441,19 @@ function LiveViewer({ post, onProfileClick }: { post: PostViewerModalProps['post
             ring="gradient"
           />
           <div>
-            <span className="font-semibold text-foreground text-sm">{post.author.name}</span>
-            <p className="text-xs text-foreground/60">Live now</p>
+            <span className="font-semibold text-foreground text-body">{post.author.name}</span>
+            <p className="text-label text-foreground/60">Live now</p>
           </div>
-          <Button size="sm" variant="outline" className="ml-2 h-7 text-xs">
+          <Button size="sm" variant="outline" className="ml-2 h-7 text-label">
             Follow
           </Button>
         </button>
 
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 px-2 py-1 bg-background/20 backdrop-blur rounded-full">
-            <span className="text-xs font-medium text-foreground">1.2K</span>
+            <span className="text-label font-medium text-foreground">1.2K</span>
           </div>
-          <div className="px-2 py-1 bg-red-500 rounded text-xs font-bold text-white">
+          <div className="px-2 py-1 bg-red-500 rounded text-label font-bold text-white">
             LIVE
           </div>
         </div>
@@ -465,7 +465,7 @@ function LiveViewer({ post, onProfileClick }: { post: PostViewerModalProps['post
           {[1, 2, 3].map(i => (
             <div key={i} className="flex items-center gap-2 bg-background/20 backdrop-blur rounded-lg px-3 py-2">
               <CinematicAvatar size="xs" fallback={`U${i}`} />
-              <p className="text-sm text-foreground/90">Sample comment message...</p>
+              <p className="text-body text-foreground/90">Sample comment message...</p>
             </div>
           ))}
         </div>
@@ -475,7 +475,7 @@ function LiveViewer({ post, onProfileClick }: { post: PostViewerModalProps['post
           <input
             type="text"
             placeholder="Comment..."
-            className="flex-1 bg-background/30 backdrop-blur rounded-full px-4 py-2.5 text-sm text-foreground placeholder:text-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary"
+            className="flex-1 bg-background/30 backdrop-blur rounded-full px-4 py-2.5 text-body text-foreground placeholder:text-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary"
           />
           <div className="flex gap-2">
             <motion.button whileTap={{ scale: 0.9 }}>❤️</motion.button>

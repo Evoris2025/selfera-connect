@@ -99,7 +99,7 @@ export default function CrisisSupport() {
           <AlertTriangle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
           <div>
             <p className="font-semibold text-foreground">{t('crisis.subtitle')}</p>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-body text-muted-foreground mt-1">
               Emergency services: 911 (US), 999 (UK), 112 (EU)
             </p>
           </div>
@@ -118,7 +118,7 @@ export default function CrisisSupport() {
 
         {/* Country Selector */}
         <div className="mb-8">
-          <label className="block text-sm font-medium text-foreground mb-2">
+          <label className="block text-body font-medium text-foreground mb-2">
             {t('crisis.selectCountry')}
           </label>
           <Select value={selectedCountry} onValueChange={setSelectedCountry}>
@@ -136,7 +136,7 @@ export default function CrisisSupport() {
 
         {/* Resources */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
+          <h2 className="text-headline font-semibold text-foreground flex items-center gap-2">
             <Phone className="h-5 w-5 text-primary" />
             {t('crisis.hotlines')}
           </h2>
@@ -147,7 +147,7 @@ export default function CrisisSupport() {
                 <div className="p-6">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="text-lg font-semibold text-foreground mb-1">{resource.name}</h3>
+                      <h3 className="text-title font-semibold text-foreground mb-1">{resource.name}</h3>
                       <div className="flex items-center gap-2">
                         {resource.available247 && (
                           <Badge variant="secondary" className="gap-1">
@@ -193,7 +193,7 @@ export default function CrisisSupport() {
         {/* International Resources */}
         <div className="mt-12 bg-card border border-border rounded-xl p-6 text-center">
           <h3 className="font-semibold text-foreground mb-2">Can't find your country?</h3>
-          <p className="text-sm text-muted-foreground mb-4">
+          <p className="text-body text-muted-foreground mb-4">
             Visit the International Association for Suicide Prevention for a directory of crisis centers worldwide.
           </p>
           <Button variant="outline" asChild>

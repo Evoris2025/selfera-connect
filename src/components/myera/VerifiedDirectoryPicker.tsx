@@ -189,16 +189,16 @@ export function VerifiedDirectoryPicker({
                   
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5">
-                      <span className="font-medium text-sm text-foreground truncate">
+                      <span className="font-medium text-body text-foreground truncate">
                         {profile.display_name || 'Unknown'}
                       </span>
                       <EraVerifiedTick size="sm" userEmail={profile.email || undefined} />
                     </div>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-xs text-muted-foreground truncate">
+                      <span className="text-label text-muted-foreground truncate">
                         @{profile.handle || 'user'}
                       </span>
-                      <Badge variant="outline" className="text-[10px] h-4">
+                      <Badge variant="outline" className="text-caption h-4">
                         {getUserTypeLabel(profile.user_type)}
                       </Badge>
                     </div>

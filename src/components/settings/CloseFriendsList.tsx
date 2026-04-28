@@ -72,7 +72,7 @@ export function CloseFriendsList({ onBack }: CloseFriendsListProps) {
         </button>
         <div className="flex-1">
           <h1 className="font-semibold">Close Friends</h1>
-          <p className="text-xs text-muted-foreground">{closeFriends.length} people</p>
+          <p className="text-label text-muted-foreground">{closeFriends.length} people</p>
         </div>
         <Button size="sm" onClick={handleSave}>
           Done
@@ -86,8 +86,8 @@ export function CloseFriendsList({ onBack }: CloseFriendsListProps) {
             <UserPlus className="w-5 h-5 text-green-500" />
           </div>
           <div>
-            <p className="font-medium text-sm">Share privately with Close Friends</p>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="font-medium text-body">Share privately with Close Friends</p>
+            <p className="text-label text-muted-foreground mt-1">
               Only people you add will see your Close Friends expressions. They won't be notified that you added them.
             </p>
           </div>
@@ -137,7 +137,7 @@ export function CloseFriendsList({ onBack }: CloseFriendsListProps) {
                 {/* User info */}
                 <div className="text-left flex-1">
                   <p className="font-medium">{follower.name}</p>
-                  <p className="text-sm text-muted-foreground">@{follower.handle}</p>
+                  <p className="text-body text-muted-foreground">@{follower.handle}</p>
                 </div>
 
                 {/* Toggle indicator */}

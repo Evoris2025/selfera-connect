@@ -37,7 +37,7 @@ export function BrandSheetTitle({
   const upper = emphasis.toUpperCase();
   return (
     <SheetHeader className={cn('text-left mb-1 px-1', className)}>
-      <SheetTitle className="text-lg font-extrabold tracking-tight text-white leading-tight">
+      <SheetTitle className="text-title font-extrabold tracking-tight text-white leading-tight">
         <span className="font-medium text-white/85">{setup} </span>
         <span className={cn('font-extrabold', gradientEmphasis && 'text-gradient-brand')}>
           {upper}
@@ -45,7 +45,7 @@ export function BrandSheetTitle({
         <span className="text-gradient-brand">.</span>
       </SheetTitle>
       {subtitle ? (
-        <SheetDescription className="text-xs text-white/50 mt-0.5">
+        <SheetDescription className="text-label text-white/50 mt-0.5">
           {subtitle}
         </SheetDescription>
       ) : (

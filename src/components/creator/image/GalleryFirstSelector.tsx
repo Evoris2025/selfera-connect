@@ -98,13 +98,13 @@ export function GalleryFirstSelector({
               </div>
               
               <div className="text-center space-y-1">
-                <span className="text-base font-semibold text-foreground block">Select from Gallery</span>
-                <span className="text-sm text-muted-foreground block">Select up to {maxImages} photos</span>
+                <span className="text-title font-semibold text-foreground block">Select from Gallery</span>
+                <span className="text-body text-muted-foreground block">Select up to {maxImages} photos</span>
               </div>
 
 
               {/* Selection counter badge (shows 0 initially for affordance) */}
-              <div className="absolute top-4 right-4 px-2.5 py-1 rounded-full bg-secondary text-xs font-medium">
+              <div className="absolute top-4 right-4 px-2.5 py-1 rounded-full bg-secondary text-label font-medium">
                 0 selected
               </div>
             </button>
@@ -123,7 +123,7 @@ export function GalleryFirstSelector({
                 alt="Cover preview"
                 className="w-full h-full object-contain"
               />
-              <div className="absolute bottom-3 left-3 px-2 py-1 rounded-full bg-background/80 backdrop-blur-sm text-xs font-medium">
+              <div className="absolute bottom-3 left-3 px-2 py-1 rounded-full bg-background/80 backdrop-blur-sm text-label font-medium">
                 Cover Photo
               </div>
             </motion.div>
@@ -150,7 +150,7 @@ export function GalleryFirstSelector({
                   </div>
                   
                   {/* Index Badge */}
-                  <div className="absolute top-1 left-1 w-5 h-5 rounded-full bg-background/80 flex items-center justify-center text-xs font-medium">
+                  <div className="absolute top-1 left-1 w-5 h-5 rounded-full bg-background/80 flex items-center justify-center text-label font-medium">
                     {index + 1}
                   </div>
                   
@@ -173,7 +173,7 @@ export function GalleryFirstSelector({
                   className="aspect-square rounded-lg border-2 border-dashed border-border hover:border-primary/50 flex flex-col items-center justify-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <Plus className="h-5 w-5" />
-                  <span className="text-[10px]">Add</span>
+                  <span className="text-caption">Add</span>
                 </motion.button>
               )}
             </div>
@@ -193,11 +193,11 @@ export function GalleryFirstSelector({
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <Images className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm">
+                <span className="text-body">
                   {images.length} photo{images.length !== 1 ? 's' : ''} selected
                 </span>
               </div>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-label text-muted-foreground">
                 {availableSlots} more available
               </span>
             </div>

@@ -48,22 +48,22 @@ export function PlanCard({
       >
         {/* Popular badge */}
         {plan.popular && !isCurrent && (
-          <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs">
+          <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-label">
             Most popular
           </Badge>
         )}
 
         {/* Current badge */}
         {isCurrent && (
-          <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-xs">
+          <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-label">
             Current plan
           </Badge>
         )}
 
         {/* Header */}
         <div className="mb-4">
-          <h3 className="text-lg font-semibold text-foreground">{plan.name}</h3>
-          <p className="text-sm text-muted-foreground mt-1">{plan.description}</p>
+          <h3 className="text-title font-semibold text-foreground">{plan.name}</h3>
+          <p className="text-body text-muted-foreground mt-1">{plan.description}</p>
         </div>
 
         {/* Price */}
@@ -71,19 +71,19 @@ export function PlanCard({
           {price !== null ? (
             <div className="flex items-baseline gap-1">
               <span className="text-3xl font-bold text-foreground">${price}</span>
-              <span className="text-sm text-muted-foreground">
+              <span className="text-body text-muted-foreground">
                 /{billingPeriod === 'yearly' ? 'year' : 'month'}
               </span>
             </div>
           ) : (
             <div className="flex items-baseline gap-1">
               <span className="text-3xl font-bold text-foreground">Free</span>
-              <span className="text-sm text-muted-foreground">forever</span>
+              <span className="text-body text-muted-foreground">forever</span>
             </div>
           )}
 
           {billingPeriod === 'yearly' && savingsPercent > 0 && (
-            <p className="text-xs text-emerald-400 mt-1">
+            <p className="text-label text-emerald-400 mt-1">
               Save {savingsPercent}% with yearly billing
             </p>
           )}
@@ -98,7 +98,7 @@ export function PlanCard({
                 feature.highlight ? 'text-primary' : 'text-emerald-400'
               )} />
               <span className={cn(
-                'text-sm',
+                'text-body',
                 feature.highlight ? 'text-foreground font-medium' : 'text-muted-foreground'
               )}>
                 {feature.name}

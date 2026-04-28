@@ -242,7 +242,7 @@ export function CrossroadFeed({
   if (!loading && posts.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-        <p className="text-[14px] text-white/55 mt-4">your feed starts here.</p>
+        <p className="text-body text-white/55 mt-4">your feed starts here.</p>
       </div>
     );
   }

@@ -111,7 +111,7 @@ export function NewConversationModal({ isOpen, onClose, onStartConversation }: N
           >
             <X className="h-5 w-5" />
           </Button>
-          <h2 className="font-semibold text-lg">New Message</h2>
+          <h2 className="font-semibold text-title">New Message</h2>
           <Button
             variant="ghost"
             size="sm"
@@ -135,7 +135,7 @@ export function NewConversationModal({ isOpen, onClose, onStartConversation }: N
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search..."
-                className="border-0 bg-transparent focus-visible:ring-0 px-0 h-10 text-[15px]"
+                className="border-0 bg-transparent focus-visible:ring-0 px-0 h-10 text-body"
                 autoFocus
               />
             </div>
@@ -187,8 +187,8 @@ export function NewConversationModal({ isOpen, onClose, onStartConversation }: N
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 text-left">
-                    <p className="font-medium text-[15px]">{userResult.displayName}</p>
-                    <p className="text-muted-foreground text-sm">@{userResult.handle}</p>
+                    <p className="font-medium text-body">{userResult.displayName}</p>
+                    <p className="text-muted-foreground text-body">@{userResult.handle}</p>
                   </div>
                   <AnimatePresence>
                     {selectedUserId === userResult.id && (

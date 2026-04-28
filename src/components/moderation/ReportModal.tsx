@@ -136,7 +136,7 @@ export function ReportModal({
               exit={{ opacity: 0, x: 20 }}
               className="space-y-3"
             >
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="text-body text-muted-foreground mb-4">
                 Why are you reporting this {targetTypeLabel}?
               </p>
               
@@ -160,8 +160,8 @@ export function ReportModal({
                       {reason.icon}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm">{reason.label}</p>
-                      <p className="text-xs text-muted-foreground">{reason.description}</p>
+                      <p className="font-medium text-body">{reason.label}</p>
+                      <p className="text-label text-muted-foreground">{reason.description}</p>
                     </div>
                   </button>
                 ))}
@@ -187,10 +187,10 @@ export function ReportModal({
               className="space-y-4"
             >
               <div>
-                <p className="text-sm font-medium mb-2">
+                <p className="text-body font-medium mb-2">
                   {reportReasons.find(r => r.value === selectedReason)?.label}
                 </p>
-                <p className="text-sm text-muted-foreground mb-4">
+                <p className="text-body text-muted-foreground mb-4">
                   Add any additional details that might help us review this report.
                 </p>
               </div>
@@ -227,13 +227,13 @@ export function ReportModal({
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                 <Flag className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">Thanks for reporting</h3>
-              <p className="text-sm text-muted-foreground mb-4">
+              <h3 className="text-title font-semibold mb-2">Thanks for reporting</h3>
+              <p className="text-body text-muted-foreground mb-4">
                 Reported content is reviewed by our safety team. Your report helps keep SelfERA safe.
               </p>
               <Link 
                 to="/transparency" 
-                className="text-xs text-muted-foreground hover:text-foreground underline mb-6 block"
+                className="text-label text-muted-foreground hover:text-foreground underline mb-6 block"
               >
                 Community Guidelines
               </Link>
@@ -253,17 +253,17 @@ export function ReportModal({
               <div className="w-16 h-16 rounded-full bg-crisis/10 flex items-center justify-center mx-auto mb-4">
                 <Heart className="h-8 w-8 text-crisis" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">Thanks for reporting</h3>
-              <p className="text-sm text-muted-foreground mb-4">
+              <h3 className="text-title font-semibold mb-2">Thanks for reporting</h3>
+              <p className="text-body text-muted-foreground mb-4">
                 Reported content is reviewed by our safety team.
               </p>
               
               {/* Passive crisis support banner */}
               <div className="bg-crisis/5 border border-crisis/20 rounded-lg p-4 mb-6">
-                <p className="text-sm font-medium text-foreground mb-2">
+                <p className="text-body font-medium text-foreground mb-2">
                   You're not alone. Support is available.
                 </p>
-                <p className="text-xs text-muted-foreground mb-3">
+                <p className="text-label text-muted-foreground mb-3">
                   If you or someone you know needs help, crisis support resources are available.
                 </p>
                 <Button variant="crisis" size="sm" asChild>

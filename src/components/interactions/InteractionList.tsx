@@ -56,10 +56,10 @@ export function InteractionList({
         transition={springGentle}
       >
         <History className="w-10 h-10 mx-auto mb-3 text-muted-foreground/30" />
-        <p className="text-sm text-muted-foreground">
+        <p className="text-body text-muted-foreground">
           No interactions yet
         </p>
-        <p className="text-xs text-muted-foreground/70 mt-1">
+        <p className="text-label text-muted-foreground/70 mt-1">
           {userRole === 'client' 
             ? 'Request an interaction with a verified provider'
             : 'Interactions will appear here when clients request them'}
@@ -77,10 +77,10 @@ export function InteractionList({
           animate={{ opacity: 1, y: 0 }}
           transition={springGentle}
         >
-          <h3 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+          <h3 className="text-body font-medium text-foreground mb-3 flex items-center gap-2">
             <Clock className="w-4 h-4 text-amber-400" />
             {userRole === 'provider' ? 'Incoming Requests' : 'Pending Response'}
-            <span className="text-xs text-muted-foreground">({pending.length})</span>
+            <span className="text-label text-muted-foreground">({pending.length})</span>
           </h3>
           <div className="space-y-3">
             {pending.map((interaction) => (
@@ -106,10 +106,10 @@ export function InteractionList({
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...springGentle, delay: 0.05 }}
         >
-          <h3 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+          <h3 className="text-body font-medium text-foreground mb-3 flex items-center gap-2">
             <Check className="w-4 h-4 text-emerald-400" />
             Active Interactions
-            <span className="text-xs text-muted-foreground">({active.length})</span>
+            <span className="text-label text-muted-foreground">({active.length})</span>
           </h3>
           <div className="space-y-3">
             {active.map((interaction) => (
@@ -133,10 +133,10 @@ export function InteractionList({
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...springGentle, delay: 0.1 }}
         >
-          <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
+          <h3 className="text-body font-medium text-muted-foreground mb-3 flex items-center gap-2">
             <History className="w-4 h-4" />
             Past Interactions
-            <span className="text-xs">({completed.length})</span>
+            <span className="text-label">({completed.length})</span>
           </h3>
           <div className="space-y-3">
             {completed.slice(0, 5).map((interaction) => (
@@ -157,10 +157,10 @@ export function InteractionList({
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...springGentle, delay: 0.15 }}
         >
-          <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
+          <h3 className="text-body font-medium text-muted-foreground mb-3 flex items-center gap-2">
             <XCircle className="w-4 h-4" />
             Cancelled
-            <span className="text-xs">({cancelled.length})</span>
+            <span className="text-label">({cancelled.length})</span>
           </h3>
           <div className="space-y-3">
             {cancelled.slice(0, 3).map((interaction) => (

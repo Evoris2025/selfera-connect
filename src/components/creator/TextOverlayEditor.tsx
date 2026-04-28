@@ -69,7 +69,7 @@ export function TextOverlayEditor({ overlay, onSave, onCancel }: TextOverlayEdit
   };
 
   const fontSizeClasses = {
-    small: 'text-lg',
+    small: 'text-title',
     medium: 'text-2xl',
     large: 'text-4xl',
   };
@@ -109,20 +109,20 @@ export function TextOverlayEditor({ overlay, onSave, onCancel }: TextOverlayEdit
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder="Type your text here..."
-        className="mb-4 text-lg"
+        className="mb-4 text-title"
         autoFocus
       />
 
       {/* Font Family */}
       <div className="mb-4">
-        <p className="text-xs text-muted-foreground mb-2">Font</p>
+        <p className="text-label text-muted-foreground mb-2">Font</p>
         <div className="flex gap-2 overflow-x-auto pb-2">
           {fontFamilies.map((font) => (
             <button
               key={font.name}
               onClick={() => setFontFamily(font.value)}
               className={cn(
-                "px-4 py-2 rounded-lg text-sm whitespace-nowrap transition-all",
+                "px-4 py-2 rounded-lg text-body whitespace-nowrap transition-all",
                 fontFamily === font.value
                   ? "bg-primary text-primary-foreground"
                   : "bg-secondary hover:bg-secondary/80"
@@ -137,14 +137,14 @@ export function TextOverlayEditor({ overlay, onSave, onCancel }: TextOverlayEdit
 
       {/* Font Size */}
       <div className="mb-4">
-        <p className="text-xs text-muted-foreground mb-2">Size</p>
+        <p className="text-label text-muted-foreground mb-2">Size</p>
         <div className="flex gap-2">
           {(['small', 'medium', 'large'] as const).map((size) => (
             <button
               key={size}
               onClick={() => setFontSize(size)}
               className={cn(
-                "px-4 py-2 rounded-lg text-sm capitalize transition-all flex-1",
+                "px-4 py-2 rounded-lg text-body capitalize transition-all flex-1",
                 fontSize === size
                   ? "bg-primary text-primary-foreground"
                   : "bg-secondary hover:bg-secondary/80"
@@ -158,7 +158,7 @@ export function TextOverlayEditor({ overlay, onSave, onCancel }: TextOverlayEdit
 
       {/* Text Color */}
       <div className="mb-4">
-        <p className="text-xs text-muted-foreground mb-2">Text Color</p>
+        <p className="text-label text-muted-foreground mb-2">Text Color</p>
         <div className="flex gap-2 overflow-x-auto pb-2">
           {colorPresets.map((c) => (
             <button
@@ -176,7 +176,7 @@ export function TextOverlayEditor({ overlay, onSave, onCancel }: TextOverlayEdit
 
       {/* Background */}
       <div className="mb-4">
-        <p className="text-xs text-muted-foreground mb-2">Background</p>
+        <p className="text-label text-muted-foreground mb-2">Background</p>
         <div className="flex gap-2 overflow-x-auto pb-2">
           {backgroundPresets.map((bg, index) => (
             <button
@@ -196,7 +196,7 @@ export function TextOverlayEditor({ overlay, onSave, onCancel }: TextOverlayEdit
 
       {/* Alignment */}
       <div className="mb-6">
-        <p className="text-xs text-muted-foreground mb-2">Alignment</p>
+        <p className="text-label text-muted-foreground mb-2">Alignment</p>
         <div className="flex gap-2">
           {[
             { value: 'left', icon: AlignLeft },

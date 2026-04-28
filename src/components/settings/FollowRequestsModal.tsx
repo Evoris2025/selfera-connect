@@ -69,9 +69,9 @@ export function FollowRequestsModal({ open, onOpenChange }: FollowRequestsModalP
                       <AvatarFallback>{request.follower.name[0]}</AvatarFallback>
                     </Avatar>
                     <div className="min-w-0">
-                      <p className="font-medium text-sm truncate">{request.follower.name}</p>
-                      <p className="text-xs text-muted-foreground truncate">@{request.follower.handle}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
+                      <p className="font-medium text-body truncate">{request.follower.name}</p>
+                      <p className="text-label text-muted-foreground truncate">@{request.follower.handle}</p>
+                      <p className="text-label text-muted-foreground mt-0.5">
                         {formatDistanceToNow(request.createdAt, { addSuffix: true })}
                       </p>
                     </div>

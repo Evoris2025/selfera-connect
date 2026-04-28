@@ -538,7 +538,7 @@ export function EnhancedCarouselEditor({
 
         {/* Image Counter + Reorder Toggle */}
         <div className="flex items-center gap-1 shrink-0">
-          <div className="px-2 py-1 rounded-full bg-muted text-xs font-medium text-center">
+          <div className="px-2 py-1 rounded-full bg-muted text-label font-medium text-center">
             {selectedIndex + 1}/{images.length}
           </div>
           {images.length > 1 && (
@@ -643,7 +643,7 @@ export function EnhancedCarouselEditor({
                     </div>
 
                     {currentImage.cropData.scale === 1 && (currentImage.cropData.rotation || 0) === 0 && (
-                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-full bg-black/60 text-white text-xs whitespace-nowrap">
+                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-full bg-black/60 text-white text-label whitespace-nowrap">
                         <span className="md:hidden">Pinch to zoom</span>
                         <span className="hidden md:inline">Scroll to zoom • Drag to reposition</span>
                       </div>

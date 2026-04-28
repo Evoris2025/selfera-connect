@@ -48,7 +48,7 @@ export function ImagePreviewBar({
         >
           <div className="flex items-center gap-2">
             <Progress value={uploadProgress} className="h-1.5 flex-1" />
-            <span className="text-xs text-muted-foreground">{uploadProgress}%</span>
+            <span className="text-label text-muted-foreground">{uploadProgress}%</span>
           </div>
         </motion.div>
       )}
@@ -119,7 +119,7 @@ export function ImagePreviewBar({
       </div>
 
       {/* Image count */}
-      <div className="mt-1.5 flex items-center justify-between text-xs text-muted-foreground">
+      <div className="mt-1.5 flex items-center justify-between text-label text-muted-foreground">
         <span>{images.length} of {maxImages} images</span>
         {images.length > 1 && (
           <span className="text-muted-foreground/70">Swipe to see all</span>

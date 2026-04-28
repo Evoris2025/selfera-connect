@@ -206,8 +206,8 @@ export function VerificationApplicationForm({
         {step === 1 && (
           <>
             <div className="space-y-2">
-              <h3 className="text-lg font-medium text-foreground">Basic Information</h3>
-              <p className="text-sm text-muted-foreground">
+              <h3 className="text-title font-medium text-foreground">Basic Information</h3>
+              <p className="text-body text-muted-foreground">
                 Tell us about yourself
               </p>
             </div>
@@ -255,7 +255,7 @@ export function VerificationApplicationForm({
         {step === 2 && (
           <>
             <div className="space-y-2">
-              <h3 className="text-lg font-medium text-foreground">
+              <h3 className="text-title font-medium text-foreground">
                 {intent === 'creator' && 'Creator Details'}
                 {intent === 'practitioner' && 'Professional Details'}
                 {intent === 'organisation' && 'Organisation Details'}
@@ -468,8 +468,8 @@ export function VerificationApplicationForm({
         {step === 3 && (
           <>
             <div className="space-y-2">
-              <h3 className="text-lg font-medium text-foreground">Evidence (Optional)</h3>
-              <p className="text-sm text-muted-foreground">
+              <h3 className="text-title font-medium text-foreground">Evidence (Optional)</h3>
+              <p className="text-body text-muted-foreground">
                 Upload documents or provide a link to supporting evidence
               </p>
             </div>
@@ -477,10 +477,10 @@ export function VerificationApplicationForm({
             <div className="space-y-4">
               <div className="border-2 border-dashed border-white/10 rounded-2xl p-8 text-center">
                 <Upload className="w-8 h-8 mx-auto mb-3 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground mb-2">
+                <p className="text-body text-muted-foreground mb-2">
                   Drag & drop files here, or click to browse
                 </p>
-                <p className="text-xs text-muted-foreground/70">
+                <p className="text-label text-muted-foreground/70">
                   PDF, JPG, PNG up to 10MB
                 </p>
                 <Button variant="secondary" size="sm" className="mt-4 rounded-full">
@@ -488,7 +488,7 @@ export function VerificationApplicationForm({
                 </Button>
               </div>
 
-              <div className="text-center text-sm text-muted-foreground">or</div>
+              <div className="text-center text-body text-muted-foreground">or</div>
 
               <div className="space-y-2">
                 <Label htmlFor="evidence_url">Link to Evidence</Label>
@@ -508,8 +508,8 @@ export function VerificationApplicationForm({
         {step === 4 && (
           <>
             <div className="space-y-2">
-              <h3 className="text-lg font-medium text-foreground">Review & Submit</h3>
-              <p className="text-sm text-muted-foreground">
+              <h3 className="text-title font-medium text-foreground">Review & Submit</h3>
+              <p className="text-body text-muted-foreground">
                 Confirm your details and submit your verification request
               </p>
             </div>
@@ -517,23 +517,23 @@ export function VerificationApplicationForm({
             <div className="space-y-4">
               <div className="p-4 rounded-xl bg-card/60 border border-white/[0.06] space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground text-sm">Name</span>
-                  <span className="text-sm font-medium">{formData.display_name}</span>
+                  <span className="text-muted-foreground text-body">Name</span>
+                  <span className="text-body font-medium">{formData.display_name}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground text-sm">Intent</span>
+                  <span className="text-muted-foreground text-body">Intent</span>
                   <Badge variant="secondary" className="capitalize">{intent.replace('_', ' ')}</Badge>
                 </div>
                 {formData.why_verify && (
                   <div>
-                    <span className="text-muted-foreground text-sm block mb-1">Reason</span>
-                    <p className="text-sm text-foreground">{formData.why_verify}</p>
+                    <span className="text-muted-foreground text-body block mb-1">Reason</span>
+                    <p className="text-body text-foreground">{formData.why_verify}</p>
                   </div>
                 )}
               </div>
 
               <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-body text-muted-foreground">
                   <span className="font-medium text-amber-400">Estimated review time:</span> 2–5 days
                 </p>
               </div>
@@ -544,7 +544,7 @@ export function VerificationApplicationForm({
                   checked={formData.terms_accepted}
                   onCheckedChange={checked => updateField('terms_accepted', checked === true)}
                 />
-                <Label htmlFor="terms" className="text-sm leading-relaxed cursor-pointer">
+                <Label htmlFor="terms" className="text-body leading-relaxed cursor-pointer">
                   I confirm that the information provided is accurate and I agree to SelfERA's 
                   verification terms. I understand that verification grants a trust badge and 
                   does not constitute endorsement.

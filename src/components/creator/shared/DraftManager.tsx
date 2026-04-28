@@ -175,7 +175,7 @@ export function DraftManager({ onSelectDraft, filterType, className }: DraftMana
               variant="ghost"
               size="sm"
               onClick={clearAllDrafts}
-              className="h-7 px-2 text-xs text-white/50 hover:text-destructive shrink-0 mt-2"
+              className="h-7 px-2 text-label text-white/50 hover:text-destructive shrink-0 mt-2"
             >
               Clear all
             </Button>

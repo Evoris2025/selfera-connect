@@ -581,7 +581,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           >
             {textareaExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
           </button>
-          <span className="text-xs text-foreground/40">
+          <span className="text-label text-foreground/40">
             {state.content.length}/{MAX_CHARACTERS}
           </span>
         </div>
@@ -619,7 +619,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
                   onBlur={() => setComposerFocused(false)}
                   maxLength={MAX_CHARACTERS}
                   className={cn(
-                    'flex-1 resize-none border-0 bg-transparent p-0 text-lg focus-visible:ring-0 placeholder:text-foreground/35',
+                    'flex-1 resize-none border-0 bg-transparent p-0 text-title focus-visible:ring-0 placeholder:text-foreground/35',
                     'transition-[min-height,max-height] duration-200',
                     textareaExpanded ? 'min-h-[60vh] max-h-[75vh]' : 'min-h-[160px] max-h-[40vh]'
                   )}
@@ -651,7 +651,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
               value={state.contentWarningReason}
               onChange={(e) => update({ contentWarningReason: e.target.value })}
               placeholder="Reason (optional)"
-              className="h-7 text-xs bg-transparent border-amber-500/30 focus-visible:ring-amber-500/40"
+              className="h-7 text-label bg-transparent border-amber-500/30 focus-visible:ring-amber-500/40"
             />
           </div>
         )}
@@ -662,7 +662,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
             {state.selectedTags.map((tagId) => (
               <span
                 key={tagId}
-                className="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full bg-white/[0.08] text-foreground/85"
+                className="inline-flex items-center gap-1 px-2 py-0.5 text-label rounded-full bg-white/[0.08] text-foreground/85"
               >
                 #{tagId.length > 24 ? `${tagId.slice(0, 12)}…` : tagId}
                 <button
@@ -817,7 +817,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           onClick={() => setAddSheetOpen(true)}
           className="flex-1 justify-between rounded-2xl h-11 px-4 bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06] hover:shadow-[0_0_24px_-8px_rgba(217,70,239,0.4)] transition-all"
         >
-          <span className="text-sm font-medium text-foreground/85">Add to your post</span>
+          <span className="text-body font-medium text-foreground/85">Add to your post</span>
           <Plus className="h-4 w-4 text-foreground/60" />
         </Button>
         <div className="flex items-center gap-1">
@@ -844,7 +844,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
               type="button"
               onClick={() => setBgSheetOpen(true)}
               className={cn(
-                'h-11 w-11 rounded-2xl flex items-center justify-center text-sm font-bold transition border',
+                'h-11 w-11 rounded-2xl flex items-center justify-center text-body font-bold transition border',
                 state.background
                   ? 'border-fuchsia-500/60 ring-2 ring-fuchsia-500/40'
                   : 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06] text-foreground/70 hover:text-foreground'
@@ -868,7 +868,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           onClick={handleSubmit}
           disabled={!canPost || isSubmitting}
           className={cn(
-            'w-full h-14 rounded-2xl text-base font-semibold text-primary-foreground transition active:scale-[0.99]',
+            'w-full h-14 rounded-2xl text-title font-semibold text-primary-foreground transition active:scale-[0.99]',
             canPost && !isSubmitting
               ? 'bg-primary hover:opacity-95'
               : 'bg-white/10 text-white/40 opacity-100 cursor-not-allowed'
@@ -890,7 +890,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       </div>
 
       {showTopicsError && state.selectedTags.length === 0 && (
-        <p className="text-xs text-destructive px-5 pb-2">Please select at least one topic.</p>
+        <p className="text-label text-destructive px-5 pb-2">Please select at least one topic.</p>
       )}
 
       {/* Background — bottom sheet swatch picker */}
@@ -900,7 +900,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           className="rounded-t-2xl bg-background/95 backdrop-blur-md border-white/10 px-5 pt-3 pb-[calc(env(safe-area-inset-bottom)+24px)]"
         >
           <div className="w-10 h-1 rounded-full bg-white/20 mx-auto mt-2" />
-          <div className="text-[11px] text-white/40 uppercase tracking-wide mb-3 mt-4">Background</div>
+          <div className="text-caption text-white/40 uppercase tracking-wide mb-3 mt-4">Background</div>
           <div className="grid grid-cols-5 gap-3">
             <button
               type="button"
@@ -940,7 +940,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
 
 
           {/* Media */}
-          <p className="text-[11px] font-medium text-white/40 uppercase tracking-wider px-1 mb-3 mt-3">
+          <p className="text-caption font-medium text-white/40 uppercase tracking-wider px-1 mb-3 mt-3">
             Media
           </p>
           <div className="grid grid-cols-3 gap-3">
@@ -962,7 +962,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           </div>
 
           {/* Social */}
-          <p className="text-[11px] font-medium text-white/40 uppercase tracking-wider px-1 mb-3 mt-5">
+          <p className="text-caption font-medium text-white/40 uppercase tracking-wider px-1 mb-3 mt-5">
             Social
           </p>
           <div className="grid grid-cols-3 gap-3">
@@ -1012,7 +1012,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           </div>
 
           {/* Content */}
-          <p className="text-[11px] font-medium text-white/40 uppercase tracking-wider px-1 mb-3 mt-5">
+          <p className="text-caption font-medium text-white/40 uppercase tracking-wider px-1 mb-3 mt-5">
             Content
           </p>
           <div className="grid grid-cols-3 gap-3">
@@ -1054,7 +1054,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           <button
             type="button"
             onClick={() => { setAddSheetOpen(false); setAdvancedOpen(true); }}
-            className="block w-full text-sm text-white/60 hover:text-white text-center mt-5 py-2 transition-colors"
+            className="block w-full text-body text-white/60 hover:text-white text-center mt-5 py-2 transition-colors"
           >
             More
           </button>
@@ -1098,13 +1098,13 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
             </div>
             <button
               onClick={() => { setMediaSheetOpen(false); setLifeEventOpen(true); }}
-              className="flex items-center justify-center gap-2 p-3 rounded-xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.06] text-sm text-white/85"
+              className="flex items-center justify-center gap-2 p-3 rounded-xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.06] text-body text-white/85"
             >
               <PartyPopper size={16} strokeWidth={1.6} stroke="url(#selfera-brand-gradient)" fill="none" /> Life event
             </button>
             <button
               onClick={() => { setMediaSheetOpen(false); setFundraiserOpen(true); }}
-              className="flex items-center justify-center gap-2 p-3 rounded-xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.06] text-sm text-white/85"
+              className="flex items-center justify-center gap-2 p-3 rounded-xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.06] text-body text-white/85"
             >
               <Sparkles size={16} strokeWidth={1.6} stroke="url(#selfera-brand-gradient)" fill="none" /> Fundraiser
             </button>
@@ -1144,7 +1144,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           <BrandSheetTitle setup="post" emphasis="ADVANCED" subtitle="Fine-tune comments, reactions and cross-posting." />
           <div className="mt-2 space-y-4">
             <div className="space-y-1.5">
-              <Label className="text-sm">Who can comment</Label>
+              <Label className="text-body">Who can comment</Label>
               <Select
                 value={state.commentPermission}
                 onValueChange={(v) => update({ commentPermission: v as FeedCommentPermission })}
@@ -1160,7 +1160,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
               </Select>
             </div>
             <div className="flex items-center justify-between">
-              <Label htmlFor="reactions-off" className="text-sm flex items-center gap-2">
+              <Label htmlFor="reactions-off" className="text-body flex items-center gap-2">
                 <Heart className="h-4 w-4 text-muted-foreground" />
                 Turn off reactions
               </Label>
@@ -1172,7 +1172,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
             </div>
             {state.contentWarning && (
               <div className="space-y-1.5">
-                <Label className="text-sm">Warning type</Label>
+                <Label className="text-body">Warning type</Label>
                 <Select
                   value={state.contentWarningType || ''}
                   onValueChange={(v) => update({ contentWarningType: v as ContentWarningType })}
@@ -1238,7 +1238,7 @@ function Chip({
   onRemove: () => void;
 }) {
   return (
-    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs rounded-full bg-white/10 text-foreground/90">
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-label rounded-full bg-white/10 text-foreground/90">
       {children}
       <button onClick={onRemove} className="hover:text-foreground" aria-label="Remove">
         <X className="h-3 w-3" />
@@ -1311,7 +1311,7 @@ function Tile({
       <span className="flex items-center justify-center" style={s.icon}>
         {icon}
       </span>
-      <span className="text-xs text-white/75 leading-tight text-center line-clamp-1">
+      <span className="text-label text-white/75 leading-tight text-center line-clamp-1">
         {label}
       </span>
     </button>
@@ -1354,7 +1354,7 @@ function TileSlot({
         <span className="flex items-center justify-center" style={s.icon}>
           {icon}
         </span>
-        <span className="text-xs text-white/75 leading-tight text-center line-clamp-1">
+        <span className="text-label text-white/75 leading-tight text-center line-clamp-1">
           {label}
         </span>
       </div>

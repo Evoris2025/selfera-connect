@@ -29,9 +29,9 @@ export function HighlightCircle({
   };
 
   const textSizes = {
-    sm: 'text-[10px]',
-    md: 'text-xs',
-    lg: 'text-sm',
+    sm: 'text-caption',
+    md: 'text-label',
+    lg: 'text-body',
   };
 
   if (isCreateButton) {

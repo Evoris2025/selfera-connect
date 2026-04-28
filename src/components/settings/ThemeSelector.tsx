@@ -94,7 +94,7 @@ export function ThemeSelector() {
             {/* Theme name */}
             <span
               className={cn(
-                'text-xs font-medium transition-colors',
+                'text-label font-medium transition-colors',
                 isSelected ? 'text-foreground' : 'text-muted-foreground group-hover:text-foreground'
               )}
             >

@@ -104,7 +104,7 @@ export function ShareToCommunityModal({ open, onOpenChange, postId }: ShareToCom
           <div className="max-h-[240px] overflow-y-auto space-y-2">
             <AnimatePresence>
               {filteredCommunities.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground text-sm">
+                <div className="text-center py-8 text-muted-foreground text-body">
                   No communities found
                 </div>
               ) : (
@@ -131,8 +131,8 @@ export function ShareToCommunityModal({ open, onOpenChange, postId }: ShareToCom
                     </Avatar>
                     
                     <div className="flex-1 text-left">
-                      <p className="font-medium text-foreground text-sm">{community.name}</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="font-medium text-foreground text-body">{community.name}</p>
+                      <p className="text-label text-muted-foreground">
                         {formatCount(community.member_count)} members
                       </p>
                     </div>

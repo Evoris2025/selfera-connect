@@ -119,7 +119,7 @@ export function ImageCarouselEditor({
         )}
 
         {/* Image Counter */}
-        <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-background/80 backdrop-blur-sm text-xs font-medium">
+        <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-background/80 backdrop-blur-sm text-label font-medium">
           {selectedIndex + 1} / {images.length}
         </div>
       </div>
@@ -191,7 +191,7 @@ export function ImageCarouselEditor({
 
       {/* Reorder Instructions */}
       {images.length > 1 && (
-        <p className="text-xs text-muted-foreground text-center">
+        <p className="text-label text-muted-foreground text-center">
           Drag thumbnails to reorder • Tap to edit
         </p>
       )}

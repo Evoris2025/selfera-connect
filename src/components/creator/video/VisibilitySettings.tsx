@@ -52,7 +52,7 @@ export function VisibilitySettings({
 }: VisibilitySettingsProps) {
   return (
     <div className="space-y-4">
-      <label className="text-sm font-medium">Visibility</label>
+      <label className="text-body font-medium">Visibility</label>
 
       <div className="grid grid-cols-2 gap-2">
         {visibilityOptions.map((option) => (
@@ -75,12 +75,12 @@ export function VisibilitySettings({
             </div>
             <div className="flex-1 min-w-0">
               <p className={cn(
-                'font-medium text-sm',
+                'font-medium text-body',
                 visibility === option.value && 'text-primary'
               )}>
                 {option.label}
               </p>
-              <p className="text-xs text-muted-foreground line-clamp-1">
+              <p className="text-label text-muted-foreground line-clamp-1">
                 {option.description}
               </p>
             </div>
@@ -96,7 +96,7 @@ export function VisibilitySettings({
           exit={{ opacity: 0, height: 0 }}
           className="space-y-2"
         >
-          <label className="text-sm font-medium flex items-center gap-2">
+          <label className="text-body font-medium flex items-center gap-2">
             <Clock className="w-4 h-4" />
             Publish Date & Time
           </label>
@@ -112,8 +112,8 @@ export function VisibilitySettings({
       {/* Comments toggle */}
       <div className="flex items-center justify-between p-3 bg-secondary/30 rounded-xl">
         <div>
-          <p className="font-medium text-sm">Comments</p>
-          <p className="text-xs text-muted-foreground">Allow viewers to comment on this video</p>
+          <p className="font-medium text-body">Comments</p>
+          <p className="text-label text-muted-foreground">Allow viewers to comment on this video</p>
         </div>
         <Switch
           checked={commentsEnabled}

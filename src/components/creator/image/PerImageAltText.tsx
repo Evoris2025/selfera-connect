@@ -37,9 +37,9 @@ export function PerImageAltText({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Eye className="h-4 w-4 text-muted-foreground" />
-          <label className="text-sm font-medium">Alt Text</label>
+          <label className="text-body font-medium">Alt Text</label>
         </div>
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        <div className="flex items-center gap-1.5 text-label text-muted-foreground">
           <Info className="h-3.5 w-3.5" />
           <span>For accessibility</span>
         </div>
@@ -96,7 +96,7 @@ export function PerImageAltText({
 
       {/* Current image indicator */}
       {images.length > 1 && (
-        <p className="text-xs text-muted-foreground">
+        <p className="text-label text-muted-foreground">
           Image {selectedImageIndex + 1} of {images.length} • {imagesWithAltText} with alt text
         </p>
       )}
@@ -106,11 +106,11 @@ export function PerImageAltText({
         placeholder="Describe this image for people who use screen readers..."
         value={currentImage.altText || ''}
         onChange={(e) => onAltTextChange(currentImage.id, e.target.value.slice(0, maxLength))}
-        className="min-h-[80px] resize-none text-sm"
+        className="min-h-[80px] resize-none text-body"
       />
 
       {/* Footer */}
-      <div className="flex items-center justify-between text-xs">
+      <div className="flex items-center justify-between text-label">
         <p className="text-muted-foreground">
           Describe what's in the image so everyone can enjoy it
         </p>

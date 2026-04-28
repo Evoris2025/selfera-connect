@@ -182,7 +182,7 @@ export default function Settings() {
                   <Palette className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <CardTitle className="text-base">{t('settings.theme', 'Theme')}</CardTitle>
+                  <CardTitle className="text-title">{t('settings.theme', 'Theme')}</CardTitle>
                   <CardDescription>Choose your color theme</CardDescription>
                 </div>
               </div>
@@ -200,7 +200,7 @@ export default function Settings() {
                   <Globe className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <CardTitle className="text-base">{t('settings.language')}</CardTitle>
+                  <CardTitle className="text-title">{t('settings.language')}</CardTitle>
                   <CardDescription>Choose your preferred language</CardDescription>
                 </div>
               </div>
@@ -230,7 +230,7 @@ export default function Settings() {
                     <Eye className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <CardTitle className="text-base">{t('settings.reduceMotion')}</CardTitle>
+                    <CardTitle className="text-title">{t('settings.reduceMotion')}</CardTitle>
                     <CardDescription>Minimize animations throughout the app</CardDescription>
                   </div>
                 </div>
@@ -248,7 +248,7 @@ export default function Settings() {
                     <Lock className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <CardTitle className="text-base">{t('settings.privateAccount')}</CardTitle>
+                    <CardTitle className="text-title">{t('settings.privateAccount')}</CardTitle>
                     <CardDescription>Only approved followers can see your posts</CardDescription>
                   </div>
                 </div>
@@ -268,7 +268,7 @@ export default function Settings() {
                   <Bell className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <CardTitle className="text-base">{t('settings.notifications')}</CardTitle>
+                  <CardTitle className="text-title">{t('settings.notifications')}</CardTitle>
                   <CardDescription>Configure notification preferences</CardDescription>
                 </div>
               </div>
@@ -287,7 +287,7 @@ export default function Settings() {
                     <UserPlus className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <CardTitle className="text-base">Follow Requests</CardTitle>
+                    <CardTitle className="text-title">Follow Requests</CardTitle>
                     <CardDescription>Review pending follow requests</CardDescription>
                   </div>
                 </div>
@@ -312,7 +312,7 @@ export default function Settings() {
                     <Users className="h-5 w-5 text-green-500" />
                   </div>
                   <div>
-                    <CardTitle className="text-base">Close Friends</CardTitle>
+                    <CardTitle className="text-title">Close Friends</CardTitle>
                     <CardDescription>Share expressions with select people</CardDescription>
                   </div>
                 </div>
@@ -337,7 +337,7 @@ export default function Settings() {
                     <ShieldOff className="h-5 w-5 text-destructive" />
                   </div>
                   <div>
-                    <CardTitle className="text-base">Blocked Accounts</CardTitle>
+                    <CardTitle className="text-title">Blocked Accounts</CardTitle>
                     <CardDescription>Manage accounts you've blocked</CardDescription>
                   </div>
                 </div>
@@ -362,7 +362,7 @@ export default function Settings() {
                     <VolumeX className="h-5 w-5 text-amber-500" />
                   </div>
                   <div>
-                    <CardTitle className="text-base">Muted Accounts</CardTitle>
+                    <CardTitle className="text-title">Muted Accounts</CardTitle>
                     <CardDescription>Manage accounts you've muted</CardDescription>
                   </div>
                 </div>
@@ -387,7 +387,7 @@ export default function Settings() {
                     <CreditCard className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <CardTitle className="text-base">Plan & Billing</CardTitle>
+                    <CardTitle className="text-title">Plan & Billing</CardTitle>
                     <CardDescription>Manage your subscription and view plans</CardDescription>
                   </div>
                 </div>
@@ -409,7 +409,7 @@ export default function Settings() {
                   <BadgeCheck className="h-5 w-5 text-verified" />
                 </div>
                 <div>
-                  <CardTitle className="text-base">Get Verified</CardTitle>
+                  <CardTitle className="text-title">Get Verified</CardTitle>
                   <CardDescription>Apply for professional or organisation verification</CardDescription>
                 </div>
               </div>
@@ -428,7 +428,7 @@ export default function Settings() {
                     <Shield className="h-5 w-5 text-destructive" />
                   </div>
                   <div>
-                    <CardTitle className="text-base">Admin Console</CardTitle>
+                    <CardTitle className="text-title">Admin Console</CardTitle>
                     <CardDescription>Verification, moderation, and audit logs</CardDescription>
                   </div>
                 </div>
@@ -445,7 +445,7 @@ export default function Settings() {
                     <section.icon className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <CardTitle className="text-base">{section.title}</CardTitle>
+                    <CardTitle className="text-title">{section.title}</CardTitle>
                     <CardDescription>{section.description}</CardDescription>
                   </div>
                 </div>

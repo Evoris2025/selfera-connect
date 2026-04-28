@@ -75,7 +75,7 @@ export function FeelingActivityPicker({ value, onChange }: FeelingActivityPicker
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-sm"
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-body"
       >
         <span>{value.emoji}</span>
         <span className="text-muted-foreground">
@@ -112,7 +112,7 @@ export function FeelingActivityPicker({ value, onChange }: FeelingActivityPicker
           <button
             onClick={() => setActiveTab('feeling')}
             className={cn(
-              'flex-1 px-4 py-2.5 text-sm font-medium transition-colors',
+              'flex-1 px-4 py-2.5 text-body font-medium transition-colors',
               activeTab === 'feeling'
                 ? 'text-primary border-b-2 border-primary'
                 : 'text-muted-foreground hover:text-foreground'
@@ -123,7 +123,7 @@ export function FeelingActivityPicker({ value, onChange }: FeelingActivityPicker
           <button
             onClick={() => setActiveTab('activity')}
             className={cn(
-              'flex-1 px-4 py-2.5 text-sm font-medium transition-colors',
+              'flex-1 px-4 py-2.5 text-body font-medium transition-colors',
               activeTab === 'activity'
                 ? 'text-primary border-b-2 border-primary'
                 : 'text-muted-foreground hover:text-foreground'
@@ -155,8 +155,8 @@ export function FeelingActivityPicker({ value, onChange }: FeelingActivityPicker
                 onClick={() => handleSelect(activeTab, item.emoji, item.label)}
                 className="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-secondary transition-colors"
               >
-                <span className="text-xl">{item.emoji}</span>
-                <span className="text-[10px] text-muted-foreground text-center leading-tight">
+                <span className="text-headline">{item.emoji}</span>
+                <span className="text-caption text-muted-foreground text-center leading-tight">
                   {item.label}
                 </span>
               </button>

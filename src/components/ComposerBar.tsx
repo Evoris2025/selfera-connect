@@ -20,7 +20,7 @@ export function ComposerBar({ onOpenComposer }: ComposerBarProps) {
 
       <button
         onClick={() => onOpenComposer('text')}
-        className="flex-1 text-left px-4 py-2.5 bg-secondary rounded-full text-muted-foreground text-sm hover:bg-secondary/80 transition-colors"
+        className="flex-1 text-left px-4 py-2.5 bg-secondary rounded-full text-muted-foreground text-body hover:bg-secondary/80 transition-colors"
       >
         What's on your mind, {displayName}?
       </button>

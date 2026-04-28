@@ -163,7 +163,7 @@ export function UnifiedDraftsDrawer({
                             size="sm"
                             variant="ghost"
                             onClick={() => cancelScheduled(s.id)}
-                            className="h-7 px-2 text-xs text-white/50 hover:text-destructive"
+                            className="h-7 px-2 text-label text-white/50 hover:text-destructive"
                           >
                             Cancel
                           </Button>
@@ -182,7 +182,7 @@ export function UnifiedDraftsDrawer({
 
 function EmptyState({ message }: { message: string }) {
   return (
-    <div className="flex flex-col items-center justify-center py-12 text-center text-sm text-white/40">
+    <div className="flex flex-col items-center justify-center py-12 text-center text-body text-white/40">
       {message}
     </div>
   );

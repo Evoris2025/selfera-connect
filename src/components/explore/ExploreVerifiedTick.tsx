@@ -13,7 +13,7 @@ export type { VerificationTier };
  *
  * - Pass-through `tier` (EraVerifiedTick already accepts `tier` directly).
  * - Renders nothing if tier is null.
- * - Sizing: 'sm' (12px, default — inline with text-sm) or 'md' (14px).
+ * - Sizing: 'sm' (12px, default — inline with text-body) or 'md' (14px).
  */
 
 interface ExploreVerifiedTickProps {

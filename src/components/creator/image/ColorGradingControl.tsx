@@ -51,14 +51,14 @@ export function ColorGradingControl({ colorGrading, onColorGradingChange }: Colo
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Palette className="h-4 w-4 text-primary" />
-          <label className="text-sm font-medium text-foreground">Color Grading</label>
+          <label className="text-body font-medium text-foreground">Color Grading</label>
         </div>
         {hasModifications && (
           <Button
             variant="ghost"
             size="sm"
             onClick={handleReset}
-            className="h-7 text-xs text-muted-foreground hover:text-foreground"
+            className="h-7 text-label text-muted-foreground hover:text-foreground"
           >
             <RotateCcw className="h-3 w-3 mr-1" />
             Reset
@@ -69,8 +69,8 @@ export function ColorGradingControl({ colorGrading, onColorGradingChange }: Colo
       {/* Shadow Tint */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-foreground">Shadow Tint</span>
-          <span className="text-xs font-medium tabular-nums text-muted-foreground">
+          <span className="text-body text-foreground">Shadow Tint</span>
+          <span className="text-label font-medium tabular-nums text-muted-foreground">
             {colorGrading.shadowIntensity}%
           </span>
         </div>
@@ -105,8 +105,8 @@ export function ColorGradingControl({ colorGrading, onColorGradingChange }: Colo
       {/* Highlight Tint */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-foreground">Highlight Tint</span>
-          <span className="text-xs font-medium tabular-nums text-muted-foreground">
+          <span className="text-body text-foreground">Highlight Tint</span>
+          <span className="text-label font-medium tabular-nums text-muted-foreground">
             {colorGrading.highlightIntensity}%
           </span>
         </div>
@@ -138,7 +138,7 @@ export function ColorGradingControl({ colorGrading, onColorGradingChange }: Colo
         />
       </div>
 
-      <p className="text-xs text-muted-foreground text-center">
+      <p className="text-label text-muted-foreground text-center">
         Add color tints to shadows and highlights for cinematic looks
       </p>
     </motion.div>

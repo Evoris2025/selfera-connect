@@ -31,11 +31,11 @@ export function PrivateProfileState({
         <Lock className="w-7 h-7 text-muted-foreground" />
       </motion.div>
       
-      <h3 className="text-lg font-semibold text-foreground mb-1">
+      <h3 className="text-title font-semibold text-foreground mb-1">
         This account is private
       </h3>
       
-      <p className="text-sm text-muted-foreground max-w-xs mb-5">
+      <p className="text-body text-muted-foreground max-w-xs mb-5">
         Follow {displayName} to see their posts, expressions, and reels.
       </p>
       
