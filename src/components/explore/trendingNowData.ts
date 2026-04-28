@@ -11,14 +11,14 @@
  * TrendingNowRail component stays component-only.
  */
 
+export type TrendingVideoTier = 'orange' | 'purple' | 'blue' | 'green' | 'pink' | null;
+
 export interface TrendingExpression {
   id: string;
   thumbnail: string;
-  user: { handle: string; avatar: string };
+  user: { handle: string; avatar: string; tier: TrendingVideoTier };
   views: number;
 }
-
-export type TrendingVideoTier = 'orange' | 'purple' | 'blue' | 'green' | 'pink' | null;
 
 export interface TrendingVideo {
   id: string;
@@ -42,7 +42,7 @@ export interface TrendingImage {
 export interface TrendingPost {
   id: string;
   snippet: string;
-  user: { handle: string; avatar: string };
+  user: { handle: string; avatar: string; tier: TrendingVideoTier };
   likes: number;
 }
 
@@ -64,17 +64,17 @@ const PHOTOS = [
   'photo-1531123897727-8f129e1688ce',
 ];
 
-const USERS = [
-  { handle: 'drsarah', avatar: 'https://i.pravatar.cc/100?img=47' },
-  { handle: 'wellnesshub', avatar: 'https://i.pravatar.cc/100?img=32' },
-  { handle: 'jamie_j', avatar: 'https://i.pravatar.cc/100?img=12' },
-  { handle: 'mindmatters', avatar: 'https://i.pravatar.cc/100?img=14' },
-  { handle: 'calmspace', avatar: 'https://i.pravatar.cc/100?img=9' },
-  { handle: 'alex_w', avatar: 'https://i.pravatar.cc/100?img=33' },
-  { handle: 'newstart24', avatar: 'https://i.pravatar.cc/100?img=51' },
-  { handle: 'breathe.daily', avatar: 'https://i.pravatar.cc/100?img=22' },
-  { handle: 'soft_landing', avatar: 'https://i.pravatar.cc/100?img=5' },
-  { handle: 'kindredspirit', avatar: 'https://i.pravatar.cc/100?img=18' },
+const USERS: { handle: string; avatar: string; tier: TrendingVideoTier }[] = [
+  { handle: 'drsarah', avatar: 'https://i.pravatar.cc/100?img=47', tier: 'orange' },
+  { handle: 'wellnesshub', avatar: 'https://i.pravatar.cc/100?img=32', tier: 'green' },
+  { handle: 'jamie_j', avatar: 'https://i.pravatar.cc/100?img=12', tier: 'blue' },
+  { handle: 'mindmatters', avatar: 'https://i.pravatar.cc/100?img=14', tier: 'purple' },
+  { handle: 'calmspace', avatar: 'https://i.pravatar.cc/100?img=9', tier: null },
+  { handle: 'alex_w', avatar: 'https://i.pravatar.cc/100?img=33', tier: 'pink' },
+  { handle: 'newstart24', avatar: 'https://i.pravatar.cc/100?img=51', tier: 'orange' },
+  { handle: 'breathe.daily', avatar: 'https://i.pravatar.cc/100?img=22', tier: 'purple' },
+  { handle: 'soft_landing', avatar: 'https://i.pravatar.cc/100?img=5', tier: 'green' },
+  { handle: 'kindredspirit', avatar: 'https://i.pravatar.cc/100?img=18', tier: 'blue' },
 ];
 
 const VIEWS = [12400, 8900, 5600, 23400, 18700, 4300, 67800, 156000, 34500, 9800, 2100, 45200, 11300, 7600, 88400, 3400, 19200, 5500, 27800, 6100];
