@@ -161,7 +161,6 @@ function PostCard({ item, index }: { item: TrendingPost; index: number }) {
       onClick={() => handleTap('posts', item.id)}
       className="relative w-[240px] h-[120px] flex-shrink-0 flex flex-col text-left rounded-md border border-white/[0.08] p-3 hover:border-white/20 transition-colors"
     >
-      <BrandIconBadge icon={Flame} className="absolute top-2 right-2 z-10" aria-label="Trending" />
       <p className="text-white/85 text-[12px] leading-snug line-clamp-3 flex-1 pr-7">
         {item.snippet}
       </p>
