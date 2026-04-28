@@ -37,6 +37,7 @@ const recentExpressions = forYouExpressions.slice(0, 5).map((e) => ({ ...e, id: 
 const communityExpressions = forYouExpressions.slice(2, 7).map((e) => ({ ...e, id: `c-${e.id}` }));
 
 import type { ExpressionsFilters, SortBy } from './ExploreFilters';
+import { applyCreatorTier } from './exploreFilterUtils';
 
 const SORT_TO_DATA: Record<SortBy, ExpressionItem[]> = {
   'for-you': forYouExpressions,
