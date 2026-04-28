@@ -98,26 +98,29 @@ function VideoTile({ video, index }: { video: VideoItem; index: number }) {
         </div>
       </div>
 
-      {/* Below: avatar + title + meta */}
-      <div className="flex gap-2 pt-2">
-        <Avatar className="h-7 w-7 flex-shrink-0">
-          <AvatarImage src={video.creator.avatar} alt={video.creator.name} />
-          <AvatarFallback className="bg-white/[0.06] text-[10px] text-white/70">
-            {video.creator.name.charAt(0)}
-          </AvatarFallback>
-        </Avatar>
-        <div className="flex-1 min-w-0">
-          <h3 className="text-white text-[13px] font-medium leading-snug line-clamp-2">
-            {video.title}
-          </h3>
-          <div className="flex items-center gap-1 mt-0.5">
-            <span className="text-white/55 text-xs truncate">{video.creator.name}</span>
-            <ExploreVerifiedTick tier={video.creator.tier} size="sm" />
-          </div>
-          <p className="text-white/80 text-[11px] uppercase tracking-[0.08em] mt-0.5">
-            {formatViews(video.views)} VIEWS · {video.ageLabel}
-          </p>
+      {/* Below: title + creator row + stats */}
+      <div className="flex flex-col gap-1.5 mt-2">
+        {/* Row 1 — Title (locked to 2 lines reserved height) */}
+        <p className="text-white text-[13px] font-medium leading-snug line-clamp-2 min-h-[2.25rem]">
+          {video.title}
+        </p>
+
+        {/* Row 2 — Creator row (avatar + name + tier badge) */}
+        <div className="flex items-center gap-2 min-w-0">
+          <Avatar className="h-5 w-5 shrink-0">
+            <AvatarImage src={video.creator.avatar} alt={video.creator.name} />
+            <AvatarFallback className="bg-white/[0.06] text-[10px] text-white/70">
+              {video.creator.name.charAt(0)}
+            </AvatarFallback>
+          </Avatar>
+          <span className="text-[12px] text-white/70 truncate">{video.creator.name}</span>
+          <ExploreVerifiedTick tier={video.creator.tier} className="shrink-0" />
         </div>
+
+        {/* Row 3 — Stats row */}
+        <p className="text-[11px] uppercase tracking-[0.08em] text-white/45">
+          {formatViews(video.views)} VIEWS · {video.ageLabel}
+        </p>
       </div>
     </motion.div>
   );
