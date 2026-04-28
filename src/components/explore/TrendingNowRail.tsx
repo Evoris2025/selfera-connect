@@ -139,7 +139,6 @@ function ImageCard({ item, index }: { item: TrendingImage; index: number }) {
       onClick={() => handleTap('images', item.id)}
       className="relative w-[120px] h-[120px] flex-shrink-0 overflow-hidden rounded-md bg-white/[0.04] group"
     >
-      <BrandIconBadge icon={Flame} className="absolute top-2 left-2 z-10" aria-label="Trending" />
       <img src={item.url} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
       <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/70 to-transparent pointer-events-none" />
       <BrandStatPill
