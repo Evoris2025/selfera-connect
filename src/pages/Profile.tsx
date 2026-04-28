@@ -103,7 +103,7 @@ function CardStatItem({
       onClick={onClick}
       disabled={!onClick}
       className={cn(
-        'text-center flex-1 py-3 px-2 transition-colors duration-200',
+        'snap-start shrink-0 text-center py-3 px-4 min-w-[5rem] transition-colors duration-200',
         onClick && 'hover:bg-white/[0.04] active:scale-[0.97] cursor-pointer',
       )}
     >
@@ -601,30 +601,31 @@ export default function Profile() {
               {renderBioWithHashtags(displayProfile.bio || mockUser.bio)}
             </motion.p>
 
-            {/* Stats Row */}
+            {/* Stats Row — horizontal snap rail to handle column-density at max-w-md */}
             <motion.div
-              className="flex items-center mt-6 -mx-2"
+              className="mt-6 -mx-4 flex items-stretch overflow-x-auto snap-x snap-mandatory scrollbar-hide px-2"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
               <CardStatItem count={normalizedStats.postCount} label="Posts" />
               <div className="w-px self-stretch bg-white/[0.08]" />
-              <CardStatItem 
-                count={followerCount || normalizedStats.followerCount} 
-                label="Followers" 
+              <CardStatItem
+                count={followerCount || normalizedStats.followerCount}
+                label="Followers"
                 onClick={() => openListModal('followers')}
               />
               <div className="w-px self-stretch bg-white/[0.08]" />
-              <CardStatItem 
-                count={normalizedStats.followingCount} 
-                label="Following" 
+              <CardStatItem
+                count={normalizedStats.followingCount}
+                label="Following"
                 onClick={() => openListModal('following')}
               />
               <div className="w-px self-stretch bg-white/[0.08]" />
-              <CardStatItem 
-                count={normalizedStats.communityCount} 
-                label="Community" 
+              <CardStatItem
+                count={normalizedStats.communityCount}
+                label="Community"
                 onClick={() => openListModal('community')}
               />
             </motion.div>
