@@ -42,33 +42,36 @@ export function HighlightRow({
         transition={{ delay: 0.1 }}
         className="w-full"
       >
-        <ScrollArea className="w-full">
-          <div className="flex gap-4 px-4 py-3">
-            {/* Create button - only for own profile */}
-            {isOwnProfile && (
+        <div
+          className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory rail-fade-right -mx-4 pl-4 pr-10 py-3"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          {/* Create button - only for own profile */}
+          {isOwnProfile && (
+            <div className="flex-shrink-0 snap-start">
               <HighlightCircle
                 isCreateButton
                 onClick={handleCreate}
               />
-            )}
+            </div>
+          )}
 
-            {/* Highlight circles */}
-            {highlights.map((highlight, index) => (
-              <motion.div
-                key={highlight.id}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.05 }}
-              >
-                <HighlightCircle
-                  highlight={highlight}
-                  onClick={() => handleHighlightClick(highlight)}
-                />
-              </motion.div>
-            ))}
-          </div>
-          <ScrollBar orientation="horizontal" className="hidden" />
-        </ScrollArea>
+          {/* Highlight circles */}
+          {highlights.map((highlight, index) => (
+            <motion.div
+              key={highlight.id}
+              className="flex-shrink-0 snap-start"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: index * 0.05 }}
+            >
+              <HighlightCircle
+                highlight={highlight}
+                onClick={() => handleHighlightClick(highlight)}
+              />
+            </motion.div>
+          ))}
+        </div>
       </motion.div>
 
       {/* Create Modal */}
