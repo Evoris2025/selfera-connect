@@ -117,59 +117,59 @@ export function EraAccountStatusCard({
 
   return (
     <motion.div
-      className="bg-card/40 backdrop-blur-lg border border-white/[0.06] p-5"
+      className="bg-card/40 backdrop-blur-lg border border-white/[0.06] p-4 flex flex-col gap-2"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={springGentle}
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
-            <Shield className="w-4 h-4 text-primary" />
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center flex-shrink-0">
+            <Shield className="w-3.5 h-3.5 text-primary" />
           </div>
-          <h3 className="text-body font-semibold text-foreground">ERA Account Status</h3>
+          <h3 className="text-body font-semibold text-foreground truncate">ERA Account Status</h3>
         </div>
         {tierConfig && (
-          <Badge 
-            variant="outline" 
-            className={`${tierConfig.bgClass} ${tierConfig.colorClass} ${tierConfig.borderClass} text-label`}
+          <Badge
+            variant="outline"
+            className={`${tierConfig.bgClass} ${tierConfig.colorClass} ${tierConfig.borderClass} text-caption flex-shrink-0`}
           >
             {tierConfig.label}
           </Badge>
         )}
       </div>
-      
+
       {/* Account Type */}
-      <div className="mb-4">
-        <p className="text-caption text-muted-foreground uppercase tracking-wide mb-1">Account Type</p>
-        <p className="text-title font-semibold text-foreground">{getAccountTypeLabel()}</p>
+      <div>
+        <p className="text-caption text-muted-foreground uppercase tracking-wide">Account Type</p>
+        <p className="text-body font-semibold text-foreground">{getAccountTypeLabel()}</p>
         {tierConfig && (
-          <p className="text-label text-muted-foreground mt-0.5">{tierConfig.description}</p>
+          <p className="text-caption text-muted-foreground mt-0.5 line-clamp-1">{tierConfig.description}</p>
         )}
       </div>
-      
+
       {/* Billing Status - Only show for paid plans */}
       {planType !== 'free' && (
-        <div className="grid grid-cols-2 gap-4 mb-4 pt-3 border-t border-white/[0.06]">
+        <div className="grid grid-cols-2 gap-3 pt-2 border-t border-white/[0.06]">
           {/* Status */}
           <div>
-            <p className="text-caption text-muted-foreground uppercase tracking-wide mb-1">Billing Status</p>
-            <div className={`flex items-center gap-1.5 ${billingConfig.colorClass}`}>
-              <BillingIcon className="w-4 h-4" />
-              <span className="text-body font-medium">{billingConfig.label}</span>
+            <p className="text-caption text-muted-foreground uppercase tracking-wide">Billing Status</p>
+            <div className={`flex items-center gap-1 ${billingConfig.colorClass}`}>
+              <BillingIcon className="w-3.5 h-3.5" />
+              <span className="text-label font-medium">{billingConfig.label}</span>
             </div>
           </div>
-          
+
           {/* Next Billing */}
           <div>
-            <p className="text-caption text-muted-foreground uppercase tracking-wide mb-1">
+            <p className="text-caption text-muted-foreground uppercase tracking-wide">
               {billingStatus === 'overdue' ? 'Amount Due' : 'Next Billing'}
             </p>
-            <p className={`text-body font-medium ${billingStatus === 'overdue' ? 'text-red-500' : 'text-foreground'}`}>
-              {billingStatus === 'overdue' 
+            <p className={`text-label font-medium ${billingStatus === 'overdue' ? 'text-red-500' : 'text-foreground'}`}>
+              {billingStatus === 'overdue'
                 ? formatPrice(amountDue > 0 ? amountDue : tierPrice)
-                : currentPeriodEnd 
+                : currentPeriodEnd
                   ? format(new Date(currentPeriodEnd), 'MMM d, yyyy')
                   : '—'
               }
@@ -177,20 +177,20 @@ export function EraAccountStatusCard({
           </div>
         </div>
       )}
-      
+
       {/* Monthly Amount - For paid plans */}
       {planType !== 'free' && (
-        <div className="mb-4 pt-3 border-t border-white/[0.06]">
-          <p className="text-caption text-muted-foreground uppercase tracking-wide mb-1">Monthly Amount</p>
-          <p className="text-headline font-bold text-foreground">{formatPrice(tierPrice)}</p>
+        <div className="pt-2 border-t border-white/[0.06]">
+          <p className="text-caption text-muted-foreground uppercase tracking-wide">Monthly Amount</p>
+          <p className="text-title font-bold text-foreground">{formatPrice(tierPrice)}</p>
         </div>
       )}
-      
+
       {/* CTA Button */}
       <Button
         variant={billingStatus === 'overdue' ? 'destructive' : 'secondary'}
         size="sm"
-        className="w-full rounded-xl"
+        className="w-full rounded-xl mt-1"
         onClick={cta.action}
       >
         {cta.label}

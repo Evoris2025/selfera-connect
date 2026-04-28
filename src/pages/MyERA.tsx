@@ -375,13 +375,17 @@ export default function MyERA() {
                 />
 
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h2 className="text-title font-semibold text-white truncate">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <h2 className="text-title font-semibold text-white truncate min-w-0">
                       {profile?.display_name || 'User'}
                     </h2>
-                    {profile?.is_verified && <EraVerifiedTick size="sm" userEmail={profile?.email || undefined} />}
+                    {profile?.is_verified && (
+                      <span className="flex-shrink-0">
+                        <EraVerifiedTick size="sm" userEmail={profile?.email || undefined} />
+                      </span>
+                    )}
                   </div>
-                  <p className="text-body text-white/55">
+                  <p className="text-body text-white/55 truncate">
                     @{profile?.handle || 'user'}
                   </p>
                   <div className="mt-1.5">
@@ -393,7 +397,7 @@ export default function MyERA() {
                 <button
                   type="button"
                   onClick={() => navigate('/profile')}
-                  className="shrink-0 h-9 px-3.5 rounded-full border bg-transparent text-label uppercase tracking-[0.1em]"
+                  className="flex-shrink-0 h-9 px-3.5 rounded-full border bg-transparent text-label uppercase tracking-[0.1em]"
                   style={{ borderColor: themePrimary, color: themePrimary }}
                 >
                   View Profile
@@ -478,9 +482,12 @@ export default function MyERA() {
         </div>
 
 
+        {/* Sections — IA: MYERA NETWORK is hero (order-1), YOUR ACCOUNT demoted (order-2) */}
+        <div className="flex flex-col">
+
         {/* Your Account Info Section */}
         <motion.section
-          className="px-4 mt-8"
+          className="px-4 mt-8 order-2"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...springGentle, delay: 0.17 }}
@@ -504,7 +511,7 @@ export default function MyERA() {
                 <BrandSurface
                   as={motion.div as any}
                   key="verification-cta"
-                  className="relative overflow-hidden min-h-[180px] flex flex-col p-5"
+                  className="relative overflow-hidden flex flex-col p-4"
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -10 }}
@@ -556,7 +563,7 @@ export default function MyERA() {
                 <BrandSurface
                   as={motion.div as any}
                   key="verification-progress"
-                  className="relative overflow-hidden min-h-[180px] flex flex-col p-5"
+                  className="relative overflow-hidden flex flex-col p-4"
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -10 }}
@@ -639,7 +646,7 @@ export default function MyERA() {
                 <BrandSurface
                   as={motion.div as any}
                   key="verification-rejected"
-                  className="relative overflow-hidden min-h-[180px] flex flex-col p-5"
+                  className="relative overflow-hidden flex flex-col p-4"
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -10 }}
@@ -671,7 +678,7 @@ export default function MyERA() {
                 <BrandSurface
                   as={motion.div as any}
                   key="verified-status"
-                  className="relative overflow-hidden min-h-[180px] flex flex-col p-5"
+                  className="relative overflow-hidden flex flex-col p-4"
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -10 }}
@@ -814,7 +821,7 @@ export default function MyERA() {
 
         {/* MyERA Network Section */}
         <motion.section
-          className="mt-8 px-4"
+          className="mt-8 px-4 order-1"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...springGentle, delay: 0.35 }}
@@ -1031,6 +1038,9 @@ export default function MyERA() {
             )}
           </AnimatePresence>
         </motion.section>
+
+        </div>
+        {/* /Sections wrapper */}
 
         {/* Footer - Softened */}
         <motion.footer
