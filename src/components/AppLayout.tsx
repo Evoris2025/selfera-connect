@@ -46,8 +46,13 @@ export function AppLayout({ children, title, showHeader = true, brandMark = fals
       <div className="flex min-h-dvh w-full">
         <DesktopLeftRail />
 
-        {/* Mobile column — unchanged shape/behavior on every viewport. */}
-        <div className="relative mx-auto flex min-h-dvh w-full max-w-md flex-col bg-background shadow-cinematic">
+        {/*
+         * Stepped breakpoint ladder (see docs/SCALING.md):
+         *   < 768px (phone): full width, fills viewport edge-to-edge
+         *   768–1023px (md tablet): max-w-xl (36rem / 576px), centered
+         *   ≥ 1024px (lg desktop): max-w-md (28rem / 448px), DesktopLeftRail carries chrome
+         */}
+        <div className="relative mx-auto flex min-h-dvh w-full md:max-w-xl lg:max-w-md flex-col bg-background shadow-cinematic">
           {showHeader && <AppHeader title={title} brandMark={brandMark} />}
 
           <main className="flex-1 pb-nav-safe w-full lg:pb-0">
