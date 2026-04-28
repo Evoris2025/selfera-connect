@@ -375,13 +375,17 @@ export default function MyERA() {
                 />
 
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h2 className="text-title font-semibold text-white truncate">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <h2 className="text-title font-semibold text-white truncate min-w-0">
                       {profile?.display_name || 'User'}
                     </h2>
-                    {profile?.is_verified && <EraVerifiedTick size="sm" userEmail={profile?.email || undefined} />}
+                    {profile?.is_verified && (
+                      <span className="flex-shrink-0">
+                        <EraVerifiedTick size="sm" userEmail={profile?.email || undefined} />
+                      </span>
+                    )}
                   </div>
-                  <p className="text-body text-white/55">
+                  <p className="text-body text-white/55 truncate">
                     @{profile?.handle || 'user'}
                   </p>
                   <div className="mt-1.5">
@@ -393,7 +397,7 @@ export default function MyERA() {
                 <button
                   type="button"
                   onClick={() => navigate('/profile')}
-                  className="shrink-0 h-9 px-3.5 rounded-full border bg-transparent text-label uppercase tracking-[0.1em]"
+                  className="flex-shrink-0 h-9 px-3.5 rounded-full border bg-transparent text-label uppercase tracking-[0.1em]"
                   style={{ borderColor: themePrimary, color: themePrimary }}
                 >
                   View Profile
