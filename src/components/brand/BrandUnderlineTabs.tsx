@@ -77,7 +77,7 @@ export function BrandUnderlineTabs({
               'flex-1 justify-center inline-flex',
               'px-3 py-2 text-[12px] uppercase tracking-[0.1em] font-medium',
               'transition-colors duration-150',
-              'focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--primary))]/40 rounded-sm',
+              'outline-none focus:outline-none focus-visible:outline-none',
               active ? 'text-gradient-brand' : 'text-white/45 hover:text-white/70',
             )}
           >
