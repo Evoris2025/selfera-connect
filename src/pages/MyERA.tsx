@@ -1039,6 +1039,9 @@ export default function MyERA() {
           </AnimatePresence>
         </motion.section>
 
+        </div>
+        {/* /Sections wrapper */}
+
         {/* Footer - Softened */}
         <motion.footer
           className="px-6 py-8 mt-8 text-center"
