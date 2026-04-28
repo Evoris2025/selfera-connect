@@ -141,12 +141,15 @@ function ImageCard({ item, index }: { item: TrendingImage; index: number }) {
     >
       <img src={item.url} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
       <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/70 to-transparent pointer-events-none" />
-      <BrandStatPill
-        icon={Heart}
-        value={formatCount(item.likes)}
-        className="absolute bottom-2 left-2 z-10"
+      <div
+        className="absolute bottom-2 left-2 flex items-center gap-1 [filter:drop-shadow(0_2px_4px_rgba(0,0,0,0.6))]"
         aria-label={`${formatCount(item.likes)} reactions`}
-      />
+      >
+        <BrandIcon icon={Heart} size={16} />
+        <span className="text-[12px] font-medium text-white tabular-nums leading-none">
+          {formatCount(item.likes)}
+        </span>
+      </div>
     </motion.button>
   );
 }
