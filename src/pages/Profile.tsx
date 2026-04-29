@@ -471,7 +471,7 @@ export default function Profile() {
           </motion.div>
 
           {/* Profile Info Section */}
-          <div className="px-5 sm:px-8 md:px-10 -mt-14 sm:-mt-16 pb-6">
+          <div className="px-4 -mt-14 sm:-mt-16 pb-6">
             
             {/* Avatar + Name/Handle Row */}
             <motion.div
