@@ -71,61 +71,6 @@ import {
   BrandUnderlineTabs,
 } from '@/components/brand';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { cn } from '@/lib/utils';
-
-// 2x2 grid stat cell — mirrors Profile hero CardStatItem
-function MyEraStatCell({
-  count,
-  label,
-  onClick,
-  position,
-  showDot,
-  iconOnly,
-  icon: IconComp,
-}: {
-  count?: number | string;
-  label: string;
-  onClick?: () => void;
-  position: 'tl' | 'tr' | 'bl' | 'br';
-  showDot?: boolean;
-  iconOnly?: boolean;
-  icon?: React.ComponentType<{ className?: string }>;
-}) {
-  const borderClasses = cn(
-    position === 'tl' && 'border-r border-b border-white/[0.08]',
-    position === 'tr' && 'border-b border-white/[0.08]',
-    position === 'bl' && 'border-r border-white/[0.08]',
-  );
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={!onClick}
-      className={cn(
-        'relative flex flex-col items-center justify-center gap-1.5 py-3 px-1 transition-colors duration-200',
-        borderClasses,
-        onClick && 'hover:bg-white/[0.04] active:scale-[0.97] cursor-pointer',
-      )}
-    >
-      {iconOnly && IconComp ? (
-        <IconComp className="h-5 w-5 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]" />
-      ) : (
-        <p className="text-white text-title font-medium leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)] text-center">
-          {count ?? 0}
-        </p>
-      )}
-      <p className="text-[10px] uppercase tracking-[0.08em] font-medium text-white/70 truncate w-full text-center leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
-        {label}
-      </p>
-      {showDot && (
-        <span
-          className="absolute top-1.5 right-1/4 w-2 h-2 rounded-full"
-          style={{ backgroundColor: 'hsl(var(--primary))' }}
-        />
-      )}
-    </button>
-  );
-}
 
 const springGentle = { type: "spring" as const, stiffness: 260, damping: 28 };
 
@@ -408,112 +353,131 @@ export default function MyERA() {
             </motion.div>
           </div>
 
-          {/* Identity + Stats overlay — mirrors Profile hero pattern */}
-          <div className="px-4 -mt-14 sm:-mt-16 pb-2 relative z-10">
-
-            {/* ROW 1: Avatar + 2x2 stat grid */}
-            <motion.div
-              className="flex items-center gap-4 sm:gap-5"
-              initial={{ opacity: 0, y: 12 }}
+          {/* Profile Card Floating Over Cover */}
+          <div className="px-4 -mt-20 relative z-10">
+            <BrandSurface
+              as={motion.div as any}
+              className="p-5 shadow-2xl"
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ ...springGentle, delay: 0.1 }}
             >
-              <button
-                type="button"
-                onClick={() => navigate('/profile')}
-                aria-label="View your profile"
-                className="flex-shrink-0 rounded-full focus:outline-none focus:ring-2 focus:ring-primary/40"
-              >
-                <CinematicAvatar
-                  src={profile?.avatar_url || undefined}
-                  alt={profile?.display_name || 'User'}
-                  fallback={profile?.display_name?.[0] || 'U'}
-                  size="md"
-                  ring="gradient"
-                />
-              </button>
+              {/* Avatar + Info Row */}
+              <div className="flex items-center gap-4">
+                <button
+                  type="button"
+                  onClick={() => navigate('/profile')}
+                  aria-label="View your profile"
+                  className="flex-shrink-0 rounded-full focus:outline-none focus:ring-2 focus:ring-primary/40"
+                >
+                  <CinematicAvatar
+                    src={profile?.avatar_url || undefined}
+                    alt={profile?.display_name || 'User'}
+                    fallback={profile?.display_name?.[0] || 'U'}
+                    size="md"
+                    ring="gradient"
+                  />
+                </button>
 
-              {/* 2x2 stat grid — vertically centered against avatar */}
-              <div className="flex-1 min-w-0 grid grid-cols-2 grid-rows-2">
-                <MyEraStatCell
-                  count={communitiesLoading ? '—' : communitiesCount}
-                  label="Waitlist"
-                  position="tl"
-                  onClick={() => navigate('/community')}
-                />
-                <MyEraStatCell
-                  count={connectionsCount}
-                  label="My List"
-                  position="tr"
-                  onClick={() => navigate('/directory')}
-                />
-                <MyEraStatCell
-                  count={pendingConnectionCount || 0}
-                  label="Pending"
-                  position="bl"
-                  onClick={() => navigate('/notifications')}
-                  showDot={pendingConnectionCount > 0}
-                />
-                <MyEraStatCell
-                  label="Alerts"
-                  position="br"
-                  onClick={() => navigate('/notifications')}
-                  iconOnly
-                  icon={Bell}
-                />
-              </div>
-            </motion.div>
-
-            {/* ROW 2: Identity block */}
-            <motion.div
-              className="mt-4 flex flex-col items-start gap-1"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <div className="flex items-center gap-1.5 flex-wrap min-w-0">
-                <h1 className="text-headline font-semibold text-foreground tracking-tight leading-tight">
-                  {profile?.display_name || 'User'}
-                </h1>
-                {profile?.is_verified && (
-                  <span className="flex-shrink-0">
-                    <EraVerifiedTick size="sm" userEmail={profile?.email || undefined} />
-                  </span>
-                )}
-                {profile?.user_type && profile.user_type !== 'individual' && (
-                  <AccountTypeBadge type={profile.user_type as AccountType} />
-                )}
-              </div>
-              <p className="text-sm text-muted-foreground">
-                @{profile?.handle || 'user'}
-              </p>
-            </motion.div>
-
-            {/* ROW 3: Account Status Button — full content-well width */}
-            <motion.button
-              type="button"
-              onClick={() => navigate('/account')}
-              aria-label="View account details"
-              className="mt-4 w-full h-11 px-4 rounded-md border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.04] active:bg-white/[0.06] transition-colors flex items-center justify-between"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                <BrandIcon icon={Shield} size={16} />
-                <div className="flex flex-col items-start min-w-0">
-                  <span className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground">Account Status</span>
-                  <span className="text-sm font-medium text-white truncate">
-                    {isVerified
-                      ? 'ERA Verified · Active'
-                      : planType && planType !== 'free'
-                      ? `${planType.charAt(0).toUpperCase()}${planType.slice(1)} Plan`
-                      : 'Free Account'}
-                  </span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <h2 className="text-title font-semibold text-white truncate min-w-0">
+                      {profile?.display_name || 'User'}
+                    </h2>
+                    {profile?.is_verified && (
+                      <span className="flex-shrink-0">
+                        <EraVerifiedTick size="sm" userEmail={profile?.email || undefined} />
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-body text-white/55 truncate">
+                    @{profile?.handle || 'user'}
+                  </p>
+                  <div className="mt-1.5">
+                    <AccountTypeBadge type={(profile?.user_type as AccountType) || 'individual'} />
+                  </div>
                 </div>
               </div>
-              <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-            </motion.button>
+
+              {/* Account Status Button — full-width row */}
+              <button
+                type="button"
+                onClick={() => navigate('/account')}
+                aria-label="View account details"
+                className="mt-3 w-full h-11 px-4 rounded-md border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.04] active:bg-white/[0.06] transition-colors flex items-center justify-between"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <BrandIcon icon={Shield} size={16} />
+                  <div className="flex flex-col items-start min-w-0">
+                    <span className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground">Account Status</span>
+                    <span className="text-sm font-medium text-white truncate">
+                      {isVerified
+                        ? 'ERA Verified · Active'
+                        : planType && planType !== 'free'
+                        ? `${planType.charAt(0).toUpperCase()}${planType.slice(1)} Plan`
+                        : 'Free Account'}
+                    </span>
+                  </div>
+                </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+              </button>
+
+              {/* Stats Row — FIT pattern (see docs/SCALING.md) */}
+              <div className="flex w-full items-stretch gap-0 mt-5 pt-4 border-t border-white/[0.08]">
+                <button
+                  type="button"
+                  className="flex-1 min-w-0 flex flex-col items-center text-center py-2 px-1"
+                  onClick={() => navigate('/community')}
+                >
+                  <div className="h-7 flex items-center justify-center mb-1.5">
+                    <p className="text-headline font-bold text-white leading-none">
+                      {communitiesLoading ? '—' : communitiesCount}
+                    </p>
+                  </div>
+                  <p className="text-caption font-medium uppercase tracking-wider text-white/55 truncate w-full text-center">Waitlist</p>
+                </button>
+                <button
+                  type="button"
+                  className="flex-1 min-w-0 flex flex-col items-center text-center py-2 px-1 border-l border-white/[0.08]"
+                  onClick={() => navigate('/directory')}
+                >
+                  <div className="h-7 flex items-center justify-center mb-1.5">
+                    <p className="text-headline font-bold text-white leading-none">
+                      {connectionsCount}
+                    </p>
+                  </div>
+                  <p className="text-caption font-medium uppercase tracking-wider text-white/55 truncate w-full text-center">My List</p>
+                </button>
+                <button
+                  type="button"
+                  className="flex-1 min-w-0 flex flex-col items-center text-center py-2 px-1 relative border-l border-white/[0.08]"
+                  onClick={() => navigate('/notifications')}
+                >
+                  <div className="h-7 flex items-center justify-center mb-1.5">
+                    <p className="text-headline font-bold text-white leading-none">
+                      {pendingConnectionCount || 0}
+                    </p>
+                  </div>
+                  <p className="text-caption font-medium uppercase tracking-wider text-white/55 truncate w-full text-center">Pending</p>
+                  {pendingConnectionCount > 0 && (
+                    <span
+                      className="absolute top-1 right-1/4 w-2 h-2 rounded-full"
+                      style={{ backgroundColor: themePrimary }}
+                    />
+                  )}
+                </button>
+                <button
+                  type="button"
+                  className="flex-1 min-w-0 flex flex-col items-center text-center py-2 px-1 relative border-l border-white/[0.08]"
+                  onClick={() => navigate('/notifications')}
+                >
+                  <div className="h-7 flex items-center justify-center mb-1.5">
+                    <BrandIcon icon={Bell} size={20} />
+                  </div>
+                  <p className="text-caption font-medium uppercase tracking-wider text-white/55 truncate w-full text-center">Alerts</p>
+                </button>
+              </div>
+            </BrandSurface>
           </div>
         </motion.section>
 
