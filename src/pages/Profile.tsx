@@ -101,9 +101,9 @@ function CardStatItem({
   position?: 'tl' | 'tr' | 'bl' | 'br';
 }) {
   const borderClasses = cn(
-    position === 'tl' && 'border-r border-b border-white/[0.04]',
-    position === 'tr' && 'border-b border-white/[0.04]',
-    position === 'bl' && 'border-r border-white/[0.04]',
+    position === 'tl' && 'border-r border-b border-white/[0.08]',
+    position === 'tr' && 'border-b border-white/[0.08]',
+    position === 'bl' && 'border-r border-white/[0.08]',
   );
   return (
     <button
@@ -115,8 +115,8 @@ function CardStatItem({
         onClick && 'hover:bg-white/[0.04] active:scale-[0.97] cursor-pointer',
       )}
     >
-      <p className="text-white/85 text-title font-medium leading-none">{formatCount(count)}</p>
-      <p className="text-[10px] uppercase tracking-[0.08em] text-white/45 truncate w-full text-center leading-none">
+      <p className="text-white text-title font-medium leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">{formatCount(count)}</p>
+      <p className="text-[10px] uppercase tracking-[0.08em] text-white/70 truncate w-full text-center leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
         {label}
       </p>
     </button>
@@ -612,18 +612,25 @@ export default function Profile() {
                 {displayProfile.isPrivate && <Lock className="h-4 w-4 text-muted-foreground flex-shrink-0" />}
               </div>
 
-              {/* Handle row */}
-              <p className="text-sm text-muted-foreground leading-tight">
-                @{displayProfile.handle || mockUser.handle}
-              </p>
-
-              {/* Location row */}
-              {(displayProfile.location || mockUser.location) && (
-                <p className="flex items-center gap-1 text-xs text-muted-foreground leading-tight">
-                  <MapPin className="h-3 w-3 flex-shrink-0" />
-                  <span className="truncate">{displayProfile.location || mockUser.location}</span>
-                </p>
-              )}
+              {/* Combined handle + location row */}
+              {(() => {
+                const handle = displayProfile.handle || mockUser.handle;
+                const location = displayProfile.location || mockUser.location;
+                return (
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap min-w-0">
+                    <span>@{handle}</span>
+                    {location && (
+                      <>
+                        <span aria-hidden="true" className="text-muted-foreground/60">·</span>
+                        <span className="flex items-center gap-1 min-w-0">
+                          <MapPin className="h-3 w-3 flex-shrink-0" />
+                          <span className="truncate">{location}</span>
+                        </span>
+                      </>
+                    )}
+                  </div>
+                );
+              })()}
             </motion.div>
 
             {/* ROW 3: Bio - Full content-well width */}
