@@ -558,60 +558,43 @@ export default function Profile() {
                 )}
               </motion.div>
 
-              {/* Name + Handle + Location + Admin Button */}
-              <div className="flex flex-col justify-end min-w-0 pb-1 flex-1">
-                {/* Name Row with Admin Button on Right */}
-                <div className="flex items-center justify-between gap-2">
-                  {/* Name + Verified Badge */}
-                  <div className="flex items-center gap-2 flex-wrap min-w-0">
-                    <h1 className="text-headline sm:text-2xl md:text-3xl font-bold text-foreground tracking-tight leading-tight truncate">
-                      {displayProfile.displayName || mockUser.name}
-                    </h1>
-                    {displayProfile.isVerified && (
-                      <EraVerifiedTooltip 
-                        tier={calculateVerificationTier(0, false, displayProfile.email ?? undefined)} 
-                        userEmail={displayProfile.email ?? undefined} 
-                        size="md" 
-                      />
-                    )}
-                    {displayProfile.userType && displayProfile.userType !== 'individual' && (
-                      <AccountTypeBadge type={displayProfile.userType as AccountType} size="md" />
-                    )}
-                    {displayProfile.isPrivate && <Lock className="h-4 w-4 text-muted-foreground" />}
-                  </div>
+              {/* Identity block — flush-left under avatar */}
+              <div className="flex flex-col items-start gap-1 min-w-0">
+                {/* Name row */}
+                <div className="flex items-center gap-1.5 flex-wrap min-w-0">
+                  <h1 className="text-headline font-semibold text-foreground tracking-tight leading-tight">
+                    {displayProfile.displayName || mockUser.name}
+                  </h1>
+                  {displayProfile.isVerified && (
+                    <EraVerifiedTooltip
+                      tier={calculateVerificationTier(0, false, displayProfile.email ?? undefined)}
+                      userEmail={displayProfile.email ?? undefined}
+                      size="md"
+                    />
+                  )}
+                  {displayProfile.userType && displayProfile.userType !== 'individual' && (
+                    <AccountTypeBadge type={displayProfile.userType as AccountType} size="md" />
+                  )}
+                  {displayProfile.isPrivate && <Lock className="h-4 w-4 text-muted-foreground flex-shrink-0" />}
                 </div>
 
-                {/* Handle + Location */}
-                <p className="text-body sm:text-title text-muted-foreground mt-1 flex items-center flex-wrap gap-x-2">
-                  <span className="font-medium">@{displayProfile.handle || mockUser.handle}</span>
-                  {(displayProfile.location || mockUser.location) && (
-                    <span className="inline-flex items-center gap-1.5 text-muted-foreground/70">
-                      <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
-                      <MapPin className="w-3.5 h-3.5" />
-                      <span>{displayProfile.location || mockUser.location}</span>
-                    </span>
-                  )}
+                {/* Handle row */}
+                <p className="text-sm text-muted-foreground leading-tight">
+                  @{displayProfile.handle || mockUser.handle}
                 </p>
+
+                {/* Location row */}
+                {(displayProfile.location || mockUser.location) && (
+                  <p className="flex items-center gap-1 text-xs text-muted-foreground leading-tight">
+                    <MapPin className="h-3 w-3 flex-shrink-0" />
+                    <span className="truncate">{displayProfile.location || mockUser.location}</span>
+                  </p>
+                )}
               </div>
-            </motion.div>
+            </div>
 
-            {/* Bio - Full Width Below */}
-            <motion.p
-              className="text-body sm:text-title text-foreground/85 leading-relaxed mt-5 max-w-2xl"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.25 }}
-            >
-              {renderBioWithHashtags(displayProfile.bio || mockUser.bio)}
-            </motion.p>
-
-            {/* Stats Row — strict 4 equal columns inside the content well */}
-            <motion.div
-              className="mt-6 grid w-full grid-cols-4 items-stretch divide-x divide-white/[0.08] -translate-x-[25%]"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
+            {/* RIGHT COLUMN: 2x2 stat grid filling height */}
+            <div className="flex-1 min-w-0 grid grid-cols-2 grid-rows-2 h-full">
               <CardStatItem count={normalizedStats.postCount} label="Posts" />
               <CardStatItem
                 count={followerCount || normalizedStats.followerCount}
@@ -628,7 +611,19 @@ export default function Profile() {
                 label="Community"
                 onClick={() => openListModal('community')}
               />
+            </div>
             </motion.div>
+
+            {/* Bio - Full Width Below */}
+            <motion.p
+              className="text-body sm:text-title text-foreground/85 leading-relaxed mt-5 max-w-2xl"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.25 }}
+            >
+              {renderBioWithHashtags(displayProfile.bio || mockUser.bio)}
+            </motion.p>
+
 
             {/* CTA Buttons - Below Stats */}
             {!isOwnProfile && (
