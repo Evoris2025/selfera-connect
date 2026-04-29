@@ -88,34 +88,41 @@ function formatCount(count: number): string {
   return count.toString();
 }
 
-// Clickable stat item for the card profile
+// Clickable stat item for the card profile (2x2 grid cell)
 function CardStatItem({
   count,
   label,
   onClick,
+  position,
 }: {
   count: number;
   label: string;
   onClick?: () => void;
+  position?: 'tl' | 'tr' | 'bl' | 'br';
 }) {
+  const borderClasses = cn(
+    position === 'tl' && 'border-r border-b border-white/[0.04]',
+    position === 'tr' && 'border-b border-white/[0.04]',
+    position === 'bl' && 'border-r border-white/[0.04]',
+  );
   return (
     <button
       onClick={onClick}
       disabled={!onClick}
       className={cn(
-        'flex-1 min-w-0 flex flex-col items-center text-center py-3 px-1 transition-colors duration-200',
+        'flex flex-col items-center justify-center gap-1.5 py-3 px-1 transition-colors duration-200',
+        borderClasses,
         onClick && 'hover:bg-white/[0.04] active:scale-[0.97] cursor-pointer',
       )}
     >
-      <p className="text-white text-title font-medium leading-none">{formatCount(count)}</p>
-      <div className="mt-1.5 w-full">
-        <p className="text-caption font-medium uppercase tracking-wider text-white/55 truncate w-full text-center">
-          {label}
-        </p>
-      </div>
+      <p className="text-white/85 text-title font-medium leading-none">{formatCount(count)}</p>
+      <p className="text-[10px] uppercase tracking-[0.08em] text-white/45 truncate w-full text-center leading-none">
+        {label}
+      </p>
     </button>
   );
 }
+
 
 // Render bio with inline hashtags styled
 function renderBioWithHashtags(bio: string) {
