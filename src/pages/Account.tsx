@@ -1,17 +1,17 @@
 import { useNavigate } from 'react-router-dom';
-import { Check, CreditCard, Shield } from 'lucide-react';
+import { ArrowLeft, Check, CreditCard, Shield } from 'lucide-react';
 import { AppLayout } from '@/components/AppLayout';
-import { AppHeader } from '@/components/AppHeader';
 import { BrandSectionLabel, BrandSurface, BrandIcon } from '@/components/brand';
 import { Button } from '@/components/ui/button';
-import { useVerification } from '@/hooks/useVerification';
+import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/hooks/useSubscription';
 
 export default function Account() {
   const navigate = useNavigate();
-  const { isVerified } = useVerification();
+  const { profile } = useAuth();
   const { subscription } = useSubscription();
 
+  const isVerified = !!profile?.is_verified;
   const planId = subscription?.plan || 'free';
   const isFree = planId === 'free';
   const tierName = isVerified
@@ -44,7 +44,17 @@ export default function Account() {
 
   return (
     <AppLayout>
-      <AppHeader title="Account" showBackButton onBack={() => navigate('/my-era')} />
+      <header className="sticky top-0 z-40 border-b border-border/50 bg-background/95 backdrop-blur-xl flex items-center h-14 px-3 gap-2">
+        <button
+          type="button"
+          onClick={() => navigate('/my-era')}
+          aria-label="Back"
+          className="h-10 w-10 inline-flex items-center justify-center rounded-full hover:bg-white/[0.06] transition-colors"
+        >
+          <ArrowLeft className="h-5 w-5 text-white" />
+        </button>
+        <h1 className="text-title font-semibold text-white">Account</h1>
+      </header>
 
       <div className="px-4 py-4 space-y-6">
         {/* CURRENT TIER */}
