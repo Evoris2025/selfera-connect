@@ -605,7 +605,7 @@ export default function Profile() {
 
             {/* Stats Row — strict 4 equal columns inside the content well */}
             <motion.div
-              className="mt-6 grid w-full grid-cols-4 items-stretch divide-x divide-white/[0.08]"
+              className="mt-6 grid w-full grid-cols-4 items-stretch divide-x divide-white/[0.08] -translate-x-[10%]"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
