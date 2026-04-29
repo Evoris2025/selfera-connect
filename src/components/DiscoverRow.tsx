@@ -257,7 +257,7 @@ export function DiscoverRow() {
 
   if (loading) {
     return (
-      <div className="py-5 px-5">
+      <div className="py-5 px-4">
         <div className="flex items-center justify-between mb-4">
           <div className="h-4 w-32 bg-muted rounded animate-pulse" />
         </div>
@@ -273,17 +273,17 @@ export function DiscoverRow() {
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="py-5">
       {/* Section Header */}
-      <div className="flex items-center justify-between px-5 mb-4">
-        <CollapsibleTrigger className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <h3 className="text-title font-semibold text-foreground">Discover People</h3>
+      <div className="flex items-center justify-between gap-3 min-w-0 px-4 mb-4">
+        <CollapsibleTrigger className="flex items-center gap-2 hover:opacity-80 transition-opacity min-w-0 flex-1">
+          <h3 className="text-title font-semibold text-foreground truncate min-w-0">Discover People</h3>
           <ChevronDown 
-            className={`h-4 w-4 text-muted-foreground transition-transform duration-300 ${
+            className={`h-4 w-4 text-muted-foreground transition-transform duration-300 flex-shrink-0 ${
               isOpen ? '' : '-rotate-90'
             }`} 
           />
         </CollapsibleTrigger>
         <button
-          className="text-body text-primary font-medium flex items-center gap-0.5 hover:opacity-80 transition-opacity"
+          className="text-body text-primary font-medium flex items-center gap-0.5 hover:opacity-80 transition-opacity flex-shrink-0"
           onClick={() => navigate('/directory')}
         >
           See all
