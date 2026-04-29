@@ -414,7 +414,7 @@ export default function MyERA() {
                       {isVerified
                         ? 'ERA Verified · Active'
                         : planType && planType !== 'free'
-                        ? PLAN_DETAILS[planType as PlanType]?.name || 'Free Account'
+                        ? `${planType.charAt(0).toUpperCase()}${planType.slice(1)} Plan`
                         : 'Free Account'}
                     </span>
                   </div>
