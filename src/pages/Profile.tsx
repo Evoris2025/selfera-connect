@@ -603,9 +603,12 @@ export default function Profile() {
               {renderBioWithHashtags(displayProfile.bio || mockUser.bio)}
             </motion.p>
 
+            {/* DEBUG MEASUREMENT readout */}
+            <div id="__measure" className="text-[10px] text-yellow-400 font-mono mt-2"></div>
+
             {/* Stats Row — strict 4 equal columns inside the content well */}
             <motion.div
-              ref={(el) => { if (el) { requestAnimationFrame(() => { const bio = el.previousElementSibling as HTMLElement; const g = el.getBoundingClientRect(); const b = bio?.getBoundingClientRect(); document.title = `GL${g.left.toFixed(2)} GR${g.right.toFixed(2)} BL${b?.left.toFixed(2)} BR${b?.right.toFixed(2)}`; }); } }}
+              ref={(el) => { if (el) { requestAnimationFrame(() => { const bio = document.querySelector('.text-foreground\\/85') as HTMLElement; const target = document.getElementById('__measure'); const g = el.getBoundingClientRect(); const b = bio?.getBoundingClientRect(); if (target) target.textContent = `gridL=${g.left.toFixed(2)} gridR=${g.right.toFixed(2)} bioL=${b?.left.toFixed(2)} bioR=${b?.right.toFixed(2)}`; }); } }}
               className="mt-6 grid w-full grid-cols-4 items-stretch divide-x divide-white/[0.08]"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
