@@ -93,11 +93,15 @@ function CardStatItem({
   count,
   label,
   onClick,
+  edge,
 }: {
   count: number;
   label: string;
   onClick?: () => void;
+  edge?: 'start' | 'end';
 }) {
+  const alignmentClass = edge === 'start' ? 'text-left' : edge === 'end' ? 'text-right' : 'text-center';
+
   return (
     <button
       onClick={onClick}
@@ -107,9 +111,9 @@ function CardStatItem({
         onClick && 'hover:bg-white/[0.04] active:scale-[0.97] cursor-pointer',
       )}
     >
-      <p className="text-white text-title font-medium leading-none text-center w-full">{formatCount(count)}</p>
+      <p className={cn('text-white text-title font-medium leading-none w-full', alignmentClass)}>{formatCount(count)}</p>
       <div className="mt-1.5 w-full">
-        <p className="text-center w-full text-[10px] uppercase tracking-tight font-medium text-muted-foreground leading-none">
+        <p className={cn('w-full text-[10px] uppercase tracking-tight font-medium text-muted-foreground leading-none', alignmentClass)}>
           {label}
         </p>
       </div>
@@ -610,7 +614,7 @@ export default function Profile() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <CardStatItem count={normalizedStats.postCount} label="Posts" />
+              <CardStatItem count={normalizedStats.postCount} label="Posts" edge="start" />
               <CardStatItem
                 count={followerCount || normalizedStats.followerCount}
                 label="Followers"
@@ -624,6 +628,7 @@ export default function Profile() {
               <CardStatItem
                 count={normalizedStats.communityCount}
                 label="Community"
+                edge="end"
                 onClick={() => openListModal('community')}
               />
             </motion.div>
