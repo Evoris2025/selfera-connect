@@ -1,5 +1,4 @@
 import { Video, Image, Film } from 'lucide-react';
-import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
 import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
 
 interface ComposerBarProps {
@@ -7,17 +6,10 @@ interface ComposerBarProps {
 }
 
 export function ComposerBar({ onOpenComposer }: ComposerBarProps) {
-  const { avatarUrl, displayName } = useCurrentUserAvatar();
+  const { displayName } = useCurrentUserAvatar();
 
   return (
     <div className="flex items-center gap-3 p-3 bg-card rounded-xl">
-      <CinematicAvatar
-        src={avatarUrl}
-        alt={displayName}
-        size="md"
-        ring="muted"
-      />
-
       <button
         onClick={() => onOpenComposer('text')}
         className="flex-1 text-left px-4 py-2.5 bg-secondary rounded-full text-muted-foreground text-body hover:bg-secondary/80 transition-colors"
