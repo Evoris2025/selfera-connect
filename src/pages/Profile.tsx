@@ -93,20 +93,17 @@ function CardStatItem({
   count,
   label,
   onClick,
-  borderClasses,
 }: {
   count: number;
   label: string;
   onClick?: () => void;
-  borderClasses?: string;
 }) {
   return (
     <button
       onClick={onClick}
       disabled={!onClick}
       className={cn(
-        'flex flex-col items-center justify-center gap-1.5 py-5 transition-colors',
-        borderClasses,
+        'flex flex-col items-center justify-center gap-1.5 py-4 transition-colors',
         onClick && 'hover:bg-white/[0.04] active:bg-white/[0.06] cursor-pointer',
       )}
     >
@@ -604,29 +601,23 @@ export default function Profile() {
               {renderBioWithHashtags(displayProfile.bio || mockUser.bio)}
             </motion.p>
 
-            {/* Stats — 2x2 grid, soft "+" cross via per-cell low-contrast borders */}
+            {/* Stats — 1x4 row */}
             <motion.div
-              className="mt-6 mb-6 grid w-full grid-cols-2 grid-rows-2"
+              className="mt-6 mb-6 grid w-full grid-cols-4 items-stretch"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <CardStatItem
-                count={normalizedStats.postCount}
-                label="Posts"
-                borderClasses="border-r border-b border-white/[0.04]"
-              />
+              <CardStatItem count={normalizedStats.postCount} label="Posts" />
               <CardStatItem
                 count={followerCount || normalizedStats.followerCount}
                 label="Followers"
                 onClick={() => openListModal('followers')}
-                borderClasses="border-b border-white/[0.04]"
               />
               <CardStatItem
                 count={normalizedStats.followingCount}
                 label="Following"
                 onClick={() => openListModal('following')}
-                borderClasses="border-r border-white/[0.04]"
               />
               <CardStatItem
                 count={normalizedStats.communityCount}
