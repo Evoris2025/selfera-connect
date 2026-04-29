@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Check, CreditCard, Shield } from 'lucide-react';
 import { AppLayout } from '@/components/AppLayout';
@@ -5,13 +6,24 @@ import { BrandSectionLabel, BrandSurface, BrandIcon } from '@/components/brand';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/hooks/useSubscription';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function Account() {
   const navigate = useNavigate();
-  const { profile } = useAuth();
+  const { user } = useAuth();
   const { subscription } = useSubscription();
+  const [isVerified, setIsVerified] = useState(false);
 
-  const isVerified = !!profile?.is_verified;
+  useEffect(() => {
+    if (!user?.id) return;
+    supabase
+      .from('profiles')
+      .select('is_verified')
+      .eq('id', user.id)
+      .maybeSingle()
+      .then(({ data }) => setIsVerified(!!data?.is_verified));
+  }, [user?.id]);
+
   const planId = subscription?.plan || 'free';
   const isFree = planId === 'free';
   const tierName = isVerified
