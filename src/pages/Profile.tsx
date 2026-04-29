@@ -603,7 +603,7 @@ export default function Profile() {
 
             {/* Stats — 1x4 row */}
             <motion.div
-              className="mt-6 mb-6 grid w-full grid-cols-4 items-stretch"
+              className="mt-6 grid w-full grid-cols-4 items-stretch"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
@@ -663,7 +663,7 @@ export default function Profile() {
         
         {/* Highlights Row - Instagram-style story highlights */}
         {highlights.length > 0 && (
-          <div className="mt-2 px-4">
+          <div className="mt-6 px-4">
             <HighlightRow highlights={highlights} isOwnProfile={isOwnProfile} />
           </div>
         )}
