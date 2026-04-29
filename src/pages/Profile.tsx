@@ -605,6 +605,7 @@ export default function Profile() {
 
             {/* Stats Row — strict 4 equal columns inside the content well */}
             <motion.div
+              ref={(el) => { if (el) { const bio = el.previousElementSibling as HTMLElement; const g = el.getBoundingClientRect(); const b = bio?.getBoundingClientRect(); console.log('[STATSTRIP]', JSON.stringify({grid_left: g.left, grid_right: g.right, bio_left: b?.left, bio_right: b?.right})); } }}
               className="mt-6 grid w-full grid-cols-4 items-stretch divide-x divide-white/[0.08]"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
