@@ -273,7 +273,7 @@ export function DiscoverRow() {
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="py-5">
       {/* Section Header */}
-      <div className="flex items-center justify-between gap-3 min-w-0 px-4 mb-4">
+      <div className="flex items-center justify-between gap-3 min-w-0 mb-4">
         <CollapsibleTrigger className="flex items-center gap-2 hover:opacity-80 transition-opacity min-w-0 flex-1">
           <h3 className="text-title font-semibold text-foreground truncate min-w-0">Discover People</h3>
           <ChevronDown 
