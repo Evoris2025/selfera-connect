@@ -315,9 +315,9 @@ export function TrendingNowRail({ activeTab, filters }: TrendingNowRailProps) {
 
   return (
     <div className="bg-background pt-4 pb-6">
-      <div className="px-4 mb-2 flex items-center gap-1.5">
+      <div className="px-4 mb-2 flex items-center gap-1.5 min-w-0">
         <BrandIcon icon={Flame} size={12} />
-        <span className="text-caption font-medium uppercase tracking-[0.12em] text-white/55">
+        <span className="min-w-0 flex-1 truncate text-caption font-medium uppercase tracking-[0.12em] text-white/55">
           {`TRENDING ${activeTab.toUpperCase()}`}
         </span>
       </div>
