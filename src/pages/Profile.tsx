@@ -103,14 +103,16 @@ function CardStatItem({
       onClick={onClick}
       disabled={!onClick}
       className={cn(
-        'flex flex-col items-center justify-center gap-1.5 py-4 transition-colors',
-        onClick && 'hover:bg-white/[0.04] active:bg-white/[0.06] cursor-pointer',
+        'flex-1 min-w-0 flex flex-col items-center text-center py-3 px-1 transition-colors duration-200',
+        onClick && 'hover:bg-white/[0.04] active:scale-[0.97] cursor-pointer',
       )}
     >
-      <p className="text-white/85 text-title font-medium leading-none text-center">{formatCount(count)}</p>
-      <p className="text-[10px] uppercase tracking-[0.08em] font-medium text-white/45 leading-none text-center">
-        {label}
-      </p>
+      <p className="text-white text-title font-medium leading-none">{formatCount(count)}</p>
+      <div className="mt-1.5 w-full">
+        <p className="text-caption font-medium uppercase tracking-wider text-white/55 truncate w-full text-center">
+          {label}
+        </p>
+      </div>
     </button>
   );
 }
@@ -601,9 +603,9 @@ export default function Profile() {
               {renderBioWithHashtags(displayProfile.bio || mockUser.bio)}
             </motion.p>
 
-            {/* Stats — 1x4 row */}
+            {/* Stats Row — strict 4 equal columns inside the content well */}
             <motion.div
-              className="mt-6 grid w-full grid-cols-4 items-stretch"
+              className="mt-6 grid w-full grid-cols-4 items-stretch divide-x divide-white/[0.08]"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
@@ -663,7 +665,7 @@ export default function Profile() {
         
         {/* Highlights Row - Instagram-style story highlights */}
         {highlights.length > 0 && (
-          <div className="mt-6 px-4">
+          <div className="mt-2 px-4">
             <HighlightRow highlights={highlights} isOwnProfile={isOwnProfile} />
           </div>
         )}
