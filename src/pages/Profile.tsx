@@ -601,7 +601,7 @@ export default function Profile() {
             </div>
 
             {/* RIGHT COLUMN: 2x2 stat grid filling height */}
-            <div className="flex-1 min-w-0 grid grid-cols-2 grid-rows-2 self-stretch">
+            <div className="flex-1 min-w-0 grid grid-cols-2 grid-rows-2 h-full pt-14 sm:pt-16">
               <CardStatItem count={normalizedStats.postCount} label="Posts" position="tl" />
               <CardStatItem
                 count={followerCount || normalizedStats.followerCount}
