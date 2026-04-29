@@ -170,7 +170,7 @@ function Chip<T extends string>({ option, active, themePrimary, onClick, leftDot
       disabled={option.disabled}
       aria-pressed={active}
       className={cn(
-        'h-9 px-3 rounded-full text-label uppercase tracking-[0.08em] flex items-center justify-center gap-2 transition-colors',
+        'h-9 px-3 rounded-full text-label uppercase tracking-[0.08em] whitespace-nowrap flex items-center justify-center gap-2 transition-colors',
         active
           ? 'text-white'
           : 'border border-white/[0.15] text-white/55 bg-transparent hover:border-white/30',
@@ -302,7 +302,7 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
           {/* Section 1 — Sort by (chip grid, single-select) */}
           <section>
             <BrandSectionLabel className="px-5 mb-2">SORT BY</BrandSectionLabel>
-            <div className="grid grid-cols-3 gap-2 px-4">
+            <div className="flex flex-wrap gap-2 px-4">
               {SORT_OPTIONS.map((opt) => (
                 <Chip
                   key={opt.value}
@@ -318,7 +318,7 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
           {/* Section 2 — Time period (3-col chip grid) */}
           <section>
             <BrandSectionLabel className="px-5 mb-2">TIME PERIOD</BrandSectionLabel>
-            <div className="grid grid-cols-3 gap-2 px-4">
+            <div className="flex flex-wrap gap-2 px-4">
               {TIME_OPTIONS.map((opt) => (
                 <Chip
                   key={opt.value}
@@ -335,7 +335,7 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
           {activeTab === 'videos' && (
             <section>
               <BrandSectionLabel className="px-5 mb-2">DURATION</BrandSectionLabel>
-              <div className="grid grid-cols-2 gap-2 px-4">
+              <div className="flex flex-wrap gap-2 px-4">
                 {DURATION_OPTIONS.map((opt) => (
                   <Chip
                     key={opt.value}
@@ -351,7 +351,7 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
           {activeTab === 'images' && (
             <section>
               <BrandSectionLabel className="px-5 mb-2">FORMAT</BrandSectionLabel>
-              <div className="grid grid-cols-3 gap-2 px-4">
+              <div className="flex flex-wrap gap-2 px-4">
                 {FORMAT_OPTIONS.map((opt) => (
                   <Chip
                     key={opt.value}
@@ -369,7 +369,7 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
           {activeTab !== 'images' && (
             <section>
               <BrandSectionLabel className="px-5 mb-2">CREATOR TIER</BrandSectionLabel>
-              <div className="grid grid-cols-3 gap-2 px-4">
+              <div className="flex flex-wrap gap-2 px-4">
                 <Chip
                   option={{ value: 'all', label: 'All' }}
                   active={(tabSlice as { creatorTier: CreatorTier }).creatorTier === 'all'}
@@ -415,7 +415,7 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
           {/* Section 4 — Origin (chip grid, single-select) */}
           <section>
             <BrandSectionLabel className="px-5 mb-2">ORIGIN</BrandSectionLabel>
-            <div className="grid grid-cols-3 gap-2 px-4">
+            <div className="flex flex-wrap gap-2 px-4">
               {ORIGIN_OPTIONS.map((opt) => (
                 <Chip
                   key={opt.value}
