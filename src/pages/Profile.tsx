@@ -603,27 +603,24 @@ export default function Profile() {
               {renderBioWithHashtags(displayProfile.bio || mockUser.bio)}
             </motion.p>
 
-            {/* Stats Row — fits 4 stats natively across the 28rem column (no scroll) */}
+            {/* Stats Row — strict 4 equal columns inside the content well */}
             <motion.div
-              className="mt-6 flex w-full items-stretch gap-1"
+              className="mt-6 grid w-full grid-cols-4 items-stretch divide-x divide-white/[0.08]"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
               <CardStatItem count={normalizedStats.postCount} label="Posts" />
-              <div className="w-px self-stretch bg-white/[0.08]" />
               <CardStatItem
                 count={followerCount || normalizedStats.followerCount}
                 label="Followers"
                 onClick={() => openListModal('followers')}
               />
-              <div className="w-px self-stretch bg-white/[0.08]" />
               <CardStatItem
                 count={normalizedStats.followingCount}
                 label="Following"
                 onClick={() => openListModal('following')}
               />
-              <div className="w-px self-stretch bg-white/[0.08]" />
               <CardStatItem
                 count={normalizedStats.communityCount}
                 label="Community"
@@ -668,13 +665,13 @@ export default function Profile() {
         
         {/* Highlights Row - Instagram-style story highlights */}
         {highlights.length > 0 && (
-          <div className="mt-2">
+          <div className="mt-2 px-4">
             <HighlightRow highlights={highlights} isOwnProfile={isOwnProfile} />
           </div>
         )}
         
         {/* Discover People Row */}
-        <div className="mt-2">
+        <div className="mt-2 px-4">
           <DiscoverRow />
         </div>
 
