@@ -364,15 +364,20 @@ export default function MyERA() {
             >
               {/* Avatar + Info Row */}
               <div className="flex items-center gap-4">
-                <CinematicAvatar
-                  src={profile?.avatar_url || undefined}
-                  alt={profile?.display_name || 'User'}
-                  fallback={profile?.display_name?.[0] || 'U'}
-                  size="md"
-                  ring="gradient"
-                  interactive
+                <button
+                  type="button"
                   onClick={() => navigate('/profile')}
-                />
+                  aria-label="View your profile"
+                  className="flex-shrink-0 rounded-full focus:outline-none focus:ring-2 focus:ring-primary/40"
+                >
+                  <CinematicAvatar
+                    src={profile?.avatar_url || undefined}
+                    alt={profile?.display_name || 'User'}
+                    fallback={profile?.display_name?.[0] || 'U'}
+                    size="md"
+                    ring="gradient"
+                  />
+                </button>
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 min-w-0">
@@ -392,17 +397,30 @@ export default function MyERA() {
                     <AccountTypeBadge type={(profile?.user_type as AccountType) || 'individual'} />
                   </div>
                 </div>
-
-                {/* Quick Action — outline only, theme color */}
-                <button
-                  type="button"
-                  onClick={() => navigate('/profile')}
-                  className="flex-shrink-0 h-9 px-3.5 rounded-full border bg-transparent text-label uppercase tracking-[0.1em]"
-                  style={{ borderColor: themePrimary, color: themePrimary }}
-                >
-                  View Profile
-                </button>
               </div>
+
+              {/* Account Status Button — full-width row */}
+              <button
+                type="button"
+                onClick={() => navigate('/account')}
+                aria-label="View account details"
+                className="mt-3 w-full h-11 px-4 rounded-md border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.04] active:bg-white/[0.06] transition-colors flex items-center justify-between"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <BrandIcon icon={Shield} size={16} />
+                  <div className="flex flex-col items-start min-w-0">
+                    <span className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground">Account Status</span>
+                    <span className="text-sm font-medium text-white truncate">
+                      {isVerified
+                        ? 'ERA Verified · Active'
+                        : planType && planType !== 'free'
+                        ? PLAN_DETAILS[planType as PlanType]?.name || 'Free Account'
+                        : 'Free Account'}
+                    </span>
+                  </div>
+                </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+              </button>
 
               {/* Stats Row — FIT pattern (see docs/SCALING.md) */}
               <div className="flex w-full items-stretch gap-0 mt-5 pt-4 border-t border-white/[0.08]">
