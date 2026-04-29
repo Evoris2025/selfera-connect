@@ -107,9 +107,9 @@ function CardStatItem({
         onClick && 'hover:bg-white/[0.04] active:scale-[0.97] cursor-pointer',
       )}
     >
-      <p className="text-white text-title font-medium leading-none text-center w-full max-w-[60px] mx-auto">{formatCount(count)}</p>
+      <p className="text-white text-title font-medium leading-none text-center w-full">{formatCount(count)}</p>
       <div className="mt-1.5 w-full">
-        <p className="text-center w-full max-w-[60px] mx-auto text-[10px] uppercase tracking-tight font-medium text-muted-foreground leading-none">
+        <p className="text-center w-full text-[10px] uppercase tracking-tight font-medium text-muted-foreground leading-none">
           {label}
         </p>
       </div>
