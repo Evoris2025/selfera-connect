@@ -504,7 +504,7 @@ export default function MyERA() {
           </div>
 
           {/* Network Tabs — brand underline */}
-          <div className="mb-5 border-b border-white/[0.08]">
+          <div className="-mx-4 mb-4 px-3 border-b border-white/[0.08]">
             <BrandUnderlineTabs
               tabs={[
                 { id: 'discover', label: 'Discover' },
@@ -622,7 +622,9 @@ export default function MyERA() {
                         </div>
 
                         {link.status === 'pending' && (
-                          <BrandSectionLabel>PENDING</BrandSectionLabel>
+                          <span className="shrink-0 text-[10px] uppercase tracking-[0.08em] font-medium px-2 py-0.5 rounded-full border border-white/15 text-white/55">
+                            Pending
+                          </span>
                         )}
                         
                         <Button
