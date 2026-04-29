@@ -482,7 +482,7 @@ export default function Profile() {
             
             {/* Two-column hero: [Avatar+Identity] | [2x2 Stats] */}
             <motion.div
-              className="flex items-center gap-4 sm:gap-5"
+              className="flex items-stretch gap-4 sm:gap-5"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
