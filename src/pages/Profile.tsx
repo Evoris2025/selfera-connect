@@ -480,15 +480,13 @@ export default function Profile() {
           {/* Profile Info Section */}
           <div className="px-4 -mt-14 sm:-mt-16 pb-6">
             
-            {/* Two-column hero: [Avatar+Identity] | [2x2 Stats] */}
+            {/* ROW 1: Avatar + 2x2 stat grid */}
             <motion.div
-              className="flex items-stretch gap-4 sm:gap-5"
+              className="flex items-center gap-4 sm:gap-5"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             >
-            {/* LEFT COLUMN: Avatar + Identity stack */}
-            <div className="flex-shrink-0 flex flex-col items-start gap-3">
               {/* Avatar with gradient ring and upload overlay */}
               <motion.div
                 className="relative flex-shrink-0 group"
