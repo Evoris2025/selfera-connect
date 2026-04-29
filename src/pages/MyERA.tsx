@@ -821,20 +821,19 @@ export default function MyERA() {
 
         {/* MyERA Network Section */}
         <motion.section
-          className="mt-8 px-4 order-1"
+          className="px-4 order-1"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ ...springGentle, delay: 0.35 }}
         >
-          <div className="mb-3 flex items-center justify-between">
+          <div className="mt-6 mb-3 flex items-center justify-between">
             <BrandSectionLabel>MYERA NETWORK</BrandSectionLabel>
             <button
               type="button"
               onClick={() => setShowDirectoryPicker(true)}
-              className="h-8 px-3 rounded-full border bg-transparent text-caption uppercase tracking-[0.1em] inline-flex items-center gap-1"
-              style={{ borderColor: themePrimary, color: themePrimary }}
+              className="h-7 px-2.5 rounded-full border border-primary/40 text-[11px] uppercase tracking-tight font-medium text-primary bg-transparent hover:bg-primary/10 inline-flex items-center gap-1"
             >
-              <Plus className="w-3.5 h-3.5" />
+              <Plus className="h-3 w-3" />
               Add
             </button>
           </div>
