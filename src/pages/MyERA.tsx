@@ -71,6 +71,61 @@ import {
   BrandUnderlineTabs,
 } from '@/components/brand';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { cn } from '@/lib/utils';
+
+// 2x2 grid stat cell — mirrors Profile hero CardStatItem
+function MyEraStatCell({
+  count,
+  label,
+  onClick,
+  position,
+  showDot,
+  iconOnly,
+  icon: IconComp,
+}: {
+  count?: number | string;
+  label: string;
+  onClick?: () => void;
+  position: 'tl' | 'tr' | 'bl' | 'br';
+  showDot?: boolean;
+  iconOnly?: boolean;
+  icon?: React.ComponentType<{ className?: string }>;
+}) {
+  const borderClasses = cn(
+    position === 'tl' && 'border-r border-b border-white/[0.08]',
+    position === 'tr' && 'border-b border-white/[0.08]',
+    position === 'bl' && 'border-r border-white/[0.08]',
+  );
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={!onClick}
+      className={cn(
+        'relative flex flex-col items-center justify-center gap-1.5 py-3 px-1 transition-colors duration-200',
+        borderClasses,
+        onClick && 'hover:bg-white/[0.04] active:scale-[0.97] cursor-pointer',
+      )}
+    >
+      {iconOnly && IconComp ? (
+        <IconComp className="h-5 w-5 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]" />
+      ) : (
+        <p className="text-white text-title font-medium leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)] text-center">
+          {count ?? 0}
+        </p>
+      )}
+      <p className="text-[10px] uppercase tracking-[0.08em] font-medium text-white/70 truncate w-full text-center leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
+        {label}
+      </p>
+      {showDot && (
+        <span
+          className="absolute top-1.5 right-1/4 w-2 h-2 rounded-full"
+          style={{ backgroundColor: 'hsl(var(--primary))' }}
+        />
+      )}
+    </button>
+  );
+}
 
 const springGentle = { type: "spring" as const, stiffness: 260, damping: 28 };
 
