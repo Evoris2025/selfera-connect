@@ -563,68 +563,72 @@ export default function Profile() {
                 )}
               </motion.div>
 
-              {/* Identity block — flush-left under avatar */}
-              <div className="flex flex-col items-start gap-1 min-w-0">
-                {/* Name row */}
-                <div className="flex items-center gap-1.5 flex-wrap min-w-0">
-                  <h1 className="text-headline font-semibold text-foreground tracking-tight leading-tight">
-                    {displayProfile.displayName || mockUser.name}
-                  </h1>
-                  {displayProfile.isVerified && (
-                    <EraVerifiedTooltip
-                      tier={calculateVerificationTier(0, false, displayProfile.email ?? undefined)}
-                      userEmail={displayProfile.email ?? undefined}
-                      size="md"
-                    />
-                  )}
-                  {displayProfile.userType && displayProfile.userType !== 'individual' && (
-                    <AccountTypeBadge type={displayProfile.userType as AccountType} size="md" />
-                  )}
-                  {displayProfile.isPrivate && <Lock className="h-4 w-4 text-muted-foreground flex-shrink-0" />}
-                </div>
-
-                {/* Handle row */}
-                <p className="text-sm text-muted-foreground leading-tight">
-                  @{displayProfile.handle || mockUser.handle}
-                </p>
-
-                {/* Location row */}
-                {(displayProfile.location || mockUser.location) && (
-                  <p className="flex items-center gap-1 text-xs text-muted-foreground leading-tight">
-                    <MapPin className="h-3 w-3 flex-shrink-0" />
-                    <span className="truncate">{displayProfile.location || mockUser.location}</span>
-                  </p>
-                )}
+              {/* 2x2 stat grid — vertically centered against avatar */}
+              <div className="flex-1 min-w-0 grid grid-cols-2 grid-rows-2">
+                <CardStatItem count={normalizedStats.postCount} label="Posts" position="tl" />
+                <CardStatItem
+                  count={followerCount || normalizedStats.followerCount}
+                  label="Followers"
+                  onClick={() => openListModal('followers')}
+                  position="tr"
+                />
+                <CardStatItem
+                  count={normalizedStats.followingCount}
+                  label="Following"
+                  onClick={() => openListModal('following')}
+                  position="bl"
+                />
+                <CardStatItem
+                  count={normalizedStats.communityCount}
+                  label="Community"
+                  onClick={() => openListModal('community')}
+                  position="br"
+                />
               </div>
-            </div>
-
-            {/* RIGHT COLUMN: 2x2 stat grid filling height */}
-            <div className="flex-1 min-w-0 grid grid-cols-2 grid-rows-2 h-full pt-14 sm:pt-16">
-              <CardStatItem count={normalizedStats.postCount} label="Posts" position="tl" />
-              <CardStatItem
-                count={followerCount || normalizedStats.followerCount}
-                label="Followers"
-                onClick={() => openListModal('followers')}
-                position="tr"
-              />
-              <CardStatItem
-                count={normalizedStats.followingCount}
-                label="Following"
-                onClick={() => openListModal('following')}
-                position="bl"
-              />
-              <CardStatItem
-                count={normalizedStats.communityCount}
-                label="Community"
-                onClick={() => openListModal('community')}
-                position="br"
-              />
-            </div>
             </motion.div>
 
-            {/* Bio - Full Width Below */}
+            {/* ROW 2: Identity block — full content-well width, flush-left */}
+            <motion.div
+              className="mt-4 flex flex-col items-start gap-1"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {/* Name row */}
+              <div className="flex items-center gap-1.5 flex-wrap min-w-0">
+                <h1 className="text-headline font-semibold text-foreground tracking-tight leading-tight">
+                  {displayProfile.displayName || mockUser.name}
+                </h1>
+                {displayProfile.isVerified && (
+                  <EraVerifiedTooltip
+                    tier={calculateVerificationTier(0, false, displayProfile.email ?? undefined)}
+                    userEmail={displayProfile.email ?? undefined}
+                    size="md"
+                  />
+                )}
+                {displayProfile.userType && displayProfile.userType !== 'individual' && (
+                  <AccountTypeBadge type={displayProfile.userType as AccountType} size="md" />
+                )}
+                {displayProfile.isPrivate && <Lock className="h-4 w-4 text-muted-foreground flex-shrink-0" />}
+              </div>
+
+              {/* Handle row */}
+              <p className="text-sm text-muted-foreground leading-tight">
+                @{displayProfile.handle || mockUser.handle}
+              </p>
+
+              {/* Location row */}
+              {(displayProfile.location || mockUser.location) && (
+                <p className="flex items-center gap-1 text-xs text-muted-foreground leading-tight">
+                  <MapPin className="h-3 w-3 flex-shrink-0" />
+                  <span className="truncate">{displayProfile.location || mockUser.location}</span>
+                </p>
+              )}
+            </motion.div>
+
+            {/* ROW 3: Bio - Full content-well width */}
             <motion.p
-              className="text-body sm:text-title text-foreground/85 leading-relaxed mt-5 max-w-2xl"
+              className="text-body sm:text-title text-foreground/85 leading-relaxed mt-3 max-w-2xl"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.25 }}
