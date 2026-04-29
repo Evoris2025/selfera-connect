@@ -492,7 +492,10 @@ export default function MyERA() {
           transition={{ ...springGentle, delay: 0.35 }}
         >
           <div className="mt-6 mb-3 flex items-center justify-between">
-            <BrandSectionLabel>MYERA NETWORK</BrandSectionLabel>
+            <BrandSectionLabel>
+              <span className="text-gradient-brand">MYERA</span>{' '}
+              <span>NETWORK</span>
+            </BrandSectionLabel>
             <button
               type="button"
               onClick={() => setShowDirectoryPicker(true)}
