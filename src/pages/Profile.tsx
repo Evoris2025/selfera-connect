@@ -93,22 +93,25 @@ function CardStatItem({
   count,
   label,
   onClick,
+  borderClasses,
 }: {
   count: number;
   label: string;
   onClick?: () => void;
+  borderClasses?: string;
 }) {
   return (
     <button
       onClick={onClick}
       disabled={!onClick}
       className={cn(
-        'flex flex-col items-center justify-center gap-1 py-4 transition-colors',
+        'flex flex-col items-center justify-center gap-1.5 py-5 transition-colors',
+        borderClasses,
         onClick && 'hover:bg-white/[0.04] active:bg-white/[0.06] cursor-pointer',
       )}
     >
-      <p className="text-white text-title font-medium leading-none text-center">{formatCount(count)}</p>
-      <p className="text-[10px] uppercase tracking-tight font-medium text-muted-foreground leading-none text-center">
+      <p className="text-white/85 text-title font-medium leading-none text-center">{formatCount(count)}</p>
+      <p className="text-[10px] uppercase tracking-[0.08em] font-medium text-white/45 leading-none text-center">
         {label}
       </p>
     </button>
@@ -601,23 +604,29 @@ export default function Profile() {
               {renderBioWithHashtags(displayProfile.bio || mockUser.bio)}
             </motion.p>
 
-            {/* Stats — 2x2 grid with cross dividers */}
+            {/* Stats — 2x2 grid, soft "+" cross via per-cell low-contrast borders */}
             <motion.div
-              className="mt-6 grid w-full grid-cols-2 grid-rows-2 divide-x divide-y divide-white/[0.08]"
+              className="mt-6 mb-6 grid w-full grid-cols-2 grid-rows-2"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <CardStatItem count={normalizedStats.postCount} label="Posts" />
+              <CardStatItem
+                count={normalizedStats.postCount}
+                label="Posts"
+                borderClasses="border-r border-b border-white/[0.04]"
+              />
               <CardStatItem
                 count={followerCount || normalizedStats.followerCount}
                 label="Followers"
                 onClick={() => openListModal('followers')}
+                borderClasses="border-b border-white/[0.04]"
               />
               <CardStatItem
                 count={normalizedStats.followingCount}
                 label="Following"
                 onClick={() => openListModal('following')}
+                borderClasses="border-r border-white/[0.04]"
               />
               <CardStatItem
                 count={normalizedStats.communityCount}
