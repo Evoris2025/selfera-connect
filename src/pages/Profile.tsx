@@ -88,34 +88,41 @@ function formatCount(count: number): string {
   return count.toString();
 }
 
-// Clickable stat item for the card profile
+// Clickable stat item for the card profile (2x2 grid cell)
 function CardStatItem({
   count,
   label,
   onClick,
+  position,
 }: {
   count: number;
   label: string;
   onClick?: () => void;
+  position?: 'tl' | 'tr' | 'bl' | 'br';
 }) {
+  const borderClasses = cn(
+    position === 'tl' && 'border-r border-b border-white/[0.04]',
+    position === 'tr' && 'border-b border-white/[0.04]',
+    position === 'bl' && 'border-r border-white/[0.04]',
+  );
   return (
     <button
       onClick={onClick}
       disabled={!onClick}
       className={cn(
-        'flex-1 min-w-0 flex flex-col items-center text-center py-3 px-1 transition-colors duration-200',
+        'flex flex-col items-center justify-center gap-1.5 py-3 px-1 transition-colors duration-200',
+        borderClasses,
         onClick && 'hover:bg-white/[0.04] active:scale-[0.97] cursor-pointer',
       )}
     >
-      <p className="text-white text-title font-medium leading-none">{formatCount(count)}</p>
-      <div className="mt-1.5 w-full">
-        <p className="text-caption font-medium uppercase tracking-wider text-white/55 truncate w-full text-center">
-          {label}
-        </p>
-      </div>
+      <p className="text-white/85 text-title font-medium leading-none">{formatCount(count)}</p>
+      <p className="text-[10px] uppercase tracking-[0.08em] text-white/45 truncate w-full text-center leading-none">
+        {label}
+      </p>
     </button>
   );
 }
+
 
 // Render bio with inline hashtags styled
 function renderBioWithHashtags(bio: string) {
@@ -473,13 +480,15 @@ export default function Profile() {
           {/* Profile Info Section */}
           <div className="px-4 -mt-14 sm:-mt-16 pb-6">
             
-            {/* Avatar + Name/Handle Row */}
+            {/* Two-column hero: [Avatar+Identity] | [2x2 Stats] */}
             <motion.div
-              className="flex items-end gap-5 sm:gap-6"
+              className="flex items-stretch gap-4 sm:gap-5"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             >
+            {/* LEFT COLUMN: Avatar + Identity stack */}
+            <div className="flex-shrink-0 flex flex-col items-start gap-3">
               {/* Avatar with gradient ring and upload overlay */}
               <motion.div
                 className="relative flex-shrink-0 group"
@@ -556,41 +565,63 @@ export default function Profile() {
                 )}
               </motion.div>
 
-              {/* Name + Handle + Location + Admin Button */}
-              <div className="flex flex-col justify-end min-w-0 pb-1 flex-1">
-                {/* Name Row with Admin Button on Right */}
-                <div className="flex items-center justify-between gap-2">
-                  {/* Name + Verified Badge */}
-                  <div className="flex items-center gap-2 flex-wrap min-w-0">
-                    <h1 className="text-headline sm:text-2xl md:text-3xl font-bold text-foreground tracking-tight leading-tight truncate">
-                      {displayProfile.displayName || mockUser.name}
-                    </h1>
-                    {displayProfile.isVerified && (
-                      <EraVerifiedTooltip 
-                        tier={calculateVerificationTier(0, false, displayProfile.email ?? undefined)} 
-                        userEmail={displayProfile.email ?? undefined} 
-                        size="md" 
-                      />
-                    )}
-                    {displayProfile.userType && displayProfile.userType !== 'individual' && (
-                      <AccountTypeBadge type={displayProfile.userType as AccountType} size="md" />
-                    )}
-                    {displayProfile.isPrivate && <Lock className="h-4 w-4 text-muted-foreground" />}
-                  </div>
+              {/* Identity block — flush-left under avatar */}
+              <div className="flex flex-col items-start gap-1 min-w-0">
+                {/* Name row */}
+                <div className="flex items-center gap-1.5 flex-wrap min-w-0">
+                  <h1 className="text-headline font-semibold text-foreground tracking-tight leading-tight">
+                    {displayProfile.displayName || mockUser.name}
+                  </h1>
+                  {displayProfile.isVerified && (
+                    <EraVerifiedTooltip
+                      tier={calculateVerificationTier(0, false, displayProfile.email ?? undefined)}
+                      userEmail={displayProfile.email ?? undefined}
+                      size="md"
+                    />
+                  )}
+                  {displayProfile.userType && displayProfile.userType !== 'individual' && (
+                    <AccountTypeBadge type={displayProfile.userType as AccountType} size="md" />
+                  )}
+                  {displayProfile.isPrivate && <Lock className="h-4 w-4 text-muted-foreground flex-shrink-0" />}
                 </div>
 
-                {/* Handle + Location */}
-                <p className="text-body sm:text-title text-muted-foreground mt-1 flex items-center flex-wrap gap-x-2">
-                  <span className="font-medium">@{displayProfile.handle || mockUser.handle}</span>
-                  {(displayProfile.location || mockUser.location) && (
-                    <span className="inline-flex items-center gap-1.5 text-muted-foreground/70">
-                      <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
-                      <MapPin className="w-3.5 h-3.5" />
-                      <span>{displayProfile.location || mockUser.location}</span>
-                    </span>
-                  )}
+                {/* Handle row */}
+                <p className="text-sm text-muted-foreground leading-tight">
+                  @{displayProfile.handle || mockUser.handle}
                 </p>
+
+                {/* Location row */}
+                {(displayProfile.location || mockUser.location) && (
+                  <p className="flex items-center gap-1 text-xs text-muted-foreground leading-tight">
+                    <MapPin className="h-3 w-3 flex-shrink-0" />
+                    <span className="truncate">{displayProfile.location || mockUser.location}</span>
+                  </p>
+                )}
               </div>
+            </div>
+
+            {/* RIGHT COLUMN: 2x2 stat grid filling height */}
+            <div className="flex-1 min-w-0 grid grid-cols-2 grid-rows-2 h-full pt-14 sm:pt-16">
+              <CardStatItem count={normalizedStats.postCount} label="Posts" position="tl" />
+              <CardStatItem
+                count={followerCount || normalizedStats.followerCount}
+                label="Followers"
+                onClick={() => openListModal('followers')}
+                position="tr"
+              />
+              <CardStatItem
+                count={normalizedStats.followingCount}
+                label="Following"
+                onClick={() => openListModal('following')}
+                position="bl"
+              />
+              <CardStatItem
+                count={normalizedStats.communityCount}
+                label="Community"
+                onClick={() => openListModal('community')}
+                position="br"
+              />
+            </div>
             </motion.div>
 
             {/* Bio - Full Width Below */}
@@ -603,30 +634,6 @@ export default function Profile() {
               {renderBioWithHashtags(displayProfile.bio || mockUser.bio)}
             </motion.p>
 
-            {/* Stats Row — strict 4 equal columns inside the content well */}
-            <motion.div
-              className="mt-6 grid w-full grid-cols-4 items-stretch divide-x divide-white/[0.08] -translate-x-[25%]"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              <CardStatItem count={normalizedStats.postCount} label="Posts" />
-              <CardStatItem
-                count={followerCount || normalizedStats.followerCount}
-                label="Followers"
-                onClick={() => openListModal('followers')}
-              />
-              <CardStatItem
-                count={normalizedStats.followingCount}
-                label="Following"
-                onClick={() => openListModal('following')}
-              />
-              <CardStatItem
-                count={normalizedStats.communityCount}
-                label="Community"
-                onClick={() => openListModal('community')}
-              />
-            </motion.div>
 
             {/* CTA Buttons - Below Stats */}
             {!isOwnProfile && (
