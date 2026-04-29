@@ -103,12 +103,12 @@ function CardStatItem({
       onClick={onClick}
       disabled={!onClick}
       className={cn(
-        'rounded-md border border-white/[0.08] bg-white/[0.02] aspect-[2/1] flex flex-col items-center justify-center gap-1 px-3 py-3 transition-colors',
+        'flex flex-col items-center justify-center gap-1 py-4 transition-colors',
         onClick && 'hover:bg-white/[0.04] active:bg-white/[0.06] cursor-pointer',
       )}
     >
       <p className="text-white text-title font-medium leading-none text-center">{formatCount(count)}</p>
-      <p className="text-[10px] uppercase tracking-tight font-medium text-muted-foreground leading-none text-center mt-1">
+      <p className="text-[10px] uppercase tracking-tight font-medium text-muted-foreground leading-none text-center">
         {label}
       </p>
     </button>
@@ -601,9 +601,9 @@ export default function Profile() {
               {renderBioWithHashtags(displayProfile.bio || mockUser.bio)}
             </motion.p>
 
-            {/* Stats — 2x2 grid of equal cards */}
+            {/* Stats — 2x2 grid with cross dividers */}
             <motion.div
-              className="mt-6 grid w-full grid-cols-2 grid-rows-2 gap-3"
+              className="mt-6 grid w-full grid-cols-2 grid-rows-2 divide-x divide-y divide-white/[0.08]"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
