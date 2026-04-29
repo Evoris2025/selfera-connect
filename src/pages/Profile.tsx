@@ -101,9 +101,9 @@ function CardStatItem({
   position?: 'tl' | 'tr' | 'bl' | 'br';
 }) {
   const borderClasses = cn(
-    position === 'tl' && 'border-r border-b border-white/[0.04]',
-    position === 'tr' && 'border-b border-white/[0.04]',
-    position === 'bl' && 'border-r border-white/[0.04]',
+    position === 'tl' && 'border-r border-b border-white/[0.08]',
+    position === 'tr' && 'border-b border-white/[0.08]',
+    position === 'bl' && 'border-r border-white/[0.08]',
   );
   return (
     <button
@@ -115,8 +115,8 @@ function CardStatItem({
         onClick && 'hover:bg-white/[0.04] active:scale-[0.97] cursor-pointer',
       )}
     >
-      <p className="text-white/85 text-title font-medium leading-none">{formatCount(count)}</p>
-      <p className="text-[10px] uppercase tracking-[0.08em] text-white/45 truncate w-full text-center leading-none">
+      <p className="text-white text-title font-medium leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">{formatCount(count)}</p>
+      <p className="text-[10px] uppercase tracking-[0.08em] text-white/70 truncate w-full text-center leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
         {label}
       </p>
     </button>
