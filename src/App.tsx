@@ -35,6 +35,7 @@ import CreatorDashboard from "./pages/CreatorDashboard";
 import Studio from "./pages/Studio";
 import NotFound from "./pages/NotFound";
 import DebugBrand from "./pages/DebugBrand";
+import Account from "./pages/Account";
 
 const queryClient = new QueryClient();
 
@@ -92,6 +93,7 @@ function AppRoutes() {
         <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
         <Route path="/community/:communityId" element={<ProtectedRoute><Community /></ProtectedRoute>} />
         <Route path="/my-era" element={<ProtectedRoute><MyERA /></ProtectedRoute>} />
+        <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
         <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
         <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
         <Route path="/profile/:handle?" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
