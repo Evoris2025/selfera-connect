@@ -32,7 +32,7 @@ export function AppHeader({ title, brandMark = false }: AppHeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/50 bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80 pt-safe lg:hidden">
+    <header className="sticky top-0 z-40 border-b border-border/50 bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80 pt-safe">
       <div className="flex items-center justify-between h-14 px-4 w-full">
         {/* Logo + Title */}
         <Link to="/feed" className="flex items-center gap-3">
