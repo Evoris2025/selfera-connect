@@ -2,24 +2,14 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { Heart, Shield, Users, Phone, Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { BrandMark } from '@/components/BrandMark';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { z } from 'zod';
-
-const fadeInUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
-
-const stagger = {
-  visible: { transition: { staggerChildren: 0.1 } },
-};
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email'),
@@ -69,195 +59,124 @@ export default function Landing() {
     }
   };
 
-  const features = [
-    { icon: Users, title: t('landing.features.community'), description: t('landing.features.communityDesc') },
-    { icon: Heart, title: t('landing.features.resources'), description: t('landing.features.resourcesDesc') },
-    { icon: Shield, title: t('landing.features.safe'), description: t('landing.features.safeDesc') },
-  ];
-
   return (
-    <div className="min-h-dvh bg-background">
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 h-14 flex items-center justify-between">
-          <Link to="/" className="flex items-center">
-            <BrandMark />
-          </Link>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/crisis">
-                <Phone className="h-4 w-4 mr-1" />
-                <span className="hidden sm:inline">{t('nav.crisisSupport')}</span>
-              </Link>
-            </Button>
-            <LanguageSwitcher />
-          </div>
-        </div>
-      </header>
+    <div className="min-h-dvh bg-background flex flex-col">
+      {/* Floating brand mark top-left */}
+      <div className="absolute top-6 left-6 z-20">
+        <Link to="/" className="flex items-center">
+          <BrandMark />
+        </Link>
+      </div>
 
-      {/* Main split: marketing (left) + login card (right) */}
-      <section className="pt-20 pb-12 px-4">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-[55fr_45fr] gap-10 lg:gap-12 items-center min-h-[calc(100dvh-5rem)]">
-          {/* RIGHT on desktop / TOP on mobile: Login card */}
+      {/* Main split: tagline (left) + login card (right) */}
+      <main className="flex-1 flex items-center px-6 md:px-12 lg:px-20 pt-24 pb-12">
+        <div className="w-full max-w-7xl mx-auto grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+          {/* LEFT: Hero tagline */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="order-2 lg:order-1 text-center lg:text-left"
+          >
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold text-foreground leading-[1.05] tracking-tight">
+              Your{' '}
+              <span className="bg-gradient-to-r from-[#3b82f6] via-[#a855f7] to-[#f97316] bg-clip-text text-transparent">
+                wellbeing
+              </span>
+              <br />
+              matters
+              <span className="text-primary">.</span>
+            </h1>
+            <p className="mt-6 text-title sm:text-headline text-muted-foreground max-w-xl mx-auto lg:mx-0">
+              {t('landing.hero.subtitle')}
+            </p>
+          </motion.div>
+
+          {/* RIGHT: Login card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
             className="order-1 lg:order-2 w-full max-w-md mx-auto lg:ml-auto lg:mr-0"
           >
-            <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-2xl">
-              <div className="flex justify-center mb-6">
-                <BrandMark />
-              </div>
-
+            <div className="bg-card border border-border p-6 sm:p-8 shadow-2xl">
               <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">{t('auth.email')}</Label>
+                <Input
+                  type="email"
+                  placeholder="Email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="h-12 text-base"
+                />
+                {errors.email && <p className="text-body text-destructive -mt-2">{errors.email}</p>}
+
+                <div className="relative">
                   <Input
-                    id="email"
-                    type="email"
-                    placeholder="you@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="h-12"
+                    className="h-12 pr-12 text-base"
                   />
-                  {errors.email && <p className="text-body text-destructive">{errors.email}</p>}
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
                 </div>
+                {errors.password && <p className="text-body text-destructive -mt-2">{errors.password}</p>}
 
-                <div className="space-y-2">
-                  <Label htmlFor="password">{t('auth.password')}</Label>
-                  <div className="relative">
-                    <Input
-                      id="password"
-                      type={showPassword ? 'text' : 'password'}
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      className="h-12 pr-12"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    >
-                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                    </button>
-                  </div>
-                  {errors.password && <p className="text-body text-destructive">{errors.password}</p>}
-                </div>
-
-                <Button type="submit" variant="gradient" size="lg" className="w-full" disabled={loading}>
-                  {loading ? t('common.loading') : t('auth.login')}
+                <Button type="submit" variant="gradient" size="lg" className="w-full h-12" disabled={loading}>
+                  {loading ? t('common.loading') : 'Log in'}
                 </Button>
 
                 <Link
                   to="/auth?mode=forgot"
-                  className="block text-center text-body text-primary hover:underline"
+                  className="block text-center text-body text-primary hover:underline pt-1"
                 >
-                  {t('auth.forgotPassword')}
+                  Forgotten password?
                 </Link>
 
-                <div className="relative py-2">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-border" />
-                  </div>
-                  <div className="relative flex justify-center">
-                    <span className="bg-card px-3 text-label text-muted-foreground uppercase tracking-wider">
-                      or
-                    </span>
-                  </div>
-                </div>
+                <div className="border-t border-border my-2" />
 
-                <Button type="button" variant="outline" size="lg" className="w-full" asChild>
+                <Button type="button" variant="outline" size="lg" className="w-full h-12" asChild>
                   <Link to="/auth?mode=signup">Create new account</Link>
                 </Button>
               </form>
             </div>
-          </motion.div>
 
-          {/* LEFT on desktop / BOTTOM on mobile: Marketing */}
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={stagger}
-            className="order-2 lg:order-1 text-center lg:text-left"
-          >
-            <motion.div variants={fadeInUp} className="mb-6">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-body font-medium">
-                <Heart className="h-4 w-4" />
-                <span>Mental health support for everyone</span>
-              </div>
-            </motion.div>
-
-            <motion.h1
-              variants={fadeInUp}
-              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight"
-            >
-              {t('landing.hero.title')}
-            </motion.h1>
-
-            <motion.p
-              variants={fadeInUp}
-              className="text-title sm:text-headline text-muted-foreground mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed"
-            >
-              {t('landing.hero.subtitle')}
-            </motion.p>
-
-            <motion.div variants={fadeInUp} className="grid sm:grid-cols-3 gap-4">
-              {features.map((feature, index) => (
-                <div
-                  key={index}
-                  className="bg-card border border-border rounded-2xl p-5 text-center hover:border-primary/30 transition-colors"
-                >
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mx-auto mb-3">
-                    <feature.icon className="h-6 w-6 text-primary" />
-                  </div>
-                  <h3 className="text-body font-semibold text-foreground mb-1">{feature.title}</h3>
-                  <p className="text-label text-muted-foreground">{feature.description}</p>
-                </div>
-              ))}
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Crisis CTA */}
-      <section className="py-16 px-4">
-        <div className="max-w-3xl mx-auto">
-          <div className="bg-gradient-to-br from-crisis/10 to-crisis/5 border border-crisis/20 rounded-2xl p-8 md:p-12 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-crisis/20 flex items-center justify-center mx-auto mb-6">
-              <Phone className="h-8 w-8 text-crisis" />
-            </div>
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
-              {t('landing.crisis.title')}
-            </h2>
-            <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
-              {t('landing.crisis.subtitle')}
+            <p className="text-center text-label text-muted-foreground mt-4">
+              <Link to="/crisis" className="hover:text-foreground transition-colors underline underline-offset-2">
+                Need support now? Crisis resources
+              </Link>
             </p>
-            <Button variant="crisis" size="lg" asChild>
-              <Link to="/crisis">{t('landing.crisis.cta')}</Link>
-            </Button>
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </main>
 
       {/* Footer */}
-      <footer className="border-t border-border py-12 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center">
-              <BrandMark />
-            </div>
-            <nav className="flex flex-wrap items-center justify-center gap-6 text-body text-muted-foreground">
-              <Link to="/transparency" className="hover:text-foreground transition-colors">Trust & Transparency</Link>
-              <Link to="/privacy" className="hover:text-foreground transition-colors">{t('footer.privacy')}</Link>
-              <Link to="/terms" className="hover:text-foreground transition-colors">{t('footer.terms')}</Link>
-              <Link to="/guidelines" className="hover:text-foreground transition-colors">{t('footer.guidelines')}</Link>
-              <Link to="/crisis" className="hover:text-foreground transition-colors">Crisis Support</Link>
-            </nav>
-            <p className="text-body text-muted-foreground">© {new Date().getFullYear()} SelfERA</p>
+      <footer className="border-t border-border px-6 md:px-12 lg:px-20 py-6">
+        <div className="max-w-7xl mx-auto space-y-4">
+          <div className="flex items-center justify-center sm:justify-start gap-4 pb-3 border-b border-border/50">
+            <LanguageSwitcher />
           </div>
+          <nav className="flex flex-wrap items-center justify-center sm:justify-start gap-x-5 gap-y-2 text-label text-muted-foreground">
+            <Link to="/auth?mode=signup" className="hover:text-foreground transition-colors">Sign up</Link>
+            <Link to="/auth" className="hover:text-foreground transition-colors">Log in</Link>
+            <Link to="/directory" className="hover:text-foreground transition-colors">Directory</Link>
+            <Link to="/crisis" className="hover:text-foreground transition-colors">Crisis Support</Link>
+            <Link to="/transparency" className="hover:text-foreground transition-colors">Trust & Transparency</Link>
+            <Link to="/guidelines" className="hover:text-foreground transition-colors">{t('footer.guidelines')}</Link>
+            <Link to="/privacy" className="hover:text-foreground transition-colors">{t('footer.privacy')}</Link>
+            <Link to="/terms" className="hover:text-foreground transition-colors">{t('footer.terms')}</Link>
+          </nav>
+          <p className="text-label text-muted-foreground/70">
+            © {new Date().getFullYear()} SelfERA
+          </p>
         </div>
       </footer>
     </div>
