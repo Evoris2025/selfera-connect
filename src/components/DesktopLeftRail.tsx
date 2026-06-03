@@ -101,9 +101,9 @@ export function DesktopLeftRail() {
       <motion.div whileTap={{ scale: 0.98 }} className="mt-4">
         <Link
           to="/studio"
-          className="flex min-h-11 w-full items-center justify-center gap-2 rounded-md gradient-brand px-3 py-2.5 text-body font-semibold text-white shadow-cinematic"
+          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 px-4 py-3 text-body font-semibold text-white shadow-lg shadow-emerald-500/20 transition-transform hover:brightness-110"
         >
-          <Plus className="h-5 w-5" strokeWidth={2} />
+          <Plus className="h-5 w-5" strokeWidth={2.4} />
           <span>{t('nav.create', 'Create')}</span>
         </Link>
       </motion.div>
