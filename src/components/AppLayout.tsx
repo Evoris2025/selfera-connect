@@ -44,6 +44,7 @@ export function AppLayout({ children, title, showHeader = true, brandMark = fals
        * the rail component itself) and the column behaves identically.
        */}
       <div className="flex min-h-dvh w-full">
+        <DesktopLeftRail />
 
 
         {/*
@@ -55,9 +56,10 @@ export function AppLayout({ children, title, showHeader = true, brandMark = fals
         <div className="relative mx-auto flex min-h-dvh w-full md:max-w-xl lg:max-w-md flex-col bg-background shadow-cinematic">
           {showHeader && <AppHeader title={title} brandMark={brandMark} />}
 
-          <main className="flex-1 pb-nav-safe w-full">
+          <main className="flex-1 pb-nav-safe w-full lg:pb-0">
             {children}
           </main>
+
 
 
         </div>
@@ -73,7 +75,7 @@ export function AppLayout({ children, title, showHeader = true, brandMark = fals
        * bar visually sits inside the column on tablet/desktop. Hidden at
        * lg+ where DesktopLeftRail takes over primary nav.
        */}
-      <div className="fixed inset-x-0 bottom-0 z-50 flex justify-center pointer-events-none">
+      <div className="fixed inset-x-0 bottom-0 z-50 lg:hidden flex justify-center pointer-events-none">
         <div className="w-full md:max-w-xl pointer-events-auto">
           <AnimatePresence mode="wait">
             {isNavbarVisible && (

@@ -1,189 +1,150 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import {
-  Home,
-  Compass,
-  LayoutDashboard,
-  Bell,
-  MessageCircle,
-  User,
-  Plus,
-  Settings,
-  LogOut,
-} from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Link, useLocation } from 'react-router-dom';
+import { Home, Compass, Plus, Bell, MessageCircle, User, LayoutDashboard } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { CinematicAvatar } from '@/components/ui/CinematicAvatar';
-import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
-import { useAuth } from '@/contexts/AuthContext';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNotifications } from '@/hooks/useNotifications';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-
-/**
- * DesktopLeftRail — floating expandable pill nav (lg+).
- *
- * Collapsed (~64px): icon-only vertical pill, vertically centered,
- * floats over content via position: fixed.
- * Expanded (on hover, ~240px): labels slide in, Create reveals text,
- * avatar reveals name + "View profile".
- *
- * Below lg: display:none — MobileNav (bottom) takes over.
- */
+import { useFollowRequests } from '@/hooks/useFollowRequests';
 
 interface NavItem {
   icon: typeof Home;
   href: string;
-  labelKey: string;
-  fallbackLabel: string;
-  showBadge?: boolean;
+  label: string;
+  isCreate?: boolean;
+  isProfile?: boolean;
+  hasBadge?: boolean;
 }
 
-const navItems: NavItem[] = [
-  { icon: Home, href: '/feed', labelKey: 'nav.home', fallbackLabel: 'Home' },
-  { icon: Compass, href: '/explore', labelKey: 'nav.explore', fallbackLabel: 'Explore' },
-  { icon: LayoutDashboard, href: '/my-era', labelKey: 'nav.myera', fallbackLabel: 'MyERA' },
-  { icon: Bell, href: '/notifications', labelKey: 'nav.notifications', fallbackLabel: 'Notifications', showBadge: true },
-  { icon: MessageCircle, href: '/messages', labelKey: 'nav.messages', fallbackLabel: 'Messages' },
-  { icon: User, href: '/profile', labelKey: 'nav.profile', fallbackLabel: 'Profile' },
-];
+const springSmooth = { type: 'spring' as const, stiffness: 300, damping: 30 };
+const springGentle = { type: 'spring' as const, stiffness: 200, damping: 25 };
 
+/**
+ * DesktopLeftRail — vertical pill mirroring MobileNav styling, fixed to the left
+ * edge on lg+ screens. Same icons, same green Create button, same active dots.
+ */
 export function DesktopLeftRail() {
   const location = useLocation();
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-  const { signOut } = useAuth();
-  const { avatarUrl, displayName } = useCurrentUserAvatar();
   const { unreadCount } = useNotifications();
+  const { pendingCount } = useFollowRequests();
 
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/');
-  };
+  const totalNotificationBadge = (unreadCount ?? 0) + (pendingCount ?? 0);
 
-  const isActive = (href: string) =>
-    location.pathname === href ||
-    (href === '/explore' && location.pathname.startsWith('/explore')) ||
-    (href === '/profile' && location.pathname.startsWith('/profile'));
+  const navItems: NavItem[] = [
+    { icon: Home, href: '/feed', label: 'Home' },
+    { icon: Compass, href: '/explore', label: 'Explore' },
+    { icon: LayoutDashboard, href: '/my-era', label: 'MyERA' },
+    { icon: Plus, href: '#create', isCreate: true, label: 'Create' },
+    { icon: Bell, href: '/notifications', label: 'Notifications', hasBadge: totalNotificationBadge > 0 },
+    { icon: MessageCircle, href: '/messages', label: 'Messages' },
+    { icon: User, href: '/profile', label: 'Profile', isProfile: true },
+  ];
 
   return (
-    <aside
-      className={cn(
-        'group hidden lg:flex fixed left-4 top-1/2 -translate-y-1/2 z-50',
-        'flex-col gap-1 p-2',
-        'w-16 hover:w-[220px]',
-        'rounded-3xl border border-white/10 bg-background/70 backdrop-blur-md shadow-2xl',
-        'transition-[width] duration-300 ease-in-out overflow-hidden',
-      )}
-    >
-      {/* Primary nav */}
-      <nav className="flex flex-col gap-1">
-        {navItems.map((item) => {
-          const active = isActive(item.href);
-          const showBadge = item.showBadge && unreadCount > 0;
-          return (
-            <Link
-              key={item.href}
-              to={item.href}
-              className={cn(
-                'relative flex items-center gap-3 rounded-2xl px-3 py-3 transition-colors',
-                active
-                  ? 'bg-emerald-500/15 text-emerald-300'
-                  : 'text-muted-foreground hover:bg-white/5 hover:text-foreground',
-              )}
-            >
-              <span className="relative flex h-5 w-5 shrink-0 items-center justify-center">
-                <item.icon className="h-5 w-5" strokeWidth={active ? 2 : 1.6} />
-                {showBadge && (
-                  <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-rose-500 ring-2 ring-background" />
-                )}
-              </span>
-              <span
-                className={cn(
-                  'whitespace-nowrap text-body font-medium',
-                  'opacity-0 -translate-x-2 transition-all duration-300 ease-in-out',
-                  'group-hover:opacity-100 group-hover:translate-x-0',
-                )}
-              >
-                {t(item.labelKey, item.fallbackLabel)}
-              </span>
-            </Link>
-          );
-        })}
-      </nav>
+    <nav className="hidden lg:flex fixed left-4 top-1/2 -translate-y-1/2 z-50">
+      <div className="relative flex flex-col items-center gap-2 py-5 px-2 rounded-3xl">
+        {/* Glass background matching MobileNav */}
+        <div className="absolute inset-0 glass-heavy rounded-3xl border border-border/50" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/40 to-transparent rounded-3xl pointer-events-none" />
 
-      {/* Create */}
-      <motion.div whileTap={{ scale: 0.96 }} className="mt-2">
-        <Link
-          to="/studio"
-          className="flex items-center gap-3 rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-500 px-3 py-3 font-semibold text-white shadow-lg shadow-emerald-500/20 transition-transform hover:brightness-110"
-        >
-          <Plus className="h-5 w-5 shrink-0" strokeWidth={2.4} />
-          <span
-            className={cn(
-              'whitespace-nowrap text-body',
-              'opacity-0 -translate-x-2 transition-all duration-300 ease-in-out',
-              'group-hover:opacity-100 group-hover:translate-x-0',
-            )}
-          >
-            {t('nav.create', 'Create')}
-          </span>
-        </Link>
-      </motion.div>
+        <div className="relative flex flex-col items-center gap-1">
+          {navItems.map((item, index) => {
+            const isActive =
+              location.pathname === item.href ||
+              (item.href === '/explore' && location.pathname.startsWith('/explore')) ||
+              (item.href === '/profile' && location.pathname.startsWith('/profile'));
 
-      {/* Divider */}
-      <div className="my-1 h-px bg-white/5" />
+            if (item.isCreate) {
+              return (
+                <Link key={`create-${index}`} to="/studio" aria-label="Create">
+                  <motion.div
+                    whileTap={{ scale: 0.9 }}
+                    whileHover={{ scale: 1.05 }}
+                    transition={springSmooth}
+                    className="relative flex items-center justify-center w-11 h-11 rounded-xl bg-primary/10 hover:bg-primary/20 transition-colors duration-300 my-1"
+                  >
+                    <motion.div
+                      whileHover={{ rotate: 90 }}
+                      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                      <item.icon className="h-5 w-5 text-primary" strokeWidth={1.5} />
+                    </motion.div>
+                  </motion.div>
+                </Link>
+              );
+            }
 
-      {/* Account block */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button className="flex w-full items-center gap-3 rounded-2xl p-1.5 text-left transition-colors hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-primary/50">
-            <div className="shrink-0">
-              <CinematicAvatar src={avatarUrl} alt={displayName} size="sm" ring="primary" />
-            </div>
-            <div
-              className={cn(
-                'min-w-0 flex-1',
-                'opacity-0 -translate-x-2 transition-all duration-300 ease-in-out',
-                'group-hover:opacity-100 group-hover:translate-x-0',
-              )}
-            >
-              <p className="truncate text-label font-medium text-foreground">{displayName}</p>
-              <p className="truncate text-caption text-muted-foreground">
-                {t('nav.viewProfile', 'View profile')}
-              </p>
-            </div>
-          </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" side="right" className="w-56 border border-border bg-popover">
-          <DropdownMenuItem asChild>
-            <Link to="/profile">{t('nav.profile')}</Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link to="/directory">{t('nav.directory')}</Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link to="/crisis">{t('nav.crisisSupport')}</Link>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
-            <Link to="/settings" className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
-              {t('nav.settings')}
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
-            <LogOut className="h-4 w-4 mr-2" />
-            {t('auth.logout')}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </aside>
+            if (item.isProfile) {
+              return (
+                <Link key={item.href} to={item.href} aria-label={item.label}>
+                  <motion.div
+                    whileTap={{ scale: 0.9 }}
+                    transition={springSmooth}
+                    className={cn(
+                      'relative flex items-center justify-center p-3',
+                      isActive ? 'text-foreground' : 'text-muted-foreground/50'
+                    )}
+                  >
+                    <motion.div
+                      className={cn(
+                        'relative',
+                        isActive &&
+                          'after:absolute after:inset-0 after:rounded-full after:ring-2 after:ring-primary/60 after:ring-offset-2 after:ring-offset-background'
+                      )}
+                      animate={isActive ? { scale: 1.1 } : { scale: 1 }}
+                      transition={springGentle}
+                    >
+                      <item.icon className="h-5 w-5" strokeWidth={isActive ? 1.8 : 1.2} />
+                    </motion.div>
+                  </motion.div>
+                </Link>
+              );
+            }
+
+            return (
+              <Link key={item.href} to={item.href} aria-label={item.label}>
+                <motion.div
+                  whileTap={{ scale: 0.9 }}
+                  transition={springSmooth}
+                  className={cn(
+                    'relative flex items-center justify-center p-3',
+                    isActive ? 'text-foreground' : 'text-muted-foreground/50 hover:text-muted-foreground'
+                  )}
+                >
+                  <motion.div
+                    animate={isActive ? { scale: 1.1 } : { scale: 1 }}
+                    transition={springGentle}
+                  >
+                    <item.icon className="h-5 w-5" strokeWidth={isActive ? 1.8 : 1.2} />
+                  </motion.div>
+
+                  <AnimatePresence>
+                    {isActive && (
+                      <motion.span
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0, opacity: 0 }}
+                        transition={springGentle}
+                        className="absolute -right-1 w-1 h-1 rounded-full bg-primary"
+                      />
+                    )}
+                  </AnimatePresence>
+
+                  <AnimatePresence mode="popLayout">
+                    {item.hasBadge && (
+                      <motion.span
+                        initial={{ opacity: 0, scale: 0 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0 }}
+                        transition={springGentle}
+                        className="absolute top-2 right-2 w-2 h-2 rounded-full bg-crisis/80"
+                      />
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+    </nav>
   );
 }
