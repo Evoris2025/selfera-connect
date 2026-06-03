@@ -280,15 +280,8 @@ export const RearrangeableTabBar = memo(function RearrangeableTabBar({
   }, []);
 
   if (loading) {
-    return (
-      <div className="w-full h-11 border-t border-border/30 flex items-center justify-center">
-        <div className="flex gap-8">
-          {[1, 2, 3, 4, 5].map(i => (
-            <div key={i} className="w-5 h-5 bg-muted rounded animate-pulse" />
-          ))}
-        </div>
-      </div>
-    );
+    // Seamless: render the bar shell only, no pulsing dots.
+    return <div className="w-full h-11 border-t border-border/30" aria-hidden />;
   }
 
   return (
