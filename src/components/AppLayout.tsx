@@ -44,6 +44,7 @@ export function AppLayout({ children, title, showHeader = true, brandMark = fals
        * the rail component itself) and the column behaves identically.
        */}
       <div className="flex min-h-dvh w-full">
+        <DesktopLeftRail />
 
 
         {/*
