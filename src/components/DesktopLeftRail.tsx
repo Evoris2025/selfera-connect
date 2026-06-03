@@ -18,8 +18,8 @@ const springSmooth = { type: 'spring' as const, stiffness: 300, damping: 30 };
 const springGentle = { type: 'spring' as const, stiffness: 200, damping: 25 };
 
 /**
- * DesktopLeftRail — vertical pill mirroring MobileNav styling, fixed to the left
- * edge on lg+ screens. Same icons, same green Create button, same active dots.
+ * DesktopLeftRail — the mobile/tablet glass nav treatment placed on the left
+ * edge for desktop. Same icons, active states, and create button as MobileNav.
  */
 export function DesktopLeftRail() {
   const location = useLocation();
@@ -39,13 +39,12 @@ export function DesktopLeftRail() {
   ];
 
   return (
-    <nav className="hidden lg:flex fixed left-4 top-1/2 -translate-y-1/2 z-50">
-      <div className="relative flex flex-col items-center gap-2 py-5 px-2 rounded-3xl">
-        {/* Glass background matching MobileNav */}
-        <div className="absolute inset-0 glass-heavy rounded-3xl border border-border/50" />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/40 to-transparent rounded-3xl pointer-events-none" />
+    <nav className="hidden lg:flex fixed left-0 inset-y-0 z-50 h-dvh w-18">
+      <div className="relative h-full w-full">
+        <div className="absolute inset-0 glass-heavy rounded-r-3xl border-r border-border/50" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/40 to-transparent rounded-r-3xl pointer-events-none" />
 
-        <div className="relative flex flex-col items-center gap-1">
+        <div className="relative flex h-full w-full flex-col items-center justify-center gap-3 py-8">
           {navItems.map((item, index) => {
             const isActive =
               location.pathname === item.href ||
@@ -59,7 +58,7 @@ export function DesktopLeftRail() {
                     whileTap={{ scale: 0.9 }}
                     whileHover={{ scale: 1.05 }}
                     transition={springSmooth}
-                    className="relative flex items-center justify-center w-11 h-11 rounded-xl bg-primary/10 hover:bg-primary/20 transition-colors duration-300 my-1"
+                    className="relative flex items-center justify-center w-11 h-11 rounded-xl bg-primary/10 hover:bg-primary/20 transition-colors duration-300"
                   >
                     <motion.div
                       whileHover={{ rotate: 90 }}
