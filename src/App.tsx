@@ -86,6 +86,7 @@ function AppRoutes() {
     <>
       <Routes>
         <Route path="/" element={<HomeRoute />} />
+        <Route path="/login" element={<Navigate to="/" replace />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/feed" element={<ProtectedRoute><Feed /></ProtectedRoute>} />
         <Route path="/explore" element={<ProtectedRoute><Explore /></ProtectedRoute>} />
