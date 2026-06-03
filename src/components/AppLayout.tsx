@@ -75,7 +75,7 @@ export function AppLayout({ children, title, showHeader = true, brandMark = fals
        * bar visually sits inside the column on tablet/desktop. Hidden at
        * lg+ where DesktopLeftRail takes over primary nav.
        */}
-      <div className="fixed inset-x-0 bottom-0 z-50 flex justify-center pointer-events-none">
+      <div className="fixed inset-x-0 bottom-0 z-50 lg:hidden flex justify-center pointer-events-none">
         <div className="w-full md:max-w-xl pointer-events-auto">
           <AnimatePresence mode="wait">
             {isNavbarVisible && (
