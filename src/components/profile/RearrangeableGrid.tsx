@@ -179,13 +179,9 @@ export const RearrangeableGrid = memo(function RearrangeableGrid({
   }, [handleDragEnd]);
 
   if (loading) {
-    return (
-      <div className="grid grid-cols-3 gap-[1px]">
-        {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div key={i} className="aspect-square bg-muted animate-pulse" />
-        ))}
-      </div>
-    );
+    // Seamless: render an empty container matching the background so users
+    // don't see flashing skeleton tiles before content hydrates.
+    return <div className="grid grid-cols-3 gap-[1px] min-h-[200px]" aria-hidden />;
   }
 
   // Spring config for smooth layout transitions
