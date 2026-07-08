@@ -34,9 +34,9 @@ interface ContentTypeCard {
 
 const contentTypes: ContentTypeCard[] = [
   { id: 'expression', icon: ExpressionIcon, title: 'Expression', description: 'A moment, not a record' },
-  { id: 'video', icon: Video, title: 'Video', description: 'Stories worth the time' },
-  { id: 'image', icon: ImageIcon, title: 'Photo', description: 'A frame of your world' },
-  { id: 'post', icon: FileText, title: 'Post', description: "What's on your mind" },
+  { id: 'video', icon: VideoIcon, title: 'Video', description: 'Stories worth the time' },
+  { id: 'image', icon: ImagesIcon, title: 'Photo', description: 'A frame of your world' },
+  { id: 'post', icon: PostsIcon, title: 'Post', description: "What's on your mind" },
 ];
 
 interface ContentTypeDashboardProps {
