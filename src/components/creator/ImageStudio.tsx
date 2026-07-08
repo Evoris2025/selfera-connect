@@ -640,51 +640,54 @@ export function ImageStudio({ onBack, onSuccess }: ImageStudioProps) {
     >
       <CreatorScreenHeader type="photo" onBack={handleBack} onClose={handleClose} showAudience={false} />
 
-      {/* Step controls bar */}
-      <div className="flex items-center justify-between p-4 border-b border-border">
-        <div className="flex items-center gap-1">
-          <button
-            onClick={handleBack}
-            className="p-2 -ml-2 rounded-full hover:bg-secondary transition-colors"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </button>
-          {step === 'edit' && (
-            <UndoRedoControls
-              canUndo={canUndo}
-              canRedo={canRedo}
-              onUndo={handleUndo}
-              onRedo={handleRedo}
-            />
-          )}
-        </div>
-        <h2 className="font-semibold">
-          {step === 'select' ? 'Select Photos' : step === 'edit' ? 'Edit' : 'Details'}
-        </h2>
-        <div className="flex items-center gap-2">
-          {step === 'edit' && (
-            <Button size="sm" variant="ghost" onClick={handleProceedToDetails}>
-              Next
-            </Button>
-          )}
-          {step === 'details' && (
-            <Button
-              size="sm"
-              onClick={handleSubmit}
-              disabled={!canShare || isSubmitting}
-              className="bg-primary text-primary-foreground"
+      {/* Step controls bar — hidden on select step to match Video studio */}
+      {step !== 'select' && (
+        <div className="flex items-center justify-between p-4 border-b border-border">
+          <div className="flex items-center gap-1">
+            <button
+              onClick={handleBack}
+              className="p-2 -ml-2 rounded-full hover:bg-secondary transition-colors"
             >
-              {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Share'}
-            </Button>
-          )}
-          <button
-            onClick={handleClose}
-            className="p-2 rounded-full hover:bg-secondary transition-colors"
-          >
-            <X className="h-5 w-5" />
-          </button>
+              <ArrowLeft className="h-5 w-5" />
+            </button>
+            {step === 'edit' && (
+              <UndoRedoControls
+                canUndo={canUndo}
+                canRedo={canRedo}
+                onUndo={handleUndo}
+                onRedo={handleRedo}
+              />
+            )}
+          </div>
+          <h2 className="font-semibold">
+            {step === 'edit' ? 'Edit' : 'Details'}
+          </h2>
+          <div className="flex items-center gap-2">
+            {step === 'edit' && (
+              <Button size="sm" variant="ghost" onClick={handleProceedToDetails}>
+                Next
+              </Button>
+            )}
+            {step === 'details' && (
+              <Button
+                size="sm"
+                onClick={handleSubmit}
+                disabled={!canShare || isSubmitting}
+                className="bg-primary text-primary-foreground"
+              >
+                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Share'}
+              </Button>
+            )}
+            <button
+              onClick={handleClose}
+              className="p-2 rounded-full hover:bg-secondary transition-colors"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
+
 
       <AnimatePresence mode="wait">
         {/* Step 1: Select Photos */}
