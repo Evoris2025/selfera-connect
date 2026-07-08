@@ -209,10 +209,10 @@ export function ContinueWorkingSheet({
                   <div className="grid grid-cols-4 gap-2">
                     {(['post', 'expression', 'image', 'video'] as ContentType[]).map((ct) => {
                       const Icon =
-                        ct === 'post' ? FileText
+                        ct === 'post' ? PostsIcon
                         : ct === 'expression' ? ExpressionIcon
-                        : ct === 'image' ? ImageIcon
-                        : Video;
+                        : ct === 'image' ? ImagesIcon
+                        : VideoIcon;
                       return (
                         <button
                           key={ct}
