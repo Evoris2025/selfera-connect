@@ -819,3 +819,58 @@
   transform: translateY(100%);
   pointer-events: none;
 }
+
+/* ============================================================
+ * Menu / Settings / Admin canonical typography + icon scale
+ * ============================================================
+ * Shared tokens for every menu, panel, settings-style screen,
+ * filter sheet, and admin surface — current and future.
+ *
+ *   .text-page-title  → 20px / bold      (e.g. "Settings", "Internal Admin")
+ *   .text-section     → 15px / semibold  (section headers, card titles)
+ *   .text-row-label   → 14px / regular   (row labels, card labels)
+ *   .text-helper      → 12px / muted     (descriptions, subtext)
+ *   .icon-menu        → 18px             (icons inside menus/cards)
+ *   .icon-menu-sm     → 16px             (inline / tab-strip icons)
+ *
+ * DO NOT introduce new one-off text sizes on settings-style
+ * screens — always reuse these tokens so oversized headers
+ * cannot reappear on any current or future page.
+ */
+@layer components {
+  .text-page-title {
+    font-size: 20px;
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: hsl(var(--foreground));
+  }
+  .text-section {
+    font-size: 15px;
+    line-height: 1.35;
+    font-weight: 600;
+    color: hsl(var(--foreground));
+  }
+  .text-row-label {
+    font-size: 14px;
+    line-height: 1.4;
+    font-weight: 400;
+    color: hsl(var(--foreground));
+  }
+  .text-helper {
+    font-size: 12px;
+    line-height: 1.4;
+    font-weight: 400;
+    color: hsl(var(--muted-foreground));
+  }
+  .icon-menu {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+  .icon-menu-sm {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+}
