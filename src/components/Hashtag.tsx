@@ -10,36 +10,36 @@ interface HashtagProps {
 }
 
 const sizeClasses = {
-  sm: 'text-label px-2 py-0.5',
-  md: 'text-body px-2.5 py-1',
-  lg: 'text-title px-3 py-1.5',
+  sm: 'text-label',
+  md: 'text-body',
+  lg: 'text-title',
 };
 
-export function Hashtag({ 
-  tag, 
-  className, 
-  size = 'md', 
+export function Hashtag({
+  tag,
+  className,
+  size = 'md',
   showHash = true,
-  animated = true 
+  animated = true,
 }: HashtagProps) {
   const cleanTag = tag.startsWith('#') ? tag.slice(1) : tag;
-  
+
   return (
     <Link
       to={`/explore?tag=${encodeURIComponent(cleanTag)}`}
+      onClick={(e) => e.stopPropagation()}
       className={cn(
-        'inline-flex items-center rounded-full font-medium transition-all',
-        'bg-primary/10 text-primary hover:bg-primary/20',
-        animated && 'hover:scale-105 active:scale-95',
+        'inline text-primary hover:underline font-normal transition-colors',
         sizeClasses[size],
         className
       )}
     >
-      {showHash && <span className="opacity-60">#</span>}
+      {showHash && '#'}
       {cleanTag}
     </Link>
   );
 }
+
 
 interface HashtagListProps {
   tags: string[];
