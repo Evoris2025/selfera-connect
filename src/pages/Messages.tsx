@@ -830,9 +830,12 @@ export default function Messages() {
                 >
                   <div className="relative">
                     {user.id === 'note' ? (
-                      <div className="w-16 h-16 rounded-full bg-white/[0.04] border border-dashed border-white/[0.15] flex items-center justify-center">
-                        <span className="text-2xl">{user.note}</span>
-                      </div>
+                      <Avatar className="h-16 w-16 border border-white/[0.12]">
+                        {currentUserAvatarUrl && <AvatarImage src={currentUserAvatarUrl} alt={currentUserDisplayName || 'You'} />}
+                        <AvatarFallback className="bg-white/[0.06] text-white text-title font-medium">
+                          {(currentUserDisplayName || 'Y').charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
                     ) : user.id === 'new' ? (
                       <div className="w-16 h-16 rounded-full bg-white/[0.04] border border-white/[0.12] flex items-center justify-center">
                         <BrandIcon icon={Plus} size={22} />
