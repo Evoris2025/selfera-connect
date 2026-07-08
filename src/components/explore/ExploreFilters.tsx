@@ -1,6 +1,6 @@
 import { useState, useMemo, type ReactNode } from 'react';
 import { Filter, ChevronDown } from 'lucide-react';
-import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetTrigger } from '@/components/ui/sheet';
 import {
@@ -168,47 +168,8 @@ function SectionLabel({ children, className }: { children: ReactNode; className?
   );
 }
 
-// Segmented tab bar for the primary Sort control (X / IG feed switcher style).
-interface SegmentedTabsProps<T extends string> {
-  options: { value: T; label: string }[];
-  value: T;
-  themePrimary: string;
-  onChange: (v: T) => void;
-}
+// (Segmented tab bar removed — Sort By now uses the same Chip treatment as other sections.)
 
-function SegmentedTabs<T extends string>({ options, value, themePrimary, onChange }: SegmentedTabsProps<T>) {
-  return (
-    <LayoutGroup id="filter-sort-tabs">
-      <div className="flex items-center gap-1 overflow-x-auto no-scrollbar -mx-1 px-1">
-        {options.map((opt) => {
-          const active = value === opt.value;
-          return (
-            <button
-              key={opt.value}
-              type="button"
-              onClick={() => onChange(opt.value)}
-              aria-pressed={active}
-              className={cn(
-                'relative shrink-0 px-3 py-2 text-[13px] font-medium whitespace-nowrap transition-colors',
-                active ? 'text-white' : 'text-white/50 hover:text-white/80',
-              )}
-            >
-              {opt.label}
-              {active && (
-                <motion.span
-                  layoutId="filter-sort-underline"
-                  className="absolute left-2 right-2 -bottom-[1px] h-[2px] rounded-full"
-                  style={{ backgroundColor: themePrimary }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 40 }}
-                />
-              )}
-            </button>
-          );
-        })}
-      </div>
-    </LayoutGroup>
-  );
-}
 
 // ----- Chip (Time / Duration / Format / Origin / Tier) -----
 
@@ -228,8 +189,9 @@ function Chip<T extends string>({ option, active, themePrimary, onClick, leftDot
       disabled={option.disabled}
       aria-pressed={active}
       className={cn(
-        'h-8 px-3 rounded-full text-[13px] font-medium whitespace-nowrap inline-flex items-center justify-center gap-1.5 transition-colors',
+        'h-[34px] px-3 rounded-full text-[13px] font-medium whitespace-nowrap inline-flex items-center justify-center gap-1.5 transition-colors',
         active
+
           ? 'text-white border border-transparent'
           : 'bg-white/[0.04] border border-white/[0.08] text-white/60 hover:text-white/80 hover:border-white/20',
         option.disabled && 'opacity-40 pointer-events-none',
@@ -357,24 +319,27 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
         </div>
 
         {/* Scrollable body */}
-        <div className="flex-1 overflow-y-auto py-4 space-y-5">
-          {/* Section 1 — Sort by (segmented tab bar, primary control) */}
-          <section className="px-4">
-            <SectionLabel className="px-1">SORT BY</SectionLabel>
-            <div className="border-b border-white/[0.06]">
-              <SegmentedTabs
-                options={SORT_OPTIONS}
-                value={tabSlice.sortBy}
-                themePrimary={themePrimary}
-                onChange={(v) => updateTabSlice('sortBy', v)}
-              />
+        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
+          {/* Sort by */}
+          <section>
+            <SectionLabel>SORT BY</SectionLabel>
+            <div className="flex flex-wrap gap-2">
+              {SORT_OPTIONS.map((opt) => (
+                <Chip
+                  key={opt.value}
+                  option={opt}
+                  active={tabSlice.sortBy === opt.value}
+                  themePrimary={themePrimary}
+                  onClick={() => updateTabSlice('sortBy', opt.value)}
+                />
+              ))}
             </div>
           </section>
 
-          {/* Section 2 — Time period */}
-          <section className="px-4">
-            <SectionLabel className="px-1">TIME PERIOD</SectionLabel>
-            <div className="flex flex-wrap gap-1.5">
+          {/* Time period */}
+          <section>
+            <SectionLabel>TIME PERIOD</SectionLabel>
+            <div className="flex flex-wrap gap-2">
               {TIME_OPTIONS.map((opt) => (
                 <Chip
                   key={opt.value}
@@ -387,11 +352,11 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
             </div>
           </section>
 
-          {/* Section 3 — Content type (context-aware) */}
+          {/* Content type (context-aware) */}
           {activeTab === 'videos' && (
-            <section className="px-4">
-              <SectionLabel className="px-1">DURATION</SectionLabel>
-              <div className="flex flex-wrap gap-1.5">
+            <section>
+              <SectionLabel>DURATION</SectionLabel>
+              <div className="flex flex-wrap gap-2">
                 {DURATION_OPTIONS.map((opt) => (
                   <Chip
                     key={opt.value}
@@ -405,9 +370,9 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
             </section>
           )}
           {activeTab === 'images' && (
-            <section className="px-4">
-              <SectionLabel className="px-1">FORMAT</SectionLabel>
-              <div className="flex flex-wrap gap-1.5">
+            <section>
+              <SectionLabel>FORMAT</SectionLabel>
+              <div className="flex flex-wrap gap-2">
                 {FORMAT_OPTIONS.map((opt) => (
                   <Chip
                     key={opt.value}
@@ -421,19 +386,19 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
             </section>
           )}
 
-          {/* Secondary filters — collapsed by default */}
-          <section className="px-4">
+          {/* Secondary filters — plain accordion row with hairline dividers */}
+          <section className="!mt-5">
             <button
               type="button"
               onClick={() => setMoreOpen((o) => !o)}
               aria-expanded={moreOpen}
-              className="w-full flex items-center justify-between py-2 text-[13px] font-medium text-white/70 hover:text-white transition-colors"
+              className="w-full flex items-center justify-between py-3 border-y border-white/[0.08] text-[11px] font-semibold uppercase tracking-[0.12em] text-white/45 hover:text-white/70 transition-colors"
             >
               <span>More filters</span>
               <motion.span
                 animate={{ rotate: moreOpen ? 180 : 0 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                className="text-white/50"
+                className="text-white/45"
               >
                 <ChevronDown className="h-4 w-4" />
               </motion.span>
@@ -449,12 +414,12 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
                   transition={{ duration: 0.22, ease: 'easeOut' }}
                   className="overflow-hidden"
                 >
-                  <div className="pt-3 space-y-5">
+                  <div className="pt-5 space-y-5">
                     {/* Creator tier — hidden on Images */}
                     {activeTab !== 'images' && (
                       <div>
-                        <SectionLabel className="px-1">CREATOR TIER</SectionLabel>
-                        <div className="flex flex-wrap gap-1.5">
+                        <SectionLabel>CREATOR TIER</SectionLabel>
+                        <div className="flex flex-wrap gap-2">
                           <Chip
                             option={{ value: 'all', label: 'All' }}
                             active={(tabSlice as { creatorTier: CreatorTier }).creatorTier === 'all'}
@@ -499,8 +464,8 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
 
                     {/* Origin */}
                     <div>
-                      <SectionLabel className="px-1">ORIGIN</SectionLabel>
-                      <div className="flex flex-wrap gap-1.5">
+                      <SectionLabel>ORIGIN</SectionLabel>
+                      <div className="flex flex-wrap gap-2">
                         {ORIGIN_OPTIONS.map((opt) => (
                           <Chip
                             key={opt.value}
@@ -518,6 +483,7 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
             </AnimatePresence>
           </section>
         </div>
+
 
         {/* Sticky footer */}
         <div className="shrink-0 sticky bottom-0 z-10 flex items-center gap-3 px-4 py-3 border-t border-white/[0.08] bg-black pb-[calc(env(safe-area-inset-bottom)+12px)]">
