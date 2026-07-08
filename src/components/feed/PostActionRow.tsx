@@ -9,6 +9,8 @@ import {
 } from '@/components/interactions';
 import { ReactionButton, ReactionType } from './ReactionPicker';
 import { useFeedData } from '@/contexts/FeedDataContext';
+import { useMockSystem } from '@/contexts/MockSystemContext';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface PostActionRowProps {
   postId: string;
@@ -30,19 +32,31 @@ interface PostActionRowProps {
   variant?: 'default' | 'overlay';
 }
 
-// Small deterministic pool for a plausible "Liked by …" name when we have
-// no real liker data (mock feed). Keeps display stable per post.
-const LIKER_POOL = [
-  'lbmuc75',
-  'ataste0fmatt',
-  'jenny.wren',
-  'kai_rivers',
-  'sam.holloway',
-  'noor.k',
-  'devon.m',
-  'ari.b',
+type LikerProfile = {
+  name: string;
+  avatar?: string;
+};
+
+// Use real in-app mock profile photos instead of generated/random images.
+const LIKER_POOL: LikerProfile[] = [
+  {
+    name: 'jenny.wren',
+    avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop',
+  },
+  {
+    name: 'devon.m',
+    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop',
+  },
+  {
+    name: 'ari.b',
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop',
+  },
+  {
+    name: 'sam.holloway',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop',
+  },
 ];
-function pickLiker(postId: string): string {
+function pickLiker(postId: string): LikerProfile {
   let h = 0;
   for (let i = 0; i < postId.length; i++) h = (h * 31 + postId.charCodeAt(i)) | 0;
   return LIKER_POOL[Math.abs(h) % LIKER_POOL.length];
@@ -78,9 +92,21 @@ export function PostActionRow({
   variant = 'default',
 }: PostActionRowProps) {
   const feedData = useFeedData();
-  const comments = feedData.getComments(postId);
-  const topComment = comments.length > 0 ? comments[comments.length - 1] : null;
-  const likerName = topLikerName || pickLiker(postId);
+  const mockSystem = useMockSystem();
+  const mockComments = mockSystem.getComments(postId);
+  const feedComments = feedData.getComments(postId);
+  const comments = mockComments.length > 0 ? mockComments : feedComments;
+  const topComment = comments.length > 0
+    ? comments[comments.length - 1]
+    : commentCount > 0
+      ? {
+          author: { handle: authorName.replace(/\s+/g, '').toLowerCase(), name: authorName },
+          content: 'View the latest comment in this conversation.',
+        }
+      : null;
+  const pickedLiker = pickLiker(postId);
+  const likerName = topLikerName || pickedLiker.name;
+  const likerAvatar = pickedLiker.avatar;
 
   const mutedText =
     variant === 'overlay'
@@ -142,24 +168,25 @@ export function PostActionRow({
 
       {/* Social-proof: liked by … with tiny avatar + count */}
       {reactionCount > 0 && (
-        <div className={cn('flex items-center gap-2 mt-1.5 text-label', mutedText)}>
-          <img
-            src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${likerName}`}
-            alt=""
-            className="h-4 w-4 rounded-full flex-shrink-0"
-          />
-          <p className="truncate">
+        <div className={cn('flex items-center gap-1.5 mt-1.5 text-xs leading-tight', mutedText)}>
+          <Avatar className="h-4 w-4 flex-shrink-0 border-0">
+            <AvatarImage src={likerAvatar} alt="" />
+            <AvatarFallback className="text-caption font-semibold">
+              {likerName.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <p className="truncate text-xs leading-tight">
             Liked by{' '}
             <button
               type="button"
               onClick={(e) => e.stopPropagation()}
-              className={cn('font-semibold hover:underline', strongText)}
+              className={cn('text-xs leading-tight font-semibold hover:underline', strongText)}
             >
               {likerName}
             </button>
             {reactionCount > 1 && (
               <>
-                {' '}and <span className={cn('font-semibold', strongText)}>{formatCount(reactionCount - 1)}</span> others
+                {' '}and <span className={cn('text-xs leading-tight font-semibold', strongText)}>{formatCount(reactionCount - 1)}</span> others
               </>
             )}
           </p>
@@ -168,31 +195,20 @@ export function PostActionRow({
 
       {/* Top comment preview — tap to open full thread; 'more' link below */}
       {topComment && canComment && (
-        <div className="mt-0.5">
-          <button
-            type="button"
-            onClick={onOpenComments}
-            className={cn(
-              'text-label block w-full text-left truncate',
-              mutedText,
-              'hover:text-foreground transition-colors'
-            )}
-          >
-            <span className={cn('font-semibold mr-1.5', strongText)}>
-              {topComment.author.handle || topComment.author.name}
-            </span>
-            {topComment.content}
-          </button>
-          {topComment.content.length > 60 && (
-            <button
-              type="button"
-              onClick={onOpenComments}
-              className={cn('text-label hover:underline', mutedText)}
-            >
-              more
-            </button>
+        <button
+          type="button"
+          onClick={onOpenComments}
+          className={cn(
+            'text-xs mt-1 block w-full text-left truncate leading-tight',
+            mutedText,
+            'hover:text-foreground transition-colors'
           )}
-        </div>
+        >
+          <span className={cn('text-xs leading-tight font-semibold mr-1.5', strongText)}>
+            {topComment.author.handle || topComment.author.name}
+          </span>
+          {topComment.content}
+        </button>
       )}
 
     </div>
