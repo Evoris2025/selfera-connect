@@ -170,10 +170,10 @@ function Chip<T extends string>({ option, active, themePrimary, onClick, leftDot
       disabled={option.disabled}
       aria-pressed={active}
       className={cn(
-        'h-9 px-3 rounded-full text-label uppercase tracking-[0.08em] whitespace-nowrap flex items-center justify-center gap-2 transition-colors',
+        'h-7 px-2.5 rounded-full text-caption font-medium uppercase tracking-[0.06em] whitespace-nowrap flex items-center justify-center gap-1.5 transition-colors',
         active
           ? 'text-white'
-          : 'border border-white/[0.15] text-white/55 bg-transparent hover:border-white/30',
+          : 'border border-white/[0.12] text-white/50 bg-transparent hover:border-white/25',
         option.disabled && 'opacity-40 pointer-events-none',
       )}
       style={active ? { backgroundColor: themePrimary } : undefined}
