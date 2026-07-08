@@ -9,11 +9,13 @@ export interface ProfileTab {
 }
 
 const DEFAULT_TABS: ProfileTab[] = [
-  { id: 'posts', icon: 'Grid3X3', label: 'Posts' },
-  { id: 'expressions', icon: 'Expression', label: 'Expressions' },
-  { id: 'reels', icon: 'Play', label: 'Reels' },
-  { id: 'community', icon: 'Users', label: 'Community' },
-  { id: 'library', icon: 'BookOpen', label: 'Library' },
+  { id: 'unified', icon: 'Unified', label: 'Unified' },
+  { id: 'expressions', icon: 'Expressions', label: 'Expressions' },
+  { id: 'video', icon: 'Video', label: 'Video' },
+  { id: 'images', icon: 'Images', label: 'Images' },
+  { id: 'posts', icon: 'Posts', label: 'Posts' },
+  { id: 'community', icon: 'Community', label: 'Community' },
+  { id: 'saved', icon: 'Saved', label: 'Saved' },
 ];
 
 export function useProfileTabOrder() {
