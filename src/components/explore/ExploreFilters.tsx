@@ -170,10 +170,10 @@ function Chip<T extends string>({ option, active, themePrimary, onClick, leftDot
       disabled={option.disabled}
       aria-pressed={active}
       className={cn(
-        'h-9 px-3 rounded-full text-label uppercase tracking-[0.08em] whitespace-nowrap flex items-center justify-center gap-2 transition-colors',
+        'h-7 px-2.5 rounded-full text-caption font-medium uppercase tracking-[0.06em] whitespace-nowrap flex items-center justify-center gap-1.5 transition-colors',
         active
           ? 'text-white'
-          : 'border border-white/[0.15] text-white/55 bg-transparent hover:border-white/30',
+          : 'border border-white/[0.12] text-white/50 bg-transparent hover:border-white/25',
         option.disabled && 'opacity-40 pointer-events-none',
       )}
       style={active ? { backgroundColor: themePrimary } : undefined}
@@ -298,11 +298,11 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
         </div>
 
         {/* Scrollable body */}
-        <div className="flex-1 overflow-y-auto space-y-6 py-4">
+        <div className="flex-1 overflow-y-auto space-y-5 py-4">
           {/* Section 1 — Sort by (chip grid, single-select) */}
           <section>
-            <BrandSectionLabel className="px-5 mb-2">SORT BY</BrandSectionLabel>
-            <div className="flex flex-wrap gap-2 px-4">
+            <BrandSectionLabel className="px-5 mb-1.5">SORT BY</BrandSectionLabel>
+            <div className="flex flex-wrap gap-1.5 px-4">
               {SORT_OPTIONS.map((opt) => (
                 <Chip
                   key={opt.value}
@@ -317,8 +317,8 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
 
           {/* Section 2 — Time period (3-col chip grid) */}
           <section>
-            <BrandSectionLabel className="px-5 mb-2">TIME PERIOD</BrandSectionLabel>
-            <div className="flex flex-wrap gap-2 px-4">
+            <BrandSectionLabel className="px-5 mb-1.5">TIME PERIOD</BrandSectionLabel>
+            <div className="flex flex-wrap gap-1.5 px-4">
               {TIME_OPTIONS.map((opt) => (
                 <Chip
                   key={opt.value}
@@ -334,8 +334,8 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
           {/* Section 3 — Content type (context-aware) */}
           {activeTab === 'videos' && (
             <section>
-              <BrandSectionLabel className="px-5 mb-2">DURATION</BrandSectionLabel>
-              <div className="flex flex-wrap gap-2 px-4">
+              <BrandSectionLabel className="px-5 mb-1.5">DURATION</BrandSectionLabel>
+              <div className="flex flex-wrap gap-1.5 px-4">
                 {DURATION_OPTIONS.map((opt) => (
                   <Chip
                     key={opt.value}
@@ -350,8 +350,8 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
           )}
           {activeTab === 'images' && (
             <section>
-              <BrandSectionLabel className="px-5 mb-2">FORMAT</BrandSectionLabel>
-              <div className="flex flex-wrap gap-2 px-4">
+              <BrandSectionLabel className="px-5 mb-1.5">FORMAT</BrandSectionLabel>
+              <div className="flex flex-wrap gap-1.5 px-4">
                 {FORMAT_OPTIONS.map((opt) => (
                   <Chip
                     key={opt.value}
@@ -368,8 +368,8 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
           {/* Section — Creator tier (multi-select chip grid). Hidden on Images. */}
           {activeTab !== 'images' && (
             <section>
-              <BrandSectionLabel className="px-5 mb-2">CREATOR TIER</BrandSectionLabel>
-              <div className="flex flex-wrap gap-2 px-4">
+              <BrandSectionLabel className="px-5 mb-1.5">CREATOR TIER</BrandSectionLabel>
+              <div className="flex flex-wrap gap-1.5 px-4">
                 <Chip
                   option={{ value: 'all', label: 'All' }}
                   active={(tabSlice as { creatorTier: CreatorTier }).creatorTier === 'all'}
@@ -387,7 +387,7 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
                       themePrimary={themePrimary}
                       leftDot={
                         <span
-                          className="w-2.5 h-2.5 rounded-full"
+                          className="w-2 h-2 rounded-full"
                           style={{ backgroundColor: TIER_HEX[opt.value] }}
                           aria-hidden
                         />
@@ -414,8 +414,8 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
 
           {/* Section 4 — Origin (chip grid, single-select) */}
           <section>
-            <BrandSectionLabel className="px-5 mb-2">ORIGIN</BrandSectionLabel>
-            <div className="flex flex-wrap gap-2 px-4">
+            <BrandSectionLabel className="px-5 mb-1.5">ORIGIN</BrandSectionLabel>
+            <div className="flex flex-wrap gap-1.5 px-4">
               {ORIGIN_OPTIONS.map((opt) => (
                 <Chip
                   key={opt.value}
@@ -435,14 +435,14 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
             type="button"
             onClick={handleReset}
             disabled={draftCount === 0}
-            className="flex-1 h-10 rounded-full border border-white/[0.15] bg-transparent text-white/55 text-label uppercase tracking-[0.1em] transition-colors hover:border-white/30 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-white/[0.15]"
+            className="flex-1 h-9 rounded-full border border-white/[0.12] bg-transparent text-white/55 text-caption font-medium uppercase tracking-[0.08em] transition-colors hover:border-white/25 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-white/[0.12]"
           >
             Reset
           </button>
           <button
             type="button"
             onClick={handleApply}
-            className="flex-1 h-10 rounded-full text-label uppercase tracking-[0.1em] inline-flex items-center justify-center text-white transition-opacity hover:opacity-90"
+            className="flex-1 h-9 rounded-full text-caption font-medium uppercase tracking-[0.08em] inline-flex items-center justify-center text-white transition-opacity hover:opacity-90"
             style={{ backgroundColor: themePrimary }}
           >
             Apply
