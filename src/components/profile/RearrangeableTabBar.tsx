@@ -136,7 +136,7 @@ const DraggableTab = memo(function DraggableTab({
       }}
       transition={{ type: 'spring', stiffness: 400, damping: 30 }}
       className={cn(
-        'relative flex-1 flex items-center justify-center py-2.5 transition-all duration-200',
+        'relative flex items-center justify-center py-2.5 shrink-0 min-w-[56px] flex-1 transition-all duration-200',
         isRearrangeMode && 'cursor-grab active:cursor-grabbing animate-jiggle',
         isDragging && 'z-50',
         isActive && !isRearrangeMode && 'text-white',
