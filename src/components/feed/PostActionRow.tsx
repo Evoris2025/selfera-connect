@@ -49,31 +49,43 @@ export function PostActionRow({
   variant = 'default',
 }: PostActionRowProps) {
   return (
-    <div className="flex items-center gap-3 pt-1 w-full">
-      {showReactions && (
-        <ReactionButton
-          postId={postId}
-          currentReaction={currentReaction}
-          count={reactionCount}
-          onReact={onReact}
-          size="sm"
-        />
-      )}
-      {canComment ? (
-        <CommentButton count={commentCount} onClick={onOpenComments} size="sm" />
-      ) : commentPermission === 'followers' ? (
-        <span className="text-label text-muted-foreground" title="Only followers can comment">
-          Comments limited
-        </span>
-      ) : null}
-      <RepostButton size="sm" />
-      <ShareButton postId={postId} size="sm" />
-      {authorId && <CommunityButton authorId={authorId} authorName={authorName} size="sm" />}
+    <div className="flex items-center pt-1 w-full">
+      {/* Left group: Like, Comment, Repost */}
+      <div className="flex items-center gap-1">
+        {showReactions && (
+          <ReactionButton
+            postId={postId}
+            currentReaction={currentReaction}
+            count={reactionCount}
+            onReact={onReact}
+            size="sm"
+          />
+        )}
+        {canComment ? (
+          <CommentButton count={commentCount} onClick={onOpenComments} size="sm" />
+        ) : commentPermission === 'followers' ? (
+          <span className="text-label text-muted-foreground" title="Only followers can comment">
+            Comments limited
+          </span>
+        ) : null}
+        <RepostButton size="sm" />
+      </div>
+
+      {/* Flexible space between left and right groups */}
+      <div className="flex-1" />
+
+      {/* Right group: Share, Community */}
+      <div className="flex items-center gap-1">
+        <ShareButton postId={postId} size="sm" />
+        {authorId && <CommunityButton authorId={authorId} authorName={authorName} size="sm" />}
+      </div>
+
+      {/* Save — far right */}
       <motion.button
         whileTap={{ scale: 0.9 }}
         onClick={onToggleLibrary}
         className={cn(
-          'transition-colors p-1',
+          'transition-colors p-1 ml-2',
           inLibrary
             ? 'text-primary'
             : variant === 'overlay'
