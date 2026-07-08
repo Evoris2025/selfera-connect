@@ -17,7 +17,8 @@ import {
   Upload,
   MessageCircle,
 } from 'lucide-react';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -253,6 +254,7 @@ export default function Messages() {
   const { startConversation, findExistingConversation } = useNewConversation();
   const themeColor = useThemeColor();
   const themePrimary = themeColor.primary;
+  const { avatarUrl: currentUserAvatarUrl, displayName: currentUserDisplayName } = useCurrentUserAvatar();
   const {
     isUploading,
     uploadProgress,
@@ -828,9 +830,12 @@ export default function Messages() {
                 >
                   <div className="relative">
                     {user.id === 'note' ? (
-                      <div className="w-16 h-16 rounded-full bg-white/[0.04] border border-dashed border-white/[0.15] flex items-center justify-center">
-                        <span className="text-2xl">{user.note}</span>
-                      </div>
+                      <Avatar className="h-16 w-16 border border-white/[0.12]">
+                        {currentUserAvatarUrl && <AvatarImage src={currentUserAvatarUrl} alt={currentUserDisplayName || 'You'} />}
+                        <AvatarFallback className="bg-white/[0.06] text-white text-title font-medium">
+                          {(currentUserDisplayName || 'Y').charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
                     ) : user.id === 'new' ? (
                       <div className="w-16 h-16 rounded-full bg-white/[0.04] border border-white/[0.12] flex items-center justify-center">
                         <BrandIcon icon={Plus} size={22} />
