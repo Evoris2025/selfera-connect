@@ -45,8 +45,8 @@ export function FluentEmoji({ type, size = 28, className }: FluentEmojiProps) {
         objectFit: 'contain',
         filter: 'drop-shadow(0 2px 3px rgba(0,0,0,0.35))',
         userSelect: 'none',
-        WebkitUserDrag: 'none' as unknown as string,
       }}
     />
   );
 }
+
