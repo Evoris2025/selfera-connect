@@ -414,8 +414,8 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
 
           {/* Section 4 — Origin (chip grid, single-select) */}
           <section>
-            <BrandSectionLabel className="px-5 mb-2">ORIGIN</BrandSectionLabel>
-            <div className="flex flex-wrap gap-2 px-4">
+            <BrandSectionLabel className="px-5 mb-1.5">ORIGIN</BrandSectionLabel>
+            <div className="flex flex-wrap gap-1.5 px-4">
               {ORIGIN_OPTIONS.map((opt) => (
                 <Chip
                   key={opt.value}
