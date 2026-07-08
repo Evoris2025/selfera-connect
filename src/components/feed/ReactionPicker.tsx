@@ -108,6 +108,8 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
                   }}
                   transition={selectedReaction === reaction.type 
                     ? { duration: 0.4, times: [0, 0.2, 0.4, 0.6, 1] }
+                    : hoveredReaction === reaction.type
+                      ? { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
                     : springTransitions.bouncy
                   }
                   className="block"
