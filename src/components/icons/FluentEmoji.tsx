@@ -61,8 +61,8 @@ export function FluentEmoji({ type, size = 28, className }: FluentEmojiProps) {
         display: 'inline-block',
         filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.4))',
         userSelect: 'none',
-        WebkitUserDrag: 'none' as unknown as string,
       }}
     />
   );
 }
+
