@@ -56,10 +56,10 @@ const DraggableTab = memo(function DraggableTab({
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
   const isLongPressing = useRef(false);
 
-  const Icon = ICON_MAP[tab.icon];
+  const Icon = CONTENT_TYPE_ICONS[tab.icon as ContentTypeIconKey];
   const isBeingDraggedOver = dragOverIndex === index && !isDragging;
-  // Allow layout picker on posts, expressions, and reels tabs
-  const isGridTab = ['posts', 'expressions', 'reels'].includes(tab.id);
+  // Allow the grid-layout long-press picker on grid-style content tabs.
+  const isGridTab = GRID_LAYOUT_TAB_IDS.has(tab.id);
 
   const handlePointerDown = useCallback(() => {
     if (isRearrangeMode || !isOwnProfile || !isGridTab) return;
