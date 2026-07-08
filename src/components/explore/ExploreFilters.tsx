@@ -1,5 +1,6 @@
 import { useState, useMemo, type ReactNode } from 'react';
-import { Filter } from 'lucide-react';
+import { Filter, ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetTrigger } from '@/components/ui/sheet';
 import {
