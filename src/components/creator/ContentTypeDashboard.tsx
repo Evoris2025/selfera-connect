@@ -25,7 +25,7 @@ export type { ContentType };
 
 interface ContentTypeCard {
   id: ContentType;
-  icon: typeof Sparkles;
+  icon: React.ComponentType<{ className?: string; size?: number | string }>;
   title: string;
   description: string;
 }
