@@ -11,6 +11,7 @@ import {
   X,
   ChevronRight,
 } from 'lucide-react';
+import { ExpressionIcon } from '@/components/icons/ExpressionIcon';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useFeedData } from '@/contexts/FeedDataContext';
