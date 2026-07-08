@@ -18,6 +18,7 @@ import {
   Image as ImageIcon,
   FileText,
 } from 'lucide-react';
+import { ExpressionIcon } from '@/components/icons/ExpressionIcon';
 import { useNavigate } from 'react-router-dom';
 import {
   useFeedData,
