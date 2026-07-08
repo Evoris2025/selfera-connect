@@ -8,13 +8,15 @@ import {
 } from '@/components/ui/sheet-system';
 import {
   Sparkles,
-  Video,
-  Image as ImageIcon,
-  FileText,
   Clock,
   ChevronRight,
 } from 'lucide-react';
-import { ExpressionIcon } from '@/components/icons/ExpressionIcon';
+import {
+  ExpressionIcon,
+  VideoIcon,
+  ImagesIcon,
+  PostsIcon,
+} from '@/components/icons/contentTypeIcons';
 import { useNavigate } from 'react-router-dom';
 import {
   useFeedData,
@@ -41,9 +43,9 @@ const KIND_META: Record<
   { icon: React.ComponentType<React.SVGProps<SVGSVGElement> & { size?: number | string }>; route: string }
 > = {
   expression: { icon: ExpressionIcon, route: '/studio/expression' },
-  video: { icon: Video, route: '/studio/video' },
-  photo: { icon: ImageIcon, route: '/studio/photo' },
-  post: { icon: FileText, route: '/studio/post' },
+  video: { icon: VideoIcon, route: '/studio/video' },
+  photo: { icon: ImagesIcon, route: '/studio/photo' },
+  post: { icon: PostsIcon, route: '/studio/post' },
 };
 
 function gradientIcon(
@@ -207,10 +209,10 @@ export function ContinueWorkingSheet({
                   <div className="grid grid-cols-4 gap-2">
                     {(['post', 'expression', 'image', 'video'] as ContentType[]).map((ct) => {
                       const Icon =
-                        ct === 'post' ? FileText
+                        ct === 'post' ? PostsIcon
                         : ct === 'expression' ? ExpressionIcon
-                        : ct === 'image' ? ImageIcon
-                        : Video;
+                        : ct === 'image' ? ImagesIcon
+                        : VideoIcon;
                       return (
                         <button
                           key={ct}

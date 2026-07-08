@@ -1,206 +1,105 @@
-# MyERA "oversized labels" — diagnosis report (read-only)
+# Profile toolbar → 7 tabs + single shared icon set app-wide
 
-## TL;DR
+## Goal
 
-There is **no global token regression** and **no change to `BrandSectionLabel` or `BrandUnderlineTabs`**. The three perceived size issues have three independent causes, in order of severity:
+Replace the current 5-tab profile toolbar (Posts, Expressions, Reels, Community, Library) with the exact 7-tab sequence:
 
-1. **PENDING pill is the wrong component.** It uses `<BrandSectionLabel>` (a screen-level section header, 11px uppercase, `tracking-[0.12em]`) instead of a small inline status pill. This is a hard bug, not a perception issue.
-2. **MyERA secondary tabs render in a wider container than Explore's**, which makes the same-size labels feel chunkier. Font-size is provably identical to Explore at any given viewport.
-3. **MYERA NETWORK header is currently identical to Explore's section labels** (same component, same default classes, no overrides). Any perceived inflation is coming from the row's right-side button neighbour, not the label itself.
+**Unified · Expressions · Video · Images · Posts · Community · Saved**
 
----
+Every content-type icon in the app (toolbar, studio cards, drafts drawer, cross-post toggles, continue-working sheet, tools rail, everywhere) becomes a direct reuse of a single shared component per type — never a page-local recreation.
 
-## 1. Canonical token audit — UNCHANGED
+## 1. Create a single canonical icon module
 
-`tailwind.config.ts` lines 21–40 define the canonical scale:
+New file: `src/components/icons/contentTypeIcons.tsx`. Exports one component per content type. Every other file imports from here — no more scattered Lucide imports for these concepts.
+
+| Content type | Component | Underlying icon |
+| --- | --- | --- |
+| Unified      | `UnifiedIcon`      | Lucide `Grid3X3` re-export |
+| Expressions  | `ExpressionIcon`   | existing `src/components/icons/ExpressionIcon.tsx` re-export |
+| Video        | `VideoIcon`        | Lucide `Play` re-export |
+| Images       | `ImagesIcon`       | **new** thin-stroke SVG (framed photo with mountain + sun) |
+| Posts        | `PostsIcon`        | **new** thin-stroke SVG (document with 3 text lines) |
+| Community    | `CommunityIcon`    | Lucide `Users` re-export |
+| Saved        | `SavedIcon`        | Lucide `BookOpen` re-export |
+
+All seven components share:
+- `viewBox="0 0 24 24"`, drawing extent ~2–22 like Lucide.
+- Default `strokeWidth={2}`, `strokeLinecap="round"`, `strokeLinejoin="round"`.
+- `vectorEffect="non-scaling-stroke"` on every path so any caller-supplied `strokeWidth` renders exactly.
+- Accept `size`, `stroke`, `strokeWidth`, `className`, and pass through `...rest` — API identical to Lucide.
+
+`ImagesIcon` and `PostsIcon` are drawn from scratch matching Lucide line weight so all 7 read as one icon set.
+
+## 2. Rewrite the profile tab definitions
+
+Edit `src/hooks/useProfileTabOrder.ts`:
 
 ```
-caption:  ['11px', { lineHeight: '1.25', letterSpacing: '0.04em' }]
-label:    ['12px', { lineHeight: '1.4' }]
-body:     ['14px', { lineHeight: '1.5' }]
-title:    ['16px', { lineHeight: '1.375' }]
-headline: ['20px', { lineHeight: '1.25' }]
+DEFAULT_TABS = [
+  { id: 'unified',     icon: 'Unified',     label: 'Unified' },
+  { id: 'expressions', icon: 'Expressions', label: 'Expressions' },
+  { id: 'video',       icon: 'Video',       label: 'Video' },
+  { id: 'images',      icon: 'Images',      label: 'Images' },
+  { id: 'posts',       icon: 'Posts',       label: 'Posts' },
+  { id: 'community',   icon: 'Community',   label: 'Community' },
+  { id: 'saved',       icon: 'Saved',       label: 'Saved' },
+]
 ```
 
-`src/index.css` defines a fluid root font-size:
-```
-font-size: clamp(0.9375rem, 0.875rem + 0.2vw, 1rem);
-```
-That is the same root used by every page. No `text-base/text-lg` overrides on `html`, `body`, or any cascading selector.
+Migration for existing persisted orders: filter out unknown ids, then append any new default ids at the end — same pattern the hook already uses for "missing tabs".
 
-**Verdict:** No token redefinition. All canonical tokens intact.
+## 3. Update `RearrangeableTabBar`
 
----
+Edit `src/components/profile/RearrangeableTabBar.tsx`:
 
-## 2. Primitive audit — UNCHANGED
+- Drop the Lucide + `ExpressionIcon` imports; import the 7 icons from `contentTypeIcons`.
+- Rewrite `ICON_MAP` to map the 7 icon keys to those components.
+- Remove the special-case `monochrome` / size-boost wrapper for Expression — no longer needed once every icon is drawn to the same viewBox extent and stroke width.
+- Update `isGridTab` (currently `['posts', 'expressions', 'reels']`) to `['unified', 'expressions', 'video', 'images', 'posts']` so the layout picker still triggers on grid-like tabs.
+- The 5-item flex row (`flex-1` per tab) becomes cramped at 7; switch the tab container to a horizontal scroller: `overflow-x-auto` with `min-w-[56px]` per tab and `scrollbar-none`. On phones wide enough, 7 × 56 = 392 fits within 390 CSS px with a hair of scroll — matches the "scroll if it overflows" requirement.
+- Active-underline indicator, triple-tap-to-rearrange, and hold-for-layout behavior remain unchanged; the hint text below stays the same.
 
-### `BrandSectionLabel`
-Resolved className: `text-caption font-medium uppercase tracking-[0.12em] text-white/55`
-→ 11px, lh 1.25, letter-spacing 0.12em, weight 500.
-Accepts only `className` and `children`. No size prop, no variant.
+## 4. Wire up the new sections in `Profile.tsx`
 
-### `BrandUnderlineTabs`
-Each tab button resolved className:
-```
-flex-1 min-w-0 justify-center inline-flex
-px-1 py-2
-text-[clamp(0.6875rem,0.625rem+0.4vw,0.8125rem)]
-uppercase tracking-tight font-medium truncate
-transition-colors duration-150
-outline-none focus:outline-none focus-visible:outline-none
-[active] text-gradient-brand | [inactive] text-white/45 hover:text-white/70
-```
-**Font-size is viewport-driven**, not container-driven: 11px → 13px between ~390px and ~830px viewports. Identical numeric size on Explore and MyERA at the same viewport.
+Edit `src/pages/Profile.tsx`:
 
-**Verdict:** Defaults unchanged. No size props. Cannot be the source.
+- Initial `activeTab` changes from `'posts'` to `'unified'`.
+- Rename the existing `activeTab === 'reels'` branch to `'video'` and `'library'` to `'saved'` (pure key rename; the underlying grid content is unchanged for this pass).
+- Add two new branches:
+  - `'unified'` → renders a merged grid of the user's posts + expressions + video + images (reuse the existing PostGrid component with the union feed the profile already loads; empty state matches the other tabs).
+  - `'images'` → renders only image-type posts (filter the existing profile feed by media kind = image).
+- The existing `'posts'` branch stays but its content narrows to text/link posts only (filter by media kind ≠ image/video) so Unified / Images / Video / Posts don't duplicate content.
 
----
+## 5. App-wide icon audit — swap every content-type icon to the shared components
 
-## 3. Call-site comparison
+Files to edit (each swaps a Lucide or local icon for the shared component of the same type):
 
-### MYERA NETWORK header (`src/pages/MyERA.tsx` 494–504)
-```tsx
-<div className="mt-6 mb-3 flex items-center justify-between">
-  <BrandSectionLabel>MYERA NETWORK</BrandSectionLabel>
-  <button ...> + Add </button>
-</div>
-```
+- `src/components/creator/ContentTypeDashboard.tsx` — Video card: `Video` → `VideoIcon`; Photo card: `ImageIcon` → `ImagesIcon`; Post card: `FileText` → `PostsIcon`. Expression already uses `ExpressionIcon`; re-import via the new module.
+- `src/components/creator/shared/ContinueWorkingSheet.tsx` — same three swaps.
+- `src/components/creator/shared/DraftManager.tsx` — same three swaps.
+- `src/components/creator/shared/UnifiedDraftsDrawer.tsx` — same three swaps.
+- `src/components/creator/shared/CrossPostToggles.tsx` — same swaps for any content-type toggles present.
+- `src/components/creator/shared/ToolsRail.tsx` — audit and swap any content-type icons.
+- Any other file surfaced by `rg -n "from 'lucide-react'" src | rg "Video|FileText|Image as ImageIcon|Play|Users|BookOpen|Grid3X3"` **when the usage represents one of these seven content types** (unrelated uses of `Video`/`Play`/etc. for playback controls or generic UI stay as-is).
 
-### Explore section labels — Explore has none at the screen level. The screen uses `BrandUnderlineTabs` directly under a search bar. The closest comparator is the same `BrandSectionLabel` component used inside `ExploreFilters.tsx` at lines 304/320/337/353/371/417 — all with `className="px-5 mb-2"` only. **Same component, same defaults.**
+After this pass there is exactly one component per content type reachable from `contentTypeIcons.tsx`, and every representation of that content type across the app renders the same glyph at the same weight.
 
-### MyERA secondary tabs (`src/pages/MyERA.tsx` 506–515)
-```tsx
-<div className="mb-5 border-b border-white/[0.08]">
-  <BrandUnderlineTabs
-    tabs={[{id:'discover',label:'Discover'},{id:'mylist',label:'My List'},{id:'interactions',label:'Interactions'}]}
-    value={activeNetworkTab} ... />
-</div>
-```
-Parent section is `<motion.section className="px-4 order-1">`. Tabs container has **no horizontal padding** of its own.
+## 6. Behavior kept intact
 
-### Explore top tabs (`src/pages/Explore.tsx` 164–171)
-```tsx
-<div className="sticky top-14 z-20 bg-background/95 backdrop-blur px-3 border-b border-white/[0.08]">
-  <BrandUnderlineTabs tabs={exploreTabs} value={activeTab} ... />
-</div>
-```
-Parent is the page root `<div className="flex flex-col min-h-full">` (full width). Tabs container adds `px-3`.
+- Blue-underline active indicator on the selected tab (`gradient-brand` bar) — unchanged.
+- `Triple-tap to rearrange • Hold grid icon for layout` hint — unchanged.
+- Grid layout picker still opens on long-press for grid-style tabs.
+- Rearrange mode, drag-and-drop, and save-to-Cloud persistence — unchanged (only the default tab list changes).
 
-### Same component? Same props?
-- Component: **Yes**, both `BrandUnderlineTabs`.
-- Props: **Yes**, no size overrides on either side.
-- Wrapper context: **No.** Explore tabs sit at full screen width minus 24px and divide across **4 cells** → ~91px/cell at 390px viewport. MyERA tabs sit inside `px-4` (32px gutter) and divide across **3 cells** → ~119px/cell at 390px viewport. Same font-size, **~30% wider cells** → labels look larger and heavier because of negative-space framing.
+## Technical details
 
----
+- New Images icon SVG (approx): `<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>` — identical geometry to Lucide `ImageIcon` but exported through our shared module so future restyles happen in one file.
+- New Posts icon SVG (approx): `<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M8 13h8"/><path d="M8 17h5"/>` — document with folded corner and text lines.
+- `useProfileTabOrder` migration path: unknown ids in a saved `ordered_tab_ids` (e.g. old `'reels'`, `'library'`) get dropped by the existing `.filter(Boolean)`; the existing "append missing" step then adds `unified`, `video`, `images`, `saved` to the end. Users with a customized order will see new tabs appended; users on default get the exact 7-in-order layout.
+- Tab bar overflow: switching from `flex-1` per tab to `min-w-[56px] flex-shrink-0` inside an `overflow-x-auto scrollbar-none` container satisfies "horizontally scrollable rather than shrinking icons unevenly".
+- No database schema change required; `user_profile_tab_order.ordered_tab_ids` is already a `text[]` and stores whatever id strings we hand it.
 
-## 4. Status pill audit — **ROOT CAUSE FOUND**
+## Out of scope for this pass
 
-`src/pages/MyERA.tsx` line 624–626:
-```tsx
-{link.status === 'pending' && (
-  <BrandSectionLabel>PENDING</BrandSectionLabel>
-)}
-```
-
-This is the bug. `BrandSectionLabel` is a screen-level section header with `tracking-[0.12em]` and 11px caption typography — when used as a status pill on a list row, it renders as a chunky uppercase block sitting next to the message-icon button, with no border, no background, no compact form factor. There is no other "PENDING" status pill elsewhere in the app to compare against; status visualisation in the codebase typically uses a small bordered chip (e.g. the "{N} ACTIVE" pill in `ExploreFilters.tsx` 287–296: `text-caption uppercase tracking-[0.12em] px-2 py-1 rounded-full border ...`).
-
-**Verdict:** Wrong primitive. `BrandSectionLabel` is for screen-level headers, not row badges.
-
----
-
-## 5. Cascade audit — clean
-
-Walking up from each affected element to `<AppLayout>`:
-
-- `MYERA NETWORK` → `<div mt-6 mb-3 flex …>` → `<motion.section px-4 order-1>` → `<div flex flex-col>` → `<div ... main flex flex-col>` (no font-size cascades)
-- Secondary tabs → `<div mb-5 border-b …>` → same `<motion.section px-4>` → same parents
-- PENDING → row `<motion.div className="flex items-center gap-3 p-3 rounded-xl bg-card/50 border border-white/5">` → list `<div space-y-2>` → tab content → same section
-
-**No ancestor applies `text-base`, `text-lg`, `text-sm`, `prose`, or any cascading font-size/leading.**
-
----
-
-## 6. Runtime computed sizes (analytical, not inspected)
-
-At a 390px viewport:
-- `BrandSectionLabel` (MYERA NETWORK / SORT BY / FOLLOW REQUESTS): **11px**, lh 1.25, ls 0.12em — identical across every screen.
-- `BrandUnderlineTabs` cell label (DISCOVER, EXPRESSIONS, anywhere): font-size = `clamp(11px, 10px + 0.4vw, 13px)` ≈ **11.56px** at 390px viewport. **Identical between Explore and MyERA.**
-- PENDING (`BrandSectionLabel`): **11px** + ls 0.12em — looks oversized in a row context because section-label letter-spacing is wider than a status pill's expected `tracking-tight`/`tracking-wider`, and there's no chip chrome to constrain it.
-
----
-
-## Diagnosis summary
-
-| Question | Answer |
-|---|---|
-| Tokens redefined? | **No.** |
-| `BrandSectionLabel` defaults changed? | **No.** |
-| `BrandUnderlineTabs` defaults changed? | **No.** |
-| MyERA passes size overrides? | **No.** |
-| Parent wrapper cascading larger font? | **No.** |
-| Wrong primitive used somewhere? | **Yes — `BrandSectionLabel` for the PENDING row pill.** |
-| Wrapper geometry difference between MyERA and Explore tabs? | **Yes — MyERA's tab container has no `px-3` padding and only 3 cells (vs Explore's `px-3` + 4 cells), making each cell ~30% wider.** |
-
-### Single most likely root causes
-
-1. **PENDING pill (line 625, `src/pages/MyERA.tsx`)** — wrong component. `BrandSectionLabel` should never be used as a row-level status badge.
-2. **Secondary tab container (line 507, `src/pages/MyERA.tsx`)** — missing `px-3` (and arguably tighter overall horizontal padding) makes 3 wide cells feel oversized. Explore's same primitive looks compact because `px-3` is added to the tab container itself, not the parent section.
-
-(MYERA NETHEADER is not actually inflated at the component level — it matches Explore's filter-sheet labels exactly. Any perception of "larger" is coming from the visual weight of the `+ Add` chip beside it, not the label itself.)
-
----
-
-## Proposed minimal fix (for next default-mode pass — DO NOT APPLY YET)
-
-Two surgical edits in `src/pages/MyERA.tsx`. No other files touched. No new tokens, no new components.
-
-### Edit A — line 624–626 (PENDING pill)
-
-Replace:
-```tsx
-{link.status === 'pending' && (
-  <BrandSectionLabel>PENDING</BrandSectionLabel>
-)}
-```
-with the same chip primitive Explore uses for `{N} ACTIVE` (compact bordered pill):
-```tsx
-{link.status === 'pending' && (
-  <span className="shrink-0 text-[10px] uppercase tracking-[0.08em] font-medium px-2 py-0.5 rounded-full border border-white/15 text-white/55">
-    Pending
-  </span>
-)}
-```
-
-### Edit B — line 507 (secondary tab container alignment)
-
-Replace:
-```tsx
-<div className="mb-5 border-b border-white/[0.08]">
-  <BrandUnderlineTabs ... />
-</div>
-```
-with the same wrapper Explore uses (add `px-3` and reduce bottom margin to match Explore's tab spacing):
-```tsx
-<div className="-mx-4 mb-4 px-3 border-b border-white/[0.08]">
-  <BrandUnderlineTabs ... />
-</div>
-```
-The negative `-mx-4` cancels the parent `px-4`, then `px-3` gives the same internal gutter Explore uses, restoring identical cell width per tab. Three tabs across the same width as Explore's four read as compact, not chunky.
-
-### Optional Edit C — MYERA NETWORK header
-
-No change needed. The header already uses the canonical `BrandSectionLabel` with no overrides. If the user still perceives it as heavy after Edits A+B, the cause is the `+ Add` chip's visual weight, not the label.
-
----
-
-## Files inspected (no edits made)
-
-- `tailwind.config.ts`
-- `src/index.css`
-- `src/components/brand/BrandSectionLabel.tsx`
-- `src/components/brand/BrandUnderlineTabs.tsx`
-- `src/pages/MyERA.tsx` (lines 478–640)
-- `src/pages/Explore.tsx` (lines 119–192)
-- `src/components/explore/ExploreFilters.tsx` (lines 280–430, for chip-pill comparator)
-
-Awaiting approval to apply Edits A and B.
+- No changes to what content each tab renders beyond the Unified/Images additions and the Posts narrowing described in §4. If you also want new empty-state copy, filter chips, or sort controls per tab, that's a follow-up.
+- No changes to the Studio dashboard layout, card copy, or accent colors — only the icon components inside those cards.

@@ -1,7 +1,7 @@
 import { memo, useState, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Grid3X3, Sparkles, Play, Users, BookOpen, GripVertical } from 'lucide-react';
-import { ExpressionIcon } from '@/components/icons/ExpressionIcon';
+import { GripVertical } from 'lucide-react';
+import { CONTENT_TYPE_ICONS, type ContentTypeIconKey } from '@/components/icons/contentTypeIcons';
 import { cn } from '@/lib/utils';
 import { ProfileTab, useProfileTabOrder } from '@/hooks/useProfileTabOrder';
 import { toast } from '@/hooks/use-toast';
@@ -17,24 +17,8 @@ interface RearrangeableTabBarProps {
   onLayoutChange?: (layout: GridLayoutStyle) => void;
 }
 
-const ICON_MAP: Record<string, React.FC<{ className?: string }>> = {
-  Grid3X3,
-  Sparkles,
-  // Force monochrome so the Expression tab inherits currentColor like every
-  // other Lucide icon in this toolbar (no brand gradient here). Render at a
-  // slightly larger intrinsic size (h-6 w-6) rather than CSS-scaling — CSS
-  // transforms blur SVG strokes, and the diagonal two-mask composition needs
-  // a bit more box to optically match a solid Lucide glyph at h-5 w-5.
-  Expression: ({ className }) => (
-    <ExpressionIcon
-      className={cn(className?.replace(/\bh-5\b/, 'h-6').replace(/\bw-5\b/, 'w-6'))}
-      monochrome
-    />
-  ),
-  Play,
-  Users,
-  BookOpen,
-};
+// Tabs that should offer the grid-layout long-press picker.
+const GRID_LAYOUT_TAB_IDS = new Set(['unified', 'expressions', 'video', 'images', 'posts']);
 
 interface DraggableTabProps {
   tab: ProfileTab;
@@ -72,10 +56,10 @@ const DraggableTab = memo(function DraggableTab({
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
   const isLongPressing = useRef(false);
 
-  const Icon = ICON_MAP[tab.icon];
+  const Icon = CONTENT_TYPE_ICONS[tab.icon as ContentTypeIconKey];
   const isBeingDraggedOver = dragOverIndex === index && !isDragging;
-  // Allow layout picker on posts, expressions, and reels tabs
-  const isGridTab = ['posts', 'expressions', 'reels'].includes(tab.id);
+  // Allow the grid-layout long-press picker on grid-style content tabs.
+  const isGridTab = GRID_LAYOUT_TAB_IDS.has(tab.id);
 
   const handlePointerDown = useCallback(() => {
     if (isRearrangeMode || !isOwnProfile || !isGridTab) return;
@@ -152,7 +136,7 @@ const DraggableTab = memo(function DraggableTab({
       }}
       transition={{ type: 'spring', stiffness: 400, damping: 30 }}
       className={cn(
-        'relative flex-1 flex items-center justify-center py-2.5 transition-all duration-200',
+        'relative flex items-center justify-center py-2.5 shrink-0 min-w-[56px] flex-1 transition-all duration-200',
         isRearrangeMode && 'cursor-grab active:cursor-grabbing animate-jiggle',
         isDragging && 'z-50',
         isActive && !isRearrangeMode && 'text-white',
@@ -327,31 +311,34 @@ export const RearrangeableTabBar = memo(function RearrangeableTabBar({
         </motion.div>
       )}
 
-      {/* Polished Tab Bar - Clean square edge style */}
+      {/* Polished Tab Bar — square edge, horizontally scrollable when 7 tabs
+          overflow the viewport so icons stay the same size instead of shrinking. */}
       <div className={cn(
-        'w-full flex items-center bg-[hsl(240,10%,8%)] border border-border/30 mx-4',
+        'w-full overflow-x-auto scrollbar-none bg-[hsl(240,10%,8%)] border border-border/30 mx-4',
         isRearrangeMode && 'bg-muted/20'
       )}
         style={{ width: 'calc(100% - 2rem)' }}
       >
-        {orderedTabs.map((tab, index) => (
-          <DraggableTab
-            key={tab.id}
-            tab={tab}
-            index={index}
-            isActive={activeTab === tab.id}
-            isRearrangeMode={isRearrangeMode}
-            isDragging={draggingIndex === index}
-            dragOverIndex={dragOverIndex}
-            isOwnProfile={isOwnProfile}
-            onTabChange={onTabChange}
-            onTap={enterRearrangeMode}
-            onLongPress={openLayoutPicker}
-            onDragStart={handleDragStart}
-            onDragOver={handleDragOver}
-            onDragEnd={handleDragEnd}
-          />
-        ))}
+        <div className="flex items-center min-w-full w-max">
+          {orderedTabs.map((tab, index) => (
+            <DraggableTab
+              key={tab.id}
+              tab={tab}
+              index={index}
+              isActive={activeTab === tab.id}
+              isRearrangeMode={isRearrangeMode}
+              isDragging={draggingIndex === index}
+              dragOverIndex={dragOverIndex}
+              isOwnProfile={isOwnProfile}
+              onTabChange={onTabChange}
+              onTap={enterRearrangeMode}
+              onLongPress={openLayoutPicker}
+              onDragStart={handleDragStart}
+              onDragOver={handleDragOver}
+              onDragEnd={handleDragEnd}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Hint text - centered with proper spacing */}

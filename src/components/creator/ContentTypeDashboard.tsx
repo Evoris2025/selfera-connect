@@ -3,15 +3,17 @@ import { ICON_SIZE } from "@/lib/scale";
 import { motion } from 'framer-motion';
 import {
   Sparkles,
-  Video,
-  Image as ImageIcon,
   FileText,
-  
   ArrowLeft,
   X,
   ChevronRight,
 } from 'lucide-react';
-import { ExpressionIcon } from '@/components/icons/ExpressionIcon';
+import {
+  ExpressionIcon,
+  VideoIcon,
+  ImagesIcon,
+  PostsIcon,
+} from '@/components/icons/contentTypeIcons';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useFeedData } from '@/contexts/FeedDataContext';
@@ -32,9 +34,9 @@ interface ContentTypeCard {
 
 const contentTypes: ContentTypeCard[] = [
   { id: 'expression', icon: ExpressionIcon, title: 'Expression', description: 'A moment, not a record' },
-  { id: 'video', icon: Video, title: 'Video', description: 'Stories worth the time' },
-  { id: 'image', icon: ImageIcon, title: 'Photo', description: 'A frame of your world' },
-  { id: 'post', icon: FileText, title: 'Post', description: "What's on your mind" },
+  { id: 'video', icon: VideoIcon, title: 'Video', description: 'Stories worth the time' },
+  { id: 'image', icon: ImagesIcon, title: 'Photo', description: 'A frame of your world' },
+  { id: 'post', icon: PostsIcon, title: 'Post', description: "What's on your mind" },
 ];
 
 interface ContentTypeDashboardProps {

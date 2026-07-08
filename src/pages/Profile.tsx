@@ -174,7 +174,7 @@ export default function Profile() {
   const { uploadCoverPhoto, isUploading: isCoverUploading } = useCoverPhotoUpload();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
-  const [activeTab, setActiveTab] = useState('posts');
+  const [activeTab, setActiveTab] = useState('unified');
   const [listModalOpen, setListModalOpen] = useState(false);
   const [listModalType, setListModalType] = useState<ListType>('followers');
   const [gridLayout, setGridLayout] = useState<GridLayoutStyle>('uniform');
@@ -713,9 +713,9 @@ export default function Profile() {
             />
           ) : (
             <AnimatePresence mode="wait">
-              {activeTab === 'posts' && (
+              {activeTab === 'unified' && (
                 <motion.div
-                  key="posts"
+                  key="unified"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -737,9 +737,33 @@ export default function Profile() {
                 </motion.div>
               )}
 
-              {activeTab === 'reels' && (
+              {activeTab === 'video' && (
                 <motion.div
-                  key="reels"
+                  key="video"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <RearrangeableGrid posts={mockPosts.filter(p => p.isVideo)} isOwnProfile={isOwnProfile} layoutStyle={gridLayout} />
+                </motion.div>
+              )}
+
+              {activeTab === 'images' && (
+                <motion.div
+                  key="images"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <RearrangeableGrid posts={mockPosts.filter(p => !p.isVideo)} isOwnProfile={isOwnProfile} layoutStyle={gridLayout} />
+                </motion.div>
+              )}
+
+              {activeTab === 'posts' && (
+                <motion.div
+                  key="posts"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -761,9 +785,9 @@ export default function Profile() {
                 </motion.div>
               )}
 
-              {activeTab === 'library' && (
+              {activeTab === 'saved' && (
                 <motion.div
-                  key="library"
+                  key="saved"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}

@@ -1,5 +1,4 @@
-import { FileText } from 'lucide-react';
-import { ExpressionIcon } from '@/components/icons/ExpressionIcon';
+import { ExpressionIcon, PostsIcon } from '@/components/icons/contentTypeIcons';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import type { StudioContentKind } from '@/contexts/FeedDataContext';
@@ -40,7 +39,7 @@ export function CrossPostToggles({ source, value, onChange }: CrossPostTogglesPr
       {source !== 'post' && (
         <div className="flex items-center justify-between gap-3">
           <Label htmlFor="cross-post" className="flex items-center gap-2 text-body">
-            <FileText className="h-4 w-4 text-emerald-400" />
+            <PostsIcon className="h-4 w-4 text-emerald-400" />
             Also share as Post
           </Label>
           <Switch

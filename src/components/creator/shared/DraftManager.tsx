@@ -1,7 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ICON_SIZE } from "@/lib/scale";
-import { FileText, Trash2, Clock, ChevronRight, Sparkles, Video, Image as ImageIcon } from 'lucide-react';
-import { ExpressionIcon } from '@/components/icons/ExpressionIcon';
+import { FileText, Trash2, Clock, ChevronRight, Sparkles } from 'lucide-react';
+import {
+  ExpressionIcon,
+  VideoIcon,
+  ImagesIcon,
+  PostsIcon,
+} from '@/components/icons/contentTypeIcons';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetTrigger } from '@/components/ui/sheet';
@@ -122,9 +127,9 @@ function generateDraftTitle(type: ContentType, data: Record<string, unknown>): s
 
 const typeIconMap: Record<ContentType, React.ComponentType<React.SVGProps<SVGSVGElement> & { size?: number | string }>> = {
   expression: ExpressionIcon,
-  video: Video,
-  image: ImageIcon,
-  post: FileText,
+  video: VideoIcon,
+  image: ImagesIcon,
+  post: PostsIcon,
 };
 
 const ROW_ACCENT = 'hsl(271 91% 65%)'; // brand purple — matches "Your work" rows
