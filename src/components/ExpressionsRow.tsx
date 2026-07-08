@@ -1,27 +1,33 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Plus, ChevronRight } from 'lucide-react';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { motion } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
 import { useFeedData } from '@/contexts/FeedDataContext';
 import { useNavbar } from '@/contexts/NavbarContext';
-import { useCloseFriends } from '@/hooks/useCloseFriends';
 import { ExpressionViewer } from '@/components/ExpressionViewer';
 import { CreatorStudio } from '@/components/creator';
 import { BrandIcon } from '@/components/brand';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
+const BATCH_SIZE = 5;
+const INITIAL_VISIBLE = 8;
+
 export function ExpressionsRow() {
   const { avatarUrl, displayName } = useCurrentUserAvatar();
   const { expressions, markExpressionSeen } = useFeedData();
   const { hideNavbar, showNavbar } = useNavbar();
-  const { isCloseFriend } = useCloseFriends();
   const themePrimary = useThemeColor().primary;
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerInitialIndex, setViewerInitialIndex] = useState(0);
   const [creatorOpen, setCreatorOpen] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Reset visible count if expressions change significantly
+  useEffect(() => {
+    setVisibleCount(Math.min(INITIAL_VISIBLE, expressions.length));
+  }, [expressions.length]);
 
   // Hide navbar when expression viewer is open
   useEffect(() => {
@@ -46,10 +52,31 @@ export function ExpressionsRow() {
     setCreatorOpen(true);
   };
 
+  const handleScroll = useCallback(() => {
+    if (!scrollRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+    if (scrollWidth - scrollLeft - clientWidth < 120) {
+      setVisibleCount(prev => Math.min(prev + BATCH_SIZE, expressions.length));
+    }
+  }, [expressions.length]);
+
+  const scrollRight = useCallback(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: 260, behavior: 'smooth' });
+    }
+  }, []);
+
+  const hasMore = visibleCount < expressions.length;
+
   return (
     <>
       <div className="relative">
-        <ScrollArea className="w-full">
+        <div
+          ref={scrollRef}
+          onScroll={handleScroll}
+          className="w-full overflow-x-auto scrollbar-hide"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
           <div className="flex gap-3 px-4 py-2">
             {/* Create Expression Card */}
             <motion.button
@@ -82,7 +109,7 @@ export function ExpressionsRow() {
             </motion.button>
 
             {/* Expression Cards from FeedDataContext */}
-            {expressions.map((expression, index) => (
+            {expressions.slice(0, visibleCount).map((expression, index) => (
               <motion.button
                 key={expression.id}
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -104,21 +131,29 @@ export function ExpressionsRow() {
                 </span>
               </motion.button>
             ))}
+
+            {/* Loading indicator */}
+            {hasMore && (
+              <div className="flex-shrink-0 flex items-center justify-center w-20">
+                <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
           </div>
-          <ScrollBar orientation="horizontal" className="hidden" />
-        </ScrollArea>
+        </div>
 
         {/* Right scroll indicator */}
-        <motion.button 
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.5 }}
-          className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/[0.12] flex items-center justify-center"
-        >
-          <BrandIcon icon={ChevronRight} size={16} />
-        </motion.button>
+        {hasMore && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.5 }}
+            onClick={scrollRight}
+            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/[0.12] flex items-center justify-center cursor-pointer"
+          >
+            <BrandIcon icon={ChevronRight} size={16} />
+          </motion.button>
+        )}
       </div>
-
 
       {/* Expression Viewer Modal */}
       <ExpressionViewer
