@@ -21,8 +21,13 @@ const ICON_MAP: Record<string, React.FC<{ className?: string }>> = {
   Grid3X3,
   Sparkles,
   // Force monochrome so the Expression tab inherits currentColor like every
-  // other Lucide icon in this toolbar (no brand gradient here).
-  Expression: (props) => <ExpressionIcon {...props} monochrome />,
+  // other Lucide icon in this toolbar (no brand gradient here). Also nudge
+  // the visual size up ~15% because the diagonal two-mask composition fills
+  // less of its viewBox than a solid Lucide glyph, so at the same box size
+  // it optically reads smaller than its siblings.
+  Expression: ({ className }) => (
+    <ExpressionIcon className={cn(className, 'scale-[1.25]')} monochrome />
+  ),
   Play,
   Users,
   BookOpen,
