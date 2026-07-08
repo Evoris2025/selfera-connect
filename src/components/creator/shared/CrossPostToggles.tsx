@@ -26,7 +26,7 @@ export function CrossPostToggles({ source, value, onChange }: CrossPostTogglesPr
       {source !== 'expression' && (
         <div className="flex items-center justify-between gap-3">
           <Label htmlFor="cross-expression" className="flex items-center gap-2 text-body">
-            <Sparkles className="h-4 w-4 text-rose-400" />
+            <ExpressionIcon className="h-4 w-4" />
             Also share as Expression
           </Label>
           <Switch
