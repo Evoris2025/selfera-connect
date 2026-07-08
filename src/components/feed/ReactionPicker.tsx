@@ -189,9 +189,12 @@ interface ReactionButtonProps {
   currentReaction?: ReactionType | null;
   count: number;
   onReact: (type: ReactionType | null) => void;
+  size?: 'sm' | 'md' | 'lg';
 }
 
-export function ReactionButton({ postId, currentReaction, count, onReact }: ReactionButtonProps) {
+export function ReactionButton({ postId, currentReaction, count, onReact, size = 'md' }: ReactionButtonProps) {
+  const sizeMap = { sm: { box: 'w-5 h-5', svg: 'h-5 w-5', px: 18 }, md: { box: 'w-6 h-6', svg: 'h-6 w-6', px: 24 }, lg: { box: 'w-7 h-7', svg: 'h-7 w-7', px: 28 } } as const;
+  const s = sizeMap[size];
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   const [isLongPressing, setIsLongPressing] = useState(false);
   const [localBurst, setLocalBurst] = useState<BurstParticle[] | null>(null);
