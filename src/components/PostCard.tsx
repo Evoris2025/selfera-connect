@@ -24,7 +24,7 @@ import { EraVerifiedTick, calculateVerificationTier } from './EraVerifiedTick';
 import { EraVerifiedTooltip } from './profile/EraVerifiedTooltip';
 import { AccountTypeBadge, AccountType } from './AccountTypeBadge';
 import { Hashtag } from './Hashtag';
-import { CommentButton, ShareButton, CommentSheet, CommunityButton } from './interactions';
+import { CommentButton, ShareButton, CommentSheet, CommunityButton, RepostButton } from './interactions';
 import { CinematicAvatar } from './ui/CinematicAvatar';
 import { ImmersiveMedia } from './ui/ImmersiveMedia';
 import { ReactionButton, ReactionType } from './feed/ReactionPicker';
@@ -325,25 +325,27 @@ function PostCardBase(props: PostCardProps) {
   ) : null;
 
   const actionBar = (
-    <div className="flex items-center gap-5 pt-1">
+    <div className="flex items-center gap-3 pt-1">
       {showReactions && (
         <ReactionButton
           postId={id}
           currentReaction={currentReaction}
           count={reactionCount}
           onReact={handleReaction}
+          size="sm"
         />
       )}
       {canComment && (
-        <CommentButton count={commentCount} onClick={() => setShowCommentSheet(true)} />
+        <CommentButton count={commentCount} onClick={() => setShowCommentSheet(true)} size="sm" />
       )}
       {!canComment && commentPermission === 'followers' && (
         <span className="text-label text-muted-foreground" title="Only followers can comment">
           Comments limited
         </span>
       )}
-      <ShareButton postId={id} />
-      {authorId && <CommunityButton authorId={authorId} authorName={author.name} />}
+      <RepostButton size="sm" />
+      <ShareButton postId={id} size="sm" />
+      {authorId && <CommunityButton authorId={authorId} authorName={author.name} size="sm" />}
       <motion.button
         whileTap={{ scale: 0.9 }}
         onClick={handleLibraryToggle}

@@ -189,9 +189,12 @@ interface ReactionButtonProps {
   currentReaction?: ReactionType | null;
   count: number;
   onReact: (type: ReactionType | null) => void;
+  size?: 'sm' | 'md' | 'lg';
 }
 
-export function ReactionButton({ postId, currentReaction, count, onReact }: ReactionButtonProps) {
+export function ReactionButton({ postId, currentReaction, count, onReact, size = 'md' }: ReactionButtonProps) {
+  const sizeMap = { sm: { box: 'w-5 h-5', svg: 'h-5 w-5', px: 18 }, md: { box: 'w-6 h-6', svg: 'h-6 w-6', px: 24 }, lg: { box: 'w-7 h-7', svg: 'h-7 w-7', px: 28 } } as const;
+  const s = sizeMap[size];
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   const [isLongPressing, setIsLongPressing] = useState(false);
   const [localBurst, setLocalBurst] = useState<BurstParticle[] | null>(null);
@@ -335,7 +338,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact }: Reac
           currentReaction ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
         )}
       >
-        <div className="relative w-6 h-6 flex items-center justify-center">
+        <div className={cn('relative flex items-center justify-center', s.box)}>
           <motion.div
             key={currentReaction || 'default'}
             initial={{ scale: 0.5, rotate: -15 }}
@@ -344,11 +347,12 @@ export function ReactionButton({ postId, currentReaction, count, onReact }: Reac
             className="flex items-center justify-center"
           >
             {hasReaction ? (
-              <FluentEmoji type={currentReaction!} size={ICON_SIZE.lg} />
+              <FluentEmoji type={currentReaction!} size={s.px} />
             ) : (
               <svg
                 className={cn(
-                  'h-6 w-6 transition-colors',
+                  s.svg,
+                  'transition-colors',
                   currentReaction ? 'fill-current' : 'fill-none stroke-current'
                 )}
                 viewBox="0 0 24 24"
