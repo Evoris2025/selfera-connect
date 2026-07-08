@@ -153,7 +153,64 @@ const TAB_TITLE: Record<ExploreTab, string> = {
   posts: 'POSTS',
 };
 
-// ----- Chip (Sort / Time / Duration / Format / Origin / Tier) -----
+// ----- Small building blocks -----
+
+function SectionLabel({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <div
+      className={cn(
+        'text-[11px] font-semibold uppercase tracking-[0.12em] text-white/45 mb-2',
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
+// Segmented tab bar for the primary Sort control (X / IG feed switcher style).
+interface SegmentedTabsProps<T extends string> {
+  options: { value: T; label: string }[];
+  value: T;
+  themePrimary: string;
+  onChange: (v: T) => void;
+}
+
+function SegmentedTabs<T extends string>({ options, value, themePrimary, onChange }: SegmentedTabsProps<T>) {
+  return (
+    <LayoutGroup id="filter-sort-tabs">
+      <div className="flex items-center gap-1 overflow-x-auto no-scrollbar -mx-1 px-1">
+        {options.map((opt) => {
+          const active = value === opt.value;
+          return (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => onChange(opt.value)}
+              aria-pressed={active}
+              className={cn(
+                'relative shrink-0 px-3 py-2 text-[13px] font-medium whitespace-nowrap transition-colors',
+                active ? 'text-white' : 'text-white/50 hover:text-white/80',
+              )}
+            >
+              {opt.label}
+              {active && (
+                <motion.span
+                  layoutId="filter-sort-underline"
+                  className="absolute left-2 right-2 -bottom-[1px] h-[2px] rounded-full"
+                  style={{ backgroundColor: themePrimary }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 40 }}
+                />
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </LayoutGroup>
+  );
+}
+
+// ----- Chip (Time / Duration / Format / Origin / Tier) -----
 
 interface ChipProps<T extends string> {
   option: { value: T; label: string; disabled?: boolean };
@@ -171,10 +228,10 @@ function Chip<T extends string>({ option, active, themePrimary, onClick, leftDot
       disabled={option.disabled}
       aria-pressed={active}
       className={cn(
-        'h-7 px-2.5 rounded-full text-caption font-medium uppercase tracking-[0.06em] whitespace-nowrap flex items-center justify-center gap-1.5 transition-colors',
+        'h-8 px-3 rounded-full text-[13px] font-medium whitespace-nowrap inline-flex items-center justify-center gap-1.5 transition-colors',
         active
-          ? 'text-white'
-          : 'border border-white/[0.12] text-white/50 bg-transparent hover:border-white/25',
+          ? 'text-white border border-transparent'
+          : 'bg-white/[0.04] border border-white/[0.08] text-white/60 hover:text-white/80 hover:border-white/20',
         option.disabled && 'opacity-40 pointer-events-none',
       )}
       style={active ? { backgroundColor: themePrimary } : undefined}
