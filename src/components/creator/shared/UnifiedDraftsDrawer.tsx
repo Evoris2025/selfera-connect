@@ -43,9 +43,9 @@ const KIND_META: Record<
   { label: string; icon: React.ComponentType<React.SVGProps<SVGSVGElement> & { size?: number | string }>; route: string }
 > = {
   expression: { label: 'Expression', icon: ExpressionIcon, route: '/studio/expression' },
-  video: { label: 'Video', icon: Video, route: '/studio/video' },
-  photo: { label: 'Photo', icon: ImageIcon, route: '/studio/photo' },
-  post: { label: 'Post', icon: FileText, route: '/studio/post' },
+  video: { label: 'Video', icon: VideoIcon, route: '/studio/video' },
+  photo: { label: 'Photo', icon: ImagesIcon, route: '/studio/photo' },
+  post: { label: 'Post', icon: PostsIcon, route: '/studio/post' },
 };
 
 // "Your work" rows use a magenta accent — the brand stop tied to personal expression.
