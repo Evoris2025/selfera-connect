@@ -435,14 +435,14 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
             type="button"
             onClick={handleReset}
             disabled={draftCount === 0}
-            className="flex-1 h-10 rounded-full border border-white/[0.15] bg-transparent text-white/55 text-label uppercase tracking-[0.1em] transition-colors hover:border-white/30 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-white/[0.15]"
+            className="flex-1 h-9 rounded-full border border-white/[0.12] bg-transparent text-white/55 text-caption font-medium uppercase tracking-[0.08em] transition-colors hover:border-white/25 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-white/[0.12]"
           >
             Reset
           </button>
           <button
             type="button"
             onClick={handleApply}
-            className="flex-1 h-10 rounded-full text-label uppercase tracking-[0.1em] inline-flex items-center justify-center text-white transition-opacity hover:opacity-90"
+            className="flex-1 h-9 rounded-full text-caption font-medium uppercase tracking-[0.08em] inline-flex items-center justify-center text-white transition-opacity hover:opacity-90"
             style={{ backgroundColor: themePrimary }}
           >
             Apply
