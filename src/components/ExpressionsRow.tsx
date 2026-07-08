@@ -63,7 +63,7 @@ export function ExpressionsRow() {
             >
               <div className="relative">
                 <Avatar
-                  className="h-16 w-16"
+                  className="h-20 w-20"
                   style={{ boxShadow: `0 0 0 2px ${themePrimary}` }}
                 >
                   <AvatarImage src={avatarUrl} alt={displayName} />
@@ -78,7 +78,7 @@ export function ExpressionsRow() {
                   <Plus className="h-3 w-3 text-white" strokeWidth={2.5} />
                 </div>
               </div>
-              <span className="text-caption text-white/55 truncate max-w-[72px]">your story</span>
+              <span className="text-caption text-white/55 truncate max-w-[80px]">your story</span>
             </motion.button>
 
             {/* Expression Cards from FeedDataContext */}
@@ -93,13 +93,13 @@ export function ExpressionsRow() {
                 onClick={() => handleExpressionClick(index)}
                 className="flex-shrink-0 flex flex-col items-center gap-2"
               >
-                <Avatar className="h-16 w-16 border border-white/[0.15]">
+                <Avatar className="h-20 w-20 border border-white/[0.15]">
                   <AvatarImage src={expression.userAvatar} alt={expression.userName} />
                   <AvatarFallback className="bg-white/[0.06] text-white">
                     {expression.userName.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
-                <span className="text-caption text-white/55 truncate max-w-[72px]">
+                <span className="text-caption text-white/55 truncate max-w-[80px]">
                   {expression.userName}
                 </span>
               </motion.button>
