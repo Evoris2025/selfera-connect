@@ -21,12 +21,15 @@ const ICON_MAP: Record<string, React.FC<{ className?: string }>> = {
   Grid3X3,
   Sparkles,
   // Force monochrome so the Expression tab inherits currentColor like every
-  // other Lucide icon in this toolbar (no brand gradient here). Also nudge
-  // the visual size up ~15% because the diagonal two-mask composition fills
-  // less of its viewBox than a solid Lucide glyph, so at the same box size
-  // it optically reads smaller than its siblings.
+  // other Lucide icon in this toolbar (no brand gradient here). Render at a
+  // slightly larger intrinsic size (h-6 w-6) rather than CSS-scaling — CSS
+  // transforms blur SVG strokes, and the diagonal two-mask composition needs
+  // a bit more box to optically match a solid Lucide glyph at h-5 w-5.
   Expression: ({ className }) => (
-    <ExpressionIcon className={cn(className, 'scale-[1.25]')} monochrome />
+    <ExpressionIcon
+      className={cn(className?.replace(/\bh-5\b/, 'h-6').replace(/\bw-5\b/, 'w-6'))}
+      monochrome
+    />
   ),
   Play,
   Users,
