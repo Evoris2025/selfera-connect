@@ -20,7 +20,9 @@ interface RearrangeableTabBarProps {
 const ICON_MAP: Record<string, React.FC<{ className?: string }>> = {
   Grid3X3,
   Sparkles,
-  Expression: ExpressionIcon,
+  // Force monochrome so the Expression tab inherits currentColor like every
+  // other Lucide icon in this toolbar (no brand gradient here).
+  Expression: (props) => <ExpressionIcon {...props} monochrome />,
   Play,
   Users,
   BookOpen,
