@@ -174,7 +174,7 @@ export default function Profile() {
   const { uploadCoverPhoto, isUploading: isCoverUploading } = useCoverPhotoUpload();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
-  const [activeTab, setActiveTab] = useState('posts');
+  const [activeTab, setActiveTab] = useState('unified');
   const [listModalOpen, setListModalOpen] = useState(false);
   const [listModalType, setListModalType] = useState<ListType>('followers');
   const [gridLayout, setGridLayout] = useState<GridLayoutStyle>('uniform');
