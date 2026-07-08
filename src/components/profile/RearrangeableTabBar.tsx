@@ -20,6 +20,7 @@ interface RearrangeableTabBarProps {
 const ICON_MAP: Record<string, React.FC<{ className?: string }>> = {
   Grid3X3,
   Sparkles,
+  Expression: ExpressionIcon,
   Play,
   Users,
   BookOpen,
