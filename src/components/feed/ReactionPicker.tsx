@@ -67,9 +67,9 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
           transition={springTransitions.bouncy}
           onContextMenu={(e) => e.preventDefault()}
           onClick={(e) => e.stopPropagation()}
-          className="absolute bottom-full left-0 mb-3 z-50"
+          className="absolute left-0 top-0 z-50"
         >
-          <div className="flex items-center gap-1 px-2.5 py-2 bg-card/80 backdrop-blur-2xl rounded-full shadow-[0_10px_40px_-8px_rgba(0,0,0,0.55),0_2px_6px_rgba(0,0,0,0.35)] ring-1 ring-white/10 border border-border/40 select-none touch-manipulation">
+          <div className="flex items-center gap-1 px-2.5 py-2 bg-card/90 backdrop-blur-2xl rounded-full shadow-[0_10px_40px_-8px_rgba(0,0,0,0.55),0_2px_6px_rgba(0,0,0,0.35)] ring-1 ring-white/10 border border-border/40 select-none touch-manipulation">
             {reactions.map((reaction, index) => (
               <motion.button
                 key={reaction.type}
@@ -108,6 +108,8 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
                   }}
                   transition={selectedReaction === reaction.type 
                     ? { duration: 0.4, times: [0, 0.2, 0.4, 0.6, 1] }
+                    : hoveredReaction === reaction.type
+                      ? { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
                     : springTransitions.bouncy
                   }
                   className="block"
@@ -224,11 +226,8 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
   const handleMouseLeave = () => {
     if (typeof navigator !== 'undefined' && (navigator.maxTouchPoints ?? 0) > 0) return;
     if (hoverTimer.current) clearTimeout(hoverTimer.current);
-    setTimeout(() => {
-      if (!isLongPressing) {
-        setIsPickerOpen(false);
-      }
-    }, 200);
+    setIsPickerOpen(false);
+    setIsLongPressing(false);
   };
 
   const handleTouchStart = (e: TouchEvent<HTMLButtonElement>) => {
@@ -311,7 +310,10 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
 
   return (
     <div 
-      className="relative"
+      className={cn(
+        'relative flex items-end transition-[padding] duration-150 ease-out',
+        isPickerOpen && 'pt-[62px]'
+      )}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={(e) => e.stopPropagation()}
