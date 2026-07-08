@@ -256,6 +256,7 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
 
   // Local draft so Reset/Apply can take effect on close.
   const [draft, setDraft] = useState<ExploreFiltersState>(filters);
+  const [moreOpen, setMoreOpen] = useState(false);
 
   const handleOpenChange = (open: boolean) => {
     if (open) setDraft(filters);
