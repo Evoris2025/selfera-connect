@@ -77,7 +77,7 @@ function CreatorRow({
   backgroundUrl,
   onClick,
 }: {
-  icon: typeof Sparkles;
+  icon: React.ComponentType<{ className?: string; size?: number | string }>;
   title: string;
   description: string;
   accentColor: string;
