@@ -78,7 +78,7 @@ export function ExpressionsRow() {
                   <Plus className="h-3 w-3 text-white" strokeWidth={2.5} />
                 </div>
               </div>
-              <span className="text-caption text-white/55 truncate max-w-[72px]">your story</span>
+              <span className="text-caption text-white/55 truncate max-w-[80px]">your story</span>
             </motion.button>
 
             {/* Expression Cards from FeedDataContext */}
