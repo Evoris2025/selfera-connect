@@ -208,7 +208,7 @@ export function ContinueWorkingSheet({
                     {(['post', 'expression', 'image', 'video'] as ContentType[]).map((ct) => {
                       const Icon =
                         ct === 'post' ? FileText
-                        : ct === 'expression' ? Sparkles
+                        : ct === 'expression' ? ExpressionIcon
                         : ct === 'image' ? ImageIcon
                         : Video;
                       return (
