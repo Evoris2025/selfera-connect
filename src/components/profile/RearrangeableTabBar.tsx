@@ -1,6 +1,7 @@
 import { memo, useState, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Grid3X3, Sparkles, Play, Users, BookOpen, GripVertical } from 'lucide-react';
+import { ExpressionIcon } from '@/components/icons/ExpressionIcon';
 import { cn } from '@/lib/utils';
 import { ProfileTab, useProfileTabOrder } from '@/hooks/useProfileTabOrder';
 import { toast } from '@/hooks/use-toast';
