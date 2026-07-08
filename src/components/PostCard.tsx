@@ -583,33 +583,22 @@ function PostCardBase(props: PostCardProps) {
                 </div>
               )}
 
-              <div className="flex items-center justify-between pt-2">
-                <div className="flex items-center gap-5">
-                  {showReactions && (
-                    <ReactionButton
-                      postId={id}
-                      currentReaction={currentReaction}
-                      count={reactionCount}
-                      onReact={handleReaction}
-                    />
-                  )}
-                  {canComment && (
-                    <CommentButton count={commentCount} onClick={() => setShowCommentSheet(true)} />
-                  )}
-                  <ShareButton postId={id} />
-                  {authorId && <CommunityButton authorId={authorId} authorName={author.name} />}
-                </div>
-                <motion.button
-                  whileTap={{ scale: 0.9 }}
-                  onClick={handleLibraryToggle}
-                  className={cn(
-                    'transition-colors p-2',
-                    inLibrary ? 'text-primary' : 'text-foreground/80 hover:text-foreground'
-                  )}
-                >
-                  <BookOpen className={cn('h-6 w-6', inLibrary && 'fill-current')} />
-                </motion.button>
-              </div>
+              <PostActionRow
+                postId={id}
+                authorId={authorId}
+                authorName={author.name}
+                currentReaction={currentReaction}
+                reactionCount={reactionCount}
+                onReact={handleReaction}
+                showReactions={showReactions}
+                commentCount={commentCount}
+                canComment={canComment}
+                commentPermission={commentPermission}
+                onOpenComments={() => setShowCommentSheet(true)}
+                inLibrary={inLibrary}
+                onToggleLibrary={handleLibraryToggle}
+                variant="overlay"
+              />
 
               {commentCount > 0 && canComment && (
                 <button
