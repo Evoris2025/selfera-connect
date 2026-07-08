@@ -105,9 +105,9 @@ export function PostActionRow({
           content: 'View the latest comment in this conversation.',
         }
       : null;
-  const pickedLiker = pickLiker(postId);
-  const likerName = topLikerName || pickedLiker.name;
-  const likerAvatar = pickedLiker.avatar;
+  const likers = pickLikers(postId, 3);
+  const likerName = topLikerName || likers[0].name;
+
 
   const mutedText =
     variant === 'overlay'
