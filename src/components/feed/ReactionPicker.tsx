@@ -215,8 +215,6 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
   }, []);
 
   const handleMouseEnter = () => {
-    // On touch devices, some browsers emit synthetic mouse events after touch.
-    // Ignore hover-open logic so the picker doesn't re-open after a tap.
     if (typeof navigator !== 'undefined' && (navigator.maxTouchPoints ?? 0) > 0) return;
     if (hoverTimer.current) clearTimeout(hoverTimer.current);
     hoverTimer.current = setTimeout(() => {
@@ -227,9 +225,14 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
   const handleMouseLeave = () => {
     if (typeof navigator !== 'undefined' && (navigator.maxTouchPoints ?? 0) > 0) return;
     if (hoverTimer.current) clearTimeout(hoverTimer.current);
-    setIsPickerOpen(false);
-    setIsLongPressing(false);
+    // Small close delay so the cursor can travel from the button up into the picker
+    // without the popup collapsing between them.
+    hoverTimer.current = setTimeout(() => {
+      setIsPickerOpen(false);
+      setIsLongPressing(false);
+    }, 220);
   };
+
 
   const handleTouchStart = (e: TouchEvent<HTMLButtonElement>) => {
     suppressClickRef.current = true;
