@@ -189,8 +189,9 @@ function Chip<T extends string>({ option, active, themePrimary, onClick, leftDot
       disabled={option.disabled}
       aria-pressed={active}
       className={cn(
-        'h-8 px-3 rounded-full text-[13px] font-medium whitespace-nowrap inline-flex items-center justify-center gap-1.5 transition-colors',
+        'h-[34px] px-3 rounded-full text-[13px] font-medium whitespace-nowrap inline-flex items-center justify-center gap-1.5 transition-colors',
         active
+
           ? 'text-white border border-transparent'
           : 'bg-white/[0.04] border border-white/[0.08] text-white/60 hover:text-white/80 hover:border-white/20',
         option.disabled && 'opacity-40 pointer-events-none',
