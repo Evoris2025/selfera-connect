@@ -367,7 +367,7 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                   </button>
                   
                   <div className="flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-pink-400" />
+                    <ExpressionIcon className="h-5 w-5" />
                     <span className="text-white font-medium text-body">Expression</span>
                   </div>
                   
