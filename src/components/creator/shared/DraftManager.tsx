@@ -120,8 +120,8 @@ function generateDraftTitle(type: ContentType, data: Record<string, unknown>): s
   return typeLabels[type];
 }
 
-const typeIconMap: Record<ContentType, typeof Sparkles> = {
-  expression: Sparkles,
+const typeIconMap: Record<ContentType, React.ComponentType<React.SVGProps<SVGSVGElement> & { size?: number | string }>> = {
+  expression: ExpressionIcon,
   video: Video,
   image: ImageIcon,
   post: FileText,
