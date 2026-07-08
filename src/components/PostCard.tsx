@@ -24,7 +24,7 @@ import { EraVerifiedTick, calculateVerificationTier } from './EraVerifiedTick';
 import { EraVerifiedTooltip } from './profile/EraVerifiedTooltip';
 import { AccountTypeBadge, AccountType } from './AccountTypeBadge';
 import { Hashtag } from './Hashtag';
-import { CommentButton, ShareButton, CommentSheet, CommunityButton } from './interactions';
+import { CommentButton, ShareButton, CommentSheet, CommunityButton, RepostButton } from './interactions';
 import { CinematicAvatar } from './ui/CinematicAvatar';
 import { ImmersiveMedia } from './ui/ImmersiveMedia';
 import { ReactionButton, ReactionType } from './feed/ReactionPicker';
