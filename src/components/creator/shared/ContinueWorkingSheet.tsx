@@ -43,9 +43,9 @@ const KIND_META: Record<
   { icon: React.ComponentType<React.SVGProps<SVGSVGElement> & { size?: number | string }>; route: string }
 > = {
   expression: { icon: ExpressionIcon, route: '/studio/expression' },
-  video: { icon: Video, route: '/studio/video' },
-  photo: { icon: ImageIcon, route: '/studio/photo' },
-  post: { icon: FileText, route: '/studio/post' },
+  video: { icon: VideoIcon, route: '/studio/video' },
+  photo: { icon: ImagesIcon, route: '/studio/photo' },
+  post: { icon: PostsIcon, route: '/studio/post' },
 };
 
 function gradientIcon(
