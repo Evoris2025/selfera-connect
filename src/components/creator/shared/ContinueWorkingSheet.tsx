@@ -46,7 +46,10 @@ const KIND_META: Record<
   post: { icon: FileText, route: '/studio/post' },
 };
 
-function gradientIcon(Icon: typeof Sparkles, size = 22) {
+function gradientIcon(
+  Icon: React.ComponentType<React.SVGProps<SVGSVGElement> & { size?: number | string }>,
+  size = 22
+) {
   return (
     <Icon
       size={size}
@@ -58,6 +61,7 @@ function gradientIcon(Icon: typeof Sparkles, size = 22) {
     />
   );
 }
+
 
 function draftTitle(d: StudioDraft): string {
   const t = (d.title || '').trim();
