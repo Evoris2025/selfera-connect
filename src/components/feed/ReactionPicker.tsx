@@ -313,15 +313,13 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     : undefined;
 
   return (
-    <div 
-      className={cn(
-        'relative flex items-end transition-[padding] duration-150 ease-out',
-        isPickerOpen && 'pt-[62px]'
-      )}
+    <div
+      className="relative inline-flex items-center"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={(e) => e.stopPropagation()}
     >
+
       <ReactionPicker
         isOpen={isPickerOpen}
         onSelect={handleSelect}
