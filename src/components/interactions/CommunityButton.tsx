@@ -33,7 +33,7 @@ export function CommunityButton({ authorId, authorName, size = 'md' }: Community
   const prevInCommunityRef = useRef(isInCommunity);
   const isFirstRender = useRef(true);
 
-  const sizeClasses = { sm: 'h-5 w-5', md: 'h-6 w-6', lg: 'h-7 w-7' };
+  const sizeClasses = { sm: 'h-[18px] w-[18px]', md: 'h-6 w-6', lg: 'h-7 w-7' };
 
   useEffect(() => {
     if (isFirstRender.current) {
