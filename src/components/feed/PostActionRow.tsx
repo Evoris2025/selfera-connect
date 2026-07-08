@@ -168,25 +168,25 @@ export function PostActionRow({
 
       {/* Social-proof: liked by … with tiny avatar + count */}
       {reactionCount > 0 && (
-        <div className={cn('flex items-center gap-1.5 mt-1.5 text-label leading-none', mutedText)}>
+        <div className={cn('flex items-center gap-1.5 mt-1.5 text-xs leading-tight', mutedText)}>
           <Avatar className="h-4 w-4 flex-shrink-0 border-0">
             <AvatarImage src={likerAvatar} alt="" />
             <AvatarFallback className="text-caption font-semibold">
               {likerName.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <p className="truncate">
+          <p className="truncate text-xs leading-tight">
             Liked by{' '}
             <button
               type="button"
               onClick={(e) => e.stopPropagation()}
-              className={cn('font-semibold hover:underline', strongText)}
+              className={cn('text-xs leading-tight font-semibold hover:underline', strongText)}
             >
               {likerName}
             </button>
             {reactionCount > 1 && (
               <>
-                {' '}and <span className={cn('font-semibold', strongText)}>{formatCount(reactionCount - 1)}</span> others
+                {' '}and <span className={cn('text-xs leading-tight font-semibold', strongText)}>{formatCount(reactionCount - 1)}</span> others
               </>
             )}
           </p>
@@ -199,12 +199,12 @@ export function PostActionRow({
           type="button"
           onClick={onOpenComments}
           className={cn(
-            'text-label mt-1 block w-full text-left truncate leading-none',
+            'text-xs mt-1 block w-full text-left truncate leading-tight',
             mutedText,
             'hover:text-foreground transition-colors'
           )}
         >
-          <span className={cn('font-semibold mr-1.5', strongText)}>
+          <span className={cn('text-xs leading-tight font-semibold mr-1.5', strongText)}>
             {topComment.author.handle || topComment.author.name}
           </span>
           {topComment.content}
