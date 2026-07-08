@@ -93,7 +93,7 @@ export function ExpressionsRow() {
                 onClick={() => handleExpressionClick(index)}
                 className="flex-shrink-0 flex flex-col items-center gap-2"
               >
-                <Avatar className="h-16 w-16 border border-white/[0.15]">
+                <Avatar className="h-20 w-20 border border-white/[0.15]">
                   <AvatarImage src={expression.userAvatar} alt={expression.userName} />
                   <AvatarFallback className="bg-white/[0.06] text-white">
                     {expression.userName.charAt(0)}
