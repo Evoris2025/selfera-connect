@@ -73,7 +73,7 @@ export function PostActionRow({
         whileTap={{ scale: 0.9 }}
         onClick={onToggleLibrary}
         className={cn(
-          'transition-colors ml-auto p-1',
+          'transition-colors p-1',
           inLibrary
             ? 'text-primary'
             : variant === 'overlay'
