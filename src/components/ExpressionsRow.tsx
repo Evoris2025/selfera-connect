@@ -63,7 +63,7 @@ export function ExpressionsRow() {
             >
               <div className="relative">
                 <Avatar
-                  className="h-16 w-16"
+                  className="h-20 w-20"
                   style={{ boxShadow: `0 0 0 2px ${themePrimary}` }}
                 >
                   <AvatarImage src={avatarUrl} alt={displayName} />
