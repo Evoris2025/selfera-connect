@@ -99,7 +99,7 @@ export function ExpressionsRow() {
                     {expression.userName.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
-                <span className="text-caption text-white/55 truncate max-w-[72px]">
+                <span className="text-caption text-white/55 truncate max-w-[80px]">
                   {expression.userName}
                 </span>
               </motion.button>
