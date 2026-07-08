@@ -148,7 +148,7 @@ export function ExpressionsRow() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.5 }}
             onClick={scrollRight}
-            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/[0.12] flex items-center justify-center cursor-pointer"
+            className="absolute right-2 top-12 -translate-y-1/2 w-8 h-8 flex items-center justify-center cursor-pointer text-white/90"
           >
             <BrandIcon icon={ChevronRight} size={16} />
           </motion.button>
