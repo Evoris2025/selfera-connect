@@ -1,7 +1,7 @@
 import { memo, useState, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Grid3X3, Sparkles, Play, Users, BookOpen, GripVertical } from 'lucide-react';
-import { ExpressionIcon } from '@/components/icons/ExpressionIcon';
+import { GripVertical } from 'lucide-react';
+import { CONTENT_TYPE_ICONS, type ContentTypeIconKey } from '@/components/icons/contentTypeIcons';
 import { cn } from '@/lib/utils';
 import { ProfileTab, useProfileTabOrder } from '@/hooks/useProfileTabOrder';
 import { toast } from '@/hooks/use-toast';
@@ -17,24 +17,8 @@ interface RearrangeableTabBarProps {
   onLayoutChange?: (layout: GridLayoutStyle) => void;
 }
 
-const ICON_MAP: Record<string, React.FC<{ className?: string }>> = {
-  Grid3X3,
-  Sparkles,
-  // Force monochrome so the Expression tab inherits currentColor like every
-  // other Lucide icon in this toolbar (no brand gradient here). Render at a
-  // slightly larger intrinsic size (h-6 w-6) rather than CSS-scaling — CSS
-  // transforms blur SVG strokes, and the diagonal two-mask composition needs
-  // a bit more box to optically match a solid Lucide glyph at h-5 w-5.
-  Expression: ({ className }) => (
-    <ExpressionIcon
-      className={cn(className?.replace(/\bh-5\b/, 'h-6').replace(/\bw-5\b/, 'w-6'))}
-      monochrome
-    />
-  ),
-  Play,
-  Users,
-  BookOpen,
-};
+// Tabs that should offer the grid-layout long-press picker.
+const GRID_LAYOUT_TAB_IDS = new Set(['unified', 'expressions', 'video', 'images', 'posts']);
 
 interface DraggableTabProps {
   tab: ProfileTab;
