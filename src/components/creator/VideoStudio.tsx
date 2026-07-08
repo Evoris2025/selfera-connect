@@ -385,7 +385,7 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
               </button>
 
               <p className="text-label text-white/50 text-center max-w-[240px]">
-                MP4, MOV or WebM up to 500MB. AI will generate thumbnails automatically.
+                MP4, MOV or WebM up to 500MB.
               </p>
             </div>
           </motion.div>
