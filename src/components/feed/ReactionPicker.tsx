@@ -67,7 +67,7 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
           transition={springTransitions.bouncy}
           onContextMenu={(e) => e.preventDefault()}
           onClick={(e) => e.stopPropagation()}
-          className="absolute bottom-full left-0 mb-2 z-50"
+          className="absolute bottom-full left-0 mb-3 z-50"
         >
           <div className="flex items-center gap-1 px-2.5 py-2 bg-card/80 backdrop-blur-2xl rounded-full shadow-[0_10px_40px_-8px_rgba(0,0,0,0.55),0_2px_6px_rgba(0,0,0,0.35)] ring-1 ring-white/10 border border-border/40 select-none touch-manipulation">
             {reactions.map((reaction, index) => (

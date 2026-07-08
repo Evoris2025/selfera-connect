@@ -6,10 +6,9 @@ interface FluentEmojiProps {
   className?: string;
 }
 
-// Google Noto Color Emoji – rich, rounded, glossy 3D-style renderings.
-// Served from Google Fonts CDN as static PNGs, no bundle cost.
+// Twemoji – rich colorful rounded emoji renderings, hosted on jsDelivr.
 const codepointMap: Record<ReactionType, string> = {
-  like: '2764_fe0f',   // ❤️
+  like: '2764',        // ❤️
   relatable: '1f91d',  // 🤝
   inspiring: '2728',   // ✨
   support: '1f917',    // 🤗
@@ -26,7 +25,8 @@ const labelMap: Record<ReactionType, string> = {
 
 export function FluentEmoji({ type, size = 28, className }: FluentEmojiProps) {
   const cp = codepointMap[type];
-  const src = `https://fonts.gstatic.com/s/e/notoemoji/latest/${cp}/512.png`;
+  const src = `https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/72x72/${cp}.png`;
+
 
   return (
     <img
