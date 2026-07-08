@@ -8,13 +8,15 @@ import {
 } from '@/components/ui/sheet-system';
 import {
   Sparkles,
-  Video,
-  Image as ImageIcon,
-  FileText,
   Clock,
   ChevronRight,
 } from 'lucide-react';
-import { ExpressionIcon } from '@/components/icons/ExpressionIcon';
+import {
+  ExpressionIcon,
+  VideoIcon,
+  ImagesIcon,
+  PostsIcon,
+} from '@/components/icons/contentTypeIcons';
 import { useNavigate } from 'react-router-dom';
 import {
   useFeedData,
