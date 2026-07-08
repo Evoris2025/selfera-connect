@@ -183,7 +183,7 @@ export default function Settings() {
                 </div>
                 <div>
                   <CardTitle className="text-section">{t('settings.theme', 'Theme')}</CardTitle>
-                  <CardDescription>Choose your color theme</CardDescription>
+                  <CardDescription className="text-helper">Choose your color theme</CardDescription>
                 </div>
               </div>
             </CardHeader>
@@ -201,7 +201,7 @@ export default function Settings() {
                 </div>
                 <div>
                   <CardTitle className="text-section">{t('settings.language')}</CardTitle>
-                  <CardDescription>Choose your preferred language</CardDescription>
+                  <CardDescription className="text-helper">Choose your preferred language</CardDescription>
                 </div>
               </div>
             </CardHeader>
@@ -231,7 +231,7 @@ export default function Settings() {
                   </div>
                   <div>
                     <CardTitle className="text-section">{t('settings.reduceMotion')}</CardTitle>
-                    <CardDescription>Minimize animations throughout the app</CardDescription>
+                    <CardDescription className="text-helper">Minimize animations throughout the app</CardDescription>
                   </div>
                 </div>
                 <Switch id="reduce-motion" />
@@ -249,7 +249,7 @@ export default function Settings() {
                   </div>
                   <div>
                     <CardTitle className="text-section">{t('settings.privateAccount')}</CardTitle>
-                    <CardDescription>Only approved followers can see your posts</CardDescription>
+                    <CardDescription className="text-helper">Only approved followers can see your posts</CardDescription>
                   </div>
                 </div>
                 <Switch id="private-account" />
@@ -269,7 +269,7 @@ export default function Settings() {
                 </div>
                 <div>
                   <CardTitle className="text-section">{t('settings.notifications')}</CardTitle>
-                  <CardDescription>Configure notification preferences</CardDescription>
+                  <CardDescription className="text-helper">Configure notification preferences</CardDescription>
                 </div>
               </div>
             </CardHeader>
@@ -288,7 +288,7 @@ export default function Settings() {
                   </div>
                   <div>
                     <CardTitle className="text-section">Follow Requests</CardTitle>
-                    <CardDescription>Review pending follow requests</CardDescription>
+                    <CardDescription className="text-helper">Review pending follow requests</CardDescription>
                   </div>
                 </div>
                 {pendingCount > 0 && (
@@ -313,7 +313,7 @@ export default function Settings() {
                   </div>
                   <div>
                     <CardTitle className="text-section">Close Friends</CardTitle>
-                    <CardDescription>Share expressions with select people</CardDescription>
+                    <CardDescription className="text-helper">Share expressions with select people</CardDescription>
                   </div>
                 </div>
                 {closeFriendsCount > 0 && (
@@ -338,7 +338,7 @@ export default function Settings() {
                   </div>
                   <div>
                     <CardTitle className="text-section">Blocked Accounts</CardTitle>
-                    <CardDescription>Manage accounts you've blocked</CardDescription>
+                    <CardDescription className="text-helper">Manage accounts you've blocked</CardDescription>
                   </div>
                 </div>
                 {blockedUserIds.size > 0 && (
@@ -363,7 +363,7 @@ export default function Settings() {
                   </div>
                   <div>
                     <CardTitle className="text-section">Muted Accounts</CardTitle>
-                    <CardDescription>Manage accounts you've muted</CardDescription>
+                    <CardDescription className="text-helper">Manage accounts you've muted</CardDescription>
                   </div>
                 </div>
                 {mutedUserIds.size > 0 && (
@@ -388,7 +388,7 @@ export default function Settings() {
                   </div>
                   <div>
                     <CardTitle className="text-section">Plan & Billing</CardTitle>
-                    <CardDescription>Manage your subscription and view plans</CardDescription>
+                    <CardDescription className="text-helper">Manage your subscription and view plans</CardDescription>
                   </div>
                 </div>
                 <Badge variant="secondary" className="capitalize">
@@ -410,7 +410,7 @@ export default function Settings() {
                 </div>
                 <div>
                   <CardTitle className="text-section">Get Verified</CardTitle>
-                  <CardDescription>Apply for professional or organisation verification</CardDescription>
+                  <CardDescription className="text-helper">Apply for professional or organisation verification</CardDescription>
                 </div>
               </div>
             </CardHeader>
@@ -429,7 +429,7 @@ export default function Settings() {
                   </div>
                   <div>
                     <CardTitle className="text-section">Admin Console</CardTitle>
-                    <CardDescription>Verification, moderation, and audit logs</CardDescription>
+                    <CardDescription className="text-helper">Verification, moderation, and audit logs</CardDescription>
                   </div>
                 </div>
               </CardHeader>
@@ -446,7 +446,7 @@ export default function Settings() {
                   </div>
                   <div>
                     <CardTitle className="text-section">{section.title}</CardTitle>
-                    <CardDescription>{section.description}</CardDescription>
+                    <CardDescription className="text-helper">{section.description}</CardDescription>
                   </div>
                 </div>
               </CardHeader>
