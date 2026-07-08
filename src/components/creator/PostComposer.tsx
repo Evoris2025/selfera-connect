@@ -619,7 +619,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
                   onBlur={() => setComposerFocused(false)}
                   maxLength={MAX_CHARACTERS}
                   className={cn(
-                    'flex-1 resize-none border-0 bg-transparent p-0 text-title focus-visible:ring-0 placeholder:text-foreground/35',
+                    'flex-1 resize-none border-0 bg-transparent px-1 py-0 text-title focus-visible:ring-0 placeholder:text-foreground/35',
                     'transition-[min-height,max-height] duration-200',
                     textareaExpanded ? 'min-h-[60vh] max-h-[75vh]' : 'min-h-[160px] max-h-[40vh]'
                   )}
