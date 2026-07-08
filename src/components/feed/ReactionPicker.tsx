@@ -67,9 +67,10 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
           transition={springTransitions.bouncy}
           onContextMenu={(e) => e.preventDefault()}
           onClick={(e) => e.stopPropagation()}
-          className="absolute left-0 top-0 z-50"
+          style={{ transformOrigin: 'bottom left' }}
+          className="absolute bottom-full left-0 z-50 pb-2 pt-3 pr-6"
         >
-          <div className="flex items-center gap-1 px-2.5 py-2 bg-card/90 backdrop-blur-2xl rounded-full shadow-[0_10px_40px_-8px_rgba(0,0,0,0.55),0_2px_6px_rgba(0,0,0,0.35)] ring-1 ring-white/10 border border-border/40 select-none touch-manipulation">
+          <div className="flex items-center gap-1 px-2.5 py-2 bg-card/95 backdrop-blur-2xl rounded-full shadow-[0_10px_40px_-8px_rgba(0,0,0,0.55),0_2px_6px_rgba(0,0,0,0.35)] ring-1 ring-white/10 border border-border/40 select-none touch-manipulation">
             {reactions.map((reaction, index) => (
               <motion.button
                 key={reaction.type}
@@ -214,8 +215,6 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
   }, []);
 
   const handleMouseEnter = () => {
-    // On touch devices, some browsers emit synthetic mouse events after touch.
-    // Ignore hover-open logic so the picker doesn't re-open after a tap.
     if (typeof navigator !== 'undefined' && (navigator.maxTouchPoints ?? 0) > 0) return;
     if (hoverTimer.current) clearTimeout(hoverTimer.current);
     hoverTimer.current = setTimeout(() => {
@@ -226,9 +225,14 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
   const handleMouseLeave = () => {
     if (typeof navigator !== 'undefined' && (navigator.maxTouchPoints ?? 0) > 0) return;
     if (hoverTimer.current) clearTimeout(hoverTimer.current);
-    setIsPickerOpen(false);
-    setIsLongPressing(false);
+    // Small close delay so the cursor can travel from the button up into the picker
+    // without the popup collapsing between them.
+    hoverTimer.current = setTimeout(() => {
+      setIsPickerOpen(false);
+      setIsLongPressing(false);
+    }, 220);
   };
+
 
   const handleTouchStart = (e: TouchEvent<HTMLButtonElement>) => {
     suppressClickRef.current = true;
@@ -309,15 +313,13 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     : undefined;
 
   return (
-    <div 
-      className={cn(
-        'relative flex items-end transition-[padding] duration-150 ease-out',
-        isPickerOpen && 'pt-[62px]'
-      )}
+    <div
+      className="relative inline-flex items-center"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={(e) => e.stopPropagation()}
     >
+
       <ReactionPicker
         isOpen={isPickerOpen}
         onSelect={handleSelect}
