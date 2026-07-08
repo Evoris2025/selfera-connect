@@ -169,13 +169,21 @@ export function PostActionRow({
 
       {/* Social-proof: liked by … with tiny avatar + count */}
       {reactionCount > 0 && (
-        <div className={cn('flex items-center gap-1.5 mt-1.5 text-xs leading-tight', mutedText)}>
-          <Avatar className="h-4 w-4 flex-shrink-0 border-0">
-            <AvatarImage src={likerAvatar} alt="" />
-            <AvatarFallback className="text-caption font-semibold">
-              {likerName.charAt(0).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
+        <div className={cn('flex items-center gap-2 mt-1.5 text-xs leading-tight', mutedText)}>
+          <div className="flex flex-shrink-0 -space-x-1.5">
+            {likers.map((l, i) => (
+              <Avatar
+                key={i}
+                className="h-4 w-4 ring-1 ring-background"
+                style={{ zIndex: likers.length - i }}
+              >
+                <AvatarImage src={l.avatar} alt="" />
+                <AvatarFallback className="text-[8px] font-semibold">
+                  {l.name.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+            ))}
+          </div>
           <p className="truncate text-xs leading-tight">
             Liked by{' '}
             <button
