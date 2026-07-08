@@ -338,7 +338,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
           currentReaction ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
         )}
       >
-        <div className="relative w-6 h-6 flex items-center justify-center">
+        <div className={cn('relative flex items-center justify-center', s.box)}>
           <motion.div
             key={currentReaction || 'default'}
             initial={{ scale: 0.5, rotate: -15 }}
@@ -347,11 +347,12 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
             className="flex items-center justify-center"
           >
             {hasReaction ? (
-              <FluentEmoji type={currentReaction!} size={ICON_SIZE.lg} />
+              <FluentEmoji type={currentReaction!} size={s.px} />
             ) : (
               <svg
                 className={cn(
-                  'h-6 w-6 transition-colors',
+                  s.svg,
+                  'transition-colors',
                   currentReaction ? 'fill-current' : 'fill-none stroke-current'
                 )}
                 viewBox="0 0 24 24"
