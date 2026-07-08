@@ -343,7 +343,10 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex-1 flex flex-col items-center justify-center p-8"
+            className="flex-1 flex flex-col"
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
           >
             <input
               ref={fileInputRef}
@@ -352,54 +355,39 @@ export function VideoStudio({ onBack, onSuccess }: VideoStudioProps) {
               onChange={handleFileSelect}
               className="hidden"
             />
-            
-            {/* Drop zone with better visual feedback */}
-            <motion.div
-              ref={dropZoneRef}
-              onClick={() => fileInputRef.current?.click()}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-              animate={{
-                scale: isDragOver ? 1.02 : 1,
-                borderColor: isDragOver ? 'hsl(var(--primary))' : 'hsl(var(--border))',
-              }}
-              className={cn(
-                "w-full aspect-video max-w-[360px] rounded-2xl border-2 border-dashed transition-all cursor-pointer",
-                "flex flex-col items-center justify-center gap-4",
-                isDragOver 
-                  ? "bg-primary/10 border-primary" 
-                  : "hover:border-primary/50 hover:bg-secondary/50"
-              )}
-            >
-              <motion.div 
-                className={cn(
-                  "w-20 h-20 rounded-2xl flex items-center justify-center transition-colors",
-                  isDragOver ? "bg-primary/20" : "bg-secondary"
-                )}
-                animate={{ scale: isDragOver ? 1.1 : 1 }}
+
+            <div className="flex-1 flex flex-col items-center justify-center gap-6 p-8">
+              <motion.button
+                onClick={() => fileInputRef.current?.click()}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                animate={{ scale: isDragOver ? 1.08 : 1 }}
+                className="w-32 h-32 rounded-full gradient-brand flex items-center justify-center shadow-lg"
               >
-                <Upload className={cn(
-                  "h-10 w-10 transition-colors",
-                  isDragOver ? "text-primary" : "text-muted-foreground"
-                )} />
-              </motion.div>
-              
-              <div className="text-center space-y-1">
-                <p className="font-medium">
-                  {isDragOver ? 'Drop video here' : 'Drag and drop or click to upload'}
-                </p>
-                <p className="text-body text-muted-foreground">
-                  MP4, MOV, WebM (max 500MB)
-                </p>
+                <Upload className="h-12 w-12 text-white" />
+              </motion.button>
+              <span className="text-body text-white/70">
+                {isDragOver ? 'Drop video here' : 'Tap to upload video'}
+              </span>
+
+              <div className="flex items-center gap-4 w-full max-w-[200px]">
+                <div className="h-px flex-1 bg-white/20" />
+                <span className="text-label text-white/50">or</span>
+                <div className="h-px flex-1 bg-white/20" />
               </div>
 
-              {/* AI thumbnail hint */}
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-label">
-                <Sparkles className="h-3 w-3" />
-                <span>AI will generate thumbnails automatically</span>
-              </div>
-            </motion.div>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white"
+              >
+                <Upload className="h-5 w-5" />
+                <span>Choose from files</span>
+              </button>
+
+              <p className="text-label text-white/50 text-center max-w-[240px]">
+                MP4, MOV or WebM up to 500MB. AI will generate thumbnails automatically.
+              </p>
+            </div>
           </motion.div>
         )}
 
