@@ -46,7 +46,7 @@ export function ExpressionIcon({
       </g>
 
       {/* Right mask (comedy / happy) — bottom-right, tilted clockwise */}
-      <g transform="translate(7.6 5.8) scale(0.85) rotate(22 12 12)">
+      <g transform="translate(2.5 1.8) scale(1.1) rotate(22 12 12)">
         <path
           d="M6.5 6.5c1.5-1 3.5-1.5 5.5-1.5s4 .5 5.5 1.5c.4 3.3.4 6.7-.6 9.4-.9 2.4-3 3.6-4.9 3.6s-4-1.2-4.9-3.6c-1-2.7-1-6.1-.6-9.4Z"
           vectorEffect="non-scaling-stroke"
