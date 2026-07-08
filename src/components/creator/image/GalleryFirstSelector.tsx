@@ -83,32 +83,41 @@ export function GalleryFirstSelector({
       {/* Main Preview Area */}
       <div className="flex-1 flex flex-col">
         {images.length === 0 ? (
-          /* Empty State - Enhanced Multi-Select UX */
+          /* Empty State — mirrors VideoStudio upload UI */
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex-1 flex flex-col items-center justify-center p-8"
+            className="flex-1 flex flex-col items-center justify-center gap-6 p-8"
           >
+            <motion.button
+              onClick={() => fileInputRef.current?.click()}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="w-32 h-32 rounded-full gradient-brand flex items-center justify-center shadow-lg"
+            >
+              <Upload className="h-12 w-12 text-white" />
+            </motion.button>
+            <span className="text-body text-white/70">Tap to upload photos</span>
+
+            <div className="flex items-center gap-4 w-full max-w-[200px]">
+              <div className="h-px flex-1 bg-white/20" />
+              <span className="text-label text-white/50">or</span>
+              <div className="h-px flex-1 bg-white/20" />
+            </div>
+
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="w-full aspect-square max-w-[320px] rounded-2xl border-2 border-dashed border-border hover:border-primary/50 transition-colors flex flex-col items-center justify-center gap-4 text-muted-foreground hover:text-foreground group"
+              className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white"
             >
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center group-hover:scale-105 transition-transform">
-                <Images className="h-10 w-10 text-primary" />
-              </div>
-              
-              <div className="text-center space-y-1">
-                <span className="text-title font-semibold text-foreground block">Select from Gallery</span>
-                <span className="text-body text-muted-foreground block">Select up to {maxImages} photos</span>
-              </div>
-
-
-              {/* Selection counter badge (shows 0 initially for affordance) */}
-              <div className="absolute top-4 right-4 px-2.5 py-1 rounded-full bg-secondary text-label font-medium">
-                0 selected
-              </div>
+              <Upload className="h-5 w-5" />
+              <span>Choose from files</span>
             </button>
+
+            <p className="text-label text-white/50 text-center max-w-[240px]">
+              Select up to {maxImages} photos.
+            </p>
           </motion.div>
+
         ) : (
           /* Selected Images Grid */
           <div className="flex-1 overflow-y-auto p-4">
