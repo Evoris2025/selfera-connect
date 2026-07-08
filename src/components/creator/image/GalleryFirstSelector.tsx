@@ -69,7 +69,7 @@ export function GalleryFirstSelector({
   const canProceed = images.length > 0;
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex-1 flex flex-col min-h-0">
       {/* Hidden file input */}
       <input
         ref={fileInputRef}
@@ -81,7 +81,8 @@ export function GalleryFirstSelector({
       />
 
       {/* Main Preview Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-h-0">
+
         {images.length === 0 ? (
           /* Empty State — mirrors VideoStudio upload UI */
           <motion.div
