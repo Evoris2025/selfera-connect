@@ -56,10 +56,11 @@ const LIKER_POOL: LikerProfile[] = [
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop',
   },
 ];
-function pickLiker(postId: string): LikerProfile {
+function pickLikers(postId: string, count = 3): LikerProfile[] {
   let h = 0;
   for (let i = 0; i < postId.length; i++) h = (h * 31 + postId.charCodeAt(i)) | 0;
-  return LIKER_POOL[Math.abs(h) % LIKER_POOL.length];
+  const start = Math.abs(h) % LIKER_POOL.length;
+  return Array.from({ length: count }, (_, i) => LIKER_POOL[(start + i) % LIKER_POOL.length]);
 }
 
 function formatCount(n: number): string {
