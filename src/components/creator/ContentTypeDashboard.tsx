@@ -25,7 +25,7 @@ export type { ContentType };
 
 interface ContentTypeCard {
   id: ContentType;
-  icon: React.ComponentType<{ className?: string; size?: number | string }>;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement> & { size?: number | string }>;
   title: string;
   description: string;
 }
@@ -77,7 +77,7 @@ function CreatorRow({
   backgroundUrl,
   onClick,
 }: {
-  icon: React.ComponentType<{ className?: string; size?: number | string }>;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement> & { size?: number | string }>;
   title: string;
   description: string;
   accentColor: string;
