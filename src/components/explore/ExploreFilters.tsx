@@ -318,24 +318,27 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
         </div>
 
         {/* Scrollable body */}
-        <div className="flex-1 overflow-y-auto py-4 space-y-5">
-          {/* Section 1 — Sort by (segmented tab bar, primary control) */}
-          <section className="px-4">
-            <SectionLabel className="px-1">SORT BY</SectionLabel>
-            <div className="border-b border-white/[0.06]">
-              <SegmentedTabs
-                options={SORT_OPTIONS}
-                value={tabSlice.sortBy}
-                themePrimary={themePrimary}
-                onChange={(v) => updateTabSlice('sortBy', v)}
-              />
+        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
+          {/* Sort by */}
+          <section>
+            <SectionLabel>SORT BY</SectionLabel>
+            <div className="flex flex-wrap gap-2">
+              {SORT_OPTIONS.map((opt) => (
+                <Chip
+                  key={opt.value}
+                  option={opt}
+                  active={tabSlice.sortBy === opt.value}
+                  themePrimary={themePrimary}
+                  onClick={() => updateTabSlice('sortBy', opt.value)}
+                />
+              ))}
             </div>
           </section>
 
-          {/* Section 2 — Time period */}
-          <section className="px-4">
-            <SectionLabel className="px-1">TIME PERIOD</SectionLabel>
-            <div className="flex flex-wrap gap-1.5">
+          {/* Time period */}
+          <section>
+            <SectionLabel>TIME PERIOD</SectionLabel>
+            <div className="flex flex-wrap gap-2">
               {TIME_OPTIONS.map((opt) => (
                 <Chip
                   key={opt.value}
@@ -348,11 +351,11 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
             </div>
           </section>
 
-          {/* Section 3 — Content type (context-aware) */}
+          {/* Content type (context-aware) */}
           {activeTab === 'videos' && (
-            <section className="px-4">
-              <SectionLabel className="px-1">DURATION</SectionLabel>
-              <div className="flex flex-wrap gap-1.5">
+            <section>
+              <SectionLabel>DURATION</SectionLabel>
+              <div className="flex flex-wrap gap-2">
                 {DURATION_OPTIONS.map((opt) => (
                   <Chip
                     key={opt.value}
@@ -366,9 +369,9 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
             </section>
           )}
           {activeTab === 'images' && (
-            <section className="px-4">
-              <SectionLabel className="px-1">FORMAT</SectionLabel>
-              <div className="flex flex-wrap gap-1.5">
+            <section>
+              <SectionLabel>FORMAT</SectionLabel>
+              <div className="flex flex-wrap gap-2">
                 {FORMAT_OPTIONS.map((opt) => (
                   <Chip
                     key={opt.value}
@@ -382,19 +385,19 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
             </section>
           )}
 
-          {/* Secondary filters — collapsed by default */}
-          <section className="px-4">
+          {/* Secondary filters — plain accordion row with hairline dividers */}
+          <section className="!mt-5">
             <button
               type="button"
               onClick={() => setMoreOpen((o) => !o)}
               aria-expanded={moreOpen}
-              className="w-full flex items-center justify-between py-2 text-[13px] font-medium text-white/70 hover:text-white transition-colors"
+              className="w-full flex items-center justify-between py-3 border-y border-white/[0.08] text-[11px] font-semibold uppercase tracking-[0.12em] text-white/45 hover:text-white/70 transition-colors"
             >
               <span>More filters</span>
               <motion.span
                 animate={{ rotate: moreOpen ? 180 : 0 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                className="text-white/50"
+                className="text-white/45"
               >
                 <ChevronDown className="h-4 w-4" />
               </motion.span>
@@ -410,12 +413,12 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
                   transition={{ duration: 0.22, ease: 'easeOut' }}
                   className="overflow-hidden"
                 >
-                  <div className="pt-3 space-y-5">
+                  <div className="pt-5 space-y-5">
                     {/* Creator tier — hidden on Images */}
                     {activeTab !== 'images' && (
                       <div>
-                        <SectionLabel className="px-1">CREATOR TIER</SectionLabel>
-                        <div className="flex flex-wrap gap-1.5">
+                        <SectionLabel>CREATOR TIER</SectionLabel>
+                        <div className="flex flex-wrap gap-2">
                           <Chip
                             option={{ value: 'all', label: 'All' }}
                             active={(tabSlice as { creatorTier: CreatorTier }).creatorTier === 'all'}
@@ -460,8 +463,8 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
 
                     {/* Origin */}
                     <div>
-                      <SectionLabel className="px-1">ORIGIN</SectionLabel>
-                      <div className="flex flex-wrap gap-1.5">
+                      <SectionLabel>ORIGIN</SectionLabel>
+                      <div className="flex flex-wrap gap-2">
                         {ORIGIN_OPTIONS.map((opt) => (
                           <Chip
                             key={opt.value}
@@ -479,6 +482,7 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
             </AnimatePresence>
           </section>
         </div>
+
 
         {/* Sticky footer */}
         <div className="shrink-0 sticky bottom-0 z-10 flex items-center gap-3 px-4 py-3 border-t border-white/[0.08] bg-black pb-[calc(env(safe-area-inset-bottom)+12px)]">
