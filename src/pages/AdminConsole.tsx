@@ -41,13 +41,13 @@ export default function AdminConsole() {
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
           <Button variant="ghost" size="icon" onClick={() => navigate('/feed')}>
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="icon-menu" />
           </Button>
           <div className="flex items-center gap-2">
-            <Shield className="h-6 w-6 text-primary" />
+            <Shield className="icon-menu text-primary" />
             <div>
-              <h1 className="text-2xl font-bold">Internal Admin</h1>
-              <p className="text-label text-muted-foreground">Simulation Mode — No Enforcement Actions</p>
+              <h1 className="text-page-title">Internal Admin</h1>
+              <p className="text-helper">Simulation Mode — No Enforcement Actions</p>
             </div>
           </div>
         </div>
