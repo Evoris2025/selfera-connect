@@ -311,31 +311,34 @@ export const RearrangeableTabBar = memo(function RearrangeableTabBar({
         </motion.div>
       )}
 
-      {/* Polished Tab Bar - Clean square edge style */}
+      {/* Polished Tab Bar — square edge, horizontally scrollable when 7 tabs
+          overflow the viewport so icons stay the same size instead of shrinking. */}
       <div className={cn(
-        'w-full flex items-center bg-[hsl(240,10%,8%)] border border-border/30 mx-4',
+        'w-full overflow-x-auto scrollbar-none bg-[hsl(240,10%,8%)] border border-border/30 mx-4',
         isRearrangeMode && 'bg-muted/20'
       )}
         style={{ width: 'calc(100% - 2rem)' }}
       >
-        {orderedTabs.map((tab, index) => (
-          <DraggableTab
-            key={tab.id}
-            tab={tab}
-            index={index}
-            isActive={activeTab === tab.id}
-            isRearrangeMode={isRearrangeMode}
-            isDragging={draggingIndex === index}
-            dragOverIndex={dragOverIndex}
-            isOwnProfile={isOwnProfile}
-            onTabChange={onTabChange}
-            onTap={enterRearrangeMode}
-            onLongPress={openLayoutPicker}
-            onDragStart={handleDragStart}
-            onDragOver={handleDragOver}
-            onDragEnd={handleDragEnd}
-          />
-        ))}
+        <div className="flex items-center min-w-full w-max">
+          {orderedTabs.map((tab, index) => (
+            <DraggableTab
+              key={tab.id}
+              tab={tab}
+              index={index}
+              isActive={activeTab === tab.id}
+              isRearrangeMode={isRearrangeMode}
+              isDragging={draggingIndex === index}
+              dragOverIndex={dragOverIndex}
+              isOwnProfile={isOwnProfile}
+              onTabChange={onTabChange}
+              onTap={enterRearrangeMode}
+              onLongPress={openLayoutPicker}
+              onDragStart={handleDragStart}
+              onDragOver={handleDragOver}
+              onDragEnd={handleDragEnd}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Hint text - centered with proper spacing */}
