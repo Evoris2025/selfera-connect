@@ -55,27 +55,27 @@ export default function AdminConsole() {
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-6 mb-6">
             <TabsTrigger value="overview" className="flex items-center gap-1">
-              <Activity className="h-4 w-4" />
+              <Activity className="icon-menu-sm" />
               <span className="hidden sm:inline">Overview</span>
             </TabsTrigger>
             <TabsTrigger value="reports" className="flex items-center gap-1">
-              <Flag className="h-4 w-4" />
+              <Flag className="icon-menu-sm" />
               <span className="hidden sm:inline">Reports</span>
             </TabsTrigger>
             <TabsTrigger value="verification" className="flex items-center gap-1">
-              <CheckCircle className="h-4 w-4" />
+              <CheckCircle className="icon-menu-sm" />
               <span className="hidden sm:inline">Verify</span>
             </TabsTrigger>
             <TabsTrigger value="trust" className="flex items-center gap-1">
-              <Shield className="h-4 w-4" />
+              <Shield className="icon-menu-sm" />
               <span className="hidden sm:inline">Trust</span>
             </TabsTrigger>
             <TabsTrigger value="interactions" className="flex items-center gap-1">
-              <MessageSquare className="h-4 w-4" />
+              <MessageSquare className="icon-menu-sm" />
               <span className="hidden sm:inline">Sessions</span>
             </TabsTrigger>
             <TabsTrigger value="governance" className="flex items-center gap-1">
-              <FileText className="h-4 w-4" />
+              <FileText className="icon-menu-sm" />
               <span className="hidden sm:inline">Log</span>
             </TabsTrigger>
           </TabsList>
