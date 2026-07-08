@@ -127,9 +127,9 @@ function generateDraftTitle(type: ContentType, data: Record<string, unknown>): s
 
 const typeIconMap: Record<ContentType, React.ComponentType<React.SVGProps<SVGSVGElement> & { size?: number | string }>> = {
   expression: ExpressionIcon,
-  video: Video,
-  image: ImageIcon,
-  post: FileText,
+  video: VideoIcon,
+  image: ImagesIcon,
+  post: PostsIcon,
 };
 
 const ROW_ACCENT = 'hsl(271 91% 65%)'; // brand purple — matches "Your work" rows
