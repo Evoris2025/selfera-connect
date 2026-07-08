@@ -168,47 +168,8 @@ function SectionLabel({ children, className }: { children: ReactNode; className?
   );
 }
 
-// Segmented tab bar for the primary Sort control (X / IG feed switcher style).
-interface SegmentedTabsProps<T extends string> {
-  options: { value: T; label: string }[];
-  value: T;
-  themePrimary: string;
-  onChange: (v: T) => void;
-}
+// (Segmented tab bar removed — Sort By now uses the same Chip treatment as other sections.)
 
-function SegmentedTabs<T extends string>({ options, value, themePrimary, onChange }: SegmentedTabsProps<T>) {
-  return (
-    <LayoutGroup id="filter-sort-tabs">
-      <div className="flex items-center gap-1 overflow-x-auto no-scrollbar -mx-1 px-1">
-        {options.map((opt) => {
-          const active = value === opt.value;
-          return (
-            <button
-              key={opt.value}
-              type="button"
-              onClick={() => onChange(opt.value)}
-              aria-pressed={active}
-              className={cn(
-                'relative shrink-0 px-3 py-2 text-[13px] font-medium whitespace-nowrap transition-colors',
-                active ? 'text-white' : 'text-white/50 hover:text-white/80',
-              )}
-            >
-              {opt.label}
-              {active && (
-                <motion.span
-                  layoutId="filter-sort-underline"
-                  className="absolute left-2 right-2 -bottom-[1px] h-[2px] rounded-full"
-                  style={{ backgroundColor: themePrimary }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 40 }}
-                />
-              )}
-            </button>
-          );
-        })}
-      </div>
-    </LayoutGroup>
-  );
-}
 
 // ----- Chip (Time / Duration / Format / Origin / Tier) -----
 
