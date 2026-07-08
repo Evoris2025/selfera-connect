@@ -301,8 +301,8 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
         <div className="flex-1 overflow-y-auto space-y-6 py-4">
           {/* Section 1 — Sort by (chip grid, single-select) */}
           <section>
-            <BrandSectionLabel className="px-5 mb-2">SORT BY</BrandSectionLabel>
-            <div className="flex flex-wrap gap-2 px-4">
+            <BrandSectionLabel className="px-5 mb-1.5">SORT BY</BrandSectionLabel>
+            <div className="flex flex-wrap gap-1.5 px-4">
               {SORT_OPTIONS.map((opt) => (
                 <Chip
                   key={opt.value}
