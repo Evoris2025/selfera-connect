@@ -226,11 +226,8 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
   const handleMouseLeave = () => {
     if (typeof navigator !== 'undefined' && (navigator.maxTouchPoints ?? 0) > 0) return;
     if (hoverTimer.current) clearTimeout(hoverTimer.current);
-    setTimeout(() => {
-      if (!isLongPressing) {
-        setIsPickerOpen(false);
-      }
-    }, 200);
+    setIsPickerOpen(false);
+    setIsLongPressing(false);
   };
 
   const handleTouchStart = (e: TouchEvent<HTMLButtonElement>) => {
