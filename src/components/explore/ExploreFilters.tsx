@@ -387,7 +387,7 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
                       themePrimary={themePrimary}
                       leftDot={
                         <span
-                          className="w-2.5 h-2.5 rounded-full"
+                          className="w-2 h-2 rounded-full"
                           style={{ backgroundColor: TIER_HEX[opt.value] }}
                           aria-hidden
                         />
