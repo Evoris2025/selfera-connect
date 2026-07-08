@@ -38,9 +38,9 @@ interface ContinueWorkingSheetProps {
 
 const KIND_META: Record<
   StudioContentKind,
-  { icon: typeof Sparkles; route: string }
+  { icon: React.ComponentType<React.SVGProps<SVGSVGElement> & { size?: number | string }>; route: string }
 > = {
-  expression: { icon: Sparkles, route: '/studio/expression' },
+  expression: { icon: ExpressionIcon, route: '/studio/expression' },
   video: { icon: Video, route: '/studio/video' },
   photo: { icon: ImageIcon, route: '/studio/photo' },
   post: { icon: FileText, route: '/studio/post' },
