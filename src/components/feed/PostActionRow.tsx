@@ -48,6 +48,13 @@ function pickLiker(postId: string): string {
   return LIKER_POOL[Math.abs(h) % LIKER_POOL.length];
 }
 
+function formatCount(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1).replace(/\.0$/, '')}K`;
+  return String(n);
+}
+
+
 /**
  * Single source of truth for the post action row (Like, Comment, Repost,
  * Share, Community, ...Save) plus the social-proof lines below (Liked by …
@@ -133,38 +140,61 @@ export function PostActionRow({
         </motion.button>
       </div>
 
-      {/* Social-proof: liked by … */}
+      {/* Social-proof: liked by … with tiny avatar + count */}
       {reactionCount > 0 && (
-        <p className={cn('text-label mt-1.5', mutedText)}>
-          Liked by{' '}
-          <button
-            type="button"
-            onClick={(e) => e.stopPropagation()}
-            className={cn('font-semibold hover:underline', strongText)}
-          >
-            {likerName}
-          </button>
-          {reactionCount > 1 && <> and others</>}
-        </p>
+        <div className={cn('flex items-center gap-2 mt-1.5 text-label', mutedText)}>
+          <img
+            src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${likerName}`}
+            alt=""
+            className="h-4 w-4 rounded-full flex-shrink-0"
+          />
+          <p className="truncate">
+            Liked by{' '}
+            <button
+              type="button"
+              onClick={(e) => e.stopPropagation()}
+              className={cn('font-semibold hover:underline', strongText)}
+            >
+              {likerName}
+            </button>
+            {reactionCount > 1 && (
+              <>
+                {' '}and <span className={cn('font-semibold', strongText)}>{formatCount(reactionCount - 1)}</span> others
+              </>
+            )}
+          </p>
+        </div>
       )}
 
-      {/* Top comment preview — tap to open full thread */}
+      {/* Top comment preview — tap to open full thread; 'more' link below */}
       {topComment && canComment && (
-        <button
-          type="button"
-          onClick={onOpenComments}
-          className={cn(
-            'text-label mt-0.5 block w-full text-left truncate',
-            mutedText,
-            'hover:text-foreground transition-colors'
+        <div className="mt-0.5">
+          <button
+            type="button"
+            onClick={onOpenComments}
+            className={cn(
+              'text-label block w-full text-left truncate',
+              mutedText,
+              'hover:text-foreground transition-colors'
+            )}
+          >
+            <span className={cn('font-semibold mr-1.5', strongText)}>
+              {topComment.author.handle || topComment.author.name}
+            </span>
+            {topComment.content}
+          </button>
+          {topComment.content.length > 60 && (
+            <button
+              type="button"
+              onClick={onOpenComments}
+              className={cn('text-label hover:underline', mutedText)}
+            >
+              more
+            </button>
           )}
-        >
-          <span className={cn('font-semibold mr-1.5', strongText)}>
-            {topComment.author.handle || topComment.author.name}
-          </span>
-          {topComment.content}
-        </button>
+        </div>
       )}
+
     </div>
   );
 }
