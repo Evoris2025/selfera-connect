@@ -49,16 +49,16 @@ export function ExpressionIcon({
         </defs>
       )}
 
-      {/* Back mask (tragedy) — tilted left */}
-      <g transform="translate(8.4 12.2) rotate(-14) translate(-12 -12)">
+      {/* Left mask (tragedy / sad) — tilted diagonally left */}
+      <g transform="translate(8 12.4) rotate(-24) translate(-12 -12)">
         <path d="M6.5 6.5c1.5-1 3.5-1.5 5.5-1.5s4 .5 5.5 1.5c.4 3.3.4 6.7-.6 9.4-.9 2.4-3 3.6-4.9 3.6s-4-1.2-4.9-3.6c-1-2.7-1-6.1-.6-9.4Z" />
-          <path d="M9.5 10.5h.01" />
-          <path d="M14.5 10.5h.01" />
-          <path d="M9.8 16c.7-.6 1.4-.9 2.2-.9s1.5.3 2.2.9" />
+        <path d="M9.5 10.5h.01" />
+        <path d="M14.5 10.5h.01" />
+        <path d="M9.5 16.4c.8-1.2 2-1.9 2.5-1.9s1.7.7 2.5 1.9" />
       </g>
 
-      {/* Front mask (comedy) — tilted right */}
-      <g transform="translate(15.6 12.2) rotate(14) translate(-12 -12)">
+      {/* Right mask (comedy / happy) — tilted diagonally right */}
+      <g transform="translate(16 12.4) rotate(24) translate(-12 -12)">
         <path d="M6.5 6.5c1.5-1 3.5-1.5 5.5-1.5s4 .5 5.5 1.5c.4 3.3.4 6.7-.6 9.4-.9 2.4-3 3.6-4.9 3.6s-4-1.2-4.9-3.6c-1-2.7-1-6.1-.6-9.4Z" />
         <path d="M9.5 10.5h.01" />
         <path d="M14.5 10.5h.01" />
