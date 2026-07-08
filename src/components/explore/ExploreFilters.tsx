@@ -7,7 +7,7 @@ import {
   BrandSheetContent,
   BrandSheetTitle,
 } from '@/components/ui/sheet-system';
-import { BrandSectionLabel } from '@/components/brand';
+
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { cn } from '@/lib/utils';
 import type { VerificationTier } from './ExploreVerifiedTick';
