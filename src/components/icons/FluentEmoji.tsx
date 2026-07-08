@@ -6,34 +6,47 @@ interface FluentEmojiProps {
   className?: string;
 }
 
-// Native emoji map - lightweight, no external dependencies
-const emojiMap: Record<ReactionType, string> = {
-  like: '❤️',
-  relatable: '🤝',
-  inspiring: '✨',
-  support: '🤗',
-  curious: '🤔',
+// Google Noto Color Emoji – rich, rounded, glossy 3D-style renderings.
+// Served from Google Fonts CDN as static PNGs, no bundle cost.
+const codepointMap: Record<ReactionType, string> = {
+  like: '2764_fe0f',   // ❤️
+  relatable: '1f91d',  // 🤝
+  inspiring: '2728',   // ✨
+  support: '1f917',    // 🤗
+  curious: '1f914',    // 🤔
+};
+
+const labelMap: Record<ReactionType, string> = {
+  like: 'Love',
+  relatable: 'Relatable',
+  inspiring: 'Inspiring',
+  support: 'Support',
+  curious: 'Curious',
 };
 
 export function FluentEmoji({ type, size = 28, className }: FluentEmojiProps) {
-  const emoji = emojiMap[type];
-  
+  const cp = codepointMap[type];
+  const src = `https://fonts.gstatic.com/s/e/notoemoji/latest/${cp}/512.png`;
+
   return (
-    <span 
+    <img
+      src={src}
+      alt={labelMap[type]}
+      width={size}
+      height={size}
+      draggable={false}
+      loading="lazy"
+      decoding="async"
       className={className}
-      style={{ 
-        display: 'inline-flex', 
-        alignItems: 'center', 
-        justifyContent: 'center',
+      style={{
         width: size,
         height: size,
-        fontSize: size * 0.85,
-        lineHeight: 1,
+        display: 'inline-block',
+        objectFit: 'contain',
+        filter: 'drop-shadow(0 2px 3px rgba(0,0,0,0.35))',
+        userSelect: 'none',
       }}
-      role="img"
-      aria-label={type}
-    >
-      {emoji}
-    </span>
+    />
   );
 }
+
