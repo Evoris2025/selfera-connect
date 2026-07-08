@@ -350,8 +350,8 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
           )}
           {activeTab === 'images' && (
             <section>
-              <BrandSectionLabel className="px-5 mb-2">FORMAT</BrandSectionLabel>
-              <div className="flex flex-wrap gap-2 px-4">
+              <BrandSectionLabel className="px-5 mb-1.5">FORMAT</BrandSectionLabel>
+              <div className="flex flex-wrap gap-1.5 px-4">
                 {FORMAT_OPTIONS.map((opt) => (
                   <Chip
                     key={opt.value}
