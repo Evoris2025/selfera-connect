@@ -24,10 +24,11 @@ import { EraVerifiedTick, calculateVerificationTier } from './EraVerifiedTick';
 import { EraVerifiedTooltip } from './profile/EraVerifiedTooltip';
 import { AccountTypeBadge, AccountType } from './AccountTypeBadge';
 import { Hashtag } from './Hashtag';
-import { CommentButton, ShareButton, CommentSheet, CommunityButton, RepostButton } from './interactions';
+import { CommentSheet } from './interactions';
 import { CinematicAvatar } from './ui/CinematicAvatar';
 import { ImmersiveMedia } from './ui/ImmersiveMedia';
-import { ReactionButton, ReactionType } from './feed/ReactionPicker';
+import { ReactionType } from './feed/ReactionPicker';
+import { PostActionRow } from './feed/PostActionRow';
 import { ReportModal } from './moderation/ReportModal';
 import { PostCardLinkPreview } from './creator/post/PostCardLinkPreview';
 import { isPollExpired } from './creator/post/PollCreator';
@@ -325,38 +326,21 @@ function PostCardBase(props: PostCardProps) {
   ) : null;
 
   const actionBar = (
-    <div className="flex items-center gap-3 pt-1">
-      {showReactions && (
-        <ReactionButton
-          postId={id}
-          currentReaction={currentReaction}
-          count={reactionCount}
-          onReact={handleReaction}
-          size="sm"
-        />
-      )}
-      {canComment && (
-        <CommentButton count={commentCount} onClick={() => setShowCommentSheet(true)} size="sm" />
-      )}
-      {!canComment && commentPermission === 'followers' && (
-        <span className="text-label text-muted-foreground" title="Only followers can comment">
-          Comments limited
-        </span>
-      )}
-      <RepostButton size="sm" />
-      <ShareButton postId={id} size="sm" />
-      {authorId && <CommunityButton authorId={authorId} authorName={author.name} size="sm" />}
-      <motion.button
-        whileTap={{ scale: 0.9 }}
-        onClick={handleLibraryToggle}
-        className={cn(
-          'transition-colors ml-auto',
-          inLibrary ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
-        )}
-      >
-        <BookOpen className={cn('h-5 w-5', inLibrary && 'fill-current')} />
-      </motion.button>
-    </div>
+    <PostActionRow
+      postId={id}
+      authorId={authorId}
+      authorName={author.name}
+      currentReaction={currentReaction}
+      reactionCount={reactionCount}
+      onReact={handleReaction}
+      showReactions={showReactions}
+      commentCount={commentCount}
+      canComment={canComment}
+      commentPermission={commentPermission}
+      onOpenComments={() => setShowCommentSheet(true)}
+      inLibrary={inLibrary}
+      onToggleLibrary={handleLibraryToggle}
+    />
   );
 
   // ---------- Text-style branch (no immersive media) -------------------------
@@ -599,33 +583,22 @@ function PostCardBase(props: PostCardProps) {
                 </div>
               )}
 
-              <div className="flex items-center justify-between pt-2">
-                <div className="flex items-center gap-5">
-                  {showReactions && (
-                    <ReactionButton
-                      postId={id}
-                      currentReaction={currentReaction}
-                      count={reactionCount}
-                      onReact={handleReaction}
-                    />
-                  )}
-                  {canComment && (
-                    <CommentButton count={commentCount} onClick={() => setShowCommentSheet(true)} />
-                  )}
-                  <ShareButton postId={id} />
-                  {authorId && <CommunityButton authorId={authorId} authorName={author.name} />}
-                </div>
-                <motion.button
-                  whileTap={{ scale: 0.9 }}
-                  onClick={handleLibraryToggle}
-                  className={cn(
-                    'transition-colors p-2',
-                    inLibrary ? 'text-primary' : 'text-foreground/80 hover:text-foreground'
-                  )}
-                >
-                  <BookOpen className={cn('h-6 w-6', inLibrary && 'fill-current')} />
-                </motion.button>
-              </div>
+              <PostActionRow
+                postId={id}
+                authorId={authorId}
+                authorName={author.name}
+                currentReaction={currentReaction}
+                reactionCount={reactionCount}
+                onReact={handleReaction}
+                showReactions={showReactions}
+                commentCount={commentCount}
+                canComment={canComment}
+                commentPermission={commentPermission}
+                onOpenComments={() => setShowCommentSheet(true)}
+                inLibrary={inLibrary}
+                onToggleLibrary={handleLibraryToggle}
+                variant="overlay"
+              />
 
               {commentCount > 0 && canComment && (
                 <button
