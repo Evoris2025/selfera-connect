@@ -317,8 +317,8 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
 
           {/* Section 2 — Time period (3-col chip grid) */}
           <section>
-            <BrandSectionLabel className="px-5 mb-2">TIME PERIOD</BrandSectionLabel>
-            <div className="flex flex-wrap gap-2 px-4">
+            <BrandSectionLabel className="px-5 mb-1.5">TIME PERIOD</BrandSectionLabel>
+            <div className="flex flex-wrap gap-1.5 px-4">
               {TIME_OPTIONS.map((opt) => (
                 <Chip
                   key={opt.value}
