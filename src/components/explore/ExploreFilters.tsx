@@ -1,6 +1,5 @@
 import { useState, useMemo, type ReactNode } from 'react';
-import { Filter, ChevronDown } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetTrigger } from '@/components/ui/sheet';
 import {
@@ -189,11 +188,10 @@ function Chip<T extends string>({ option, active, themePrimary, onClick, leftDot
       disabled={option.disabled}
       aria-pressed={active}
       className={cn(
-        'h-[34px] px-3 rounded-full text-[13px] font-medium whitespace-nowrap inline-flex items-center justify-center gap-1.5 transition-colors',
+        'h-9 px-3 rounded-full text-[13px] font-medium whitespace-nowrap flex items-center justify-center gap-1.5 w-full transition-colors',
         active
-
           ? 'text-white border border-transparent'
-          : 'bg-white/[0.04] border border-white/[0.08] text-white/60 hover:text-white/80 hover:border-white/20',
+          : 'bg-white/[0.05] border border-white/[0.10] text-white/60 hover:text-white/80 hover:border-white/20',
         option.disabled && 'opacity-40 pointer-events-none',
       )}
       style={active ? { backgroundColor: themePrimary } : undefined}
