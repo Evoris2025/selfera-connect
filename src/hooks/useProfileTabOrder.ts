@@ -10,7 +10,7 @@ export interface ProfileTab {
 
 const DEFAULT_TABS: ProfileTab[] = [
   { id: 'posts', icon: 'Grid3X3', label: 'Posts' },
-  { id: 'expressions', icon: 'Sparkles', label: 'Expressions' },
+  { id: 'expressions', icon: 'Expression', label: 'Expressions' },
   { id: 'reels', icon: 'Play', label: 'Reels' },
   { id: 'community', icon: 'Users', label: 'Community' },
   { id: 'library', icon: 'BookOpen', label: 'Library' },

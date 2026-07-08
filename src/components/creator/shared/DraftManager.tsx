@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ICON_SIZE } from "@/lib/scale";
 import { FileText, Trash2, Clock, ChevronRight, Sparkles, Video, Image as ImageIcon } from 'lucide-react';
+import { ExpressionIcon } from '@/components/icons/ExpressionIcon';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetTrigger } from '@/components/ui/sheet';
@@ -119,8 +120,8 @@ function generateDraftTitle(type: ContentType, data: Record<string, unknown>): s
   return typeLabels[type];
 }
 
-const typeIconMap: Record<ContentType, typeof Sparkles> = {
-  expression: Sparkles,
+const typeIconMap: Record<ContentType, React.ComponentType<React.SVGProps<SVGSVGElement> & { size?: number | string }>> = {
+  expression: ExpressionIcon,
   video: Video,
   image: ImageIcon,
   post: FileText,

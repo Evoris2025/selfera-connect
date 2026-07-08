@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Camera, Image as ImageIcon, X, Loader2, Sparkles, RotateCcw, FlipHorizontal, Music } from 'lucide-react';
+import { ExpressionIcon } from '@/components/icons/ExpressionIcon';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
@@ -366,7 +367,7 @@ export function ExpressionCreator({ onBack, onSuccess }: ExpressionCreatorProps)
                   </button>
                   
                   <div className="flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-pink-400" />
+                    <ExpressionIcon className="h-5 w-5" />
                     <span className="text-white font-medium text-body">Expression</span>
                   </div>
                   

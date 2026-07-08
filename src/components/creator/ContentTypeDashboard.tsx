@@ -11,6 +11,7 @@ import {
   X,
   ChevronRight,
 } from 'lucide-react';
+import { ExpressionIcon } from '@/components/icons/ExpressionIcon';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useFeedData } from '@/contexts/FeedDataContext';
@@ -24,13 +25,13 @@ export type { ContentType };
 
 interface ContentTypeCard {
   id: ContentType;
-  icon: typeof Sparkles;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement> & { size?: number | string }>;
   title: string;
   description: string;
 }
 
 const contentTypes: ContentTypeCard[] = [
-  { id: 'expression', icon: Sparkles, title: 'Expression', description: 'A moment, not a record' },
+  { id: 'expression', icon: ExpressionIcon, title: 'Expression', description: 'A moment, not a record' },
   { id: 'video', icon: Video, title: 'Video', description: 'Stories worth the time' },
   { id: 'image', icon: ImageIcon, title: 'Photo', description: 'A frame of your world' },
   { id: 'post', icon: FileText, title: 'Post', description: "What's on your mind" },
@@ -76,7 +77,7 @@ function CreatorRow({
   backgroundUrl,
   onClick,
 }: {
-  icon: typeof Sparkles;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement> & { size?: number | string }>;
   title: string;
   description: string;
   accentColor: string;

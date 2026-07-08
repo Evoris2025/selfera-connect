@@ -14,6 +14,7 @@ import {
   Clock,
   ChevronRight,
 } from 'lucide-react';
+import { ExpressionIcon } from '@/components/icons/ExpressionIcon';
 import { useNavigate } from 'react-router-dom';
 import {
   useFeedData,
@@ -37,15 +38,18 @@ interface ContinueWorkingSheetProps {
 
 const KIND_META: Record<
   StudioContentKind,
-  { icon: typeof Sparkles; route: string }
+  { icon: React.ComponentType<React.SVGProps<SVGSVGElement> & { size?: number | string }>; route: string }
 > = {
-  expression: { icon: Sparkles, route: '/studio/expression' },
+  expression: { icon: ExpressionIcon, route: '/studio/expression' },
   video: { icon: Video, route: '/studio/video' },
   photo: { icon: ImageIcon, route: '/studio/photo' },
   post: { icon: FileText, route: '/studio/post' },
 };
 
-function gradientIcon(Icon: typeof Sparkles, size = 22) {
+function gradientIcon(
+  Icon: React.ComponentType<React.SVGProps<SVGSVGElement> & { size?: number | string }>,
+  size = 22
+) {
   return (
     <Icon
       size={size}
@@ -57,6 +61,7 @@ function gradientIcon(Icon: typeof Sparkles, size = 22) {
     />
   );
 }
+
 
 function draftTitle(d: StudioDraft): string {
   const t = (d.title || '').trim();
@@ -203,7 +208,7 @@ export function ContinueWorkingSheet({
                     {(['post', 'expression', 'image', 'video'] as ContentType[]).map((ct) => {
                       const Icon =
                         ct === 'post' ? FileText
-                        : ct === 'expression' ? Sparkles
+                        : ct === 'expression' ? ExpressionIcon
                         : ct === 'image' ? ImageIcon
                         : Video;
                       return (
