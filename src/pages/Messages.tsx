@@ -254,6 +254,7 @@ export default function Messages() {
   const { startConversation, findExistingConversation } = useNewConversation();
   const themeColor = useThemeColor();
   const themePrimary = themeColor.primary;
+  const { avatarUrl: currentUserAvatarUrl, displayName: currentUserDisplayName } = useCurrentUserAvatar();
   const {
     isUploading,
     uploadProgress,
