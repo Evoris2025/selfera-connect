@@ -357,27 +357,24 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
         </div>
 
         {/* Scrollable body */}
-        <div className="flex-1 overflow-y-auto space-y-5 py-4">
-          {/* Section 1 — Sort by (chip grid, single-select) */}
-          <section>
-            <BrandSectionLabel className="px-5 mb-1.5">SORT BY</BrandSectionLabel>
-            <div className="flex flex-wrap gap-1.5 px-4">
-              {SORT_OPTIONS.map((opt) => (
-                <Chip
-                  key={opt.value}
-                  option={opt}
-                  active={tabSlice.sortBy === opt.value}
-                  themePrimary={themePrimary}
-                  onClick={() => updateTabSlice('sortBy', opt.value)}
-                />
-              ))}
+        <div className="flex-1 overflow-y-auto py-4 space-y-5">
+          {/* Section 1 — Sort by (segmented tab bar, primary control) */}
+          <section className="px-4">
+            <SectionLabel className="px-1">SORT BY</SectionLabel>
+            <div className="border-b border-white/[0.06]">
+              <SegmentedTabs
+                options={SORT_OPTIONS}
+                value={tabSlice.sortBy}
+                themePrimary={themePrimary}
+                onChange={(v) => updateTabSlice('sortBy', v)}
+              />
             </div>
           </section>
 
-          {/* Section 2 — Time period (3-col chip grid) */}
-          <section>
-            <BrandSectionLabel className="px-5 mb-1.5">TIME PERIOD</BrandSectionLabel>
-            <div className="flex flex-wrap gap-1.5 px-4">
+          {/* Section 2 — Time period */}
+          <section className="px-4">
+            <SectionLabel className="px-1">TIME PERIOD</SectionLabel>
+            <div className="flex flex-wrap gap-1.5">
               {TIME_OPTIONS.map((opt) => (
                 <Chip
                   key={opt.value}
@@ -392,9 +389,9 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
 
           {/* Section 3 — Content type (context-aware) */}
           {activeTab === 'videos' && (
-            <section>
-              <BrandSectionLabel className="px-5 mb-1.5">DURATION</BrandSectionLabel>
-              <div className="flex flex-wrap gap-1.5 px-4">
+            <section className="px-4">
+              <SectionLabel className="px-1">DURATION</SectionLabel>
+              <div className="flex flex-wrap gap-1.5">
                 {DURATION_OPTIONS.map((opt) => (
                   <Chip
                     key={opt.value}
@@ -408,9 +405,9 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
             </section>
           )}
           {activeTab === 'images' && (
-            <section>
-              <BrandSectionLabel className="px-5 mb-1.5">FORMAT</BrandSectionLabel>
-              <div className="flex flex-wrap gap-1.5 px-4">
+            <section className="px-4">
+              <SectionLabel className="px-1">FORMAT</SectionLabel>
+              <div className="flex flex-wrap gap-1.5">
                 {FORMAT_OPTIONS.map((opt) => (
                   <Chip
                     key={opt.value}
@@ -424,67 +421,101 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
             </section>
           )}
 
-          {/* Section — Creator tier (multi-select chip grid). Hidden on Images. */}
-          {activeTab !== 'images' && (
-            <section>
-              <BrandSectionLabel className="px-5 mb-1.5">CREATOR TIER</BrandSectionLabel>
-              <div className="flex flex-wrap gap-1.5 px-4">
-                <Chip
-                  option={{ value: 'all', label: 'All' }}
-                  active={(tabSlice as { creatorTier: CreatorTier }).creatorTier === 'all'}
-                  themePrimary={themePrimary}
-                  onClick={() => updateTabSlice('creatorTier' as never, 'all' as never)}
-                />
-                {TIER_OPTIONS.map((opt) => {
-                  const current = (tabSlice as { creatorTier: CreatorTier }).creatorTier;
-                  const selected = Array.isArray(current) && current.includes(opt.value);
-                  return (
-                    <Chip
-                      key={opt.value}
-                      option={opt}
-                      active={selected}
-                      themePrimary={themePrimary}
-                      leftDot={
-                        <span
-                          className="w-2 h-2 rounded-full"
-                          style={{ backgroundColor: TIER_HEX[opt.value] }}
-                          aria-hidden
-                        />
-                      }
-                      onClick={() => {
-                        let next: CreatorTier;
-                        if (current === 'all') {
-                          next = [opt.value];
-                        } else {
-                          const exists = current.includes(opt.value);
-                          const updated = exists
-                            ? current.filter((t) => t !== opt.value)
-                            : [...current, opt.value];
-                          next = updated.length === 0 ? 'all' : updated;
-                        }
-                        updateTabSlice('creatorTier' as never, next as never);
-                      }}
-                    />
-                  );
-                })}
-              </div>
-            </section>
-          )}
+          {/* Secondary filters — collapsed by default */}
+          <section className="px-4">
+            <button
+              type="button"
+              onClick={() => setMoreOpen((o) => !o)}
+              aria-expanded={moreOpen}
+              className="w-full flex items-center justify-between py-2 text-[13px] font-medium text-white/70 hover:text-white transition-colors"
+            >
+              <span>More filters</span>
+              <motion.span
+                animate={{ rotate: moreOpen ? 180 : 0 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                className="text-white/50"
+              >
+                <ChevronDown className="h-4 w-4" />
+              </motion.span>
+            </button>
 
-          {/* Section 4 — Origin (chip grid, single-select) */}
-          <section>
-            <BrandSectionLabel className="px-5 mb-1.5">ORIGIN</BrandSectionLabel>
-            <div className="flex flex-wrap gap-1.5 px-4">
-              {ORIGIN_OPTIONS.map((opt) => (
-                <Chip
-                  key={opt.value}
-                  option={opt}
-                  active={tabSlice.origin === opt.value}
-                  themePrimary={themePrimary}
-                  onClick={() => updateTabSlice('origin', opt.value)}
-                />
-              ))}
-            </div>
+            <AnimatePresence initial={false}>
+              {moreOpen && (
+                <motion.div
+                  key="more"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.22, ease: 'easeOut' }}
+                  className="overflow-hidden"
+                >
+                  <div className="pt-3 space-y-5">
+                    {/* Creator tier — hidden on Images */}
+                    {activeTab !== 'images' && (
+                      <div>
+                        <SectionLabel className="px-1">CREATOR TIER</SectionLabel>
+                        <div className="flex flex-wrap gap-1.5">
+                          <Chip
+                            option={{ value: 'all', label: 'All' }}
+                            active={(tabSlice as { creatorTier: CreatorTier }).creatorTier === 'all'}
+                            themePrimary={themePrimary}
+                            onClick={() => updateTabSlice('creatorTier' as never, 'all' as never)}
+                          />
+                          {TIER_OPTIONS.map((opt) => {
+                            const current = (tabSlice as { creatorTier: CreatorTier }).creatorTier;
+                            const selected = Array.isArray(current) && current.includes(opt.value);
+                            return (
+                              <Chip
+                                key={opt.value}
+                                option={opt}
+                                active={selected}
+                                themePrimary={themePrimary}
+                                leftDot={
+                                  <span
+                                    className="w-2 h-2 rounded-full"
+                                    style={{ backgroundColor: TIER_HEX[opt.value] }}
+                                    aria-hidden
+                                  />
+                                }
+                                onClick={() => {
+                                  let next: CreatorTier;
+                                  if (current === 'all') {
+                                    next = [opt.value];
+                                  } else {
+                                    const exists = current.includes(opt.value);
+                                    const updated = exists
+                                      ? current.filter((t) => t !== opt.value)
+                                      : [...current, opt.value];
+                                    next = updated.length === 0 ? 'all' : updated;
+                                  }
+                                  updateTabSlice('creatorTier' as never, next as never);
+                                }}
+                              />
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Origin */}
+                    <div>
+                      <SectionLabel className="px-1">ORIGIN</SectionLabel>
+                      <div className="flex flex-wrap gap-1.5">
+                        {ORIGIN_OPTIONS.map((opt) => (
+                          <Chip
+                            key={opt.value}
+                            option={opt}
+                            active={tabSlice.origin === opt.value}
+                            themePrimary={themePrimary}
+                            onClick={() => updateTabSlice('origin', opt.value)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </section>
         </div>
 
