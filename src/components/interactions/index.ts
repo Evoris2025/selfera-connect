@@ -1,6 +1,7 @@
 export { HeartButton } from './HeartButton';
 export { CommentButton } from './CommentButton';
 export { ShareButton } from './ShareButton';
+export { RepostButton } from './RepostButton';
 export { ShareSheet } from './ShareSheet';
 export { CommentSheet } from './CommentSheet';
 export { CommunityButton } from './CommunityButton';
