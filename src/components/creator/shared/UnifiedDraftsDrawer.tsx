@@ -38,9 +38,9 @@ interface UnifiedDraftsDrawerProps {
 
 const KIND_META: Record<
   StudioContentKind,
-  { label: string; icon: typeof Sparkles; route: string }
+  { label: string; icon: React.ComponentType<React.SVGProps<SVGSVGElement> & { size?: number | string }>; route: string }
 > = {
-  expression: { label: 'Expression', icon: Sparkles, route: '/studio/expression' },
+  expression: { label: 'Expression', icon: ExpressionIcon, route: '/studio/expression' },
   video: { label: 'Video', icon: Video, route: '/studio/video' },
   photo: { label: 'Photo', icon: ImageIcon, route: '/studio/photo' },
   post: { label: 'Post', icon: FileText, route: '/studio/post' },
@@ -49,7 +49,7 @@ const KIND_META: Record<
 // "Your work" rows use a magenta accent — the brand stop tied to personal expression.
 const ROW_ACCENT = 'hsl(271 91% 65%)'; // matches --gradient-mid (purple)
 
-function gradientIcon(Icon: typeof Sparkles) {
+function gradientIcon(Icon: React.ComponentType<React.SVGProps<SVGSVGElement> & { size?: number | string }>) {
   return (
     <Icon
       size={22}
@@ -61,6 +61,7 @@ function gradientIcon(Icon: typeof Sparkles) {
     />
   );
 }
+
 
 export function UnifiedDraftsDrawer({
   open,
