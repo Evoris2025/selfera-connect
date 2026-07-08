@@ -16,7 +16,7 @@ export function ShareButton({ postId, size = 'md' }: ShareButtonProps) {
   const [showSheet, setShowSheet] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const sizeClasses = { sm: 'h-5 w-5', md: 'h-6 w-6', lg: 'h-7 w-7' };
+  const sizeClasses = { sm: 'h-[18px] w-[18px]', md: 'h-6 w-6', lg: 'h-7 w-7' };
 
   const handlePointerDown = (e: React.PointerEvent) => {
     e.preventDefault();
