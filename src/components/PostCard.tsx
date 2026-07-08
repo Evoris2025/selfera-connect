@@ -443,12 +443,13 @@ function PostCardBase(props: PostCardProps) {
         )}
 
         {tags.length > 0 && !content.includes('#') && (
-          <div className="flex flex-wrap gap-1.5 mt-3 mb-1">
+          <div className="mt-1 mb-1 text-label leading-relaxed space-x-1.5">
             {tags.map((tag) => (
               <Hashtag key={tag} tag={tag} size="sm" />
             ))}
           </div>
         )}
+
 
         {actionBar}
 
