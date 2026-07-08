@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Camera, Image as ImageIcon, X, Loader2, Sparkles, RotateCcw, FlipHorizontal, Music } from 'lucide-react';
+import { ExpressionIcon } from '@/components/icons/ExpressionIcon';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
