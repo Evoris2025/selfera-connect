@@ -334,8 +334,8 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
           {/* Section 3 — Content type (context-aware) */}
           {activeTab === 'videos' && (
             <section>
-              <BrandSectionLabel className="px-5 mb-2">DURATION</BrandSectionLabel>
-              <div className="flex flex-wrap gap-2 px-4">
+              <BrandSectionLabel className="px-5 mb-1.5">DURATION</BrandSectionLabel>
+              <div className="flex flex-wrap gap-1.5 px-4">
                 {DURATION_OPTIONS.map((opt) => (
                   <Chip
                     key={opt.value}
