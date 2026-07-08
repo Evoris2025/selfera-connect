@@ -1,6 +1,5 @@
 import { useState, useMemo, type ReactNode } from 'react';
-import { Filter, ChevronDown } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetTrigger } from '@/components/ui/sheet';
 import {
@@ -189,11 +188,10 @@ function Chip<T extends string>({ option, active, themePrimary, onClick, leftDot
       disabled={option.disabled}
       aria-pressed={active}
       className={cn(
-        'h-[34px] px-3 rounded-full text-[13px] font-medium whitespace-nowrap inline-flex items-center justify-center gap-1.5 transition-colors',
+        'h-9 px-3 rounded-full text-[13px] font-medium whitespace-nowrap flex items-center justify-center gap-1.5 w-full transition-colors',
         active
-
           ? 'text-white border border-transparent'
-          : 'bg-white/[0.04] border border-white/[0.08] text-white/60 hover:text-white/80 hover:border-white/20',
+          : 'bg-white/[0.05] border border-white/[0.10] text-white/60 hover:text-white/80 hover:border-white/20',
         option.disabled && 'opacity-40 pointer-events-none',
       )}
       style={active ? { backgroundColor: themePrimary } : undefined}
@@ -218,7 +216,6 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
 
   // Local draft so Reset/Apply can take effect on close.
   const [draft, setDraft] = useState<ExploreFiltersState>(filters);
-  const [moreOpen, setMoreOpen] = useState(false);
 
   const handleOpenChange = (open: boolean) => {
     if (open) setDraft(filters);
@@ -323,7 +320,7 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
           {/* Sort by */}
           <section>
             <SectionLabel>SORT BY</SectionLabel>
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {SORT_OPTIONS.map((opt) => (
                 <Chip
                   key={opt.value}
@@ -339,7 +336,7 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
           {/* Time period */}
           <section>
             <SectionLabel>TIME PERIOD</SectionLabel>
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {TIME_OPTIONS.map((opt) => (
                 <Chip
                   key={opt.value}
@@ -352,11 +349,11 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
             </div>
           </section>
 
-          {/* Content type (context-aware) */}
+          {/* Duration (videos only) */}
           {activeTab === 'videos' && (
             <section>
               <SectionLabel>DURATION</SectionLabel>
-              <div className="flex flex-wrap gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 {DURATION_OPTIONS.map((opt) => (
                   <Chip
                     key={opt.value}
@@ -369,10 +366,12 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
               </div>
             </section>
           )}
+
+          {/* Format (images only) */}
           {activeTab === 'images' && (
             <section>
               <SectionLabel>FORMAT</SectionLabel>
-              <div className="flex flex-wrap gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 {FORMAT_OPTIONS.map((opt) => (
                   <Chip
                     key={opt.value}
@@ -386,101 +385,67 @@ export function ExploreFilters({ activeTab, filters, onChange }: ExploreFiltersP
             </section>
           )}
 
-          {/* Secondary filters — plain accordion row with hairline dividers */}
-          <section className="!mt-5">
-            <button
-              type="button"
-              onClick={() => setMoreOpen((o) => !o)}
-              aria-expanded={moreOpen}
-              className="w-full flex items-center justify-between py-3 border-y border-white/[0.08] text-[11px] font-semibold uppercase tracking-[0.12em] text-white/45 hover:text-white/70 transition-colors"
-            >
-              <span>More filters</span>
-              <motion.span
-                animate={{ rotate: moreOpen ? 180 : 0 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                className="text-white/45"
-              >
-                <ChevronDown className="h-4 w-4" />
-              </motion.span>
-            </button>
+          {/* Creator tier (hidden on Images) */}
+          {activeTab !== 'images' && (
+            <section>
+              <SectionLabel>CREATOR TIER</SectionLabel>
+              <div className="grid grid-cols-3 gap-2">
+                <Chip
+                  option={{ value: 'all', label: 'All' }}
+                  active={(tabSlice as { creatorTier: CreatorTier }).creatorTier === 'all'}
+                  themePrimary={themePrimary}
+                  onClick={() => updateTabSlice('creatorTier' as never, 'all' as never)}
+                />
+                {TIER_OPTIONS.map((opt) => {
+                  const current = (tabSlice as { creatorTier: CreatorTier }).creatorTier;
+                  const selected = Array.isArray(current) && current.includes(opt.value);
+                  return (
+                    <Chip
+                      key={opt.value}
+                      option={opt}
+                      active={selected}
+                      themePrimary={themePrimary}
+                      leftDot={
+                        <span
+                          className="w-2 h-2 rounded-full"
+                          style={{ backgroundColor: TIER_HEX[opt.value] }}
+                          aria-hidden
+                        />
+                      }
+                      onClick={() => {
+                        let next: CreatorTier;
+                        if (current === 'all') {
+                          next = [opt.value];
+                        } else {
+                          const exists = current.includes(opt.value);
+                          const updated = exists
+                            ? current.filter((t) => t !== opt.value)
+                            : [...current, opt.value];
+                          next = updated.length === 0 ? 'all' : updated;
+                        }
+                        updateTabSlice('creatorTier' as never, next as never);
+                      }}
+                    />
+                  );
+                })}
+              </div>
+            </section>
+          )}
 
-            <AnimatePresence initial={false}>
-              {moreOpen && (
-                <motion.div
-                  key="more"
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.22, ease: 'easeOut' }}
-                  className="overflow-hidden"
-                >
-                  <div className="pt-5 space-y-5">
-                    {/* Creator tier — hidden on Images */}
-                    {activeTab !== 'images' && (
-                      <div>
-                        <SectionLabel>CREATOR TIER</SectionLabel>
-                        <div className="flex flex-wrap gap-2">
-                          <Chip
-                            option={{ value: 'all', label: 'All' }}
-                            active={(tabSlice as { creatorTier: CreatorTier }).creatorTier === 'all'}
-                            themePrimary={themePrimary}
-                            onClick={() => updateTabSlice('creatorTier' as never, 'all' as never)}
-                          />
-                          {TIER_OPTIONS.map((opt) => {
-                            const current = (tabSlice as { creatorTier: CreatorTier }).creatorTier;
-                            const selected = Array.isArray(current) && current.includes(opt.value);
-                            return (
-                              <Chip
-                                key={opt.value}
-                                option={opt}
-                                active={selected}
-                                themePrimary={themePrimary}
-                                leftDot={
-                                  <span
-                                    className="w-2 h-2 rounded-full"
-                                    style={{ backgroundColor: TIER_HEX[opt.value] }}
-                                    aria-hidden
-                                  />
-                                }
-                                onClick={() => {
-                                  let next: CreatorTier;
-                                  if (current === 'all') {
-                                    next = [opt.value];
-                                  } else {
-                                    const exists = current.includes(opt.value);
-                                    const updated = exists
-                                      ? current.filter((t) => t !== opt.value)
-                                      : [...current, opt.value];
-                                    next = updated.length === 0 ? 'all' : updated;
-                                  }
-                                  updateTabSlice('creatorTier' as never, next as never);
-                                }}
-                              />
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Origin */}
-                    <div>
-                      <SectionLabel>ORIGIN</SectionLabel>
-                      <div className="flex flex-wrap gap-2">
-                        {ORIGIN_OPTIONS.map((opt) => (
-                          <Chip
-                            key={opt.value}
-                            option={opt}
-                            active={tabSlice.origin === opt.value}
-                            themePrimary={themePrimary}
-                            onClick={() => updateTabSlice('origin', opt.value)}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+          {/* Origin */}
+          <section>
+            <SectionLabel>ORIGIN</SectionLabel>
+            <div className="grid grid-cols-2 gap-2">
+              {ORIGIN_OPTIONS.map((opt) => (
+                <Chip
+                  key={opt.value}
+                  option={opt}
+                  active={tabSlice.origin === opt.value}
+                  themePrimary={themePrimary}
+                  onClick={() => updateTabSlice('origin', opt.value)}
+                />
+              ))}
+            </div>
           </section>
         </div>
 
