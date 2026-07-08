@@ -48,6 +48,13 @@ function pickLiker(postId: string): string {
   return LIKER_POOL[Math.abs(h) % LIKER_POOL.length];
 }
 
+function formatCount(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1).replace(/\.0$/, '')}K`;
+  return String(n);
+}
+
+
 /**
  * Single source of truth for the post action row (Like, Comment, Repost,
  * Share, Community, ...Save) plus the social-proof lines below (Liked by …
