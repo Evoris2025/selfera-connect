@@ -600,14 +600,6 @@ function PostCardBase(props: PostCardProps) {
                 variant="overlay"
               />
 
-              {commentCount > 0 && canComment && (
-                <button
-                  onClick={() => setShowCommentSheet(true)}
-                  className="text-body text-muted-foreground mt-2 hover:text-foreground transition-colors"
-                >
-                  View all {formatCount(commentCount)} comments
-                </button>
-              )}
             </motion.div>
           </div>
         </ImmersiveMedia>
