@@ -1,4 +1,5 @@
-import { Sparkles, FileText } from 'lucide-react';
+import { FileText } from 'lucide-react';
+import { ExpressionIcon } from '@/components/icons/ExpressionIcon';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import type { StudioContentKind } from '@/contexts/FeedDataContext';
