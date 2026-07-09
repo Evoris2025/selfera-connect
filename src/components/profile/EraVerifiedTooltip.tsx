@@ -12,7 +12,7 @@ interface EraVerifiedTooltipProps {
   subscriberCount?: number;
   isClient?: boolean;
   userEmail?: string;
-  size?: 'sm' | 'md';
+  size?: 'xs' | 'sm' | 'md';
   className?: string;
   children?: ReactNode;
 }
