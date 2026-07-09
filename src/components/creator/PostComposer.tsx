@@ -214,6 +214,7 @@ interface ComposerState {
   fundraiser: FeedFundraiser | null;
   linkPreview: FeedLinkPreview | null;
   crossPost: CrossPostState;
+  music: MusicTrack | null;
 }
 
 const DEFAULT_STATE: ComposerState = {
