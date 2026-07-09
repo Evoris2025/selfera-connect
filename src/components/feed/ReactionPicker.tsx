@@ -173,14 +173,14 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
                             delay: particle.delay,
                             ease: [0.25, 0.46, 0.45, 0.94] 
                           }}
-                          className="absolute left-1/2 top-1/2 w-2 h-2 -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none"
+                          className="absolute left-1/2 top-1/2 w-1.5 h-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none"
                           style={{ backgroundColor: particle.color || reaction.color }}
                         />
                       ))}
                       {/* Ring burst */}
                       <motion.div
                         initial={{ scale: 0.5, opacity: 0.9 }}
-                        animate={{ scale: 2.5, opacity: 0 }}
+                        animate={{ scale: 2, opacity: 0 }}
                         transition={{ duration: 0.4, ease: 'easeOut' }}
                         className="absolute inset-0 rounded-full border-2 pointer-events-none"
                         style={{ borderColor: reaction.color }}
