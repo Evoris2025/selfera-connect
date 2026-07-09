@@ -92,17 +92,19 @@ export function DiscoverRow() {
 
   const fetchProfiles = async (isInitial = false) => {
     if (loadingMore && !isInitial) return;
-    
+
     try {
       if (isInitial) {
-        setLoading(true);
+        // Do NOT flip `loading` on initial fetch — profiles are pre-seeded from
+        // mocks so the skeleton would only cause a flash on tablet/desktop.
         setOffset(0);
       } else {
         setLoadingMore(true);
       }
-      
+
       const hidden = loadHiddenProfiles();
       const currentOffset = isInitial ? 0 : offset;
+
       
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
