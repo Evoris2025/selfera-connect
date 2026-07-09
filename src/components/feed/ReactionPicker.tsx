@@ -549,11 +549,13 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
 
   return (
     <div
+      data-reaction-picker-root={postId}
       className="relative inline-flex items-center overflow-visible"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={(e) => e.stopPropagation()}
     >
+
 
       <ReactionPicker
         isOpen={isPickerOpen}
