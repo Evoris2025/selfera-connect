@@ -382,7 +382,7 @@ export function DiscoverRow() {
                         size="sm"
                         onClick={() => handleFollowToggle(profile.id, profile.isFollowing)}
                         disabled={isPending}
-                        className={`w-full h-8 text-label font-semibold rounded-lg transition-all duration-300 overflow-hidden ${
+                        className={`w-full h-6 text-[10px] font-semibold rounded-md transition-all duration-300 overflow-hidden ${
                           isPending 
                             ? 'bg-blue-500 hover:bg-blue-500 text-white shadow-[0_0_12px_rgba(59,130,246,0.5)]' 
                             : 'bg-gradient-to-r from-primary via-pink-500 to-orange-400 hover:opacity-90 text-white'
