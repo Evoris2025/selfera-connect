@@ -289,6 +289,30 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     };
   }, [cleanupTouchTracking]);
 
+  // Dismiss the picker when the user taps anywhere outside it (tap-to-select flow).
+  useEffect(() => {
+    if (!isPickerOpen) return;
+    const handleOutside = (event: Event) => {
+      const target = event.target as Node | null;
+      if (!target) return;
+      // Ignore taps inside the picker/button container itself.
+      const container = (event.currentTarget as Document).querySelector('[data-reaction-picker-root="' + postId + '"]');
+      if (container && container.contains(target)) return;
+      setIsPickerOpen(false);
+      setIsLongPressing(false);
+      setTouchHovered(null);
+    };
+    // Delay attaching so the opening touchend doesn't immediately close it.
+    const timer = setTimeout(() => {
+      document.addEventListener('pointerdown', handleOutside, true);
+    }, 50);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener('pointerdown', handleOutside, true);
+    };
+  }, [isPickerOpen, postId]);
+
+
 
   const triggerLocalBurst = useCallback((color?: string) => {
     const particles = generateBurstParticles(8, color);
@@ -329,6 +353,14 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     lastTouchPointRef.current = initialTouch ? { x: initialTouch.clientX, y: initialTouch.clientY } : null;
     setTouchHovered(null);
 
+    // Suppress the browser's long-press context menu (e.g. "Save image" popup)
+    // that can appear over underlying media while the user long-presses/drags.
+    const preventContextMenu = (event: Event) => {
+      event.preventDefault();
+      event.stopPropagation();
+    };
+    document.addEventListener('contextmenu', preventContextMenu, { capture: true });
+
     const handleTrackedTouchMove = (event: TouchEvent) => {
       event.preventDefault();
       event.stopPropagation();
@@ -348,18 +380,17 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
 
       if (longPressTimer.current) clearTimeout(longPressTimer.current);
 
-      const selectedType = touchHoveredRef.current;
       const wasLongPressing = isLongPressingRef.current;
 
       cleanupTouchTracking();
 
-      if (wasLongPressing && selectedType) {
-        handleSelect(selectedType);
-      } else if (!wasLongPressing) {
+      if (!wasLongPressing) {
+        // Short tap → toggle like immediately
         handleQuickTap();
-      } else {
         setIsPickerOpen(false);
       }
+      // If it WAS a long press: keep the picker open (Facebook-style
+      // tap-to-select). The user will tap an emoji or tap outside to dismiss.
 
       isLongPressingRef.current = false;
       setIsLongPressing(false);
@@ -384,7 +415,8 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
       touchHoveredRef.current = null;
       lastTouchPointRef.current = null;
       setTouchHovered(null);
-      setIsPickerOpen(false);
+      // Keep picker open if long-press had already activated — the cancel is
+      // often a scroll-conflict false positive; let outside-tap dismiss it.
       endTouchInteraction();
     };
 
@@ -396,6 +428,11 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
       document.removeEventListener('touchmove', handleTrackedTouchMove, { capture: true });
       document.removeEventListener('touchend', handleTrackedTouchEnd, { capture: true });
       document.removeEventListener('touchcancel', handleTrackedTouchCancel, { capture: true });
+      // Delay removing the contextmenu blocker so the synthetic contextmenu
+      // that some browsers fire right after touchend is still swallowed.
+      setTimeout(() => {
+        document.removeEventListener('contextmenu', preventContextMenu, { capture: true });
+      }, 400);
     };
 
     longPressTimer.current = setTimeout(() => {
@@ -413,6 +450,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
       if (navigator.vibrate) navigator.vibrate(10);
     }, 400);
   };
+
 
   const endTouchInteraction = () => {
     // Ignore the synthetic click that fires after touch
@@ -438,15 +476,12 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     if (nativeTouchHandledRef.current) return;
     if (longPressTimer.current) clearTimeout(longPressTimer.current);
     cleanupTouchTracking();
-    const selectedType = touchHoveredRef.current ?? touchHovered;
     const wasLongPressing = isLongPressingRef.current || isLongPressing;
-    if (wasLongPressing && selectedType) {
-      handleSelect(selectedType);
-    } else if (!wasLongPressing) {
+    if (!wasLongPressing) {
       handleQuickTap();
-    } else {
       setIsPickerOpen(false);
     }
+    // Long-press active → keep picker open for tap-to-select.
     isLongPressingRef.current = false;
     setIsLongPressing(false);
     touchHoveredRef.current = null;
@@ -466,9 +501,10 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     touchHoveredRef.current = null;
     lastTouchPointRef.current = null;
     setTouchHovered(null);
-    setIsPickerOpen(false);
     endTouchInteraction();
   };
+
+
 
 
   const handleQuickTap = async () => {
@@ -513,11 +549,13 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
 
   return (
     <div
+      data-reaction-picker-root={postId}
       className="relative inline-flex items-center overflow-visible"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={(e) => e.stopPropagation()}
     >
+
 
       <ReactionPicker
         isOpen={isPickerOpen}
