@@ -10,7 +10,6 @@ export interface ProfileTab {
 
 const DEFAULT_TABS: ProfileTab[] = [
   { id: 'unified', icon: 'Unified', label: 'Unified' },
-  { id: 'expressions', icon: 'Expressions', label: 'Expressions' },
   { id: 'video', icon: 'Video', label: 'Video' },
   { id: 'images', icon: 'Images', label: 'Images' },
   { id: 'posts', icon: 'Posts', label: 'Posts' },

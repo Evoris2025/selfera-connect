@@ -275,17 +275,18 @@ export function DiscoverRow() {
         <div className="flex items-center justify-between mb-4 px-4">
           <div className="h-4 w-32 max-w-full bg-muted rounded animate-pulse" />
         </div>
-        <div className="flex gap-3 overflow-x-auto scrollbar-hide -mx-4 pl-4 pr-10">
-          {[1, 2, 3, 4].map(i => (
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide -mx-4 pl-4 pr-10">
+          {[1, 2, 3, 4, 5].map(i => (
             <div
               key={i}
-              className="flex-shrink-0 w-44 h-44 bg-muted/50 rounded-2xl animate-pulse"
+              className="flex-shrink-0 w-24 h-36 bg-muted/50 rounded-2xl animate-pulse"
             />
           ))}
         </div>
       </div>
     );
   }
+
 
 
 
@@ -316,7 +317,7 @@ export function DiscoverRow() {
           <div
             ref={scrollRef}
             onScroll={handleScroll}
-            className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory rail-fade-right -mx-4 pl-4 pr-10"
+            className="flex gap-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory rail-fade-right -mx-4 pl-4 pr-10"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {profiles.map((profile) => {
@@ -335,34 +336,35 @@ export function DiscoverRow() {
                   <GlassCard
                     variant="card"
                     hover
-                    className="w-44 p-4 flex flex-col items-center text-center"
+                    className="w-24 p-2 flex flex-col items-center text-center"
                   >
                     <div 
-                      className="mb-3 cursor-pointer"
+                      className="mb-1.5 cursor-pointer"
                       onClick={() => navigate(`/profile/${profile.handle || profile.id}`)}
                     >
                       <CinematicAvatar
                         src={profile.avatar_url || ''}
                         alt={profile.display_name || ''}
                         fallback={(profile.display_name || 'U').charAt(0)}
-                        size="lg"
+                        size="sm"
                         ring="gradient"
                         interactive
                       />
                     </div>
 
-                    <div className="flex items-center justify-center gap-1 mb-0.5 w-full">
-                      <p className="text-body font-semibold text-foreground truncate">
+                    <div className="flex items-center justify-center gap-0.5 mb-0.5 w-full">
+                      <p className="text-caption font-semibold text-foreground truncate">
                         {profile.display_name || 'User'}
                       </p>
                       {profile.is_verified && (
-                        <EraVerifiedTick size="sm" userEmail={profile.email || undefined} />
+                        <EraVerifiedTick size="xs" userEmail={profile.email || undefined} />
                       )}
                     </div>
                     
-                    <p className="text-label text-muted-foreground truncate w-full mb-3">
+                    <p className="text-[10px] text-muted-foreground truncate w-full mb-1.5">
                       @{profile.handle || 'user'}
                     </p>
+
 
                     <motion.div
                       animate={isPending ? {
@@ -380,7 +382,7 @@ export function DiscoverRow() {
                         size="sm"
                         onClick={() => handleFollowToggle(profile.id, profile.isFollowing)}
                         disabled={isPending}
-                        className={`w-full h-8 text-label font-semibold rounded-lg transition-all duration-300 overflow-hidden ${
+                        className={`w-full h-6 text-[10px] font-semibold rounded-md transition-all duration-300 overflow-hidden ${
                           isPending 
                             ? 'bg-blue-500 hover:bg-blue-500 text-white shadow-[0_0_12px_rgba(59,130,246,0.5)]' 
                             : 'bg-gradient-to-r from-primary via-pink-500 to-orange-400 hover:opacity-90 text-white'
@@ -403,7 +405,7 @@ export function DiscoverRow() {
                               }}
                               className="flex items-center justify-center"
                             >
-                              <Check className="h-5 w-5" strokeWidth={3.5} />
+                              <Check className="h-3.5 w-3.5" strokeWidth={3.5} />
                             </motion.div>
                           ) : (
                             <motion.span
@@ -426,7 +428,7 @@ export function DiscoverRow() {
             
             {/* Loading indicator */}
             {loadingMore && (
-              <div className="flex-shrink-0 w-40 h-44 flex items-center justify-center">
+              <div className="flex-shrink-0 w-24 h-36 flex items-center justify-center">
                 <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
               </div>
             )}
