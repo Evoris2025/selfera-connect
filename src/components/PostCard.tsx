@@ -560,7 +560,7 @@ function PostCardBase(props: PostCardProps) {
             </DropdownMenu>
           </motion.div>
 
-          <div className="absolute bottom-0 left-0 right-0 p-4 z-20">
+          <div className="absolute bottom-0 left-0 right-0 p-4 pt-10 z-20 bg-gradient-to-t from-black/70 via-black/40 to-transparent">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -571,15 +571,15 @@ function PostCardBase(props: PostCardProps) {
               )}
               {fundraiserCard}
 
-              <p className="text-body text-foreground leading-relaxed mb-2 drop-shadow-md">
+              <p className="text-label text-foreground leading-snug mb-2 drop-shadow-md">
                 <span className="font-semibold mr-1.5">{author.handle}</span>
                 {renderContent(content)}
               </p>
 
               {tags.length > 0 && !content.includes('#') && (
-                <div className="flex flex-wrap gap-1.5 mb-4">
+                <div className="flex flex-wrap gap-1.5 mb-3">
                   {tags.map((tag) => (
-                    <span key={tag} className="text-body text-foreground/80 font-medium">#{tag}</span>
+                    <span key={tag} className="text-caption text-foreground/80 font-medium">#{tag}</span>
                   ))}
                 </div>
               )}
