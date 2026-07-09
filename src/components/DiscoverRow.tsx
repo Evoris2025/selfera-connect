@@ -67,9 +67,16 @@ const saveHiddenProfiles = (ids: Set<string>) => {
 export function DiscoverRow() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [profiles, setProfiles] = useState<SuggestedProfile[]>([]);
+  // Seed with mock profiles synchronously so the row feels instant across every
+  // viewport (no skeleton flash on desktop/tablet where the initial fetch is
+  // more noticeable). Real profiles hydrate in the background and swap in.
+  const [profiles, setProfiles] = useState<SuggestedProfile[]>(() => {
+    const hidden = loadHiddenProfiles();
+    const available = mockProfiles.filter(p => !hidden.has(p.id));
+    return (available.length ? available : mockProfiles).slice(0, VISIBLE_COUNT);
+  });
   const [hiddenProfiles, setHiddenProfiles] = useState<Set<string>>(loadHiddenProfiles);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [offset, setOffset] = useState(0);
@@ -81,6 +88,7 @@ export function DiscoverRow() {
   useEffect(() => {
     fetchProfiles(true);
   }, [user]);
+
 
   const fetchProfiles = async (isInitial = false) => {
     if (loadingMore && !isInitial) return;
