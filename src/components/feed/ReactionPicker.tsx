@@ -68,9 +68,13 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
           onContextMenu={(e) => e.preventDefault()}
           onClick={(e) => e.stopPropagation()}
           style={{ transformOrigin: 'bottom left' }}
-          className="absolute bottom-full left-0 z-50 pb-2 pt-3 pr-6"
+          // pb-3 creates a solid invisible bridge between the tray and the Like
+          // button below so the cursor never leaves the shared hover boundary
+          // while moving from button → tray.
+          className="absolute bottom-full left-0 z-[60] pb-3 pt-3 pr-6 pointer-events-auto"
         >
-          <div className="flex items-center gap-1 px-2.5 py-2 bg-card/95 backdrop-blur-2xl rounded-full shadow-[0_10px_40px_-8px_rgba(0,0,0,0.55),0_2px_6px_rgba(0,0,0,0.35)] ring-1 ring-white/10 border border-border/40 select-none touch-manipulation">
+          <div className="flex items-center gap-1 px-2.5 py-2 min-h-[52px] bg-card/95 backdrop-blur-2xl rounded-full shadow-[0_10px_40px_-8px_rgba(0,0,0,0.55),0_2px_6px_rgba(0,0,0,0.35)] ring-1 ring-white/10 border border-border/40 select-none touch-manipulation">
+
             {reactions.map((reaction, index) => (
               <motion.button
                 key={reaction.type}
@@ -314,7 +318,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
 
   return (
     <div
-      className="relative inline-flex items-center"
+      className="relative inline-flex items-center overflow-visible"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={(e) => e.stopPropagation()}
