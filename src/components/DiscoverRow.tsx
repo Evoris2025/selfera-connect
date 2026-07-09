@@ -266,19 +266,28 @@ export function DiscoverRow() {
   }, [user, pendingFollows, dismissProfile]);
 
   if (loading) {
+    // Skeleton mirrors the real horizontally scrollable card row so it can never
+    // spill past its parent on tablet/desktop where widths are larger. Cards
+    // stay `flex-shrink-0` inside an `overflow-x-auto` track — identical
+    // constraints to the loaded state.
     return (
-      <div className="py-5 px-4">
-        <div className="flex items-center justify-between mb-4">
-          <div className="h-4 w-32 bg-muted rounded animate-pulse" />
+      <div className="py-5">
+        <div className="flex items-center justify-between mb-4 px-4">
+          <div className="h-4 w-32 max-w-full bg-muted rounded animate-pulse" />
         </div>
-        <div className="flex gap-3">
-          {[1, 2, 3].map(i => (
-            <div key={i} className="flex-shrink-0 w-40 h-44 bg-muted/50 rounded-2xl animate-pulse" />
+        <div className="flex gap-3 overflow-x-auto scrollbar-hide -mx-4 pl-4 pr-10">
+          {[1, 2, 3, 4].map(i => (
+            <div
+              key={i}
+              className="flex-shrink-0 w-44 h-44 bg-muted/50 rounded-2xl animate-pulse"
+            />
           ))}
         </div>
       </div>
     );
   }
+
+
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="py-5">
