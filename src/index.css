@@ -885,7 +885,7 @@
 }
 
 .reaction-emoji.reaction-hovered {
-  transform: scale(1.5);
+  transform: scale(1.85);
   z-index: 10;
 }
 
