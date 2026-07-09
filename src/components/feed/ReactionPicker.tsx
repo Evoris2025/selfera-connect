@@ -363,7 +363,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
             className="flex items-center justify-center"
           >
             {hasReaction ? (
-              <FluentEmoji type={currentReaction!} size={s.px} />
+              <FluentEmoji type={currentReaction!} size={s.px} static />
             ) : (
               <svg
                 className={cn(
