@@ -276,14 +276,29 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     }, 0);
   };
 
+  const handleTouchMove = (e: TouchEvent<HTMLButtonElement>) => {
+    if (!isLongPressing) return;
+    const touch = e.touches[0];
+    if (!touch) return;
+    const el = document.elementFromPoint(touch.clientX, touch.clientY) as HTMLElement | null;
+    const target = el?.closest('[data-reaction]') as HTMLElement | null;
+    const type = target?.getAttribute('data-reaction') as ReactionType | null;
+    setTouchHovered(type ?? null);
+  };
+
   const handleTouchEnd = (e: TouchEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
     if (longPressTimer.current) clearTimeout(longPressTimer.current);
-    if (!isLongPressing) {
+    if (isLongPressing && touchHovered) {
+      handleSelect(touchHovered);
+    } else if (!isLongPressing) {
       handleQuickTap();
+    } else {
+      setIsPickerOpen(false);
     }
     setIsLongPressing(false);
+    setTouchHovered(null);
     endTouchInteraction();
   };
 
@@ -292,9 +307,11 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     e.stopPropagation();
     if (longPressTimer.current) clearTimeout(longPressTimer.current);
     setIsLongPressing(false);
+    setTouchHovered(null);
     setIsPickerOpen(false);
     endTouchInteraction();
   };
+
 
   const handleQuickTap = async () => {
     const newReaction = currentReaction ? null : 'like';
