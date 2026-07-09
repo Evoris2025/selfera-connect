@@ -52,6 +52,23 @@ const SOURCES: Record<ReactionType, { animated: string; static: string; label: s
   curious:   { animated: `${CDN}/Smilies/Thinking%20Face.png`, static: `${STATIC_CDN}/1f914.png`, label: 'Curious' },
 };
 
+// Preload every animated + static emoji once, at module load, so the first
+// paint after a reaction change is instant instead of triggering a network
+// fetch. Browsers keep these in the HTTP cache; the <img> tag then hits it
+// synchronously.
+if (typeof window !== 'undefined') {
+  const seen = new Set<string>();
+  for (const entry of Object.values(SOURCES)) {
+    for (const url of [entry.animated, entry.static]) {
+      if (seen.has(url)) continue;
+      seen.add(url);
+      const img = new Image();
+      img.decoding = 'async';
+      img.src = url;
+    }
+  }
+}
+
 export function FluentEmoji({ type, size = 28, className, static: isStatic }: FluentEmojiProps) {
   const entry = SOURCES[type];
   if (!entry) return null;
