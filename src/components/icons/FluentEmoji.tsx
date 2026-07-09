@@ -26,8 +26,8 @@ const SOURCES: Record<ReactionType, { src: string; label: string }> = {
   laughing:  { src: `${CDN}/Smilies/Rolling%20on%20the%20Floor%20Laughing.png`, label: 'Laughing' },
   // Surprise → astonished face (full jaw-drop head, not half like exploding head)
   surprise:  { src: `${CDN}/Smilies/Astonished%20Face.png`, label: 'Wow' },
-  // Sad → loudly crying, tears streaming
-  sad:       { src: `${CDN}/Smilies/Loudly%20Crying%20Face.png`, label: 'Sad' },
+  // Sad → single teardrop, calmer expression
+  sad:       { src: `${CDN}/Smilies/Crying%20Face.png`, label: 'Sad' },
   // Angry → enraged face (fully red, steam from nose)
   angry:     { src: `${CDN}/Smilies/Enraged%20Face.png`, label: 'Angry' },
   // Inspiring → star-struck, stars twinkling

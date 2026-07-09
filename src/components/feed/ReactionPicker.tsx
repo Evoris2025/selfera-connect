@@ -88,7 +88,7 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
           // while moving from button → tray.
           className="absolute bottom-full left-0 z-[60] pb-2 pt-5 pr-4 pointer-events-auto overflow-visible"
         >
-          <div className="flex items-center gap-0.5 px-2 py-1.5 min-h-[42px] bg-card/95 backdrop-blur-2xl rounded-full shadow-[0_8px_32px_-6px_rgba(0,0,0,0.5),0_2px_4px_rgba(0,0,0,0.3)] ring-1 ring-white/10 border border-border/40 select-none touch-manipulation overflow-visible">
+          <div className="flex items-center gap-0 px-1.5 py-1 min-h-[38px] bg-card/95 backdrop-blur-2xl rounded-full shadow-[0_8px_32px_-6px_rgba(0,0,0,0.5),0_2px_4px_rgba(0,0,0,0.3)] ring-1 ring-white/10 border border-border/40 select-none touch-manipulation overflow-visible">
 
 
             {reactions.map((reaction, index) => (
@@ -113,7 +113,7 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
                 onMouseEnter={() => setHoveredReaction(reaction.type)}
                 onMouseLeave={() => setHoveredReaction(null)}
                 className={cn(
-                  'relative p-1.5 rounded-full transition-colors',
+                  'relative p-0.5 rounded-full transition-colors',
                   currentReaction === reaction.type && 'bg-white/[0.1]'
                 )}
               >
