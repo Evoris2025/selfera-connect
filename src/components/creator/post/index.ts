@@ -15,4 +15,5 @@ export { CustomAudienceDialog } from './CustomAudienceDialog';
 export { LifeEventDialog } from './LifeEventDialog';
 export { FundraiserDialog } from './FundraiserDialog';
 export { PostCardLinkPreview } from './PostCardLinkPreview';
+export { MusicPicker, MusicBadge, type MusicTrack } from './MusicPicker';
 export { legacyPostPayload } from './__fixtures__/legacyPostPayload';
