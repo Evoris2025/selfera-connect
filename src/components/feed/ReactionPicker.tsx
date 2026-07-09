@@ -366,6 +366,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
         onSelect={handleSelect}
         currentReaction={currentReaction}
         onClose={() => setIsPickerOpen(false)}
+        activeReaction={touchHovered}
       />
 
       <motion.button
@@ -374,8 +375,10 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
         whileTap={{ scale: 0.9 }}
         transition={buttonPressTransition}
         onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         onTouchCancel={handleTouchCancel}
+
         onContextMenu={(e) => e.preventDefault()}
         onClick={handleClick}
         className={cn(
