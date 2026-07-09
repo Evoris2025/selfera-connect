@@ -54,6 +54,54 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose, act
   const [hoveredReaction, setHoveredReaction] = useState<ReactionType | null>(null);
   const [selectedReaction, setSelectedReaction] = useState<ReactionType | null>(null);
   const [burstParticles, setBurstParticles] = useState<{ reactionType: ReactionType; particles: BurstParticle[] } | null>(null);
+  const pickerRef = useRef<HTMLDivElement | null>(null);
+  const trayTouchActiveRef = useRef(false);
+  const trayTouchReactionRef = useRef<ReactionType | null>(null);
+
+  const getReactionFromPoint = useCallback((x: number, y: number) => {
+    const picker = pickerRef.current;
+    if (!picker) return null;
+
+    const reactionButtons = Array.from(picker.querySelectorAll<HTMLElement>('[data-reaction]'));
+    if (reactionButtons.length === 0) return null;
+
+    const trayBounds = reactionButtons.reduce(
+      (acc, button) => {
+        const rect = button.getBoundingClientRect();
+        return {
+          left: Math.min(acc.left, rect.left),
+          right: Math.max(acc.right, rect.right),
+          top: Math.min(acc.top, rect.top),
+          bottom: Math.max(acc.bottom, rect.bottom),
+        };
+      },
+      { left: Infinity, right: -Infinity, top: Infinity, bottom: -Infinity }
+    );
+
+    const insideScrubBand =
+      x >= trayBounds.left - 32 &&
+      x <= trayBounds.right + 32 &&
+      y >= trayBounds.top - 120 &&
+      y <= trayBounds.bottom + 132;
+
+    if (!insideScrubBand) return null;
+
+    const nearest = reactionButtons.reduce<{ button: HTMLElement; distance: number } | null>((closest, button) => {
+      const rect = button.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const distance = Math.abs(centerX - x);
+      return !closest || distance < closest.distance ? { button, distance } : closest;
+    }, null);
+
+    return nearest?.button.getAttribute('data-reaction') as ReactionType | null;
+  }, []);
+
+  const updateTrayTouchReaction = useCallback((x: number, y: number) => {
+    const type = getReactionFromPoint(x, y);
+    trayTouchReactionRef.current = type;
+    setHoveredReaction(type);
+    return type;
+  }, [getReactionFromPoint]);
 
   const triggerBurst = useCallback((type: ReactionType, color: string) => {
     const particles = generateBurstParticles(10, color);
@@ -74,15 +122,60 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose, act
     onClose();
   };
 
+  const handleTrayTouchStart = (e: ReactTouchEvent<HTMLDivElement>) => {
+    const touch = e.touches[0];
+    if (!touch) return;
+    e.preventDefault();
+    e.stopPropagation();
+    trayTouchActiveRef.current = true;
+    updateTrayTouchReaction(touch.clientX, touch.clientY);
+  };
+
+  const handleTrayTouchMove = (e: ReactTouchEvent<HTMLDivElement>) => {
+    if (!trayTouchActiveRef.current) return;
+    const touch = e.touches[0];
+    if (!touch) return;
+    e.preventDefault();
+    e.stopPropagation();
+    updateTrayTouchReaction(touch.clientX, touch.clientY);
+  };
+
+  const handleTrayTouchEnd = (e: ReactTouchEvent<HTMLDivElement>) => {
+    if (!trayTouchActiveRef.current) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const touch = e.changedTouches[0];
+    const selected = touch
+      ? updateTrayTouchReaction(touch.clientX, touch.clientY) ?? trayTouchReactionRef.current
+      : trayTouchReactionRef.current;
+    trayTouchActiveRef.current = false;
+    trayTouchReactionRef.current = null;
+    setHoveredReaction(null);
+    if (selected) handleSelect(selected);
+  };
+
+  const handleTrayTouchCancel = (e: ReactTouchEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    trayTouchActiveRef.current = false;
+    trayTouchReactionRef.current = null;
+    setHoveredReaction(null);
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
         <motion.div
+          ref={pickerRef}
           initial={{ opacity: 0, y: 12, scale: 0.85 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 8, scale: 0.9 }}
           transition={springTransitions.bouncy}
           onContextMenu={(e) => e.preventDefault()}
+          onTouchStart={handleTrayTouchStart}
+          onTouchMove={handleTrayTouchMove}
+          onTouchEnd={handleTrayTouchEnd}
+          onTouchCancel={handleTrayTouchCancel}
           onClick={(e) => e.stopPropagation()}
           style={{ transformOrigin: 'bottom left' }}
           // pb-3 creates a solid invisible bridge between the tray and the Like
@@ -113,6 +206,7 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose, act
                 onPointerUp={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
+                  if (e.pointerType === 'touch') return;
                   handleSelect(reaction.type);
                 }}
                 onMouseEnter={() => setHoveredReaction(reaction.type)}
@@ -229,7 +323,9 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
   const suppressClickRef = useRef(false);
   const isLongPressingRef = useRef(false);
   const touchHoveredRef = useRef<ReactionType | null>(null);
+  const initialTouchPointRef = useRef<{ x: number; y: number } | null>(null);
   const lastTouchPointRef = useRef<{ x: number; y: number } | null>(null);
+  const hasMovedDuringPressRef = useRef(false);
   const hasScrubbedReactionRef = useRef(false);
   const nativeTouchHandledRef = useRef(false);
   const cleanupTouchTrackingRef = useRef<(() => void) | null>(null);
@@ -352,9 +448,13 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     cleanupTouchTracking();
     isLongPressingRef.current = false;
     touchHoveredRef.current = null;
+    initialTouchPointRef.current = null;
+    hasMovedDuringPressRef.current = false;
     hasScrubbedReactionRef.current = false;
     const initialTouch = e.touches[0];
-    lastTouchPointRef.current = initialTouch ? { x: initialTouch.clientX, y: initialTouch.clientY } : null;
+    const initialPoint = initialTouch ? { x: initialTouch.clientX, y: initialTouch.clientY } : null;
+    initialTouchPointRef.current = initialPoint;
+    lastTouchPointRef.current = initialPoint;
     setTouchHovered(null);
 
     // Suppress the browser's long-press context menu (e.g. "Save image" popup)
@@ -370,6 +470,11 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
       event.stopPropagation();
       const touch = event.touches[0];
       if (!touch) return;
+      const initialPoint = initialTouchPointRef.current;
+      if (initialPoint) {
+        const movement = Math.hypot(touch.clientX - initialPoint.x, touch.clientY - initialPoint.y);
+        if (movement > 8) hasMovedDuringPressRef.current = true;
+      }
       lastTouchPointRef.current = { x: touch.clientX, y: touch.clientY };
       if (!isLongPressingRef.current) return;
       const hovered = updateTouchHoveredFromPoint(touch.clientX, touch.clientY);
@@ -387,6 +492,11 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
       if (longPressTimer.current) clearTimeout(longPressTimer.current);
 
       const wasLongPressing = isLongPressingRef.current;
+      const finalTouch = event.changedTouches[0];
+      if (wasLongPressing && finalTouch) {
+        const hovered = updateTouchHoveredFromPoint(finalTouch.clientX, finalTouch.clientY);
+        if (hovered && hasMovedDuringPressRef.current) hasScrubbedReactionRef.current = true;
+      }
       const selectedByScrub = wasLongPressing && hasScrubbedReactionRef.current ? touchHoveredRef.current : null;
 
       cleanupTouchTracking();
@@ -404,6 +514,8 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
       isLongPressingRef.current = false;
       setIsLongPressing(false);
       touchHoveredRef.current = null;
+      initialTouchPointRef.current = null;
+      hasMovedDuringPressRef.current = false;
       hasScrubbedReactionRef.current = false;
       lastTouchPointRef.current = null;
       setTouchHovered(null);
@@ -423,6 +535,8 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
       isLongPressingRef.current = false;
       setIsLongPressing(false);
       touchHoveredRef.current = null;
+      initialTouchPointRef.current = null;
+      hasMovedDuringPressRef.current = false;
       hasScrubbedReactionRef.current = false;
       lastTouchPointRef.current = null;
       setTouchHovered(null);
@@ -454,7 +568,8 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
         requestAnimationFrame(() => {
           const point = lastTouchPointRef.current;
           if (point && isLongPressingRef.current) {
-            updateTouchHoveredFromPoint(point.x, point.y);
+            const hovered = updateTouchHoveredFromPoint(point.x, point.y);
+            if (hovered && hasMovedDuringPressRef.current) hasScrubbedReactionRef.current = true;
           }
         });
       }
@@ -477,6 +592,11 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     if (!isLongPressing) return;
     const touch = e.touches[0];
     if (!touch) return;
+    const initialPoint = initialTouchPointRef.current;
+    if (initialPoint) {
+      const movement = Math.hypot(touch.clientX - initialPoint.x, touch.clientY - initialPoint.y);
+      if (movement > 8) hasMovedDuringPressRef.current = true;
+    }
     lastTouchPointRef.current = { x: touch.clientX, y: touch.clientY };
     const hovered = updateTouchHoveredFromPoint(touch.clientX, touch.clientY);
     if (hovered) hasScrubbedReactionRef.current = true;
@@ -489,6 +609,11 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     if (longPressTimer.current) clearTimeout(longPressTimer.current);
     cleanupTouchTracking();
     const wasLongPressing = isLongPressingRef.current || isLongPressing;
+    const finalTouch = e.changedTouches[0];
+    if (wasLongPressing && finalTouch) {
+      const hovered = updateTouchHoveredFromPoint(finalTouch.clientX, finalTouch.clientY);
+      if (hovered && hasMovedDuringPressRef.current) hasScrubbedReactionRef.current = true;
+    }
     const selectedByScrub = wasLongPressing && hasScrubbedReactionRef.current ? touchHoveredRef.current : null;
     if (selectedByScrub) {
       handleSelect(selectedByScrub);
@@ -500,6 +625,8 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     isLongPressingRef.current = false;
     setIsLongPressing(false);
     touchHoveredRef.current = null;
+    initialTouchPointRef.current = null;
+    hasMovedDuringPressRef.current = false;
     hasScrubbedReactionRef.current = false;
     lastTouchPointRef.current = null;
     setTouchHovered(null);
@@ -515,6 +642,8 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     isLongPressingRef.current = false;
     setIsLongPressing(false);
     touchHoveredRef.current = null;
+    initialTouchPointRef.current = null;
+    hasMovedDuringPressRef.current = false;
     hasScrubbedReactionRef.current = false;
     lastTouchPointRef.current = null;
     setTouchHovered(null);
