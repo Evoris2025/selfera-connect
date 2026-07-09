@@ -79,6 +79,9 @@ import {
   LifeEventDialog,
   FundraiserDialog,
   ComposerLinkPreview,
+  MusicPicker,
+  MusicBadge,
+  type MusicTrack,
   computePollClosesAt,
 } from './post';
 import type {
