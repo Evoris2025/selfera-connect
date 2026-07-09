@@ -19,7 +19,7 @@ const CDN =
 
 const SOURCES: Record<ReactionType, { src: string; label: string }> = {
   // Like → clean red heart (pulses via our CSS; no "beat" sonar lines)
-  like:      { src: `${CDN}/Symbols/Red%20Heart.png`, label: 'Like' },
+  like:      { src: `${CDN}/Smilies/Red%20Heart.png`, label: 'Like' },
   // Care → smiling face with hearts orbiting
   care:      { src: `${CDN}/Smilies/Smiling%20Face%20with%20Hearts.png`, label: 'Care' },
   // Laughing → rolling on the floor laughing (more expressive & modern than tears-of-joy)
@@ -28,8 +28,8 @@ const SOURCES: Record<ReactionType, { src: string; label: string }> = {
   surprise:  { src: `${CDN}/Smilies/Astonished%20Face.png`, label: 'Wow' },
   // Sad → loudly crying, tears streaming
   sad:       { src: `${CDN}/Smilies/Loudly%20Crying%20Face.png`, label: 'Sad' },
-  // Angry → enraged pouting face (fully red, steam)
-  angry:     { src: `${CDN}/Smilies/Pouting%20Face.png`, label: 'Angry' },
+  // Angry → enraged face (fully red, steam from nose)
+  angry:     { src: `${CDN}/Smilies/Enraged%20Face.png`, label: 'Angry' },
   // Inspiring → star-struck, stars twinkling
   inspiring: { src: `${CDN}/Smilies/Star-Struck.png`, label: 'Inspiring' },
   // Relatable → hand raise, "same / me too"
