@@ -45,7 +45,7 @@ export function Hashtag({
 interface HashtagListProps {
   tags: string[];
   className?: string;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   limit?: number;
 }
 
