@@ -10,7 +10,18 @@ import {
 } from '@/hooks/useMicroAnimations';
 import { FluentEmoji } from '@/components/icons/FluentEmoji';
 
-export type ReactionType = 'like' | 'relatable' | 'inspiring' | 'support' | 'curious';
+export type ReactionType =
+  | 'like'
+  | 'care'
+  | 'laughing'
+  | 'surprise'
+  | 'sad'
+  | 'angry'
+  | 'inspiring'
+  | 'relatable'
+  // legacy — retained for backwards compatibility with stored data
+  | 'support'
+  | 'curious';
 
 interface Reaction {
   type: ReactionType;
@@ -20,11 +31,15 @@ interface Reaction {
 
 const reactions: Reaction[] = [
   { type: 'like', label: 'Like', color: 'hsl(0, 75%, 60%)' },
-  { type: 'relatable', label: 'Relatable', color: 'hsl(200, 80%, 55%)' },
+  { type: 'care', label: 'Care', color: 'hsl(15, 90%, 60%)' },
+  { type: 'laughing', label: 'Laughing', color: 'hsl(48, 95%, 55%)' },
+  { type: 'surprise', label: 'Surprise', color: 'hsl(48, 95%, 55%)' },
+  { type: 'sad', label: 'Sad', color: 'hsl(210, 80%, 60%)' },
+  { type: 'angry', label: 'Angry', color: 'hsl(10, 85%, 55%)' },
   { type: 'inspiring', label: 'Inspiring', color: 'hsl(45, 90%, 55%)' },
-  { type: 'support', label: 'Support', color: 'hsl(155, 55%, 50%)' },
-  { type: 'curious', label: 'Curious', color: 'hsl(270, 60%, 60%)' },
+  { type: 'relatable', label: 'Relatable', color: 'hsl(200, 80%, 55%)' },
 ];
+
 
 interface ReactionPickerProps {
   isOpen: boolean;
