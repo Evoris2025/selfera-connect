@@ -481,20 +481,6 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
   };
 
 
-  const handleTouchCancel = (e: ReactTouchEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (nativeTouchHandledRef.current) return;
-    if (longPressTimer.current) clearTimeout(longPressTimer.current);
-    cleanupTouchTracking();
-    isLongPressingRef.current = false;
-    setIsLongPressing(false);
-    touchHoveredRef.current = null;
-    lastTouchPointRef.current = null;
-    setTouchHovered(null);
-    setIsPickerOpen(false);
-    endTouchInteraction();
-  };
 
 
   const handleQuickTap = async () => {
