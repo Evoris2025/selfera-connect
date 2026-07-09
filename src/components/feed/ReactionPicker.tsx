@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, type TouchEvent, type ReactNode } from 'react';
+import { useState, useRef, useCallback, useEffect, type TouchEvent as ReactTouchEvent, type ReactNode } from 'react';
 import { ICON_SIZE } from "@/lib/scale";
 import { motion, AnimatePresence, useAnimationControls } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -227,7 +227,34 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
   const hoverTimer = useRef<NodeJS.Timeout | null>(null);
   const suppressClickRef = useRef(false);
+  const isLongPressingRef = useRef(false);
+  const touchHoveredRef = useRef<ReactionType | null>(null);
+  const nativeTouchHandledRef = useRef(false);
+  const cleanupTouchTrackingRef = useRef<(() => void) | null>(null);
   const buttonControls = useAnimationControls();
+
+  const updateTouchHoveredFromPoint = useCallback((x: number, y: number) => {
+    const el = document.elementFromPoint(x, y) as HTMLElement | null;
+    const target = el?.closest('[data-reaction]') as HTMLElement | null;
+    const type = target?.getAttribute('data-reaction') as ReactionType | null;
+    const nextType = type ?? null;
+
+    touchHoveredRef.current = nextType;
+    setTouchHovered(nextType);
+  }, []);
+
+  const cleanupTouchTracking = useCallback(() => {
+    cleanupTouchTrackingRef.current?.();
+    cleanupTouchTrackingRef.current = null;
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      cleanupTouchTracking();
+      if (longPressTimer.current) clearTimeout(longPressTimer.current);
+      if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    };
+  }, [cleanupTouchTracking]);
 
 
   const triggerLocalBurst = useCallback((color?: string) => {
@@ -258,11 +285,83 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
   };
 
 
-  const handleTouchStart = (e: TouchEvent<HTMLButtonElement>) => {
+  const handleTouchStart = (e: ReactTouchEvent<HTMLButtonElement>) => {
     suppressClickRef.current = true;
     e.preventDefault();
     e.stopPropagation();
+    cleanupTouchTracking();
+    isLongPressingRef.current = false;
+    touchHoveredRef.current = null;
+    setTouchHovered(null);
+
+    const handleTrackedTouchMove = (event: TouchEvent) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const touch = event.touches[0];
+      if (!touch || !isLongPressingRef.current) return;
+      updateTouchHoveredFromPoint(touch.clientX, touch.clientY);
+    };
+
+    const handleTrackedTouchEnd = (event: TouchEvent) => {
+      event.preventDefault();
+      event.stopPropagation();
+      nativeTouchHandledRef.current = true;
+      setTimeout(() => {
+        nativeTouchHandledRef.current = false;
+      }, 0);
+
+      if (longPressTimer.current) clearTimeout(longPressTimer.current);
+
+      const selectedType = touchHoveredRef.current;
+      const wasLongPressing = isLongPressingRef.current;
+
+      cleanupTouchTracking();
+
+      if (wasLongPressing && selectedType) {
+        handleSelect(selectedType);
+      } else if (!wasLongPressing) {
+        handleQuickTap();
+      } else {
+        setIsPickerOpen(false);
+      }
+
+      isLongPressingRef.current = false;
+      setIsLongPressing(false);
+      touchHoveredRef.current = null;
+      setTouchHovered(null);
+      endTouchInteraction();
+    };
+
+    const handleTrackedTouchCancel = (event: TouchEvent) => {
+      event.preventDefault();
+      event.stopPropagation();
+      nativeTouchHandledRef.current = true;
+      setTimeout(() => {
+        nativeTouchHandledRef.current = false;
+      }, 0);
+
+      if (longPressTimer.current) clearTimeout(longPressTimer.current);
+      cleanupTouchTracking();
+      isLongPressingRef.current = false;
+      setIsLongPressing(false);
+      touchHoveredRef.current = null;
+      setTouchHovered(null);
+      setIsPickerOpen(false);
+      endTouchInteraction();
+    };
+
+    document.addEventListener('touchmove', handleTrackedTouchMove, { passive: false, capture: true });
+    document.addEventListener('touchend', handleTrackedTouchEnd, { passive: false, capture: true });
+    document.addEventListener('touchcancel', handleTrackedTouchCancel, { passive: false, capture: true });
+
+    cleanupTouchTrackingRef.current = () => {
+      document.removeEventListener('touchmove', handleTrackedTouchMove, { capture: true });
+      document.removeEventListener('touchend', handleTrackedTouchEnd, { capture: true });
+      document.removeEventListener('touchcancel', handleTrackedTouchCancel, { capture: true });
+    };
+
     longPressTimer.current = setTimeout(() => {
+      isLongPressingRef.current = true;
       setIsLongPressing(true);
       setIsPickerOpen(true);
       if (navigator.vibrate) navigator.vibrate(10);
@@ -273,40 +372,50 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     // Ignore the synthetic click that fires after touch
     setTimeout(() => {
       suppressClickRef.current = false;
-    }, 0);
+    }, 350);
   };
 
-  const handleTouchMove = (e: TouchEvent<HTMLButtonElement>) => {
+  const handleTouchMove = (e: ReactTouchEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (nativeTouchHandledRef.current) return;
     if (!isLongPressing) return;
     const touch = e.touches[0];
     if (!touch) return;
-    const el = document.elementFromPoint(touch.clientX, touch.clientY) as HTMLElement | null;
-    const target = el?.closest('[data-reaction]') as HTMLElement | null;
-    const type = target?.getAttribute('data-reaction') as ReactionType | null;
-    setTouchHovered(type ?? null);
+    updateTouchHoveredFromPoint(touch.clientX, touch.clientY);
   };
 
-  const handleTouchEnd = (e: TouchEvent<HTMLButtonElement>) => {
+  const handleTouchEnd = (e: ReactTouchEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
+    if (nativeTouchHandledRef.current) return;
     if (longPressTimer.current) clearTimeout(longPressTimer.current);
-    if (isLongPressing && touchHovered) {
-      handleSelect(touchHovered);
-    } else if (!isLongPressing) {
+    cleanupTouchTracking();
+    const selectedType = touchHoveredRef.current ?? touchHovered;
+    const wasLongPressing = isLongPressingRef.current || isLongPressing;
+    if (wasLongPressing && selectedType) {
+      handleSelect(selectedType);
+    } else if (!wasLongPressing) {
       handleQuickTap();
     } else {
       setIsPickerOpen(false);
     }
+    isLongPressingRef.current = false;
     setIsLongPressing(false);
+    touchHoveredRef.current = null;
     setTouchHovered(null);
     endTouchInteraction();
   };
 
-  const handleTouchCancel = (e: TouchEvent<HTMLButtonElement>) => {
+  const handleTouchCancel = (e: ReactTouchEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
+    if (nativeTouchHandledRef.current) return;
     if (longPressTimer.current) clearTimeout(longPressTimer.current);
+    cleanupTouchTracking();
+    isLongPressingRef.current = false;
     setIsLongPressing(false);
+    touchHoveredRef.current = null;
     setTouchHovered(null);
     setIsPickerOpen(false);
     endTouchInteraction();
@@ -381,7 +490,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
 
         onContextMenu={(e) => e.preventDefault()}
         onClick={handleClick}
-        style={{ touchAction: isPickerOpen || isLongPressing ? 'none' : 'manipulation' }}
+        style={{ touchAction: 'none' }}
         className={cn(
           'flex items-center gap-1.5 transition-colors group relative select-none [-webkit-touch-callout:none]',
           currentReaction ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
