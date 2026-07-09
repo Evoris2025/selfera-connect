@@ -112,19 +112,19 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
                 onMouseEnter={() => setHoveredReaction(reaction.type)}
                 onMouseLeave={() => setHoveredReaction(null)}
                 className={cn(
-                  'relative p-2 rounded-full transition-colors',
+                  'relative p-1.5 rounded-full transition-colors',
                   currentReaction === reaction.type && 'bg-white/[0.1]'
                 )}
               >
                 <motion.div
                   animate={{
                     scale: selectedReaction === reaction.type 
-                      ? [1, 1.6, 0.9, 1.3, 1]
-                      : hoveredReaction === reaction.type ? 1.4 : 1,
-                    y: hoveredReaction === reaction.type ? -8 : 0,
+                      ? [1, 1.45, 0.9, 1.15, 1]
+                      : hoveredReaction === reaction.type ? 1.25 : 1,
+                    y: hoveredReaction === reaction.type ? -5 : 0,
                     rotate: selectedReaction === reaction.type 
-                      ? [0, -15, 15, -10, 10, -5, 5, 0]
-                      : hoveredReaction === reaction.type ? [0, -8, 8, -4, 4, 0] : 0,
+                      ? [0, -12, 12, -8, 8, -4, 4, 0]
+                      : hoveredReaction === reaction.type ? [0, -6, 6, -3, 3, 0] : 0,
                   }}
                   transition={selectedReaction === reaction.type 
                     ? { duration: 0.4, times: [0, 0.2, 0.4, 0.6, 1] }
@@ -134,7 +134,7 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
                   }
                   className="block"
                 >
-                  <FluentEmoji type={reaction.type} size={36} />
+                  <FluentEmoji type={reaction.type} size={24} />
                 </motion.div>
 
                 {/* Tooltip */}
