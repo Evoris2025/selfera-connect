@@ -318,7 +318,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
 
   return (
     <div
-      className="relative inline-flex items-center"
+      className="relative inline-flex items-center overflow-visible"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={(e) => e.stopPropagation()}
