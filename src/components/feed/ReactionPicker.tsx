@@ -289,6 +289,30 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     };
   }, [cleanupTouchTracking]);
 
+  // Dismiss the picker when the user taps anywhere outside it (tap-to-select flow).
+  useEffect(() => {
+    if (!isPickerOpen) return;
+    const handleOutside = (event: Event) => {
+      const target = event.target as Node | null;
+      if (!target) return;
+      // Ignore taps inside the picker/button container itself.
+      const container = (event.currentTarget as Document).querySelector('[data-reaction-picker-root="' + postId + '"]');
+      if (container && container.contains(target)) return;
+      setIsPickerOpen(false);
+      setIsLongPressing(false);
+      setTouchHovered(null);
+    };
+    // Delay attaching so the opening touchend doesn't immediately close it.
+    const timer = setTimeout(() => {
+      document.addEventListener('pointerdown', handleOutside, true);
+    }, 50);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener('pointerdown', handleOutside, true);
+    };
+  }, [isPickerOpen, postId]);
+
+
 
   const triggerLocalBurst = useCallback((color?: string) => {
     const particles = generateBurstParticles(8, color);
