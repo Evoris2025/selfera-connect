@@ -230,6 +230,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
   const isLongPressingRef = useRef(false);
   const touchHoveredRef = useRef<ReactionType | null>(null);
   const lastTouchPointRef = useRef<{ x: number; y: number } | null>(null);
+  const hasScrubbedReactionRef = useRef(false);
   const nativeTouchHandledRef = useRef(false);
   const cleanupTouchTrackingRef = useRef<(() => void) | null>(null);
   const buttonControls = useAnimationControls();
@@ -274,6 +275,8 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
 
     touchHoveredRef.current = nextType;
     setTouchHovered(nextType);
+
+    return nextType;
   }, []);
 
   const cleanupTouchTracking = useCallback(() => {
@@ -349,6 +352,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     cleanupTouchTracking();
     isLongPressingRef.current = false;
     touchHoveredRef.current = null;
+    hasScrubbedReactionRef.current = false;
     const initialTouch = e.touches[0];
     lastTouchPointRef.current = initialTouch ? { x: initialTouch.clientX, y: initialTouch.clientY } : null;
     setTouchHovered(null);
@@ -365,9 +369,11 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
       event.preventDefault();
       event.stopPropagation();
       const touch = event.touches[0];
-      if (!touch || !isLongPressingRef.current) return;
+      if (!touch) return;
       lastTouchPointRef.current = { x: touch.clientX, y: touch.clientY };
-      updateTouchHoveredFromPoint(touch.clientX, touch.clientY);
+      if (!isLongPressingRef.current) return;
+      const hovered = updateTouchHoveredFromPoint(touch.clientX, touch.clientY);
+      if (hovered) hasScrubbedReactionRef.current = true;
     };
 
     const handleTrackedTouchEnd = (event: TouchEvent) => {
@@ -381,20 +387,24 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
       if (longPressTimer.current) clearTimeout(longPressTimer.current);
 
       const wasLongPressing = isLongPressingRef.current;
+      const selectedByScrub = wasLongPressing && hasScrubbedReactionRef.current ? touchHoveredRef.current : null;
 
       cleanupTouchTracking();
 
-      if (!wasLongPressing) {
+      if (selectedByScrub) {
+        handleSelect(selectedByScrub);
+      } else if (!wasLongPressing) {
         // Short tap → toggle like immediately
         handleQuickTap();
         setIsPickerOpen(false);
       }
-      // If it WAS a long press: keep the picker open (Facebook-style
-      // tap-to-select). The user will tap an emoji or tap outside to dismiss.
+      // If it WAS a long press without scrubbing onto a reaction: keep the
+      // picker open (Facebook-style tap-to-select).
 
       isLongPressingRef.current = false;
       setIsLongPressing(false);
       touchHoveredRef.current = null;
+      hasScrubbedReactionRef.current = false;
       lastTouchPointRef.current = null;
       setTouchHovered(null);
       endTouchInteraction();
@@ -413,6 +423,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
       isLongPressingRef.current = false;
       setIsLongPressing(false);
       touchHoveredRef.current = null;
+      hasScrubbedReactionRef.current = false;
       lastTouchPointRef.current = null;
       setTouchHovered(null);
       // Keep picker open if long-press had already activated — the cancel is
@@ -467,7 +478,8 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     const touch = e.touches[0];
     if (!touch) return;
     lastTouchPointRef.current = { x: touch.clientX, y: touch.clientY };
-    updateTouchHoveredFromPoint(touch.clientX, touch.clientY);
+    const hovered = updateTouchHoveredFromPoint(touch.clientX, touch.clientY);
+    if (hovered) hasScrubbedReactionRef.current = true;
   };
 
   const handleTouchEnd = (e: ReactTouchEvent<HTMLButtonElement>) => {
@@ -477,14 +489,18 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     if (longPressTimer.current) clearTimeout(longPressTimer.current);
     cleanupTouchTracking();
     const wasLongPressing = isLongPressingRef.current || isLongPressing;
-    if (!wasLongPressing) {
+    const selectedByScrub = wasLongPressing && hasScrubbedReactionRef.current ? touchHoveredRef.current : null;
+    if (selectedByScrub) {
+      handleSelect(selectedByScrub);
+    } else if (!wasLongPressing) {
       handleQuickTap();
       setIsPickerOpen(false);
     }
-    // Long-press active → keep picker open for tap-to-select.
+    // Long-press active without scrubbing → keep picker open for tap-to-select.
     isLongPressingRef.current = false;
     setIsLongPressing(false);
     touchHoveredRef.current = null;
+    hasScrubbedReactionRef.current = false;
     lastTouchPointRef.current = null;
     setTouchHovered(null);
     endTouchInteraction();
@@ -499,6 +515,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     isLongPressingRef.current = false;
     setIsLongPressing(false);
     touchHoveredRef.current = null;
+    hasScrubbedReactionRef.current = false;
     lastTouchPointRef.current = null;
     setTouchHovered(null);
     endTouchInteraction();
