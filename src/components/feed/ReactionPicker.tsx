@@ -46,9 +46,11 @@ interface ReactionPickerProps {
   onSelect: (type: ReactionType) => void;
   currentReaction?: ReactionType | null;
   onClose: () => void;
+  activeReaction?: ReactionType | null;
 }
 
-export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: ReactionPickerProps) {
+export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose, activeReaction }: ReactionPickerProps) {
+
   const [hoveredReaction, setHoveredReaction] = useState<ReactionType | null>(null);
   const [selectedReaction, setSelectedReaction] = useState<ReactionType | null>(null);
   const [burstParticles, setBurstParticles] = useState<{ reactionType: ReactionType; particles: BurstParticle[] } | null>(null);
@@ -91,9 +93,12 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
           <div className="flex items-center gap-0 px-1.5 py-1 min-h-[38px] bg-card/95 backdrop-blur-2xl rounded-full shadow-[0_8px_32px_-6px_rgba(0,0,0,0.5),0_2px_4px_rgba(0,0,0,0.3)] ring-1 ring-white/10 border border-border/40 select-none touch-manipulation overflow-visible">
 
 
-            {reactions.map((reaction, index) => (
+            {reactions.map((reaction, index) => {
+              const isActive = (activeReaction ?? hoveredReaction) === reaction.type;
+              return (
               <motion.button
                 key={reaction.type}
+                data-reaction={reaction.type}
                 initial={{ opacity: 0, scale: 0, y: 10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ 
@@ -120,7 +125,7 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
                 <span
                   className={cn(
                     'block reaction-emoji',
-                    hoveredReaction === reaction.type && 'reaction-hovered',
+                    isActive && 'reaction-hovered',
                     selectedReaction === reaction.type && 'reaction-pop'
                   )}
                 >
@@ -131,7 +136,7 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
 
                 {/* Tooltip — sits well above the scaled-up emoji head */}
                 <AnimatePresence>
-                  {hoveredReaction === reaction.type && (
+                  {isActive && (
                     <motion.div
                       initial={{ opacity: 0, y: 6 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -147,6 +152,7 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
                     </motion.div>
                   )}
                 </AnimatePresence>
+
 
 
                 {/* Particle burst on selection */}
@@ -193,7 +199,9 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
                   />
                 )}
               </motion.button>
-            ))}
+              );
+            })}
+
           </div>
         </motion.div>
       )}
@@ -214,11 +222,13 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
   const s = sizeMap[size];
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   const [isLongPressing, setIsLongPressing] = useState(false);
+  const [touchHovered, setTouchHovered] = useState<ReactionType | null>(null);
   const [localBurst, setLocalBurst] = useState<BurstParticle[] | null>(null);
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
   const hoverTimer = useRef<NodeJS.Timeout | null>(null);
   const suppressClickRef = useRef(false);
   const buttonControls = useAnimationControls();
+
 
   const triggerLocalBurst = useCallback((color?: string) => {
     const particles = generateBurstParticles(8, color);
@@ -266,14 +276,29 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     }, 0);
   };
 
+  const handleTouchMove = (e: TouchEvent<HTMLButtonElement>) => {
+    if (!isLongPressing) return;
+    const touch = e.touches[0];
+    if (!touch) return;
+    const el = document.elementFromPoint(touch.clientX, touch.clientY) as HTMLElement | null;
+    const target = el?.closest('[data-reaction]') as HTMLElement | null;
+    const type = target?.getAttribute('data-reaction') as ReactionType | null;
+    setTouchHovered(type ?? null);
+  };
+
   const handleTouchEnd = (e: TouchEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
     if (longPressTimer.current) clearTimeout(longPressTimer.current);
-    if (!isLongPressing) {
+    if (isLongPressing && touchHovered) {
+      handleSelect(touchHovered);
+    } else if (!isLongPressing) {
       handleQuickTap();
+    } else {
+      setIsPickerOpen(false);
     }
     setIsLongPressing(false);
+    setTouchHovered(null);
     endTouchInteraction();
   };
 
@@ -282,9 +307,11 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     e.stopPropagation();
     if (longPressTimer.current) clearTimeout(longPressTimer.current);
     setIsLongPressing(false);
+    setTouchHovered(null);
     setIsPickerOpen(false);
     endTouchInteraction();
   };
+
 
   const handleQuickTap = async () => {
     const newReaction = currentReaction ? null : 'like';
@@ -339,6 +366,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
         onSelect={handleSelect}
         currentReaction={currentReaction}
         onClose={() => setIsPickerOpen(false)}
+        activeReaction={touchHovered}
       />
 
       <motion.button
@@ -347,8 +375,10 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
         whileTap={{ scale: 0.9 }}
         transition={buttonPressTransition}
         onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         onTouchCancel={handleTouchCancel}
+
         onContextMenu={(e) => e.preventDefault()}
         onClick={handleClick}
         className={cn(
