@@ -222,11 +222,13 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
   const s = sizeMap[size];
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   const [isLongPressing, setIsLongPressing] = useState(false);
+  const [touchHovered, setTouchHovered] = useState<ReactionType | null>(null);
   const [localBurst, setLocalBurst] = useState<BurstParticle[] | null>(null);
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
   const hoverTimer = useRef<NodeJS.Timeout | null>(null);
   const suppressClickRef = useRef(false);
   const buttonControls = useAnimationControls();
+
 
   const triggerLocalBurst = useCallback((color?: string) => {
     const particles = generateBurstParticles(8, color);
