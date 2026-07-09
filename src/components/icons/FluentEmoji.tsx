@@ -32,8 +32,8 @@ const SOURCES: Record<ReactionType, { src: string; label: string }> = {
   angry:     { src: `${CDN}/Smilies/Enraged%20Face.png`, label: 'Angry' },
   // Inspiring → star-struck, stars twinkling
   inspiring: { src: `${CDN}/Smilies/Star-Struck.png`, label: 'Inspiring' },
-  // Relatable → hand raise, "same / me too"
-  relatable: { src: `${CDN}/People/Person%20Raising%20Hand.png`, label: 'Relatable' },
+  // Relatable → two hearts, "same / me too"
+  relatable: { src: `${CDN}/Smilies/Two%20Hearts.png`, label: 'Relatable' },
 
   // Legacy fallbacks (kept for older stored reactions)
   support:   { src: `${CDN}/Hand%20gestures/Folded%20Hands.png`, label: 'Support' },
