@@ -277,6 +277,8 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
   };
 
   const handleTouchMove = (e: TouchEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (!isLongPressing) return;
     const touch = e.touches[0];
     if (!touch) return;
@@ -381,7 +383,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
 
         onContextMenu={(e) => e.preventDefault()}
         onClick={handleClick}
-        style={{ touchAction: isPickerOpen || isLongPressing ? 'none' : 'manipulation' }}
+        style={{ touchAction: 'none' }}
         className={cn(
           'flex items-center gap-1.5 transition-colors group relative select-none [-webkit-touch-callout:none]',
           currentReaction ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
