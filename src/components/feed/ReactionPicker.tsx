@@ -116,26 +116,16 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
                   currentReaction === reaction.type && 'bg-white/[0.1]'
                 )}
               >
-                <motion.div
-                  animate={{
-                    scale: selectedReaction === reaction.type 
-                      ? [1, 1.45, 0.9, 1.15, 1]
-                      : hoveredReaction === reaction.type ? 1.25 : 1,
-                    y: hoveredReaction === reaction.type ? -5 : 0,
-                    rotate: selectedReaction === reaction.type 
-                      ? [0, -12, 12, -8, 8, -4, 4, 0]
-                      : hoveredReaction === reaction.type ? [0, -6, 6, -3, 3, 0] : 0,
-                  }}
-                  transition={selectedReaction === reaction.type 
-                    ? { duration: 0.4, times: [0, 0.2, 0.4, 0.6, 1] }
-                    : hoveredReaction === reaction.type
-                      ? { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
-                    : springTransitions.bouncy
-                  }
-                  className="block"
+                <span
+                  className={cn(
+                    'block origin-bottom',
+                    hoveredReaction === reaction.type && 'reaction-hovered',
+                    selectedReaction === reaction.type && 'reaction-pop'
+                  )}
                 >
-                  <FluentEmoji type={reaction.type} size={24} />
-                </motion.div>
+                  <FluentEmoji type={reaction.type} size={28} />
+                </span>
+
 
                 {/* Tooltip */}
                 <AnimatePresence>
