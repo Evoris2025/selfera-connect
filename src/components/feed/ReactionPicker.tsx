@@ -46,9 +46,11 @@ interface ReactionPickerProps {
   onSelect: (type: ReactionType) => void;
   currentReaction?: ReactionType | null;
   onClose: () => void;
+  activeReaction?: ReactionType | null;
 }
 
-export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: ReactionPickerProps) {
+export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose, activeReaction }: ReactionPickerProps) {
+
   const [hoveredReaction, setHoveredReaction] = useState<ReactionType | null>(null);
   const [selectedReaction, setSelectedReaction] = useState<ReactionType | null>(null);
   const [burstParticles, setBurstParticles] = useState<{ reactionType: ReactionType; particles: BurstParticle[] } | null>(null);
