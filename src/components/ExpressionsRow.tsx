@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Plus, ChevronRight } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Plus, ChevronRight, ChevronLeft } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useCurrentUserAvatar } from '@/hooks/useCurrentUserAvatar';
 import { useFeedData } from '@/contexts/FeedDataContext';
@@ -10,7 +10,7 @@ import { CreatorStudio } from '@/components/creator';
 import { BrandIcon } from '@/components/brand';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
-const BATCH_SIZE = 5;
+const BATCH_SIZE = 8;
 const INITIAL_VISIBLE = 8;
 
 export function ExpressionsRow() {
@@ -22,11 +22,13 @@ export function ExpressionsRow() {
   const [viewerInitialIndex, setViewerInitialIndex] = useState(0);
   const [creatorOpen, setCreatorOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Reset visible count if expressions change significantly
   useEffect(() => {
-    setVisibleCount(Math.min(INITIAL_VISIBLE, expressions.length));
+    setVisibleCount(INITIAL_VISIBLE);
   }, [expressions.length]);
 
   // Hide navbar when expression viewer is open
@@ -39,10 +41,10 @@ export function ExpressionsRow() {
   }, [viewerOpen, hideNavbar, showNavbar]);
 
   const handleExpressionClick = (index: number) => {
-    setViewerInitialIndex(index);
+    const realIndex = expressions.length > 0 ? index % expressions.length : 0;
+    setViewerInitialIndex(realIndex);
     setViewerOpen(true);
-    // Mark expression as seen
-    const expression = expressions[index];
+    const expression = expressions[realIndex];
     if (expression) {
       markExpressionSeen(expression.id);
     }
@@ -52,21 +54,34 @@ export function ExpressionsRow() {
     setCreatorOpen(true);
   };
 
+  const updateScrollState = useCallback(() => {
+    if (!scrollRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+    setCanScrollLeft(scrollLeft > 8);
+    setCanScrollRight(scrollWidth - scrollLeft - clientWidth > 8);
+  }, []);
+
   const handleScroll = useCallback(() => {
     if (!scrollRef.current) return;
     const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-    if (scrollWidth - scrollLeft - clientWidth < 120) {
-      setVisibleCount(prev => Math.min(prev + BATCH_SIZE, expressions.length));
+    if (scrollWidth - scrollLeft - clientWidth < 200 && expressions.length > 0) {
+      setVisibleCount(prev => prev + BATCH_SIZE);
     }
-  }, [expressions.length]);
+    updateScrollState();
+  }, [expressions.length, updateScrollState]);
 
-  const scrollRight = useCallback(() => {
+  useEffect(() => {
+    updateScrollState();
+  }, [visibleCount, updateScrollState]);
+
+  const scrollBy = useCallback((delta: number) => {
     if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: 260, behavior: 'smooth' });
+      scrollRef.current.scrollBy({ left: delta, behavior: 'smooth' });
     }
   }, []);
 
-  const hasMore = visibleCount < expressions.length;
+  // Infinite scroll: cycle through the expressions list
+  const renderedCount = expressions.length > 0 ? visibleCount : 0;
 
   return (
     <>
@@ -90,7 +105,7 @@ export function ExpressionsRow() {
             >
               <div className="relative">
                 <Avatar
-                  className="h-20 w-20"
+                  className="h-16 w-16"
                   style={{ boxShadow: `0 0 0 2px ${themePrimary}` }}
                 >
                   <AvatarImage src={avatarUrl} alt={displayName} />
@@ -105,54 +120,72 @@ export function ExpressionsRow() {
                   <Plus className="h-3 w-3 text-white" strokeWidth={2.5} />
                 </div>
               </div>
-              <span className="text-caption text-white/55 truncate max-w-[80px]">your story</span>
+              <span className="text-caption text-white/55 truncate max-w-[72px]">Express Yourself</span>
             </motion.button>
 
-            {/* Expression Cards from FeedDataContext */}
-            {expressions.slice(0, visibleCount).map((expression, index) => (
-              <motion.button
-                key={expression.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: (index + 1) * 0.05, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => handleExpressionClick(index)}
-                className="flex-shrink-0 flex flex-col items-center gap-2"
-              >
-                <Avatar className="h-20 w-20 border border-white/[0.15]">
-                  <AvatarImage src={expression.userAvatar} alt={expression.userName} />
-                  <AvatarFallback className="bg-white/[0.06] text-white">
-                    {expression.userName.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-caption text-white/55 truncate max-w-[80px]">
-                  {expression.userName}
-                </span>
-              </motion.button>
-            ))}
-
-            {/* Loading indicator */}
-            {hasMore && (
-              <div className="flex-shrink-0 flex items-center justify-center w-20">
-                <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-              </div>
-            )}
+            {/* Expression Cards from FeedDataContext (cycled for infinite scroll) */}
+            {Array.from({ length: renderedCount }).map((_, index) => {
+              const expression = expressions[index % expressions.length];
+              return (
+                <motion.button
+                  key={`${expression.id}-${index}`}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: Math.min(index + 1, 8) * 0.04, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => handleExpressionClick(index)}
+                  className="flex-shrink-0 flex flex-col items-center gap-2"
+                >
+                  <Avatar className="h-16 w-16 border border-white/[0.15]">
+                    <AvatarImage src={expression.userAvatar} alt={expression.userName} />
+                    <AvatarFallback className="bg-white/[0.06] text-white">
+                      {expression.userName.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-caption text-white/55 truncate max-w-[72px]">
+                    {expression.userName}
+                  </span>
+                </motion.button>
+              );
+            })}
           </div>
         </div>
 
-        {/* Right scroll indicator */}
-        {hasMore && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.5 }}
-            onClick={scrollRight}
-            className="absolute right-2 top-12 -translate-y-1/2 w-8 h-8 flex items-center justify-center cursor-pointer text-white/90"
-          >
-            <BrandIcon icon={ChevronRight} size={16} />
-          </motion.button>
-        )}
+        {/* Scroll arrows — plain, no background */}
+        <AnimatePresence>
+          {canScrollLeft && (
+            <motion.button
+              key="left-arrow"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              onClick={() => scrollBy(-260)}
+              aria-label="Scroll left"
+              className="absolute left-1 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center cursor-pointer text-white/90"
+            >
+              <BrandIcon icon={ChevronLeft} size={18} />
+            </motion.button>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {canScrollRight && (
+            <motion.button
+              key="right-arrow"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              onClick={() => scrollBy(260)}
+              aria-label="Scroll right"
+              className="absolute right-1 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center cursor-pointer text-white/90"
+            >
+              <BrandIcon icon={ChevronRight} size={18} />
+            </motion.button>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Expression Viewer Modal */}
