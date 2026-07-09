@@ -979,7 +979,15 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
             <TileSlot tone="teal" icon={<Film className="h-5 w-5" />} label="GIF">
               <GifPicker onSelect={(g) => { handleGifSelect(g); setAddSheetOpen(false); }} />
             </TileSlot>
+            <Tile
+              tone="teal"
+              icon={<MusicIcon className="h-5 w-5" />}
+              label="Music"
+              active={!!state.music}
+              onClick={() => { setAddSheetOpen(false); setMusicPickerOpen(true); }}
+            />
           </div>
+
 
           {/* Social */}
           <p className="text-caption font-medium text-white/40 uppercase tracking-wider px-1 mb-3 mt-5">
