@@ -452,15 +452,12 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     if (nativeTouchHandledRef.current) return;
     if (longPressTimer.current) clearTimeout(longPressTimer.current);
     cleanupTouchTracking();
-    const selectedType = touchHoveredRef.current ?? touchHovered;
     const wasLongPressing = isLongPressingRef.current || isLongPressing;
-    if (wasLongPressing && selectedType) {
-      handleSelect(selectedType);
-    } else if (!wasLongPressing) {
+    if (!wasLongPressing) {
       handleQuickTap();
-    } else {
       setIsPickerOpen(false);
     }
+    // Long-press active → keep picker open for tap-to-select.
     isLongPressingRef.current = false;
     setIsLongPressing(false);
     touchHoveredRef.current = null;
@@ -468,6 +465,21 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     setTouchHovered(null);
     endTouchInteraction();
   };
+
+  const handleTouchCancel = (e: ReactTouchEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (nativeTouchHandledRef.current) return;
+    if (longPressTimer.current) clearTimeout(longPressTimer.current);
+    cleanupTouchTracking();
+    isLongPressingRef.current = false;
+    setIsLongPressing(false);
+    touchHoveredRef.current = null;
+    lastTouchPointRef.current = null;
+    setTouchHovered(null);
+    endTouchInteraction();
+  };
+
 
   const handleTouchCancel = (e: ReactTouchEvent<HTMLButtonElement>) => {
     e.preventDefault();
