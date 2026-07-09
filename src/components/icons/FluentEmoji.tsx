@@ -17,8 +17,13 @@ interface FluentEmojiProps {
 
 const LABELS: Record<ReactionType, string> = {
   like: 'Like',
-  relatable: 'Relatable',
+  care: 'Care',
+  laughing: 'Laughing',
+  surprise: 'Surprise',
+  sad: 'Sad',
+  angry: 'Angry',
   inspiring: 'Inspiring',
+  relatable: 'Relatable',
   support: 'Support',
   curious: 'Curious',
 };
@@ -226,6 +231,105 @@ export function FluentEmoji({ type, size = 28, className }: FluentEmojiProps) {
             stroke="#c47c00"
             strokeWidth="1"
           />
+        </Face>
+      );
+
+    case 'care':
+      // Yellow face hugging a red heart
+      return (
+        <Face
+          size={size}
+          className={className}
+          label={label}
+          gradientId="fe-care"
+          from="#ffe17a"
+          to="#f0a800"
+        >
+          <path d="M18 28q3 -4 6 0" stroke="#2b1700" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+          <path d="M40 28q3 -4 6 0" stroke="#2b1700" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+          <path d="M22 40q10 6 20 0" stroke="#2b1700" strokeWidth="3" fill="none" strokeLinecap="round" />
+          <path
+            d="M32 60s-14-7-14-17a7 7 0 0 1 14-4 7 7 0 0 1 14 4c0 10-14 17-14 17z"
+            fill="#e0245e"
+          />
+          <circle cx="10" cy="46" r="7" fill="#f0a800" />
+          <circle cx="54" cy="46" r="7" fill="#f0a800" />
+        </Face>
+      );
+
+    case 'laughing':
+      // Tears of joy
+      return (
+        <Face
+          size={size}
+          className={className}
+          label={label}
+          gradientId="fe-laugh"
+          from="#ffe17a"
+          to="#f0a800"
+        >
+          <path d="M18 28q4 -4 8 0" stroke="#2b1700" strokeWidth="2.8" fill="none" strokeLinecap="round" />
+          <path d="M38 28q4 -4 8 0" stroke="#2b1700" strokeWidth="2.8" fill="none" strokeLinecap="round" />
+          <path d="M18 40q14 14 28 0 q-14 4 -28 0z" fill="#2b1700" />
+          <path d="M22 42q10 10 20 0 z" fill="#ff5a5f" />
+          <path d="M14 34q-4 6 -2 12 q6 -2 8 -6z" fill="#3fb0ff" opacity="0.9" />
+          <path d="M50 34q4 6 2 12 q-6 -2 -8 -6z" fill="#3fb0ff" opacity="0.9" />
+        </Face>
+      );
+
+    case 'surprise':
+      // Wow face — wide eyes, O mouth
+      return (
+        <Face
+          size={size}
+          className={className}
+          label={label}
+          gradientId="fe-surp"
+          from="#ffe17a"
+          to="#f0a800"
+        >
+          <circle cx="23" cy="28" r="3.2" fill="#2b1700" />
+          <circle cx="41" cy="28" r="3.2" fill="#2b1700" />
+          <path d="M14 22q6 -6 14 -3" stroke="#2b1700" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+          <path d="M36 19q8 -3 14 3" stroke="#2b1700" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+          <ellipse cx="32" cy="46" rx="6" ry="8" fill="#2b1700" />
+        </Face>
+      );
+
+    case 'sad':
+      // Blue face with tear
+      return (
+        <Face
+          size={size}
+          className={className}
+          label={label}
+          gradientId="fe-sad"
+          from="#ffe17a"
+          to="#f0a800"
+        >
+          <path d="M18 28q4 -4 8 0" stroke="#2b1700" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+          <path d="M38 28q4 -4 8 0" stroke="#2b1700" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+          <path d="M22 46q10 -8 20 0" stroke="#2b1700" strokeWidth="3" fill="none" strokeLinecap="round" />
+          <path d="M22 32 q0 10 4 12 q4 -2 4 -12 z" fill="#3fb0ff" />
+        </Face>
+      );
+
+    case 'angry':
+      // Red face with furrowed brow
+      return (
+        <Face
+          size={size}
+          className={className}
+          label={label}
+          gradientId="fe-ang"
+          from="#ff8a5c"
+          to="#c81f1f"
+        >
+          <path d="M14 24 L28 30" stroke="#2b1700" strokeWidth="3" strokeLinecap="round" />
+          <path d="M50 24 L36 30" stroke="#2b1700" strokeWidth="3" strokeLinecap="round" />
+          <circle cx="24" cy="34" r="2.4" fill="#2b1700" />
+          <circle cx="40" cy="34" r="2.4" fill="#2b1700" />
+          <path d="M20 48q12 -8 24 0" stroke="#2b1700" strokeWidth="3.2" fill="none" strokeLinecap="round" />
         </Face>
       );
 
