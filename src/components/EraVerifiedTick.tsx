@@ -8,7 +8,7 @@ const OWNER_EMAIL = 'martinbell@nefera.com.au';
 
 interface EraVerifiedTickProps {
   className?: string;
-  size?: 'sm' | 'md';
+  size?: 'xs' | 'sm' | 'md';
   tier?: VerificationTier;
   /** Number of paid subscribers for automatic tier calculation */
   subscriberCount?: number;
@@ -19,6 +19,7 @@ interface EraVerifiedTickProps {
 }
 
 const sizeClasses = {
+  xs: 'h-3.5 w-3.5',
   sm: 'h-5 w-5',
   md: 'h-7 w-7',
 };
