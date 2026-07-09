@@ -4,12 +4,13 @@ import { cn } from '@/lib/utils';
 interface HashtagProps {
   tag: string;
   className?: string;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   showHash?: boolean;
   animated?: boolean;
 }
 
 const sizeClasses = {
+  xs: 'text-caption',
   sm: 'text-label',
   md: 'text-body',
   lg: 'text-title',
@@ -44,7 +45,7 @@ export function Hashtag({
 interface HashtagListProps {
   tags: string[];
   className?: string;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   limit?: number;
 }
 

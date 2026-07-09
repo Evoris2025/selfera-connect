@@ -352,7 +352,7 @@ function PostCardBase(props: PostCardProps) {
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         className="px-4 py-5 border-b border-border/50"
       >
-        <div className="flex items-start gap-3 mb-3">
+        <div className="flex items-start gap-2 mb-3">
           <motion.button
             onClick={handleCreatorClick}
             whileHover={{ scale: 1.05 }}
@@ -363,29 +363,29 @@ function PostCardBase(props: PostCardProps) {
               src={author.avatar}
               alt={author.name}
               fallback={author.name.charAt(0)}
-              size="md"
+              size="xs"
               ring="muted"
             />
           </motion.button>
 
           <div className="flex-1 min-w-0">
             <button onClick={handleCreatorClick} className="text-left hover:underline">
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="font-semibold text-foreground text-body">{author.name}</span>
+              <div className="flex items-center gap-1 flex-wrap">
+                <span className="font-semibold text-foreground text-label">{author.name}</span>
                 {author.isVerified && (
-                  <EraVerifiedTooltip tier={calculateVerificationTier(0, false, author.email)} userEmail={author.email} size="sm" />
+                  <EraVerifiedTooltip tier={calculateVerificationTier(0, false, author.email)} userEmail={author.email} size="xs" />
                 )}
                 {author.accountType && <AccountTypeBadge type={author.accountType} size="sm" />}
               </div>
-              <p className="text-muted-foreground text-body">@{author.handle} · {createdAt}</p>
+              <p className="text-muted-foreground text-caption">@{author.handle} · {createdAt}</p>
             </button>
             {bylineExtras}
           </div>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground flex-shrink-0">
-                <MoreHorizontal className="h-4 w-4" />
+              <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground flex-shrink-0">
+                <MoreHorizontal className="h-3.5 w-3.5" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="glass-card">
@@ -420,7 +420,7 @@ function PostCardBase(props: PostCardProps) {
           <>
             {content && (
               <button onClick={handlePostContentClick} className="text-left w-full">
-                <p className="text-body text-foreground leading-relaxed mb-3">{renderContent(content)}</p>
+                <p className="text-label text-foreground leading-snug mb-3">{renderContent(content)}</p>
               </button>
             )}
             {pollBlock}
@@ -429,7 +429,7 @@ function PostCardBase(props: PostCardProps) {
           <>
             {content && (
               <button onClick={handlePostContentClick} className="text-left w-full">
-                <p className="text-body text-foreground leading-relaxed mb-3">{renderContent(content)}</p>
+                <p className="text-label text-foreground leading-snug mb-3">{renderContent(content)}</p>
               </button>
             )}
             {linkPreviewBlock}
@@ -438,14 +438,14 @@ function PostCardBase(props: PostCardProps) {
           backgroundBlock
         ) : (
           <button onClick={handlePostContentClick} className="text-left w-full">
-            <p className="text-body text-foreground leading-relaxed mb-3">{renderContent(content)}</p>
+            <p className="text-label text-foreground leading-snug mb-3">{renderContent(content)}</p>
           </button>
         )}
 
         {tags.length > 0 && !content.includes('#') && (
-          <div className="mt-1 mb-1 text-label leading-relaxed space-x-1.5">
+          <div className="mt-1 mb-1 text-caption leading-relaxed space-x-1.5">
             {tags.map((tag) => (
-              <Hashtag key={tag} tag={tag} size="sm" />
+              <Hashtag key={tag} tag={tag} size="xs" />
             ))}
           </div>
         )}
