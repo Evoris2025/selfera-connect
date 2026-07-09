@@ -199,7 +199,9 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose, act
                   />
                 )}
               </motion.button>
-            ))}
+              );
+            })}
+
           </div>
         </motion.div>
       )}
