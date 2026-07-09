@@ -67,9 +67,16 @@ const saveHiddenProfiles = (ids: Set<string>) => {
 export function DiscoverRow() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [profiles, setProfiles] = useState<SuggestedProfile[]>([]);
+  // Seed with mock profiles synchronously so the row feels instant across every
+  // viewport (no skeleton flash on desktop/tablet where the initial fetch is
+  // more noticeable). Real profiles hydrate in the background and swap in.
+  const [profiles, setProfiles] = useState<SuggestedProfile[]>(() => {
+    const hidden = loadHiddenProfiles();
+    const available = mockProfiles.filter(p => !hidden.has(p.id));
+    return (available.length ? available : mockProfiles).slice(0, VISIBLE_COUNT);
+  });
   const [hiddenProfiles, setHiddenProfiles] = useState<Set<string>>(loadHiddenProfiles);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [offset, setOffset] = useState(0);
@@ -82,19 +89,22 @@ export function DiscoverRow() {
     fetchProfiles(true);
   }, [user]);
 
+
   const fetchProfiles = async (isInitial = false) => {
     if (loadingMore && !isInitial) return;
-    
+
     try {
       if (isInitial) {
-        setLoading(true);
+        // Do NOT flip `loading` on initial fetch — profiles are pre-seeded from
+        // mocks so the skeleton would only cause a flash on tablet/desktop.
         setOffset(0);
       } else {
         setLoadingMore(true);
       }
-      
+
       const hidden = loadHiddenProfiles();
       const currentOffset = isInitial ? 0 : offset;
+
       
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
@@ -256,19 +266,28 @@ export function DiscoverRow() {
   }, [user, pendingFollows, dismissProfile]);
 
   if (loading) {
+    // Skeleton mirrors the real horizontally scrollable card row so it can never
+    // spill past its parent on tablet/desktop where widths are larger. Cards
+    // stay `flex-shrink-0` inside an `overflow-x-auto` track — identical
+    // constraints to the loaded state.
     return (
-      <div className="py-5 px-4">
-        <div className="flex items-center justify-between mb-4">
-          <div className="h-4 w-32 bg-muted rounded animate-pulse" />
+      <div className="py-5">
+        <div className="flex items-center justify-between mb-4 px-4">
+          <div className="h-4 w-32 max-w-full bg-muted rounded animate-pulse" />
         </div>
-        <div className="flex gap-3">
-          {[1, 2, 3].map(i => (
-            <div key={i} className="flex-shrink-0 w-40 h-44 bg-muted/50 rounded-2xl animate-pulse" />
+        <div className="flex gap-3 overflow-x-auto scrollbar-hide -mx-4 pl-4 pr-10">
+          {[1, 2, 3, 4].map(i => (
+            <div
+              key={i}
+              className="flex-shrink-0 w-44 h-44 bg-muted/50 rounded-2xl animate-pulse"
+            />
           ))}
         </div>
       </div>
     );
   }
+
+
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="py-5">
