@@ -93,9 +93,12 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose, act
           <div className="flex items-center gap-0 px-1.5 py-1 min-h-[38px] bg-card/95 backdrop-blur-2xl rounded-full shadow-[0_8px_32px_-6px_rgba(0,0,0,0.5),0_2px_4px_rgba(0,0,0,0.3)] ring-1 ring-white/10 border border-border/40 select-none touch-manipulation overflow-visible">
 
 
-            {reactions.map((reaction, index) => (
+            {reactions.map((reaction, index) => {
+              const isActive = (activeReaction ?? hoveredReaction) === reaction.type;
+              return (
               <motion.button
                 key={reaction.type}
+                data-reaction={reaction.type}
                 initial={{ opacity: 0, scale: 0, y: 10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ 
@@ -122,7 +125,7 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose, act
                 <span
                   className={cn(
                     'block reaction-emoji',
-                    hoveredReaction === reaction.type && 'reaction-hovered',
+                    isActive && 'reaction-hovered',
                     selectedReaction === reaction.type && 'reaction-pop'
                   )}
                 >
@@ -133,7 +136,7 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose, act
 
                 {/* Tooltip — sits well above the scaled-up emoji head */}
                 <AnimatePresence>
-                  {hoveredReaction === reaction.type && (
+                  {isActive && (
                     <motion.div
                       initial={{ opacity: 0, y: 6 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -149,6 +152,7 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose, act
                     </motion.div>
                   )}
                 </AnimatePresence>
+
 
 
                 {/* Particle burst on selection */}
