@@ -243,6 +243,7 @@ const DEFAULT_STATE: ComposerState = {
   fundraiser: null,
   linkPreview: null,
   crossPost: { alsoShareAsExpression: false, alsoShareAsPost: false },
+  music: null,
 };
 
 // ---- Component --------------------------------------------------------------
