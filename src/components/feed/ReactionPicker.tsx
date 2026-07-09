@@ -229,14 +229,47 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
   const suppressClickRef = useRef(false);
   const isLongPressingRef = useRef(false);
   const touchHoveredRef = useRef<ReactionType | null>(null);
+  const lastTouchPointRef = useRef<{ x: number; y: number } | null>(null);
   const nativeTouchHandledRef = useRef(false);
   const cleanupTouchTrackingRef = useRef<(() => void) | null>(null);
   const buttonControls = useAnimationControls();
 
   const updateTouchHoveredFromPoint = useCallback((x: number, y: number) => {
-    const el = document.elementFromPoint(x, y) as HTMLElement | null;
-    const target = el?.closest('[data-reaction]') as HTMLElement | null;
-    const type = target?.getAttribute('data-reaction') as ReactionType | null;
+    const reactionButtons = Array.from(document.querySelectorAll<HTMLElement>('[data-reaction]'));
+    let type: ReactionType | null = null;
+
+    if (reactionButtons.length > 0) {
+      const trayBounds = reactionButtons.reduce(
+        (acc, button) => {
+          const rect = button.getBoundingClientRect();
+          return {
+            left: Math.min(acc.left, rect.left),
+            right: Math.max(acc.right, rect.right),
+            top: Math.min(acc.top, rect.top),
+            bottom: Math.max(acc.bottom, rect.bottom),
+          };
+        },
+        { left: Infinity, right: -Infinity, top: Infinity, bottom: -Infinity }
+      );
+
+      const insideScrubBand =
+        x >= trayBounds.left - 28 &&
+        x <= trayBounds.right + 28 &&
+        y >= trayBounds.top - 72 &&
+        y <= trayBounds.bottom + 132;
+
+      if (insideScrubBand) {
+        const nearest = reactionButtons.reduce<{ button: HTMLElement; distance: number } | null>((closest, button) => {
+          const rect = button.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const distance = Math.abs(centerX - x);
+          return !closest || distance < closest.distance ? { button, distance } : closest;
+        }, null);
+
+        type = nearest?.button.getAttribute('data-reaction') as ReactionType | null;
+      }
+    }
+
     const nextType = type ?? null;
 
     touchHoveredRef.current = nextType;
@@ -292,6 +325,8 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     cleanupTouchTracking();
     isLongPressingRef.current = false;
     touchHoveredRef.current = null;
+    const initialTouch = e.touches[0];
+    lastTouchPointRef.current = initialTouch ? { x: initialTouch.clientX, y: initialTouch.clientY } : null;
     setTouchHovered(null);
 
     const handleTrackedTouchMove = (event: TouchEvent) => {
@@ -299,6 +334,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
       event.stopPropagation();
       const touch = event.touches[0];
       if (!touch || !isLongPressingRef.current) return;
+      lastTouchPointRef.current = { x: touch.clientX, y: touch.clientY };
       updateTouchHoveredFromPoint(touch.clientX, touch.clientY);
     };
 
@@ -328,6 +364,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
       isLongPressingRef.current = false;
       setIsLongPressing(false);
       touchHoveredRef.current = null;
+      lastTouchPointRef.current = null;
       setTouchHovered(null);
       endTouchInteraction();
     };
@@ -345,6 +382,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
       isLongPressingRef.current = false;
       setIsLongPressing(false);
       touchHoveredRef.current = null;
+      lastTouchPointRef.current = null;
       setTouchHovered(null);
       setIsPickerOpen(false);
       endTouchInteraction();
@@ -364,6 +402,14 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
       isLongPressingRef.current = true;
       setIsLongPressing(true);
       setIsPickerOpen(true);
+      if (lastTouchPointRef.current) {
+        requestAnimationFrame(() => {
+          const point = lastTouchPointRef.current;
+          if (point && isLongPressingRef.current) {
+            updateTouchHoveredFromPoint(point.x, point.y);
+          }
+        });
+      }
       if (navigator.vibrate) navigator.vibrate(10);
     }, 400);
   };
@@ -382,6 +428,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     if (!isLongPressing) return;
     const touch = e.touches[0];
     if (!touch) return;
+    lastTouchPointRef.current = { x: touch.clientX, y: touch.clientY };
     updateTouchHoveredFromPoint(touch.clientX, touch.clientY);
   };
 
@@ -403,6 +450,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     isLongPressingRef.current = false;
     setIsLongPressing(false);
     touchHoveredRef.current = null;
+    lastTouchPointRef.current = null;
     setTouchHovered(null);
     endTouchInteraction();
   };
@@ -416,6 +464,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     isLongPressingRef.current = false;
     setIsLongPressing(false);
     touchHoveredRef.current = null;
+    lastTouchPointRef.current = null;
     setTouchHovered(null);
     setIsPickerOpen(false);
     endTouchInteraction();
