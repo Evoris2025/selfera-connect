@@ -119,13 +119,14 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
               >
                 <span
                   className={cn(
-                    'block origin-bottom',
+                    'block reaction-emoji',
                     hoveredReaction === reaction.type && 'reaction-hovered',
                     selectedReaction === reaction.type && 'reaction-pop'
                   )}
                 >
                   <FluentEmoji type={reaction.type} size={28} />
                 </span>
+
 
 
                 {/* Tooltip */}
