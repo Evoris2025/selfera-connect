@@ -124,7 +124,7 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
                     selectedReaction === reaction.type && 'reaction-pop'
                   )}
                 >
-                  <FluentEmoji type={reaction.type} size={28} />
+                  <FluentEmoji type={reaction.type} size={36} />
                 </span>
 
 
