@@ -317,7 +317,7 @@ export function DiscoverRow() {
           <div
             ref={scrollRef}
             onScroll={handleScroll}
-            className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory rail-fade-right -mx-4 pl-4 pr-10"
+            className="flex gap-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory rail-fade-right -mx-4 pl-4 pr-10"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {profiles.map((profile) => {
@@ -336,34 +336,35 @@ export function DiscoverRow() {
                   <GlassCard
                     variant="card"
                     hover
-                    className="w-44 p-4 flex flex-col items-center text-center"
+                    className="w-24 p-2 flex flex-col items-center text-center"
                   >
                     <div 
-                      className="mb-3 cursor-pointer"
+                      className="mb-1.5 cursor-pointer"
                       onClick={() => navigate(`/profile/${profile.handle || profile.id}`)}
                     >
                       <CinematicAvatar
                         src={profile.avatar_url || ''}
                         alt={profile.display_name || ''}
                         fallback={(profile.display_name || 'U').charAt(0)}
-                        size="lg"
+                        size="sm"
                         ring="gradient"
                         interactive
                       />
                     </div>
 
-                    <div className="flex items-center justify-center gap-1 mb-0.5 w-full">
-                      <p className="text-body font-semibold text-foreground truncate">
+                    <div className="flex items-center justify-center gap-0.5 mb-0.5 w-full">
+                      <p className="text-caption font-semibold text-foreground truncate">
                         {profile.display_name || 'User'}
                       </p>
                       {profile.is_verified && (
-                        <EraVerifiedTick size="sm" userEmail={profile.email || undefined} />
+                        <EraVerifiedTick size="xs" userEmail={profile.email || undefined} />
                       )}
                     </div>
                     
-                    <p className="text-label text-muted-foreground truncate w-full mb-3">
+                    <p className="text-[10px] text-muted-foreground truncate w-full mb-1.5">
                       @{profile.handle || 'user'}
                     </p>
+
 
                     <motion.div
                       animate={isPending ? {
