@@ -133,15 +133,17 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
                 <AnimatePresence>
                   {hoveredReaction === reaction.type && (
                     <motion.div
-                      initial={{ opacity: 0, y: 6, scale: 0.9 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 4, scale: 0.95 }}
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 4 }}
                       transition={springTransitions.snappy}
-                      className="absolute -top-11 left-1/2 -translate-x-1/2 px-2.5 py-1 bg-foreground text-background text-label font-semibold rounded-md whitespace-nowrap shadow-lg z-50 pointer-events-none"
+                      className="absolute -top-11 left-1/2 z-50 pointer-events-none"
                     >
-                      {reaction.label}
-                      {/* Tooltip arrow */}
-                      <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px w-0 h-0 border-l-[3px] border-r-[3px] border-t-[3px] border-l-transparent border-r-transparent border-t-foreground" />
+                      <div className="relative -translate-x-1/2 px-2.5 py-1 bg-foreground text-background text-label font-semibold rounded-md whitespace-nowrap shadow-lg">
+                        {reaction.label}
+                        {/* Tooltip arrow */}
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px w-0 h-0 border-l-[3px] border-r-[3px] border-t-[3px] border-l-transparent border-r-transparent border-t-foreground" />
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
