@@ -1090,6 +1090,14 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
       </Sheet>
 
 
+      {/* Music picker */}
+      <MusicPicker
+        open={musicPickerOpen}
+        onOpenChange={setMusicPickerOpen}
+        initialTrackId={state.music?.id ?? null}
+        onSelect={(track) => update({ music: track })}
+      />
+
       {/* Hidden file inputs */}
       <input
         ref={photoInputRef}
