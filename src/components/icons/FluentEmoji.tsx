@@ -18,22 +18,21 @@ const CDN =
   'https://cdn.jsdelivr.net/gh/Tarikul-Islam-Anik/Animated-Fluent-Emojis@master/Emojis';
 
 const SOURCES: Record<ReactionType, { src: string; label: string }> = {
-  // Like → throbbing heart
-  like:      { src: `${CDN}/Smilies/Beating%20Heart.png`, label: 'Like' },
+  // Like → clean red heart (pulses via our CSS; no "beat" sonar lines)
+  like:      { src: `${CDN}/Symbols/Red%20Heart.png`, label: 'Like' },
   // Care → smiling face with hearts orbiting
   care:      { src: `${CDN}/Smilies/Smiling%20Face%20with%20Hearts.png`, label: 'Care' },
-  // Laughing → tears of joy, tears streaming
-  laughing:  { src: `${CDN}/Smilies/Face%20with%20Tears%20of%20Joy.png`, label: 'Laughing' },
-  // Surprise → jaw-drop / exploding head
-  surprise:  { src: `${CDN}/Smilies/Exploding%20Head.png`, label: 'Wow' },
-  // Sad → loudly crying, actual tears animating out of the eyes
+  // Laughing → rolling on the floor laughing (more expressive & modern than tears-of-joy)
+  laughing:  { src: `${CDN}/Smilies/Rolling%20on%20the%20Floor%20Laughing.png`, label: 'Laughing' },
+  // Surprise → astonished face (full jaw-drop head, not half like exploding head)
+  surprise:  { src: `${CDN}/Smilies/Astonished%20Face.png`, label: 'Wow' },
+  // Sad → loudly crying, tears streaming
   sad:       { src: `${CDN}/Smilies/Loudly%20Crying%20Face.png`, label: 'Sad' },
-  // Angry → face pulses yellow → red, brows furrow
-  angry:     { src: `${CDN}/Smilies/Angry%20Face.png`, label: 'Angry' },
-  // Inspiring → star-struck, stars twinkling on the face
+  // Angry → enraged pouting face (fully red, steam)
+  angry:     { src: `${CDN}/Smilies/Pouting%20Face.png`, label: 'Angry' },
+  // Inspiring → star-struck, stars twinkling
   inspiring: { src: `${CDN}/Smilies/Star-Struck.png`, label: 'Inspiring' },
-  // Relatable → "me too / same here" raising hand (replaces the weary face,
-  // which read as sad/tired rather than relatable).
+  // Relatable → hand raise, "same / me too"
   relatable: { src: `${CDN}/People/Person%20Raising%20Hand.png`, label: 'Relatable' },
 
   // Legacy fallbacks (kept for older stored reactions)
