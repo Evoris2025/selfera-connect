@@ -372,7 +372,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     // Ignore the synthetic click that fires after touch
     setTimeout(() => {
       suppressClickRef.current = false;
-    }, 0);
+    }, 350);
   };
 
   const handleTouchMove = (e: ReactTouchEvent<HTMLButtonElement>) => {
@@ -395,7 +395,7 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
     const wasLongPressing = isLongPressingRef.current || isLongPressing;
     if (wasLongPressing && selectedType) {
       handleSelect(selectedType);
-    } else if (!isLongPressing) {
+    } else if (!wasLongPressing) {
       handleQuickTap();
     } else {
       setIsPickerOpen(false);
