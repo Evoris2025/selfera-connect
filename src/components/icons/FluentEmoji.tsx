@@ -4,6 +4,9 @@ interface FluentEmojiProps {
   type: ReactionType;
   size?: number;
   className?: string;
+  /** Render a static PNG instead of the looping APNG. Useful for inline
+   *  counters where motion is distracting. */
+  static?: boolean;
 }
 
 /**
@@ -17,35 +20,44 @@ interface FluentEmojiProps {
 const CDN =
   'https://cdn.jsdelivr.net/gh/Tarikul-Islam-Anik/Animated-Fluent-Emojis@master/Emojis';
 
-const SOURCES: Record<ReactionType, { src: string; label: string }> = {
+/**
+ * Static Fluent Emoji fallback (Microsoft Fluent PNG set).
+ * Used for the compact reaction counter so the selected emoji stays still.
+ *
+ * Source: github.com/bignutty/fluent-emoji (static, unicode-named PNGs)
+ */
+const STATIC_CDN =
+  'https://cdn.jsdelivr.net/gh/bignutty/fluent-emoji@main/static';
+
+const SOURCES: Record<ReactionType, { animated: string; static: string; label: string }> = {
   // Like → clean red heart (pulses via our CSS; no "beat" sonar lines)
-  like:      { src: `${CDN}/Smilies/Red%20Heart.png`, label: 'Like' },
+  like:      { animated: `${CDN}/Smilies/Red%20Heart.png`, static: `${STATIC_CDN}/2764-fe0f.png`, label: 'Like' },
   // Care → smiling face with hearts orbiting
-  care:      { src: `${CDN}/Smilies/Smiling%20Face%20with%20Hearts.png`, label: 'Care' },
+  care:      { animated: `${CDN}/Smilies/Smiling%20Face%20with%20Hearts.png`, static: `${STATIC_CDN}/1f970.png`, label: 'Care' },
   // Laughing → rolling on the floor laughing (more expressive & modern than tears-of-joy)
-  laughing:  { src: `${CDN}/Smilies/Rolling%20on%20the%20Floor%20Laughing.png`, label: 'Laughing' },
+  laughing:  { animated: `${CDN}/Smilies/Rolling%20on%20the%20Floor%20Laughing.png`, static: `${STATIC_CDN}/1f923.png`, label: 'Laughing' },
   // Surprise → astonished face (full jaw-drop head, not half like exploding head)
-  surprise:  { src: `${CDN}/Smilies/Astonished%20Face.png`, label: 'Wow' },
+  surprise:  { animated: `${CDN}/Smilies/Astonished%20Face.png`, static: `${STATIC_CDN}/1f632.png`, label: 'Wow' },
   // Sad → single teardrop, calmer expression
-  sad:       { src: `${CDN}/Smilies/Crying%20Face.png`, label: 'Sad' },
+  sad:       { animated: `${CDN}/Smilies/Crying%20Face.png`, static: `${STATIC_CDN}/1f622.png`, label: 'Sad' },
   // Angry → enraged face (fully red, steam from nose)
-  angry:     { src: `${CDN}/Smilies/Enraged%20Face.png`, label: 'Angry' },
+  angry:     { animated: `${CDN}/Smilies/Enraged%20Face.png`, static: `${STATIC_CDN}/1f621.png`, label: 'Angry' },
   // Inspiring → star-struck, stars twinkling
-  inspiring: { src: `${CDN}/Smilies/Star-Struck.png`, label: 'Inspiring' },
+  inspiring: { animated: `${CDN}/Smilies/Star-Struck.png`, static: `${STATIC_CDN}/1f929.png`, label: 'Inspiring' },
   // Relatable → two hearts, "same / me too"
-  relatable: { src: `${CDN}/Smilies/Two%20Hearts.png`, label: 'Relatable' },
+  relatable: { animated: `${CDN}/Smilies/Two%20Hearts.png`, static: `${STATIC_CDN}/1f495.png`, label: 'Relatable' },
 
   // Legacy fallbacks (kept for older stored reactions)
-  support:   { src: `${CDN}/Hand%20gestures/Folded%20Hands.png`, label: 'Support' },
-  curious:   { src: `${CDN}/Smilies/Thinking%20Face.png`, label: 'Curious' },
+  support:   { animated: `${CDN}/Hand%20gestures/Folded%20Hands.png`, static: `${STATIC_CDN}/1f64f.png`, label: 'Support' },
+  curious:   { animated: `${CDN}/Smilies/Thinking%20Face.png`, static: `${STATIC_CDN}/1f914.png`, label: 'Curious' },
 };
 
-export function FluentEmoji({ type, size = 28, className }: FluentEmojiProps) {
+export function FluentEmoji({ type, size = 28, className, static: isStatic }: FluentEmojiProps) {
   const entry = SOURCES[type];
   if (!entry) return null;
   return (
     <img
-      src={entry.src}
+      src={isStatic ? entry.static : entry.animated}
       alt={entry.label}
       width={size}
       height={size}
