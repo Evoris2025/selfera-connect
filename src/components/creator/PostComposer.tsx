@@ -770,6 +770,19 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           </div>
         )}
 
+        {/* Music badge */}
+        {state.music && (
+          <div className="mt-3">
+            <MusicBadge
+              track={state.music}
+              onClick={() => setMusicPickerOpen(true)}
+              onRemove={() => update({ music: null })}
+            />
+          </div>
+        )}
+
+
+
         {/* Media previews */}
         {state.mediaPreviewUrls.length > 0 && (
           state.mediaPreviewUrls.length === 1 ? (
