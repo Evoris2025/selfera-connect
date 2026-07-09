@@ -428,7 +428,7 @@ export function DiscoverRow() {
             
             {/* Loading indicator */}
             {loadingMore && (
-              <div className="flex-shrink-0 w-40 h-44 flex items-center justify-center">
+              <div className="flex-shrink-0 w-24 h-36 flex items-center justify-center">
                 <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
               </div>
             )}
