@@ -62,6 +62,8 @@ export function FluentEmoji({ type, size = 28, className }: FluentEmojiProps) {
         height: `${size}px`,
         minWidth: `${size}px`,
         minHeight: `${size}px`,
+        // Tint the two-hearts emoji fully green while keeping the rest untouched.
+        filter: type === 'relatable' ? 'sepia(1) saturate(3) hue-rotate(90deg) brightness(0.95)' : undefined,
       }}
     />
   );

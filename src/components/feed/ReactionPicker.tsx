@@ -31,13 +31,13 @@ interface Reaction {
 
 const reactions: Reaction[] = [
   { type: 'like', label: 'Like', color: 'hsl(0, 75%, 60%)' },
+  { type: 'relatable', label: 'Relatable', color: 'hsl(145, 70%, 45%)' },
   { type: 'care', label: 'Care', color: 'hsl(15, 90%, 60%)' },
   { type: 'laughing', label: 'Laughing', color: 'hsl(48, 95%, 55%)' },
   { type: 'surprise', label: 'Surprise', color: 'hsl(48, 95%, 55%)' },
+  { type: 'inspiring', label: 'Inspiring', color: 'hsl(45, 90%, 55%)' },
   { type: 'sad', label: 'Sad', color: 'hsl(210, 80%, 60%)' },
   { type: 'angry', label: 'Angry', color: 'hsl(10, 85%, 55%)' },
-  { type: 'inspiring', label: 'Inspiring', color: 'hsl(45, 90%, 55%)' },
-  { type: 'relatable', label: 'Relatable', color: 'hsl(200, 80%, 55%)' },
 ];
 
 
