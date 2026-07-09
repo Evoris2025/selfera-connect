@@ -86,9 +86,9 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
           // pb-3 creates a solid invisible bridge between the tray and the Like
           // button below so the cursor never leaves the shared hover boundary
           // while moving from button → tray.
-          className="absolute bottom-full left-0 z-[60] pb-3 pt-3 pr-6 pointer-events-auto"
+          className="absolute bottom-full left-0 z-[60] pb-2 pt-2 pr-4 pointer-events-auto"
         >
-          <div className="flex items-center gap-1 px-2.5 py-2 min-h-[52px] bg-card/95 backdrop-blur-2xl rounded-full shadow-[0_10px_40px_-8px_rgba(0,0,0,0.55),0_2px_6px_rgba(0,0,0,0.35)] ring-1 ring-white/10 border border-border/40 select-none touch-manipulation">
+          <div className="flex items-center gap-0.5 px-2 py-1.5 min-h-[42px] bg-card/95 backdrop-blur-2xl rounded-full shadow-[0_8px_32px_-6px_rgba(0,0,0,0.5),0_2px_4px_rgba(0,0,0,0.3)] ring-1 ring-white/10 border border-border/40 select-none touch-manipulation">
 
             {reactions.map((reaction, index) => (
               <motion.button
@@ -112,19 +112,19 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
                 onMouseEnter={() => setHoveredReaction(reaction.type)}
                 onMouseLeave={() => setHoveredReaction(null)}
                 className={cn(
-                  'relative p-2 rounded-full transition-colors',
+                  'relative p-1.5 rounded-full transition-colors',
                   currentReaction === reaction.type && 'bg-white/[0.1]'
                 )}
               >
                 <motion.div
                   animate={{
                     scale: selectedReaction === reaction.type 
-                      ? [1, 1.6, 0.9, 1.3, 1]
-                      : hoveredReaction === reaction.type ? 1.4 : 1,
-                    y: hoveredReaction === reaction.type ? -8 : 0,
+                      ? [1, 1.45, 0.9, 1.15, 1]
+                      : hoveredReaction === reaction.type ? 1.25 : 1,
+                    y: hoveredReaction === reaction.type ? -5 : 0,
                     rotate: selectedReaction === reaction.type 
-                      ? [0, -15, 15, -10, 10, -5, 5, 0]
-                      : hoveredReaction === reaction.type ? [0, -8, 8, -4, 4, 0] : 0,
+                      ? [0, -12, 12, -8, 8, -4, 4, 0]
+                      : hoveredReaction === reaction.type ? [0, -6, 6, -3, 3, 0] : 0,
                   }}
                   transition={selectedReaction === reaction.type 
                     ? { duration: 0.4, times: [0, 0.2, 0.4, 0.6, 1] }
@@ -134,7 +134,7 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
                   }
                   className="block"
                 >
-                  <FluentEmoji type={reaction.type} size={36} />
+                  <FluentEmoji type={reaction.type} size={24} />
                 </motion.div>
 
                 {/* Tooltip */}
@@ -145,11 +145,11 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 5, scale: 0.95 }}
                       transition={springTransitions.snappy}
-                      className="absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 bg-foreground text-background text-label font-semibold rounded-md whitespace-nowrap shadow-lg"
+                      className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-foreground text-background text-label font-semibold rounded-md whitespace-nowrap shadow-lg"
                     >
                       {reaction.label}
                       {/* Tooltip arrow */}
-                      <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-foreground" />
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px w-0 h-0 border-l-[3px] border-r-[3px] border-t-[3px] border-l-transparent border-r-transparent border-t-foreground" />
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -173,14 +173,14 @@ export function ReactionPicker({ isOpen, onSelect, currentReaction, onClose }: R
                             delay: particle.delay,
                             ease: [0.25, 0.46, 0.45, 0.94] 
                           }}
-                          className="absolute left-1/2 top-1/2 w-2 h-2 -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none"
+                          className="absolute left-1/2 top-1/2 w-1.5 h-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none"
                           style={{ backgroundColor: particle.color || reaction.color }}
                         />
                       ))}
                       {/* Ring burst */}
                       <motion.div
                         initial={{ scale: 0.5, opacity: 0.9 }}
-                        animate={{ scale: 2.5, opacity: 0 }}
+                        animate={{ scale: 2, opacity: 0 }}
                         transition={{ duration: 0.4, ease: 'easeOut' }}
                         className="absolute inset-0 rounded-full border-2 pointer-events-none"
                         style={{ borderColor: reaction.color }}
