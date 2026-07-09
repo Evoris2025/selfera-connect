@@ -38,7 +38,17 @@ export function FluentEmoji({ type, size = 28, className }: FluentEmojiProps) {
       draggable={false}
       loading="eager"
       className={`select-none pointer-events-none drop-shadow-md ${className ?? ''}`}
-      style={{ display: 'inline-block' }}
+      // Explicit width/height are required because Tailwind Preflight sets
+      // `img { height: auto; max-width: 100% }`, which overrides the HTML
+      // width/height attributes and collapses the emoji to 0×0 inside a
+      // shrink-to-fit button.
+      style={{
+        display: 'inline-block',
+        width: `${size}px`,
+        height: `${size}px`,
+        minWidth: `${size}px`,
+        minHeight: `${size}px`,
+      }}
     />
   );
 }
