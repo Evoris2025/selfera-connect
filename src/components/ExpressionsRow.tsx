@@ -120,7 +120,7 @@ export function ExpressionsRow() {
                   <Plus className="h-3 w-3 text-white" strokeWidth={2.5} />
                 </div>
               </div>
-              <span className="text-caption text-white/55 truncate max-w-[72px]">Express Yourself</span>
+              <span className="text-caption text-white/55 truncate max-w-[72px]">Expression</span>
             </motion.button>
 
             {/* Expression Cards from FeedDataContext (cycled for infinite scroll) */}
