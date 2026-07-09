@@ -275,17 +275,18 @@ export function DiscoverRow() {
         <div className="flex items-center justify-between mb-4 px-4">
           <div className="h-4 w-32 max-w-full bg-muted rounded animate-pulse" />
         </div>
-        <div className="flex gap-3 overflow-x-auto scrollbar-hide -mx-4 pl-4 pr-10">
-          {[1, 2, 3, 4].map(i => (
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide -mx-4 pl-4 pr-10">
+          {[1, 2, 3, 4, 5].map(i => (
             <div
               key={i}
-              className="flex-shrink-0 w-44 h-44 bg-muted/50 rounded-2xl animate-pulse"
+              className="flex-shrink-0 w-24 h-36 bg-muted/50 rounded-2xl animate-pulse"
             />
           ))}
         </div>
       </div>
     );
   }
+
 
 
 
