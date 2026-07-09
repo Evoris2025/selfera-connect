@@ -17,8 +17,13 @@ interface FluentEmojiProps {
 
 const LABELS: Record<ReactionType, string> = {
   like: 'Like',
-  relatable: 'Relatable',
+  care: 'Care',
+  laughing: 'Laughing',
+  surprise: 'Surprise',
+  sad: 'Sad',
+  angry: 'Angry',
   inspiring: 'Inspiring',
+  relatable: 'Relatable',
   support: 'Support',
   curious: 'Curious',
 };
