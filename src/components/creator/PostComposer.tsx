@@ -24,6 +24,7 @@ import {
   UserPlus,
   Hash,
   Film,
+  Music as MusicIcon,
   Maximize2,
   Minimize2,
 } from 'lucide-react';
@@ -78,6 +79,9 @@ import {
   LifeEventDialog,
   FundraiserDialog,
   ComposerLinkPreview,
+  MusicPicker,
+  MusicBadge,
+  type MusicTrack,
   computePollClosesAt,
 } from './post';
 import type {
@@ -210,6 +214,7 @@ interface ComposerState {
   fundraiser: FeedFundraiser | null;
   linkPreview: FeedLinkPreview | null;
   crossPost: CrossPostState;
+  music: MusicTrack | null;
 }
 
 const DEFAULT_STATE: ComposerState = {
@@ -238,6 +243,7 @@ const DEFAULT_STATE: ComposerState = {
   fundraiser: null,
   linkPreview: null,
   crossPost: { alsoShareAsExpression: false, alsoShareAsPost: false },
+  music: null,
 };
 
 // ---- Component --------------------------------------------------------------
@@ -264,6 +270,7 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
   const [dismissedUrls, setDismissedUrls] = useState<Set<string>>(new Set());
   const [textareaExpanded, setTextareaExpanded] = useState(false);
   const [bgSheetOpen, setBgSheetOpen] = useState(false);
+  const [musicPickerOpen, setMusicPickerOpen] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
 
@@ -763,6 +770,19 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
           </div>
         )}
 
+        {/* Music badge */}
+        {state.music && (
+          <div className="mt-3">
+            <MusicBadge
+              track={state.music}
+              onClick={() => setMusicPickerOpen(true)}
+              onRemove={() => update({ music: null })}
+            />
+          </div>
+        )}
+
+
+
         {/* Media previews */}
         {state.mediaPreviewUrls.length > 0 && (
           state.mediaPreviewUrls.length === 1 ? (
@@ -959,7 +979,15 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
             <TileSlot tone="teal" icon={<Film className="h-5 w-5" />} label="GIF">
               <GifPicker onSelect={(g) => { handleGifSelect(g); setAddSheetOpen(false); }} />
             </TileSlot>
+            <Tile
+              tone="teal"
+              icon={<MusicIcon className="h-5 w-5" />}
+              label="Music"
+              active={!!state.music}
+              onClick={() => { setAddSheetOpen(false); setMusicPickerOpen(true); }}
+            />
           </div>
+
 
           {/* Social */}
           <p className="text-caption font-medium text-white/40 uppercase tracking-wider px-1 mb-3 mt-5">
@@ -1061,6 +1089,14 @@ export function PostComposer({ onBack, onSuccess }: PostComposerProps) {
         </BrandSheetContent>
       </Sheet>
 
+
+      {/* Music picker */}
+      <MusicPicker
+        open={musicPickerOpen}
+        onOpenChange={setMusicPickerOpen}
+        initialTrackId={state.music?.id ?? null}
+        onSelect={(track) => update({ music: track })}
+      />
 
       {/* Hidden file inputs */}
       <input
