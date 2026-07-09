@@ -381,8 +381,9 @@ export function ReactionButton({ postId, currentReaction, count, onReact, size =
 
         onContextMenu={(e) => e.preventDefault()}
         onClick={handleClick}
+        style={{ touchAction: isPickerOpen || isLongPressing ? 'none' : 'manipulation' }}
         className={cn(
-          'flex items-center gap-1.5 transition-colors group relative select-none touch-manipulation [-webkit-touch-callout:none]',
+          'flex items-center gap-1.5 transition-colors group relative select-none [-webkit-touch-callout:none]',
           currentReaction ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
         )}
       >
