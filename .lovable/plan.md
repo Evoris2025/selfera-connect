@@ -1,66 +1,67 @@
-# Report: SelfERA error pages
+# Report: the MyERA page
 
 This is a report only. Nothing in the app changes.
 
-SelfERA has **two** error screens. They do different jobs.
+## What it is
+MyERA is your personal hub inside SelfERA, at the "MyERA" tab. Your Profile page is your public social face. MyERA is the private "control room" for your account, your support network and your paid interactions with verified providers.
 
----
+## What it's for
+- Shows who you are on SelfERA and your account status at a glance.
+- Connects the free social side of the app to the paid side, where people find and work with verified professionals.
+- Gives you one place to manage your support connections and interactions (sessions or bookings with providers).
 
-## 1. "Page not found" (404) page
+## What's on the page, top to bottom
 
-**What it is**
-The screen someone sees when they go to a web address that doesn't exist in SelfERA, for example `/feeed` or an old, broken link.
+### 1. Cover banner
+- Your cover photo, faded into the dark background. If you haven't set one, a stock gradient image is used.
+- **Three-dot menu** (top right):
+  - **Analytics**: opens your creator dashboard.
+  - **Settings**
+  - **About SelfERA**: opens the transparency page.
 
-**What it's for**
-- Stops people landing on a blank or broken screen.
-- Explains clearly that the page doesn't exist.
-- Gives them a quick way back into the app.
+### 2. Identity card (floats over the cover)
+- **Avatar** with the brand gradient ring. Tap it to go to your profile.
+- **Name**, plus the ERA verified tick if you're verified.
+- **@handle**
+- **Account type badge**: Individual, Professional or Organisation.
+- **Account Status button**: shows "ERA Verified · Active", your plan name (for example "Pro Plan") or "Free Account". Tap it to open the Account page, which covers billing, plan and verification.
 
-**When it shows**
-Whenever an address doesn't match any real page. It works whether or not the person is signed in.
+### 3. Stats row (four tappable boxes)
+| Box | Shows | Goes to |
+|---|---|---|
+| Waitlist | The number of communities you belong to | Community |
+| My List | How many providers you're connected to (active and pending) | Directory |
+| Pending | Connection requests waiting on you, with a coloured dot when there are any | Notifications |
+| Alerts | A bell icon | Notifications |
 
-**What's on the page**
-- **Faded brand tile with a "?"**: a square using the SelfERA blue, purple and orange gradient, dimmed to half strength. It keeps the page on-brand without being loud.
-- **"404" in large text**: the standard signal that a page wasn't found.
-- **"Page not found"**: a short, plain explanation.
-- **"Go Home" button** (gradient style, house icon): goes to the home page. Signed-in people are sent on to their feed. Signed-out people see the landing page.
-- **"Go Back" button** (outline style, arrow icon): goes back to the previous page, like the browser's back button.
-- **Layout**: centred on a dark background and fills the whole screen height. The buttons stack on mobile and sit side by side on larger screens.
+Why it's there: it gives a quick read on your network without opening other pages.
 
-**Behind the scenes**
-Each visit records the bad address in the browser console, so broken links can be tracked down.
+### 4. MyERA Network section
+- **"+ Add" button**: opens a picker for verified directory providers, so you can add one to your network.
+- **Three tabs:**
+  - **Discover**: your support connections (verified providers), each with a status ring, an "active" dot or "Pending" tag, their organisation or role, and a **message button** that opens a chat with them. If you have none, you'll see "find support when you're ready" and an **Explore Directory** button. A loading spinner shows while it loads, and an error message with **Try again** shows if it fails.
+  - **My List**: currently only a placeholder message ("your saved connections..."). It isn't working yet.
+  - **Interactions**: your paid interactions with providers, grouped into Pending, Active, Completed and Cancelled. The buttons change with your role:
+    - **Clients** can confirm, complete or cancel.
+    - **Providers** can accept, decline, complete or cancel.
 
----
+### 5. Footer
+A soft line: "By using SelfERA, you agree to our community guidelines."
 
-## 2. "Something went wrong" crash screen
+### Hidden or pop-up parts
+- **Verification flow**: a full-screen screen for applying for ERA verification. It's built in, but nothing on the page currently opens it.
+- **Verified Directory Picker**: the pop-up opened by "+ Add".
 
-**What it is**
-A safety net wrapped around the entire app. If any part of the app crashes while it's showing a page, this screen appears instead.
+## Where the information comes from
+All of it comes from real data: your profile, community memberships, support connections, pending requests, verification request, subscription and interactions. Your role (client or provider) changes what the Interactions tab lets you do.
 
-**What it's for**
-- Stops a crash turning into a completely white, frozen screen. That matters most on a mental health platform, where someone may be using crisis tools.
-- Tells the person something went wrong and gives them a one-tap way to recover.
+## Things to know or revisit later
+- **"Waitlist" is mislabelled.** It counts communities and links to Community.
+- **My List tab** is a placeholder only.
+- **Pending and Alerts** both open Notifications.
+- The **verification flow and intent selection** code exists but nothing on the page triggers it.
+- Built-but-unused role views (Client, Creator, Practitioner, Organisation, Analytics) aren't shown here yet, even though the project rules say they should be.
+- The **fallback cover** is a hard-coded stock image.
+- Some parts use **rounded corners**, which goes against the square-edge design rule.
 
-**What's on the page**
-- **"Something went wrong"** heading.
-- **The error message**: shows the technical reason for the crash in small, muted text, or "An unexpected error occurred." if there isn't one.
-- **"Reload" button**: reloads the whole app, which usually fixes it.
-- **Layout**: centred on the app's dark background.
-
-**Behind the scenes**
-- The crash details are logged to the console for debugging.
-- At app start-up, other hidden failures (background errors and failed requests) are also logged, so white screens can be investigated.
-- Old offline/caching data that used to cause white screens is cleared on load.
-
----
-
-## Things you may want to look at later (not changing now)
-
-- The 404 tile and the Reload button use **rounded corners**, which goes against the square-edge design rule.
-- The 404 page uses **hard-coded colours** for the gradient instead of the brand colour settings.
-- The crash screen shows **raw technical error text**, which may confuse or worry users.
-- Neither page has a **link to Crisis Support**, which could be a useful safety net on this platform.
-- The wording isn't **translated** into the app's other languages.
-- "Go Home" and "Go Back" use title case. The rest of the app uses more natural, human wording.
-
-Tell me if you'd like any of these improved.
+Tell me if you'd like any of these fixed.
